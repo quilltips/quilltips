@@ -26,6 +26,7 @@ export const AuthorRegistrationForm = () => {
     const bio = formData.get("bio") as string;
 
     try {
+      console.log("Starting registration process...");
       const { error: signUpError, data } = await supabase.auth.signUp({
         email,
         password,
@@ -38,8 +39,12 @@ export const AuthorRegistrationForm = () => {
         }
       });
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        console.error("Signup error:", signUpError);
+        throw signUpError;
+      }
 
+      console.log("Registration successful:", data);
       toast({
         title: "Registration successful!",
         description: "Please check your email to verify your account.",
