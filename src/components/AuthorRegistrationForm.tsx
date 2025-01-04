@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { AuthorRegistrationFields } from "./AuthorRegistrationFields";
 
 export const AuthorRegistrationForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -65,54 +64,7 @@ export const AuthorRegistrationForm = () => {
           </p>
         </div>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="Your name as it appears on your books"
-              required
-              className="hover-lift"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="your@email.com"
-              required
-              className="hover-lift"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Create a secure password"
-              required
-              minLength={8}
-              className="hover-lift"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bio">Short Bio</Label>
-            <Input
-              id="bio"
-              name="bio"
-              placeholder="Tell readers a bit about yourself"
-              required
-              className="hover-lift"
-            />
-          </div>
-        </div>
+        <AuthorRegistrationFields isLoading={isLoading} />
 
         <Button
           type="submit"
