@@ -5,9 +5,11 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AuthorRegistrationFields } from "./AuthorRegistrationFields";
+import { Alert, AlertDescription } from "./ui/alert";
 
 export const AuthorRegistrationForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const supabase = useSupabaseClient();
@@ -15,6 +17,7 @@ export const AuthorRegistrationForm = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
@@ -23,7 +26,7 @@ export const AuthorRegistrationForm = () => {
     const bio = formData.get("bio") as string;
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { error: signUpError, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -43,10 +46,12 @@ export const AuthorRegistrationForm = () => {
       });
 
       navigate("/author/login");
-    } catch (error) {
+    } catch (err) {
+      console.error("Registration error:", err);
+      setError(err.message || "An error occurred during registration");
       toast({
         title: "Error",
-        description: error.message,
+        description: err.message || "An error occurred during registration",
         variant: "destructive",
       });
     } finally {
@@ -63,6 +68,12 @@ export const AuthorRegistrationForm = () => {
             Create an account to start receiving tips from your readers
           </p>
         </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
         <AuthorRegistrationFields isLoading={isLoading} />
 
