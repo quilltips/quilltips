@@ -19,7 +19,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase
+      // Create QR code record
+      const { data: qrCode, error: qrError } = await supabase
         .from('qr_codes')
         .insert([
           { author_id: authorId, book_title: bookTitle }
@@ -27,12 +28,17 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (qrError) throw qrError;
 
-      toast({
-        title: "QR Code Created",
-        description: "Your QR code will be available after payment processing.",
+      // Create Stripe checkout session
+      const { data: { url }, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
+        body: { qrCodeId: qrCode.id }
       });
+
+      if (checkoutError) throw checkoutError;
+
+      // Redirect to Stripe checkout
+      window.location.href = url;
 
       setBookTitle("");
     } catch (error) {
@@ -63,7 +69,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         </div>
         
         <Button type="submit" disabled={isLoading}>
-          Create QR Code
+          Create QR Code (${9.99})
         </Button>
       </form>
     </Card>
