@@ -6,7 +6,7 @@ import { AuthorProfile } from "@/components/AuthorProfile";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { QrPlus, History, Settings } from "lucide-react";
+import { QrCode, History, Settings } from "lucide-react";
 import { CreateQRCode } from "@/components/CreateQRCode";
 import { TipHistory } from "@/components/TipHistory";
 import { ProfileSettings } from "@/components/ProfileSettings";
@@ -77,7 +77,7 @@ const AuthorDashboard = () => {
             <Tabs defaultValue="qrcodes" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="qrcodes" className="space-x-2">
-                  <QrPlus className="h-4 w-4" />
+                  <QrCode className="h-4 w-4" />
                   <span>QR Codes</span>
                 </TabsTrigger>
                 <TabsTrigger value="tips" className="space-x-2">
