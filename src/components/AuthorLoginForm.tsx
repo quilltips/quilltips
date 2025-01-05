@@ -22,12 +22,18 @@ export const AuthorLoginForm = () => {
     const password = formData.get("password") as string;
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+
+      if (!data?.user) {
+        throw new Error("No user data returned");
+      }
 
       toast({
         title: "Welcome back!",
@@ -35,10 +41,10 @@ export const AuthorLoginForm = () => {
       });
 
       navigate("/author/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error?.message || "An error occurred during login",
         variant: "destructive",
       });
     } finally {
@@ -64,6 +70,7 @@ export const AuthorLoginForm = () => {
               name="email"
               type="email"
               required
+              disabled={isLoading}
               className="hover-lift"
             />
           </div>
@@ -75,6 +82,7 @@ export const AuthorLoginForm = () => {
               name="password"
               type="password"
               required
+              disabled={isLoading}
               className="hover-lift"
             />
           </div>
