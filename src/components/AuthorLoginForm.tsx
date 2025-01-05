@@ -28,12 +28,16 @@ export const AuthorLoginForm = () => {
       });
 
       if (error) {
+        console.error("Login error:", error);
         throw error;
       }
 
       if (!data?.user) {
+        console.error("No user data returned");
         throw new Error("No user data returned");
       }
+
+      console.log("Login successful:", data.user);
 
       toast({
         title: "Welcome back!",
@@ -42,6 +46,7 @@ export const AuthorLoginForm = () => {
 
       navigate("/author/dashboard");
     } catch (error: any) {
+      console.error("Caught error:", error);
       toast({
         title: "Error",
         description: error?.message || "An error occurred during login",
