@@ -40,6 +40,12 @@ export const AuthorRegistrationForm = () => {
 
       if (signUpError) {
         console.error("Signup error:", signUpError);
+        
+        // Handle specific error cases
+        if (signUpError.message === "User already registered") {
+          throw new Error("This email is already registered. Please try logging in instead.");
+        }
+        
         throw signUpError;
       }
 
@@ -53,9 +59,13 @@ export const AuthorRegistrationForm = () => {
     } catch (err) {
       console.error("Registration error:", err);
       setError(err.message || "An error occurred during registration");
+      
+      // Show a more user-friendly toast message
       toast({
-        title: "Error",
-        description: err.message || "An error occurred during registration",
+        title: "Registration Failed",
+        description: err.message === "User already registered" 
+          ? "This email is already registered. Please try logging in instead."
+          : err.message || "An error occurred during registration",
         variant: "destructive",
       });
     } finally {
@@ -88,6 +98,13 @@ export const AuthorRegistrationForm = () => {
         >
           {isLoading ? "Creating account..." : "Create Author Account"}
         </Button>
+
+        <p className="text-sm text-center text-muted-foreground">
+          Already have an account?{" "}
+          <a href="/author/login" className="text-primary hover:underline">
+            Log in
+          </a>
+        </p>
       </form>
     </Card>
   );
