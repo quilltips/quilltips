@@ -36,6 +36,76 @@ export type Database = {
         }
         Relationships: []
       }
+      qr_codes: {
+        Row: {
+          author_id: string
+          book_title: string
+          created_at: string
+          id: string
+          is_paid: boolean
+          stripe_session_id: string | null
+        }
+        Insert: {
+          author_id: string
+          book_title: string
+          created_at?: string
+          id?: string
+          is_paid?: boolean
+          stripe_session_id?: string | null
+        }
+        Update: {
+          author_id?: string
+          book_title?: string
+          created_at?: string
+          id?: string
+          is_paid?: boolean
+          stripe_session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_codes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tips: {
+        Row: {
+          amount: number
+          author_id: string
+          book_title: string | null
+          created_at: string
+          id: string
+          message: string | null
+        }
+        Insert: {
+          amount: number
+          author_id: string
+          book_title?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+        }
+        Update: {
+          amount?: number
+          author_id?: string
+          book_title?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tips_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

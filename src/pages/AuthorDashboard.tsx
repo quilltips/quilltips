@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { AuthorProfile } from "@/components/AuthorProfile";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { ExternalLink } from "lucide-react";
+import { QrPlus, History, Settings } from "lucide-react";
+import { CreateQRCode } from "@/components/CreateQRCode";
+import { TipHistory } from "@/components/TipHistory";
+import { ProfileSettings } from "@/components/ProfileSettings";
 
 const AuthorDashboard = () => {
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const supabase = useSupabaseClient();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -24,12 +27,15 @@ const AuthorDashboard = () => {
           return;
         }
 
-        setProfile({
-          name: user.user_metadata.name,
-          bio: user.user_metadata.bio,
-          imageUrl: user.user_metadata.avatar_url || "/placeholder.svg",
-          stripeConnected: user.user_metadata.stripe_connected || false
-        });
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        setProfile(profileData);
       } catch (error) {
         console.error("Error fetching profile:", error);
         toast({
@@ -43,32 +49,7 @@ const AuthorDashboard = () => {
     };
 
     fetchProfile();
-  }, [supabase, navigate, toast]);
-
-  const handleConnectStripe = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate("/author/login");
-        return;
-      }
-
-      // This would typically call your backend to create a Stripe Connect account
-      // and return an account link URL
-      toast({
-        title: "Coming Soon",
-        description: "Stripe Connect integration will be available soon!",
-      });
-    } catch (error) {
-      console.error("Error connecting Stripe:", error);
-      toast({
-        title: "Error",
-        description: "Failed to connect Stripe account",
-        variant: "destructive",
-      });
-    }
-  };
+  }, [navigate, toast]);
 
   if (isLoading) {
     return (
@@ -90,20 +71,37 @@ const AuthorDashboard = () => {
             <AuthorProfile
               name={profile.name}
               bio={profile.bio}
-              imageUrl={profile.imageUrl}
+              imageUrl={profile.avatar_url || "/placeholder.svg"}
             />
             
-            {!profile.stripeConnected && (
-              <div className="flex justify-center">
-                <Button
-                  onClick={handleConnectStripe}
-                  className="hover-lift"
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Connect Stripe Account
-                </Button>
-              </div>
-            )}
+            <Tabs defaultValue="qrcodes" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="qrcodes" className="space-x-2">
+                  <QrPlus className="h-4 w-4" />
+                  <span>QR Codes</span>
+                </TabsTrigger>
+                <TabsTrigger value="tips" className="space-x-2">
+                  <History className="h-4 w-4" />
+                  <span>Tip History</span>
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="space-x-2">
+                  <Settings className="h-4 w-4" />
+                  <span>Settings</span>
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="qrcodes">
+                <CreateQRCode authorId={profile.id} />
+              </TabsContent>
+              
+              <TabsContent value="tips">
+                <TipHistory authorId={profile.id} />
+              </TabsContent>
+              
+              <TabsContent value="settings">
+                <ProfileSettings profile={profile} />
+              </TabsContent>
+            </Tabs>
           </>
         )}
       </main>
