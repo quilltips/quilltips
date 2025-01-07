@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import AuthorLogin from "./pages/AuthorLogin";
 import AuthorRegister from "./pages/AuthorRegister";
 import AuthorDashboard from "./pages/AuthorDashboard";
+import { Search } from "./components/Search";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/author/login" element={<AuthorLogin />} />
           <Route path="/author/register" element={<AuthorRegister />} />
           <Route path="/author/dashboard" element={<AuthorDashboard />} />
