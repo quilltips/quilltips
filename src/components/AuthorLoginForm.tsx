@@ -36,6 +36,32 @@ export const AuthorLoginForm = () => {
         throw new Error("No user data returned");
       }
 
+      // Check if profile exists, if not create it
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error("Profile fetch error:", profileError);
+        throw profileError;
+      }
+
+      if (!profileData) {
+        console.log("No profile found, creating one");
+        const { error: createError } = await supabase
+          .from('profiles')
+          .insert([{ 
+            id: data.user.id,
+            name: data.user.user_metadata.name || data.user.email,
+            bio: data.user.user_metadata.bio,
+            role: data.user.user_metadata.role || 'author'
+          }]);
+
+        if (createError) throw createError;
+      }
+
       console.log("Login successful:", data.user);
 
       toast({
