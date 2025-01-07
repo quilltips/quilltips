@@ -13,16 +13,19 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-  );
-
   try {
-    // Get the QR code ID and author from the request
-    const { qrCodeId } = await req.json();
+    const { qrCodeId, bookTitle } = await req.json();
     
+    if (!qrCodeId) {
+      throw new Error('QR code ID is required');
+    }
+
     // Get the authenticated user
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    );
+
     const authHeader = req.headers.get('Authorization')!;
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
@@ -36,12 +39,19 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    // Create Stripe checkout session
+    console.log('Creating payment session...');
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
-          price: 'price_1QdzDmKQRTmxarT1Syt1KMqU',
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `QR Code for "${bookTitle}"`,
+              description: 'One-time purchase for QR code generation',
+            },
+            unit_amount: 999, // $9.99 in cents
+          },
           quantity: 1,
         },
       ],
@@ -62,9 +72,11 @@ serve(async (req) => {
       .eq('author_id', user.id);
 
     if (updateError) {
+      console.error('Error updating QR code:', updateError);
       throw updateError;
     }
 
+    console.log('Payment session created:', session.id);
     return new Response(
       JSON.stringify({ url: session.url }),
       { 

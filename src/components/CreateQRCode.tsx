@@ -19,6 +19,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
     setIsLoading(true);
 
     try {
+      console.log("Creating QR code for author:", authorId);
+      
       // Create QR code record
       const { data: qrCode, error: qrError } = await supabase
         .from('qr_codes')
@@ -28,26 +30,49 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         .select()
         .single();
 
-      if (qrError) throw qrError;
+      if (qrError) {
+        console.error("QR code creation error:", qrError);
+        throw qrError;
+      }
+
+      console.log("QR code created:", qrCode);
 
       // Create Stripe checkout session
-      const { data: { url }, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
-        body: { qrCodeId: qrCode.id }
+      const { data, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
+        body: { 
+          qrCodeId: qrCode.id,
+          bookTitle: bookTitle
+        }
       });
 
-      if (checkoutError) throw checkoutError;
+      if (checkoutError) {
+        console.error("Checkout error:", checkoutError);
+        throw checkoutError;
+      }
 
-      // Redirect to Stripe checkout
-      window.location.href = url;
+      if (!data?.url) {
+        throw new Error("No checkout URL returned");
+      }
 
-      setBookTitle("");
-    } catch (error) {
+      console.log("Redirecting to checkout:", data.url);
+      window.location.href = data.url;
+
+    } catch (error: any) {
       console.error("Error creating QR code:", error);
       toast({
         title: "Error",
-        description: "Failed to create QR code",
+        description: error?.message || "Failed to create QR code",
         variant: "destructive",
       });
+      
+      // Clean up the QR code if checkout fails
+      if (error?.message?.includes("checkout")) {
+        await supabase
+          .from('qr_codes')
+          .delete()
+          .eq('author_id', authorId)
+          .eq('book_title', bookTitle);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +94,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         </div>
         
         <Button type="submit" disabled={isLoading}>
-          Create QR Code (${9.99})
+          {isLoading ? "Creating..." : "Create QR Code ($9.99)"}
         </Button>
       </form>
     </Card>
