@@ -35,7 +35,7 @@ const AuthorDashboard = () => {
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         if (profileError) {
           console.error("Profile fetch error:", profileError);
@@ -43,12 +43,24 @@ const AuthorDashboard = () => {
         }
 
         if (!profileData) {
-          console.error("No profile data found");
-          throw new Error("Profile not found");
+          console.log("No profile found, creating one");
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert([{ 
+              id: user.id,
+              name: user.user_metadata.name || user.email,
+              bio: user.user_metadata.bio,
+              role: user.user_metadata.role || 'reader'
+            }])
+            .select()
+            .single();
+
+          if (createError) throw createError;
+          setProfile(newProfile);
+        } else {
+          setProfile(profileData);
         }
 
-        console.log("Profile data fetched:", profileData);
-        setProfile(profileData);
       } catch (error: any) {
         console.error("Dashboard error:", error);
         toast({
