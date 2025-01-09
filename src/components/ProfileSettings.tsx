@@ -5,7 +5,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, BankIcon } from "lucide-react";
+import { Loader2, Wallet } from "lucide-react";
 
 interface ProfileSettingsProps {
   profile: {
@@ -130,7 +130,7 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
             {isConnecting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
-              <BankIcon className="mr-2 h-4 w-4" />
+              <Wallet className="mr-2 h-4 w-4" />
             )}
             {profile.stripe_account_id ? "Bank Account Connected" : "Connect Bank Account"}
           </Button>
