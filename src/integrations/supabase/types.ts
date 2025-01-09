@@ -71,6 +71,81 @@ export type Database = {
           },
         ]
       }
+      tip_comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          tip_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          tip_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          tip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tip_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tip_comments_tip_id_fkey"
+            columns: ["tip_id"]
+            isOneToOne: false
+            referencedRelation: "tips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tip_likes: {
+        Row: {
+          author_id: string
+          created_at: string
+          id: string
+          tip_id: string
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          id?: string
+          tip_id: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          id?: string
+          tip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tip_likes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tip_likes_tip_id_fkey"
+            columns: ["tip_id"]
+            isOneToOne: false
+            referencedRelation: "tips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tips: {
         Row: {
           amount: number
