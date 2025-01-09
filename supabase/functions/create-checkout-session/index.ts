@@ -39,7 +39,7 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    console.log('Creating payment session...');
+    console.log('Creating payment session for user:', user.id);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -55,13 +55,14 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      mode: 'payment',
+      mode: 'payment', // Explicitly set to one-time payment
       success_url: `${req.headers.get('origin')}/author/dashboard?success=true&qr_code=${qrCodeId}`,
       cancel_url: `${req.headers.get('origin')}/author/dashboard?canceled=true`,
       metadata: {
         qrCodeId,
         authorId: user.id,
       },
+      customer_email: user.email, // Pre-fill customer email
     });
 
     // Update QR code with Stripe session ID
@@ -77,6 +78,8 @@ serve(async (req) => {
     }
 
     console.log('Payment session created:', session.id);
+    console.log('Checkout URL:', session.url);
+    
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
