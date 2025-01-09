@@ -54,27 +54,28 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
   const connectBankAccount = async () => {
     setIsConnecting(true);
     try {
-      const response = await fetch('/api/create-connect-account', {
-        method: 'POST',
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session found');
+
+      const { data, error } = await supabase.functions.invoke('create-connect-account', {
         headers: {
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
 
-      const { url, accountId, error } = await response.json();
-
-      if (error) throw new Error(error);
+      if (error) throw error;
+      if (!data.url) throw new Error('No URL returned from Stripe');
 
       // Save the Stripe account ID
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ stripe_account_id: accountId })
+        .update({ stripe_account_id: data.accountId })
         .eq('id', profile.id);
 
       if (updateError) throw updateError;
 
       // Redirect to Stripe Connect onboarding
-      window.location.href = url;
+      window.location.href = data.url;
     } catch (error) {
       console.error("Error connecting bank account:", error);
       toast({
