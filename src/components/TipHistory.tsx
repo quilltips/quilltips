@@ -11,7 +11,7 @@ import {
 } from "./ui/table";
 import { Heart, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface TipHistoryProps {
   authorId: string;
@@ -36,6 +36,8 @@ interface TipComment {
 }
 
 export const TipHistory = ({ authorId }: TipHistoryProps) => {
+  const queryClient = useQueryClient();
+
   const { data: tips, isLoading } = useQuery({
     queryKey: ['tips', authorId],
     queryFn: async () => {
@@ -77,28 +79,76 @@ export const TipHistory = ({ authorId }: TipHistoryProps) => {
   });
 
   const handleLike = async (tipId: string) => {
-    const { error } = await supabase
-      .from('tip_likes')
-      .insert({ tip_id: tipId, author_id: authorId });
+    try {
+      // First, check if the user has already liked this tip
+      const { data: existingLike, error: checkError } = await supabase
+        .from('tip_likes')
+        .select('*')
+        .eq('tip_id', tipId)
+        .eq('author_id', authorId)
+        .single();
 
-    if (error) {
-      console.error("Error liking tip:", error);
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error("Error checking like:", checkError);
+        return;
+      }
+
+      if (existingLike) {
+        // Unlike: Remove the existing like
+        const { error: deleteError } = await supabase
+          .from('tip_likes')
+          .delete()
+          .eq('tip_id', tipId)
+          .eq('author_id', authorId);
+
+        if (deleteError) {
+          console.error("Error unliking tip:", deleteError);
+          return;
+        }
+      } else {
+        // Like: Add new like
+        const { error: insertError } = await supabase
+          .from('tip_likes')
+          .insert({ tip_id: tipId, author_id: authorId });
+
+        if (insertError) {
+          console.error("Error liking tip:", insertError);
+          return;
+        }
+      }
+
+      // Invalidate and refetch the likes query to update the UI
+      queryClient.invalidateQueries({ queryKey: ['tip_likes', authorId] });
+    } catch (error) {
+      console.error("Error handling like:", error);
     }
   };
 
   const handleComment = async (tipId: string, content: string) => {
-    const { error } = await supabase
-      .from('tip_comments')
-      .insert({ tip_id: tipId, author_id: authorId, content });
+    try {
+      const { error } = await supabase
+        .from('tip_comments')
+        .insert({ tip_id: tipId, author_id: authorId, content });
 
-    if (error) {
-      console.error("Error commenting on tip:", error);
+      if (error) {
+        console.error("Error commenting on tip:", error);
+        return;
+      }
+
+      // Invalidate and refetch the comments query to update the UI
+      queryClient.invalidateQueries({ queryKey: ['tip_comments', authorId] });
+    } catch (error) {
+      console.error("Error handling comment:", error);
     }
   };
 
   if (isLoading) {
     return <div>Loading tips...</div>;
   }
+
+  const isLiked = (tipId: string) => {
+    return likes?.some(like => like.tip_id === tipId);
+  };
 
   return (
     <Card className="p-6">
@@ -124,7 +174,7 @@ export const TipHistory = ({ authorId }: TipHistoryProps) => {
               <TableCell>
                 <div className="flex items-center gap-4">
                   <Button
-                    variant="ghost"
+                    variant={isLiked(tip.id) ? "default" : "ghost"}
                     size="sm"
                     onClick={() => handleLike(tip.id)}
                     className="flex items-center gap-1"
