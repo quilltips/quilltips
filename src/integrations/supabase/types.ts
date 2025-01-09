@@ -40,25 +40,37 @@ export type Database = {
         Row: {
           author_id: string
           book_title: string
+          cover_image: string | null
           created_at: string
           id: string
           is_paid: boolean
+          isbn: string | null
+          publisher: string | null
+          release_date: string | null
           stripe_session_id: string | null
         }
         Insert: {
           author_id: string
           book_title: string
+          cover_image?: string | null
           created_at?: string
           id?: string
           is_paid?: boolean
+          isbn?: string | null
+          publisher?: string | null
+          release_date?: string | null
           stripe_session_id?: string | null
         }
         Update: {
           author_id?: string
           book_title?: string
+          cover_image?: string | null
           created_at?: string
           id?: string
           is_paid?: boolean
+          isbn?: string | null
+          publisher?: string | null
+          release_date?: string | null
           stripe_session_id?: string | null
         }
         Relationships: [
