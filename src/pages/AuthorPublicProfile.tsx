@@ -55,6 +55,7 @@ const AuthorPublicProfile = () => {
           name={author.name || 'Anonymous Author'}
           bio={author.bio || 'No bio available'}
           imageUrl="/placeholder.svg"
+          authorId={author.id}
         />
         
         <div className="max-w-2xl mx-auto">
