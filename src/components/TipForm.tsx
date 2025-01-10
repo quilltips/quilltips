@@ -6,11 +6,12 @@ import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 
 interface TipFormProps {
-  authorName: string;
+  authorId: string;
+  onSuccess?: () => void;
   bookTitle?: string;
 }
 
-export const TipForm = ({ authorName, bookTitle }: TipFormProps) => {
+export const TipForm = ({ authorId, onSuccess, bookTitle }: TipFormProps) => {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
   const { toast } = useToast();
@@ -22,20 +23,12 @@ export const TipForm = ({ authorName, bookTitle }: TipFormProps) => {
       title: "Thank you for your support!",
       description: "Your message and tip have been sent to the author.",
     });
+    onSuccess?.();
   };
 
   return (
     <Card className="glass-card p-6 max-w-2xl mx-auto mt-6 animate-enter">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <h3 className="text-lg font-medium mb-2">Support {authorName}</h3>
-          {bookTitle && (
-            <p className="text-muted-foreground text-sm">
-              Book: {bookTitle}
-            </p>
-          )}
-        </div>
-
         <div className="space-y-2">
           <label className="text-sm font-medium">
             Tip Amount ($)
