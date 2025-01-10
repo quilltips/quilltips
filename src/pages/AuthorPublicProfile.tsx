@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { AuthorProfile } from "@/components/AuthorProfile";
 import { TipHistory } from "@/components/TipHistory";
+import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { Loader2 } from "lucide-react";
 
 const AuthorPublicProfile = () => {
@@ -57,6 +58,14 @@ const AuthorPublicProfile = () => {
           imageUrl="/placeholder.svg"
           authorId={author.id}
         />
+        
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-semibold mb-4">Books</h2>
+          <AuthorQRCodes 
+            authorId={author.id} 
+            authorName={author.name || 'Anonymous Author'} 
+          />
+        </div>
         
         <div className="max-w-2xl mx-auto">
           <h2 className="text-2xl font-semibold mb-4">Recent Tips</h2>
