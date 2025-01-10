@@ -1,34 +1,26 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import { Search } from "./components/Search";
-import AuthorLogin from "./pages/AuthorLogin";
-import AuthorRegister from "./pages/AuthorRegister";
-import AuthorDashboard from "./pages/AuthorDashboard";
-import AuthorPublicProfile from "./pages/AuthorPublicProfile";
+import Index from "@/pages/Index";
+import AuthorLogin from "@/pages/AuthorLogin";
+import AuthorRegister from "@/pages/AuthorRegister";
+import AuthorDashboard from "@/pages/AuthorDashboard";
+import AuthorPublicProfile from "@/pages/AuthorPublicProfile";
+import CreateQRPage from "@/pages/CreateQRPage";
+import { Toaster } from "@/components/ui/toaster";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+function App() {
+  return (
     <BrowserRouter>
-      <TooltipProvider>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/author/:id" element={<AuthorPublicProfile />} />
-          <Route path="/author/login" element={<AuthorLogin />} />
-          <Route path="/author/register" element={<AuthorRegister />} />
-          <Route path="/author/dashboard" element={<AuthorDashboard />} />
-        </Routes>
-        <Toaster />
-        <Sonner />
-      </TooltipProvider>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/author/login" element={<AuthorLogin />} />
+        <Route path="/author/register" element={<AuthorRegister />} />
+        <Route path="/author/dashboard" element={<AuthorDashboard />} />
+        <Route path="/author/:id" element={<AuthorPublicProfile />} />
+        <Route path="/author/create-qr" element={<CreateQRPage />} />
+      </Routes>
+      <Toaster />
     </BrowserRouter>
-  </QueryClientProvider>
-);
+  );
+}
 
 export default App;
