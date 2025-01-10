@@ -8,9 +8,9 @@ import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { Loader2 } from "lucide-react";
 
 const AuthorPublicProfile = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
-  const { data: author, isLoading } = useQuery({
+  const { data: author, isLoading, error } = useQuery({
     queryKey: ['author', id],
     queryFn: async () => {
       if (!id) throw new Error('Author ID is required');
@@ -20,12 +20,14 @@ const AuthorPublicProfile = () => {
         .select()
         .eq('id', id)
         .eq('role', 'author')
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) throw new Error('Author not found');
       return data;
     },
-    enabled: !!id
+    enabled: !!id,
+    retry: false
   });
 
   if (isLoading) {
@@ -39,12 +41,14 @@ const AuthorPublicProfile = () => {
     );
   }
 
-  if (!author) {
+  if (error || !author) {
     return (
       <div className="min-h-screen">
         <Navigation />
         <div className="container mx-auto px-4 pt-24 text-center">
-          <h1 className="text-2xl font-semibold">Author not found</h1>
+          <h1 className="text-2xl font-semibold">
+            {error?.message || 'Author not found'}
+          </h1>
         </div>
       </div>
     );
