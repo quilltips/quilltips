@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { TipLikeButton } from "./TipLikeButton";
 import { TipCommentButton } from "./TipCommentButton";
+import { useState } from "react";
+import { TipDetailsDialog } from "./TipDetailsDialog";
 
 interface TipHistoryProps {
   authorId: string;
@@ -22,9 +24,12 @@ interface Tip {
   message: string;
   created_at: string;
   book_title: string;
+  author_id: string;
 }
 
 export const TipHistory = ({ authorId }: TipHistoryProps) => {
+  const [selectedTip, setSelectedTip] = useState<Tip | null>(null);
+
   const { data: tips, isLoading } = useQuery({
     queryKey: ['tips', authorId],
     queryFn: async () => {
@@ -87,14 +92,18 @@ export const TipHistory = ({ authorId }: TipHistoryProps) => {
         </TableHeader>
         <TableBody>
           {tips?.map((tip) => (
-            <TableRow key={tip.id}>
+            <TableRow 
+              key={tip.id}
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => setSelectedTip(tip)}
+            >
               <TableCell>
                 {new Date(tip.created_at).toLocaleDateString()}
               </TableCell>
               <TableCell>{tip.book_title || "N/A"}</TableCell>
               <TableCell>${tip.amount}</TableCell>
               <TableCell>{tip.message || "No message"}</TableCell>
-              <TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center gap-4">
                   <TipLikeButton
                     tipId={tip.id}
@@ -120,6 +129,12 @@ export const TipHistory = ({ authorId }: TipHistoryProps) => {
           )}
         </TableBody>
       </Table>
+
+      <TipDetailsDialog
+        isOpen={!!selectedTip}
+        onClose={() => setSelectedTip(null)}
+        tip={selectedTip}
+      />
     </Card>
   );
 };
