@@ -17,7 +17,7 @@ const AuthorPublicProfile = () => {
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select()
         .eq('id', id)
         .eq('role', 'author')
         .single();
