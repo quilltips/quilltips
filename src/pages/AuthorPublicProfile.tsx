@@ -13,6 +13,8 @@ const AuthorPublicProfile = () => {
   const { data: author, isLoading } = useQuery({
     queryKey: ['author', id],
     queryFn: async () => {
+      if (!id) throw new Error('Author ID is required');
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
