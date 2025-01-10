@@ -35,16 +35,6 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
     );
   }
 
-  // Group QR codes by book title
-  const groupedQRCodes = qrCodes?.reduce((acc, qr) => {
-    const book = qr.book_title;
-    if (!acc[book]) {
-      acc[book] = [];
-    }
-    acc[book].push(qr);
-    return acc;
-  }, {} as Record<string, typeof qrCodes>);
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -55,7 +45,7 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
         </Button>
       </div>
 
-      {!groupedQRCodes || Object.keys(groupedQRCodes).length === 0 ? (
+      {!qrCodes || qrCodes.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">
@@ -64,43 +54,38 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
           </CardContent>
         </Card>
       ) : (
-        Object.entries(groupedQRCodes).map(([bookTitle, codes]) => (
-          <Card key={bookTitle}>
+        qrCodes.map((qr) => (
+          <Card key={qr.id}>
             <CardHeader>
-              <CardTitle>{bookTitle}</CardTitle>
+              <CardTitle>{qr.book_title}</CardTitle>
               <CardDescription>
-                {codes.length} QR code{codes.length !== 1 ? 's' : ''}
+                QR Code Details
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {codes.map((qr) => (
-                  <div
-                    key={qr.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div className="space-y-1">
-                      <p className="font-medium">Published by {qr.publisher || 'Unknown'}</p>
-                      {qr.isbn && <p className="text-sm text-muted-foreground">ISBN: {qr.isbn}</p>}
-                      {qr.release_date && (
-                        <p className="text-sm text-muted-foreground">
-                          Release Date: {format(new Date(qr.release_date), 'PPP')}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {qr.is_paid ? (
-                        <Button variant="outline" onClick={() => window.open(`/qr/${qr.id}`, '_blank')}>
-                          View QR Code
-                        </Button>
-                      ) : (
-                        <Button variant="secondary" disabled>
-                          Payment Pending
-                        </Button>
-                      )}
-                    </div>
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <p className="font-medium">Published by {qr.publisher || 'Unknown'}</p>
+                    {qr.isbn && <p className="text-sm text-muted-foreground">ISBN: {qr.isbn}</p>}
+                    {qr.release_date && (
+                      <p className="text-sm text-muted-foreground">
+                        Release Date: {format(new Date(qr.release_date), 'PPP')}
+                      </p>
+                    )}
                   </div>
-                ))}
+                  <div className="flex items-center gap-2">
+                    {qr.is_paid ? (
+                      <Button variant="outline" onClick={() => window.open(`/qr/${qr.id}`, '_blank')}>
+                        View QR Code
+                      </Button>
+                    ) : (
+                      <Button variant="secondary" disabled>
+                        Payment Pending
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
