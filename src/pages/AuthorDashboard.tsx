@@ -10,7 +10,7 @@ import { AuthorQRCodesList } from "@/components/AuthorQRCodesList";
 import { TipHistory } from "@/components/TipHistory";
 import { ProfileSettings } from "@/components/ProfileSettings";
 import { Button } from "@/components/ui/button";
-import { Tooltip } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const AuthorDashboard = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -104,16 +104,23 @@ const AuthorDashboard = () => {
             bio={profile.bio || "No bio available"}
             imageUrl={profile.avatar_url || "/placeholder.svg"}
           />
-          <Tooltip>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-6 right-6"
-              onClick={() => navigate(`/author/${profile.id}`)}
-            >
-              <User className="h-5 w-5" />
-            </Button>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-6 right-6"
+                  onClick={() => navigate(`/author/${profile.id}`)}
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Public profile</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         
         <Tabs defaultValue="qrcodes" className="w-full">
