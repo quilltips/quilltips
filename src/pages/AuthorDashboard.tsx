@@ -5,10 +5,12 @@ import { Navigation } from "@/components/Navigation";
 import { AuthorProfile } from "@/components/AuthorProfile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { QrCode, History, Settings } from "lucide-react";
+import { QrCode, History, Settings, User } from "lucide-react";
 import { AuthorQRCodesList } from "@/components/AuthorQRCodesList";
 import { TipHistory } from "@/components/TipHistory";
 import { ProfileSettings } from "@/components/ProfileSettings";
+import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 
 const AuthorDashboard = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -96,11 +98,23 @@ const AuthorDashboard = () => {
     <div className="min-h-screen">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12 space-y-8">
-        <AuthorProfile
-          name={profile.name || "Anonymous Author"}
-          bio={profile.bio || "No bio available"}
-          imageUrl={profile.avatar_url || "/placeholder.svg"}
-        />
+        <div className="relative">
+          <AuthorProfile
+            name={profile.name || "Anonymous Author"}
+            bio={profile.bio || "No bio available"}
+            imageUrl={profile.avatar_url || "/placeholder.svg"}
+          />
+          <Tooltip>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-6 right-6"
+              onClick={() => navigate(`/author/${profile.id}`)}
+            >
+              <User className="h-5 w-5" />
+            </Button>
+          </Tooltip>
+        </div>
         
         <Tabs defaultValue="qrcodes" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
