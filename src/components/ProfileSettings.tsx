@@ -63,8 +63,17 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
         },
       });
 
-      if (error) throw error;
-      if (!data.url) throw new Error('No URL returned from Stripe');
+      if (error) {
+        console.error("Function error:", error);
+        throw error;
+      }
+
+      if (!data?.url) {
+        if (data?.error === 'Platform profile setup required') {
+          throw new Error(data.details || 'Platform setup required');
+        }
+        throw new Error('No URL returned from Stripe');
+      }
 
       // Save the Stripe account ID
       const { error: updateError } = await supabase
@@ -76,11 +85,11 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
 
       // Redirect to Stripe Connect onboarding
       window.location.href = data.url;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error connecting bank account:", error);
       toast({
-        title: "Error",
-        description: "Failed to connect bank account",
+        title: "Connection Error",
+        description: error.message || "Failed to connect bank account",
         variant: "destructive",
       });
     } finally {
