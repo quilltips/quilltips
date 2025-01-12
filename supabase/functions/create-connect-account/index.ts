@@ -18,42 +18,57 @@ serve(async (req) => {
 
     console.log('Creating Stripe Connect account...')
     
-    const account = await stripe.accounts.create({
-      type: 'express',
-      country: 'US',
-      capabilities: {
-        card_payments: { requested: true },
-        transfers: { requested: true },
-      },
-    }).catch(error => {
-      console.error('Stripe account creation error:', error)
-      throw new Error(error.message)
-    })
+    // First check if platform profile is complete
+    try {
+      const account = await stripe.accounts.create({
+        type: 'express',
+        country: 'US',
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
+      })
 
-    console.log('Stripe account created:', account.id)
+      console.log('Stripe account created:', account.id)
 
-    const accountLink = await stripe.accountLinks.create({
-      account: account.id,
-      refresh_url: `${req.headers.get('origin')}/author/dashboard`,
-      return_url: `${req.headers.get('origin')}/author/dashboard`,
-      type: 'account_onboarding',
-    }).catch(error => {
-      console.error('Account link creation error:', error)
-      throw new Error(error.message)
-    })
+      const accountLink = await stripe.accountLinks.create({
+        account: account.id,
+        refresh_url: `${req.headers.get('origin')}/author/dashboard`,
+        return_url: `${req.headers.get('origin')}/author/dashboard`,
+        type: 'account_onboarding',
+      })
 
-    console.log('Account link created successfully')
+      console.log('Account link created successfully')
 
-    return new Response(
-      JSON.stringify({ 
-        accountId: account.id,
-        url: accountLink.url 
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
+      return new Response(
+        JSON.stringify({ 
+          accountId: account.id,
+          url: accountLink.url 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      )
+    } catch (stripeError: any) {
+      console.error('Stripe API error:', stripeError)
+      
+      // Check if it's a platform profile error
+      if (stripeError.message?.includes('platform-profile')) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Platform profile setup required',
+            details: 'Please complete your Stripe Connect platform profile setup at https://dashboard.stripe.com/settings/connect/platform-profile'
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400,
+          }
+        )
       }
-    )
+      
+      throw stripeError
+    }
   } catch (error) {
     console.error('Edge function error:', error)
     return new Response(
