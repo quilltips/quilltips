@@ -11,7 +11,7 @@ const Index = () => {
       
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto text-center space-y-6 animate-enter">
-          <h1 className="text-4xl font-bold">Connect with Authors Through Their Books</h1>
+          <h1 className="text-4xl font-bold">Helping Authors Get Paid</h1>
           <p className="text-xl text-muted-foreground">
             Support your favorite authors directly and share your appreciation for their work
           </p>
