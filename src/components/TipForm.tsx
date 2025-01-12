@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TipFormProps {
   authorId: string;
@@ -14,16 +15,36 @@ interface TipFormProps {
 export const TipForm = ({ authorId, onSuccess, bookTitle }: TipFormProps) => {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here we'll integrate payment processing later
-    toast({
-      title: "Thank you for your support!",
-      description: "Your message and tip have been sent to the author.",
-    });
-    onSuccess?.();
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
+        body: {
+          amount: Number(amount),
+          authorId,
+          message,
+          bookTitle,
+        },
+      });
+
+      if (error) throw error;
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    } catch (error: any) {
+      console.error('Error creating checkout session:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to process tip",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -58,8 +79,12 @@ export const TipForm = ({ authorId, onSuccess, bookTitle }: TipFormProps) => {
           />
         </div>
 
-        <Button type="submit" className="w-full hover-lift">
-          Send Tip & Message
+        <Button 
+          type="submit" 
+          className="w-full hover-lift"
+          disabled={isLoading}
+        >
+          {isLoading ? "Processing..." : "Send Tip & Message"}
         </Button>
       </form>
     </Card>
