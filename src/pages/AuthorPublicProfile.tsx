@@ -7,6 +7,9 @@ import { TipHistory } from "@/components/TipHistory";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { Loader2 } from "lucide-react";
 
+// UUID validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -14,6 +17,7 @@ const AuthorPublicProfile = () => {
     queryKey: ['author', id],
     queryFn: async () => {
       if (!id) throw new Error('Author ID is required');
+      if (!UUID_REGEX.test(id)) throw new Error('Invalid author ID format');
       
       const { data, error } = await supabase
         .from('profiles')
@@ -26,7 +30,7 @@ const AuthorPublicProfile = () => {
       if (!data) throw new Error('Author not found');
       return data;
     },
-    enabled: !!id,
+    enabled: !!id && UUID_REGEX.test(id),
     retry: false
   });
 
