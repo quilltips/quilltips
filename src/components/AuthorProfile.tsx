@@ -59,7 +59,6 @@ export const AuthorProfile = ({ name, bio, imageUrl, socialLink, authorId }: Aut
                   onClick={() => setShowTipDialog(true)}
                   className="hover-lift"
                 >
-                  <DollarSign className="h-4 w-4 mr-2" />
                   Tip Author
                 </Button>
               )}

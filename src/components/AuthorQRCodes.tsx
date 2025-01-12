@@ -69,7 +69,6 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
                     bookTitle: qrCode.book_title,
                   })}
                 >
-                  <DollarSign className="h-4 w-4 mr-2" />
                   Tip for this book
                 </Button>
               </div>
