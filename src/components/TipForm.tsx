@@ -12,9 +12,10 @@ interface TipFormProps {
   authorId: string;
   onSuccess?: () => void;
   bookTitle?: string;
+  qrCodeId?: string;
 }
 
-export const TipForm = ({ authorId, onSuccess, bookTitle }: TipFormProps) => {
+export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormProps) => {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,7 @@ export const TipForm = ({ authorId, onSuccess, bookTitle }: TipFormProps) => {
           authorId,
           message,
           bookTitle,
+          qrCodeId
         },
       });
 

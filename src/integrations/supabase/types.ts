@@ -184,6 +184,7 @@ export type Database = {
           created_at: string
           id: string
           message: string | null
+          qr_code_id: string | null
         }
         Insert: {
           amount: number
@@ -192,6 +193,7 @@ export type Database = {
           created_at?: string
           id?: string
           message?: string | null
+          qr_code_id?: string | null
         }
         Update: {
           amount?: number
@@ -200,6 +202,7 @@ export type Database = {
           created_at?: string
           id?: string
           message?: string | null
+          qr_code_id?: string | null
         }
         Relationships: [
           {
@@ -207,6 +210,13 @@ export type Database = {
             columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tips_qr_code_id_fkey"
+            columns: ["qr_code_id"]
+            isOneToOne: false
+            referencedRelation: "qr_codes"
             referencedColumns: ["id"]
           },
         ]

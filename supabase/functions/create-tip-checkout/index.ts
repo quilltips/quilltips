@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { amount, authorId, message, bookTitle } = await req.json();
+    const { amount, authorId, message, bookTitle, qrCodeId } = await req.json();
     
     if (!authorId) {
       throw new Error('Author ID is required');
@@ -86,6 +86,7 @@ serve(async (req) => {
         authorId,
         message: message || '',
         bookTitle: bookTitle || '',
+        qrCodeId: qrCodeId || '',
       },
     });
 

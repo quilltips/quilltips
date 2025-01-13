@@ -91,6 +91,7 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
             <TipForm 
               authorId={authorId}
               bookTitle={selectedQRCode.bookTitle}
+              qrCodeId={selectedQRCode.id}
               onSuccess={() => setSelectedQRCode(null)}
             />
           )}
