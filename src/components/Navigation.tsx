@@ -4,22 +4,21 @@ import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useSession } from '@supabase/auth-helpers-react';
 
 export const Navigation = () => {
   const [isAuthor, setIsAuthor] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const session = useSession();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-      if (user) {
+      if (session?.user) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
-          .eq('id', user.id)
+          .eq('id', session.user.id)
           .single();
         
         setIsAuthor(profile?.role === 'author');
@@ -33,7 +32,7 @@ export const Navigation = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [session]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -68,7 +67,7 @@ export const Navigation = () => {
               <Search className="h-5 w-5" />
             </Button>
           </Link>
-          {isAuthenticated ? (
+          {session ? (
             <Button 
               variant="ghost" 
               onClick={handleLogout}
