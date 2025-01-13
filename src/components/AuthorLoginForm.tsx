@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const AuthorLoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -82,6 +84,34 @@ export const AuthorLoginForm = () => {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsResetting(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/author/reset-password`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Password Reset Email Sent",
+        description: "Check your email for the password reset link.",
+      });
+      setResetEmail("");
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      toast({
+        title: "Error",
+        description: error?.message || "An error occurred while requesting password reset",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <Card className="glass-card p-6 max-w-md mx-auto animate-enter">
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -126,6 +156,33 @@ export const AuthorLoginForm = () => {
           {isLoading ? "Signing in..." : "Sign In"}
         </Button>
       </form>
+
+      <div className="mt-6 pt-6 border-t">
+        <h3 className="text-sm font-medium mb-4">Forgot your password?</h3>
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="resetEmail">Email</Label>
+            <Input
+              id="resetEmail"
+              type="email"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              required
+              disabled={isResetting}
+              className="hover-lift"
+              placeholder="Enter your email"
+            />
+          </div>
+          <Button
+            type="submit"
+            variant="outline"
+            className="w-full hover-lift"
+            disabled={isResetting}
+          >
+            {isResetting ? "Sending Reset Link..." : "Send Reset Link"}
+          </Button>
+        </form>
+      </div>
     </Card>
   );
 };

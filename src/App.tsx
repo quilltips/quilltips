@@ -22,6 +22,10 @@ function App() {
         <Route path="/author/profile/:id" element={<AuthorPublicProfile />} />
         <Route path="/author/create-qr" element={<CreateQRPage />} />
         <Route path="/author/bank-account" element={<AuthorBankAccount />} />
+        <Route 
+          path="/author/reset-password" 
+          element={<AuthorLogin />} 
+        />
       </Routes>
       <Toaster />
     </Router>
