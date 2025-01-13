@@ -1,6 +1,6 @@
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { ExternalLink, DollarSign } from "lucide-react";
+import { ExternalLink, DollarSign, User } from "lucide-react";
 import { TipForm } from "./TipForm";
 import { useState } from "react";
 import {
@@ -16,9 +16,17 @@ interface AuthorProfileProps {
   imageUrl: string;
   socialLink?: string;
   authorId?: string;
+  publicProfileLink?: string;
 }
 
-export const AuthorProfile = ({ name, bio, imageUrl, socialLink, authorId }: AuthorProfileProps) => {
+export const AuthorProfile = ({ 
+  name, 
+  bio, 
+  imageUrl, 
+  socialLink, 
+  authorId,
+  publicProfileLink 
+}: AuthorProfileProps) => {
   const [showTipDialog, setShowTipDialog] = useState(false);
 
   return (
@@ -39,7 +47,19 @@ export const AuthorProfile = ({ name, bio, imageUrl, socialLink, authorId }: Aut
               <p className="text-muted-foreground mt-2">{bio}</p>
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
+              {publicProfileLink && (
+                <a
+                  href={publicProfileLink}
+                  className="inline-block"
+                >
+                  <Button variant="outline" className="hover-lift">
+                    <User className="h-4 w-4 mr-2" />
+                    Public Profile
+                  </Button>
+                </a>
+              )}
+              
               {socialLink && (
                 <a
                   href={socialLink}
@@ -59,6 +79,7 @@ export const AuthorProfile = ({ name, bio, imageUrl, socialLink, authorId }: Aut
                   onClick={() => setShowTipDialog(true)}
                   className="hover-lift"
                 >
+                  <DollarSign className="h-4 w-4 mr-2" />
                   Tip Author
                 </Button>
               )}
