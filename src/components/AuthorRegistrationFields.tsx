@@ -7,7 +7,7 @@ interface AuthorRegistrationFieldsProps {
 
 export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFieldsProps) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 text-left">
       <div className="space-y-2">
         <Label htmlFor="name">Full Name</Label>
         <Input
@@ -15,7 +15,7 @@ export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFields
           name="name"
           placeholder="Your name as it appears on your books"
           required
-          className="hover-lift"
+          className="hover-lift text-left"
           disabled={isLoading}
         />
       </div>
@@ -28,7 +28,7 @@ export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFields
           type="email"
           placeholder="your@email.com"
           required
-          className="hover-lift"
+          className="hover-lift text-left"
           disabled={isLoading}
         />
       </div>
@@ -42,7 +42,7 @@ export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFields
           placeholder="Create a secure password"
           required
           minLength={8}
-          className="hover-lift"
+          className="hover-lift text-left"
           disabled={isLoading}
         />
       </div>
@@ -54,7 +54,7 @@ export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFields
           name="bio"
           placeholder="Tell readers a bit about yourself"
           required
-          className="hover-lift"
+          className="hover-lift text-left"
           disabled={isLoading}
         />
       </div>

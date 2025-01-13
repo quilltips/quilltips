@@ -120,7 +120,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
 
   return (
     <Card className="p-6">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 text-left">
         <div className="space-y-2">
           <label className="text-sm font-medium">Book Title</label>
           <Input
@@ -128,6 +128,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             onChange={(e) => setBookTitle(e.target.value)}
             placeholder="Enter your book's title"
             required
+            className="text-left"
           />
         </div>
 
@@ -138,6 +139,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             onChange={(e) => setPublisher(e.target.value)}
             placeholder="Enter the publisher's name"
             required
+            className="text-left"
           />
         </div>
 
@@ -148,6 +150,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             onChange={(e) => setIsbn(e.target.value)}
             placeholder="Enter ISBN number"
             required
+            className="text-left"
           />
         </div>
 
@@ -184,10 +187,11 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             accept="image/*"
             onChange={(e) => setCoverImage(e.target.files?.[0] || null)}
             required
+            className="text-left"
           />
         </div>
         
-        <Button type="submit" disabled={isLoading} className="w-full">
+        <Button type="submit" disabled={isLoading} className="w-full text-center">
           {isLoading ? "Creating..." : "Create QR Code ($9.99)"}
         </Button>
       </form>

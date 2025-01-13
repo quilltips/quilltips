@@ -67,7 +67,7 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
 
   return (
     <Card className="glass-card p-6 max-w-2xl mx-auto mt-6 animate-enter">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 text-left">
         <div className="space-y-2">
           <label className="text-sm font-medium">
             Tip Amount ($)
@@ -79,7 +79,7 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Enter amount"
-            className="hover-lift"
+            className="hover-lift text-left"
             required
           />
         </div>
@@ -92,14 +92,14 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Write a message to the author..."
-            className="hover-lift"
+            className="hover-lift text-left"
             rows={4}
           />
         </div>
 
         <Button 
           type="submit" 
-          className="w-full hover-lift"
+          className="w-full hover-lift text-center"
           disabled={isLoading}
         >
           {isLoading ? "Processing..." : "Send Tip & Message"}
