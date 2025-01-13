@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Search, LogIn, LogOut } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -71,17 +71,16 @@ export const Navigation = () => {
           {isAuthenticated ? (
             <Button 
               variant="ghost" 
-              size="icon"
               onClick={handleLogout}
               className="hover-lift"
             >
-              <LogOut className="h-5 w-5" />
+              Log out
             </Button>
           ) : (
             <>
               <Link to="/author/login">
-                <Button variant="ghost" size="icon">
-                  <LogIn className="h-5 w-5" />
+                <Button variant="ghost" className="hover-lift">
+                  Log in
                 </Button>
               </Link>
               <Link to="/author/register">
