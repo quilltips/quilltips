@@ -23,7 +23,7 @@ const Index = () => {
             <QrCode className="h-8 w-8 mx-auto text-primary" />
             <h3 className="font-semibold">Scan & Connect</h3>
             <p className="text-sm text-muted-foreground">
-              Scan the QR code in your book to connect instantly with the author
+              Scan the QR code on your book to connect instantly
             </p>
           </Card>
 
@@ -31,7 +31,7 @@ const Index = () => {
             <MessageSquare className="h-8 w-8 mx-auto text-primary" />
             <h3 className="font-semibold">Share & Support</h3>
             <p className="text-sm text-muted-foreground">
-              Send messages and tips directly to authors you admire
+              Send messages and tips directly to authors for your favorite books
             </p>
           </Card>
 
