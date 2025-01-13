@@ -39,7 +39,7 @@ export const Search = () => {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search authors by name..."
               className="pl-10 hover-lift"
-            >
+            />
           </div>
         </Card>
 
