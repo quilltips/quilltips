@@ -41,6 +41,23 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
+    // Check if the connected account has the required capabilities
+    const account = await stripe.accounts.retrieve(author.stripe_account_id);
+    
+    if (!account.capabilities?.transfers && !account.capabilities?.legacy_payments) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Account setup incomplete',
+          details: 'The author needs to complete their account setup to receive payments.',
+          code: 'ACCOUNT_SETUP_INCOMPLETE'
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
+    }
+
     console.log('Creating payment session for author:', authorId);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -84,7 +101,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error creating checkout session:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        code: error.code || 'UNKNOWN_ERROR'
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

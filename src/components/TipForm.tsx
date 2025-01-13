@@ -5,6 +5,8 @@ import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "./ui/alert";
+import { useNavigate } from "react-router-dom";
 
 interface TipFormProps {
   authorId: string;
@@ -17,6 +19,7 @@ export const TipForm = ({ authorId, onSuccess, bookTitle }: TipFormProps) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +36,19 @@ export const TipForm = ({ authorId, onSuccess, bookTitle }: TipFormProps) => {
       });
 
       if (error) throw error;
+
+      if (data.error) {
+        if (data.code === 'ACCOUNT_SETUP_INCOMPLETE') {
+          toast({
+            title: "Account Setup Required",
+            description: "The author needs to complete their payment account setup before they can receive tips.",
+            variant: "destructive",
+          });
+          navigate(`/author/${authorId}`);
+          return;
+        }
+        throw new Error(data.error);
+      }
 
       // Redirect to Stripe Checkout
       window.location.href = data.url;
