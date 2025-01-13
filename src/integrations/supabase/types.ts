@@ -45,39 +45,51 @@ export type Database = {
       qr_codes: {
         Row: {
           author_id: string
+          average_tip: number | null
           book_title: string
           cover_image: string | null
           created_at: string
           id: string
           is_paid: boolean
           isbn: string | null
+          last_tip_date: string | null
           publisher: string | null
           release_date: string | null
           stripe_session_id: string | null
+          total_amount: number | null
+          total_tips: number | null
         }
         Insert: {
           author_id: string
+          average_tip?: number | null
           book_title: string
           cover_image?: string | null
           created_at?: string
           id?: string
           is_paid?: boolean
           isbn?: string | null
+          last_tip_date?: string | null
           publisher?: string | null
           release_date?: string | null
           stripe_session_id?: string | null
+          total_amount?: number | null
+          total_tips?: number | null
         }
         Update: {
           author_id?: string
+          average_tip?: number | null
           book_title?: string
           cover_image?: string | null
           created_at?: string
           id?: string
           is_paid?: boolean
           isbn?: string | null
+          last_tip_date?: string | null
           publisher?: string | null
           release_date?: string | null
           stripe_session_id?: string | null
+          total_amount?: number | null
+          total_tips?: number | null
         }
         Relationships: [
           {
