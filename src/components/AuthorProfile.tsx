@@ -2,7 +2,7 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { ExternalLink, DollarSign, User } from "lucide-react";
 import { TipForm } from "./TipForm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -32,7 +32,7 @@ export const AuthorProfile = ({
   const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   // Check if the profile being viewed is the current user's profile
-  useState(() => {
+  useEffect(() => {
     const checkCurrentUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user?.id || null);
