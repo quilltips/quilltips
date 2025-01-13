@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthorProfileProps {
   name: string;
@@ -28,6 +29,18 @@ export const AuthorProfile = ({
   publicProfileLink 
 }: AuthorProfileProps) => {
   const [showTipDialog, setShowTipDialog] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+
+  // Check if the profile being viewed is the current user's profile
+  useState(() => {
+    const checkCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user?.id || null);
+    };
+    checkCurrentUser();
+  }, []);
+
+  const isOwnProfile = currentUser === authorId;
 
   return (
     <>
@@ -74,7 +87,7 @@ export const AuthorProfile = ({
                 </a>
               )}
               
-              {authorId && (
+              {authorId && !isOwnProfile && (
                 <Button 
                   onClick={() => setShowTipDialog(true)}
                   className="hover-lift"
