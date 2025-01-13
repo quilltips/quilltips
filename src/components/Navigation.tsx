@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from '@supabase/auth-helpers-react';
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Navigation = () => {
   const [isAuthor, setIsAuthor] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const session = useSession();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -49,11 +51,44 @@ export const Navigation = () => {
       });
       navigate('/');
     }
+    setIsMobileMenuOpen(false);
   };
+
+  const NavLinks = () => (
+    <>
+      <Link to="/search" className="hover-lift">
+        <Button variant="ghost" size="icon">
+          <Search className="h-5 w-5" />
+        </Button>
+      </Link>
+      {session ? (
+        <Button 
+          variant="ghost" 
+          onClick={handleLogout}
+          className="hover-lift"
+        >
+          Log out
+        </Button>
+      ) : (
+        <>
+          <Link to="/author/login">
+            <Button variant="ghost" className="hover-lift w-full md:w-auto justify-start md:justify-center">
+              Log in
+            </Button>
+          </Link>
+          <Link to="/author/register">
+            <Button variant="outline" className="hover-lift w-full md:w-auto justify-start md:justify-center">
+              Register as Author
+            </Button>
+          </Link>
+        </>
+      )}
+    </>
+  );
 
   return (
     <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm border-b border-border z-50">
-      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link 
           to={isAuthor ? "/author/dashboard" : "/"} 
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
@@ -66,34 +101,25 @@ export const Navigation = () => {
           <span className="text-xl font-semibold">quilltips</span>
         </Link>
         
-        <div className="flex items-center gap-4 px-2">
-          <Link to="/search" className="hover-lift">
-            <Button variant="ghost" size="icon">
-              <Search className="h-5 w-5" />
-            </Button>
-          </Link>
-          {session ? (
-            <Button 
-              variant="ghost" 
-              onClick={handleLogout}
-              className="hover-lift"
-            >
-              Log out
-            </Button>
-          ) : (
-            <>
-              <Link to="/author/login">
-                <Button variant="ghost" className="hover-lift">
-                  Log in
-                </Button>
-              </Link>
-              <Link to="/author/register">
-                <Button variant="outline" className="hover-lift">
-                  Register as Author
-                </Button>
-              </Link>
-            </>
-          )}
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-4">
+          <NavLinks />
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="md:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[80vw] sm:w-[385px]">
+              <div className="flex flex-col gap-4 pt-8">
+                <NavLinks />
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </nav>
