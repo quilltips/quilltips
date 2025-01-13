@@ -11,6 +11,7 @@ import QRCodeDetails from "./pages/QRCodeDetails";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+import TermsOfService from "./pages/TermsOfService";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/terms" element={<TermsOfService />} />
       </Routes>
     </Router>
   );
