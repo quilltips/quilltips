@@ -56,9 +56,14 @@ export const Navigation = () => {
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <Link 
           to={isAuthor ? "/author/dashboard" : "/"} 
-          className="text-xl font-semibold hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         >
-          quilltips
+          <img 
+            src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" 
+            alt="Quilltips Logo" 
+            className="h-6 w-auto"
+          />
+          <span className="text-xl font-semibold">quilltips</span>
         </Link>
         
         <div className="flex items-center gap-4 px-2">
