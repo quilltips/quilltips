@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search, BookOpen, QrCode, MessageSquare } from "lucide-react";
@@ -6,10 +7,10 @@ import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-24 pb-12">
+      <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="max-w-4xl mx-auto text-center space-y-6 animate-enter">
           <h1 className="text-4xl font-bold">Helping Authors Get Paid</h1>
           <p className="text-xl text-muted-foreground">
@@ -54,6 +55,8 @@ const Index = () => {
           </p>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };

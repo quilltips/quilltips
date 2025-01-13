@@ -8,6 +8,9 @@ import CreateQRPage from "./pages/CreateQRPage";
 import SearchPage from "./pages/SearchPage";
 import AuthorPublicProfile from "./pages/AuthorPublicProfile";
 import QRCodeDetails from "./pages/QRCodeDetails";
+import About from "./pages/About";
+import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -22,6 +25,9 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/author/profile/:id" element={<AuthorPublicProfile />} />
         <Route path="/qr/:id" element={<QRCodeDetails />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
     </Router>
   );
