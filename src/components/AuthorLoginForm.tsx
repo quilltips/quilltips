@@ -6,65 +6,61 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "./ui/alert";
 
 export const AuthorLoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        console.error("Login error:", error);
-        throw error;
-      }
+      if (signInError) throw signInError;
 
       if (!data?.user) {
-        console.error("No user data returned");
         throw new Error("No user data returned");
       }
 
-      // Check if profile exists, if not create it
-      const { data: profileData, error: profileError } = await supabase
+      // Check if profile exists
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', data.user.id)
-        .maybeSingle();
+        .single();
 
-      if (profileError) {
+      if (profileError && profileError.code !== 'PGRST116') {
         console.error("Profile fetch error:", profileError);
         throw profileError;
       }
 
-      if (!profileData) {
-        console.log("No profile found, creating one");
+      // Create profile if it doesn't exist
+      if (!profile) {
         const { error: createError } = await supabase
           .from('profiles')
-          .insert([{ 
+          .insert([{
             id: data.user.id,
-            name: data.user.user_metadata.name || data.user.email,
-            bio: data.user.user_metadata.bio,
-            role: data.user.user_metadata.role || 'author'
+            name: data.user.email,
+            role: 'author'
           }]);
 
         if (createError) throw createError;
       }
-
-      console.log("Login successful:", data.user);
 
       toast({
         title: "Welcome back!",
@@ -72,11 +68,12 @@ export const AuthorLoginForm = () => {
       });
 
       navigate("/author/dashboard");
-    } catch (error: any) {
-      console.error("Caught error:", error);
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.message || "An error occurred during login");
       toast({
         title: "Error",
-        description: error?.message || "An error occurred during login",
+        description: err.message || "An error occurred during login",
         variant: "destructive",
       });
     } finally {
@@ -87,24 +84,29 @@ export const AuthorLoginForm = () => {
   const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsResetting(true);
+    setError(null);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/author/reset-password`,
-      });
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        resetEmail,
+        {
+          redirectTo: `${window.location.origin}/author/reset-password`,
+        }
+      );
 
-      if (error) throw error;
+      if (resetError) throw resetError;
 
       toast({
         title: "Password Reset Email Sent",
         description: "Check your email for the password reset link.",
       });
       setResetEmail("");
-    } catch (error: any) {
-      console.error("Reset password error:", error);
+    } catch (err: any) {
+      console.error("Reset password error:", err);
+      setError(err.message || "An error occurred while requesting password reset");
       toast({
         title: "Error",
-        description: error?.message || "An error occurred while requesting password reset",
+        description: err.message || "An error occurred while requesting password reset",
         variant: "destructive",
       });
     } finally {
@@ -121,6 +123,12 @@ export const AuthorLoginForm = () => {
             Welcome back! Sign in to manage your profile and tips
           </p>
         </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
         <div className="space-y-4">
           <div className="space-y-2">
