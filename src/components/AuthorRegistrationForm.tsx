@@ -55,12 +55,11 @@ export const AuthorRegistrationForm = () => {
         description: "Please check your email to verify your account.",
       });
 
-      navigate("/author/login");
+      navigate("/author/bank-account");
     } catch (err) {
       console.error("Registration error:", err);
       setError(err.message || "An error occurred during registration");
       
-      // Show a more user-friendly toast message
       toast({
         title: "Registration Failed",
         description: err.message === "User already registered" 
