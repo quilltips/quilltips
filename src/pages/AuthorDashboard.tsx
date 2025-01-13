@@ -100,7 +100,8 @@ const AuthorDashboard = () => {
           name={profile.name || "Anonymous Author"}
           bio={profile.bio || "No bio available"}
           imageUrl={profile.avatar_url || "/placeholder.svg"}
-          publicProfileLink={`/author/${profile.id}`}
+          authorId={profile.id}
+          publicProfileLink={`/author/profile/${profile.id}`}
         />
         
         <Tabs defaultValue="qrcodes" className="w-full">
