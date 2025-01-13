@@ -5,13 +5,15 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Wallet } from "lucide-react";
+import { Loader2, Wallet, Upload } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 interface ProfileSettingsProps {
   profile: {
     id: string;
     name: string;
     bio: string;
+    avatar_url?: string | null;
     stripe_account_id?: string | null;
   };
 }
@@ -21,6 +23,7 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
   const [bio, setBio] = useState(profile.bio || "");
   const [isLoading, setIsLoading] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,6 +51,75 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please upload an image smaller than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${profile.id}-${Date.now()}.${fileExt}`;
+
+      // Upload image to storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', profile.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Avatar Updated",
+        description: "Your profile picture has been updated successfully.",
+      });
+
+      // Force a page reload to see the new avatar
+      window.location.reload();
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      toast({
+        title: "Upload Error",
+        description: "Failed to upload profile picture",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -100,6 +172,35 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
   return (
     <Card className="p-6">
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Avatar className="w-24 h-24">
+            <AvatarImage src={profile.avatar_url || undefined} alt={name} />
+            <AvatarFallback>{name?.charAt(0)?.toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+              id="avatar-upload"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => document.getElementById('avatar-upload')?.click()}
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="mr-2 h-4 w-4" />
+              )}
+              Upload Picture
+            </Button>
+          </div>
+        </div>
+
         <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">
