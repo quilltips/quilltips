@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { format } from "date-fns";
-import { Download, Loader2, Plus } from "lucide-react";
+import { Download, Loader2, Plus, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AuthorQRCodeStats } from "./AuthorQRCodeStats";
 import { useToast } from "@/hooks/use-toast";
@@ -107,10 +107,15 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
         qrCodes.map((qr) => (
           <Card key={qr.id}>
             <CardHeader>
-              <CardTitle>{qr.book_title}</CardTitle>
-              <CardDescription>
-                QR Code Details
-              </CardDescription>
+              <div className="flex items-center gap-2 text-left">
+                <QrCode className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <CardTitle className="text-left">{qr.book_title}</CardTitle>
+                  <CardDescription className="text-left">
+                    QR Code Details
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -136,7 +141,7 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
                 </div>
 
                 <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="space-y-1">
+                  <div className="space-y-1 text-left">
                     <p className="font-medium">Published by {qr.publisher || 'Unknown'}</p>
                     {qr.isbn && <p className="text-sm text-muted-foreground">ISBN: {qr.isbn}</p>}
                     {qr.release_date && (
