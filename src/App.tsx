@@ -1,33 +1,28 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import AuthorRegister from "./pages/AuthorRegister";
 import AuthorLogin from "./pages/AuthorLogin";
+import AuthorRegister from "./pages/AuthorRegister";
 import AuthorDashboard from "./pages/AuthorDashboard";
-import AuthorPublicProfile from "./pages/AuthorPublicProfile";
-import CreateQRPage from "./pages/CreateQRPage";
 import AuthorBankAccount from "./pages/AuthorBankAccount";
+import CreateQRPage from "./pages/CreateQRPage";
 import SearchPage from "./pages/SearchPage";
-import { Toaster } from "./components/ui/toaster";
-import "./App.css";
+import AuthorPublicProfile from "./pages/AuthorPublicProfile";
+import QRCodeDetails from "./pages/QRCodeDetails";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/author/register" element={<AuthorRegister />} />
         <Route path="/author/login" element={<AuthorLogin />} />
+        <Route path="/author/register" element={<AuthorRegister />} />
         <Route path="/author/dashboard" element={<AuthorDashboard />} />
-        <Route path="/author/profile/:id" element={<AuthorPublicProfile />} />
-        <Route path="/author/create-qr" element={<CreateQRPage />} />
         <Route path="/author/bank-account" element={<AuthorBankAccount />} />
-        <Route 
-          path="/author/reset-password" 
-          element={<AuthorLogin />} 
-        />
+        <Route path="/author/create-qr" element={<CreateQRPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/author/profile/:id" element={<AuthorPublicProfile />} />
+        <Route path="/qr/:id" element={<QRCodeDetails />} />
       </Routes>
-      <Toaster />
     </Router>
   );
 }

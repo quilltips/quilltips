@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface TipHistoryProps {
   authorId: string;
+  qrCodeId?: string;
 }
 
 interface Tip {
@@ -30,18 +31,24 @@ interface Tip {
   author_id: string;
 }
 
-export const TipHistory = ({ authorId }: TipHistoryProps) => {
+export const TipHistory = ({ authorId, qrCodeId }: TipHistoryProps) => {
   const [selectedTip, setSelectedTip] = useState<Tip | null>(null);
   const { toast } = useToast();
 
   const { data: tips, isLoading } = useQuery({
-    queryKey: ['tips', authorId],
+    queryKey: ['tips', authorId, qrCodeId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('tips')
         .select('*')
         .eq('author_id', authorId)
         .order('created_at', { ascending: false });
+
+      if (qrCodeId) {
+        query = query.eq('qr_code_id', qrCodeId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       return data || [];
@@ -94,7 +101,7 @@ export const TipHistory = ({ authorId }: TipHistoryProps) => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `all_tips_${new Date().toISOString().split('T')[0]}.csv`;
+      a.download = `tips_${qrCodeId ? `qr_${qrCodeId}_` : ''}${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -113,10 +120,6 @@ export const TipHistory = ({ authorId }: TipHistoryProps) => {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading tips...</div>;
-  }
-
   const isLiked = (tipId: string) => {
     return likes?.some(like => like.tip_id === tipId);
   };
@@ -124,14 +127,16 @@ export const TipHistory = ({ authorId }: TipHistoryProps) => {
   return (
     <Card className="p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Tip History</h2>
+        <h2 className="text-xl font-semibold">
+          {qrCodeId ? "QR Code Tips" : "Tip History"}
+        </h2>
         <Button
           variant="outline"
           className="flex items-center gap-2"
           onClick={handleDownloadAll}
         >
           <Download className="h-4 w-4" />
-          Download All Tips
+          Download {qrCodeId ? "QR Code" : "All"} Tips
         </Button>
       </div>
 

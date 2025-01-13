@@ -105,7 +105,11 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
         </Card>
       ) : (
         qrCodes.map((qr) => (
-          <Card key={qr.id}>
+          <Card 
+            key={qr.id} 
+            className="cursor-pointer transition-colors hover:bg-muted/50"
+            onClick={() => navigate(`/qr/${qr.id}`)}
+          >
             <CardHeader>
               <div className="flex items-center gap-2 text-left">
                 <QrCode className="h-6 w-6 text-muted-foreground" />
