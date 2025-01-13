@@ -13,6 +13,9 @@ import { TipLikeButton } from "./TipLikeButton";
 import { TipCommentButton } from "./TipCommentButton";
 import { useState } from "react";
 import { TipDetailsDialog } from "./TipDetailsDialog";
+import { Button } from "./ui/button";
+import { Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface TipHistoryProps {
   authorId: string;
@@ -29,6 +32,7 @@ interface Tip {
 
 export const TipHistory = ({ authorId }: TipHistoryProps) => {
   const [selectedTip, setSelectedTip] = useState<Tip | null>(null);
+  const { toast } = useToast();
 
   const { data: tips, isLoading } = useQuery({
     queryKey: ['tips', authorId],
@@ -70,6 +74,45 @@ export const TipHistory = ({ authorId }: TipHistoryProps) => {
     }
   });
 
+  const handleDownloadAll = async () => {
+    try {
+      // Create CSV content
+      const csvContent = [
+        ['Date', 'Book', 'Amount', 'Message', 'Likes', 'Comments'].join(','),
+        ...(tips || []).map(tip => [
+          new Date(tip.created_at).toLocaleDateString(),
+          `"${(tip.book_title || 'N/A').replace(/"/g, '""')}"`,
+          tip.amount,
+          `"${(tip.message || '').replace(/"/g, '""')}"`,
+          likes?.filter(like => like.tip_id === tip.id).length || 0,
+          comments?.filter(comment => comment.tip_id === tip.id).length || 0
+        ].join(','))
+      ].join('\n');
+
+      // Create and download the file
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `all_tips_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "Download Started",
+        description: "Your tip data is being downloaded.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Download Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
     return <div>Loading tips...</div>;
   }
@@ -80,6 +123,18 @@ export const TipHistory = ({ authorId }: TipHistoryProps) => {
 
   return (
     <Card className="p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Tip History</h2>
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={handleDownloadAll}
+        >
+          <Download className="h-4 w-4" />
+          Download All Tips
+        </Button>
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
