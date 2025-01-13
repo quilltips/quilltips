@@ -55,7 +55,7 @@ export const AuthorLoginForm = () => {
           .from('profiles')
           .insert([{
             id: data.user.id,
-            name: data.user.email,
+            name: email,
             role: 'author'
           }]);
 
