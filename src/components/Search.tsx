@@ -52,7 +52,7 @@ export const Search = () => {
         {authors && authors.length > 0 && (
           <div className="space-y-4">
             {authors.map((author) => (
-              <Link key={author.id} to={`/author/${author.id}`} className="block hover:opacity-80 transition-opacity">
+              <Link key={author.id} to={`/author/profile/${author.id}`} className="block hover:opacity-80 transition-opacity">
                 <AuthorProfile
                   name={author.name || 'Anonymous Author'}
                   bio={author.bio || 'No bio available'}
