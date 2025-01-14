@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
 import { useToast } from "@/hooks/use-toast";
-import { QrCode, History, Settings } from "lucide-react";
+import { QrCode, History, Settings, ChevronRight } from "lucide-react";
 import { AuthorQRCodesList } from "@/components/AuthorQRCodesList";
 import { TipHistory } from "@/components/TipHistory";
 import { ProfileSettings } from "@/components/ProfileSettings";
@@ -17,7 +17,8 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarInset
+  SidebarInset,
+  SidebarRail
 } from "@/components/ui/sidebar";
 
 const AuthorDashboard = () => {
@@ -102,8 +103,12 @@ const AuthorDashboard = () => {
       <div className="min-h-screen flex w-full">
         <Navigation />
         
-        <Sidebar className="mt-16 pt-4">
-          <SidebarHeader className="px-2">
+        <Sidebar 
+          className="mt-16 pt-4" 
+          variant="floating"
+          collapsible="icon"
+        >
+          <SidebarHeader className="px-2 flex items-center justify-between">
             <SidebarTrigger />
           </SidebarHeader>
           <SidebarContent>
@@ -122,9 +127,12 @@ const AuthorDashboard = () => {
               ))}
             </SidebarMenu>
           </SidebarContent>
+          <SidebarRail>
+            <ChevronRight className="h-4 w-4" />
+          </SidebarRail>
         </Sidebar>
 
-        <SidebarInset>
+        <SidebarInset className="pt-16">
           <div className="container p-6">
             <div className="mb-8">
               <AuthorDashboardProfile
