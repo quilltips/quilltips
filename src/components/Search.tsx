@@ -5,7 +5,7 @@ import { Input } from "./ui/input";
 import { Search as SearchIcon, Loader2, Book, User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { AuthorProfile } from "./AuthorProfile";
+import { AuthorPublicProfileView } from "./AuthorPublicProfile";
 import { Badge } from "./ui/badge";
 
 export const Search = () => {
@@ -76,10 +76,11 @@ export const Search = () => {
                     <User className="h-4 w-4" />
                     <Badge variant="secondary">Author</Badge>
                   </div>
-                  <AuthorProfile
+                  <AuthorPublicProfileView
                     name={author.name || 'Anonymous Author'}
                     bio={author.bio || 'No bio available'}
                     imageUrl="/placeholder.svg"
+                    authorId={author.id}
                   />
                 </Card>
               </Link>
