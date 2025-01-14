@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
 import { useToast } from "@/hooks/use-toast";
-import { QrCode, History, Settings, ChevronRight } from "lucide-react";
+import { QrCode, History, Settings } from "lucide-react";
 import { AuthorQRCodesList } from "@/components/AuthorQRCodesList";
 import { TipHistory } from "@/components/TipHistory";
 import { ProfileSettings } from "@/components/ProfileSettings";
@@ -17,8 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarInset,
-  SidebarRail
+  SidebarInset
 } from "@/components/ui/sidebar";
 
 const AuthorDashboard = () => {
@@ -127,9 +126,6 @@ const AuthorDashboard = () => {
               ))}
             </SidebarMenu>
           </SidebarContent>
-          <SidebarRail>
-            <ChevronRight className="h-4 w-4" />
-          </SidebarRail>
         </Sidebar>
 
         <SidebarInset className="pt-16">
