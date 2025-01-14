@@ -4,18 +4,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
 import { useToast } from "@/hooks/use-toast";
-import { QrCode, History, Settings, Menu } from "lucide-react";
+import { QrCode, History, Settings } from "lucide-react";
 import { AuthorQRCodesList } from "@/components/AuthorQRCodesList";
 import { TipHistory } from "@/components/TipHistory";
 import { ProfileSettings } from "@/components/ProfileSettings";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { 
+  Sidebar, 
+  SidebarContent,
+  SidebarHeader,
+  SidebarTrigger,
+  SidebarProvider,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarInset
+} from "@/components/ui/sidebar";
 
 const AuthorDashboard = () => {
   const [profile, setProfile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("qrcodes");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -90,61 +98,53 @@ const AuthorDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen flex">
-      <Navigation />
-      
-      {/* Sidebar */}
-      <div className={cn(
-        "fixed lg:relative inset-y-0 left-0 z-30 w-64 transform transition-transform duration-200 ease-in-out bg-background border-r mt-16",
-        isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      )}>
-        <nav className="p-4 space-y-2">
-          {sidebarItems.map((item) => (
-            <Button
-              key={item.id}
-              variant={activeTab === item.id ? "secondary" : "ghost"}
-              className="w-full justify-start gap-2"
-              onClick={() => setActiveTab(item.id)}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Button>
-          ))}
-        </nav>
-      </div>
+    <SidebarProvider defaultOpen>
+      <div className="min-h-screen flex w-full">
+        <Navigation />
+        
+        <Sidebar className="mt-16 pt-4">
+          <SidebarHeader className="px-2">
+            <SidebarTrigger />
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarMenu>
+              {sidebarItems.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    tooltip={item.label}
+                    isActive={activeTab === item.id}
+                    onClick={() => setActiveTab(item.id)}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+        </Sidebar>
 
-      {/* Main Content */}
-      <div className="flex-1 min-w-0 pt-16">
-        <div className="container mx-auto p-6">
-          <div className="mb-8">
-            <AuthorDashboardProfile
-              name={profile.name || "Anonymous Author"}
-              bio={profile.bio || "No bio available"}
-              imageUrl={profile.avatar_url || "/placeholder.svg"}
-              authorId={profile.id}
-              publicProfileLink={`/author/profile/${profile.id}`}
-            />
+        <SidebarInset>
+          <div className="container p-6">
+            <div className="mb-8">
+              <AuthorDashboardProfile
+                name={profile.name || "Anonymous Author"}
+                bio={profile.bio || "No bio available"}
+                imageUrl={profile.avatar_url || "/placeholder.svg"}
+                authorId={profile.id}
+                publicProfileLink={`/author/profile/${profile.id}`}
+              />
+            </div>
+
+            <div className="space-y-8">
+              {activeTab === "qrcodes" && <AuthorQRCodesList authorId={profile.id} />}
+              {activeTab === "tips" && <TipHistory authorId={profile.id} />}
+              {activeTab === "settings" && <ProfileSettings profile={profile} />}
+            </div>
           </div>
-
-          {/* Content Area */}
-          <div className="lg:pl-4">
-            {activeTab === "qrcodes" && <AuthorQRCodesList authorId={profile.id} />}
-            {activeTab === "tips" && <TipHistory authorId={profile.id} />}
-            {activeTab === "settings" && <ProfileSettings profile={profile} />}
-          </div>
-        </div>
+        </SidebarInset>
       </div>
-
-      {/* Sidebar Toggle for Mobile */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="lg:hidden fixed bottom-4 right-4 z-50 bg-background shadow-lg rounded-full"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-      >
-        <Menu className="h-6 w-6" />
-      </Button>
-    </div>
+    </SidebarProvider>
   );
 };
 
