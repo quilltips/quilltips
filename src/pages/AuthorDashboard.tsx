@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
-import { AuthorProfile } from "@/components/AuthorProfile";
+import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { QrCode, History, Settings } from "lucide-react";
@@ -96,7 +96,7 @@ const AuthorDashboard = () => {
     <div className="min-h-screen">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12 space-y-8">
-        <AuthorProfile
+        <AuthorDashboardProfile
           name={profile.name || "Anonymous Author"}
           bio={profile.bio || "No bio available"}
           imageUrl={profile.avatar_url || "/placeholder.svg"}

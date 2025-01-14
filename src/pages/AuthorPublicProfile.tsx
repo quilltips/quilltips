@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
-import { AuthorProfile } from "@/components/AuthorProfile";
+import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
 import { TipHistory } from "@/components/TipHistory";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { Loader2 } from "lucide-react";
@@ -62,7 +62,7 @@ const AuthorPublicProfile = () => {
     <div className="min-h-screen">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 space-y-8">
-        <AuthorProfile
+        <AuthorPublicProfileView
           name={author.name || 'Anonymous Author'}
           bio={author.bio || 'No bio available'}
           imageUrl={author.avatar_url || "/placeholder.svg"}

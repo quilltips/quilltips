@@ -1,46 +1,31 @@
+import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { ExternalLink, DollarSign, User } from "lucide-react";
+import { ExternalLink, DollarSign } from "lucide-react";
 import { TipForm } from "./TipForm";
-import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
 
-interface AuthorProfileProps {
+interface AuthorPublicProfileProps {
   name: string;
   bio: string;
   imageUrl: string;
   socialLink?: string;
-  authorId?: string;
-  publicProfileLink?: string;
+  authorId: string;
 }
 
-export const AuthorProfile = ({ 
+export const AuthorPublicProfileView = ({ 
   name, 
   bio, 
   imageUrl, 
   socialLink, 
   authorId,
-  publicProfileLink 
-}: AuthorProfileProps) => {
+}: AuthorPublicProfileProps) => {
   const [showTipDialog, setShowTipDialog] = useState(false);
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
-
-  // Check if the profile being viewed is the current user's profile
-  useEffect(() => {
-    const checkCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUser(user?.id || null);
-    };
-    checkCurrentUser();
-  }, []);
-
-  const isOwnProfile = currentUser === authorId;
 
   return (
     <>
@@ -61,18 +46,6 @@ export const AuthorProfile = ({
             </div>
             
             <div className="flex flex-wrap gap-3">
-              {publicProfileLink && (
-                <a
-                  href={publicProfileLink}
-                  className="inline-block"
-                >
-                  <Button variant="outline" className="hover-lift">
-                    <User className="h-4 w-4 mr-2" />
-                    Public Profile
-                  </Button>
-                </a>
-              )}
-              
               {socialLink && (
                 <a
                   href={socialLink}
@@ -87,15 +60,13 @@ export const AuthorProfile = ({
                 </a>
               )}
               
-              {authorId && !isOwnProfile && (
-                <Button 
-                  onClick={() => setShowTipDialog(true)}
-                  className="hover-lift"
-                >
-                  <DollarSign className="h-4 w-4 mr-2" />
-                  Tip Author
-                </Button>
-              )}
+              <Button 
+                onClick={() => setShowTipDialog(true)}
+                className="hover-lift"
+              >
+                <DollarSign className="h-4 w-4 mr-2" />
+                Tip Author
+              </Button>
             </div>
           </div>
         </div>
@@ -106,12 +77,10 @@ export const AuthorProfile = ({
           <DialogHeader>
             <DialogTitle>Send a tip to {name}</DialogTitle>
           </DialogHeader>
-          {authorId && (
-            <TipForm 
-              authorId={authorId} 
-              onSuccess={() => setShowTipDialog(false)}
-            />
-          )}
+          <TipForm 
+            authorId={authorId} 
+            onSuccess={() => setShowTipDialog(false)}
+          />
         </DialogContent>
       </Dialog>
     </>
