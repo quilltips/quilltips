@@ -90,58 +90,60 @@ const AuthorDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex">
       <Navigation />
-      <div className="container mx-auto px-4 pt-24 pb-12">
-        <div className="mb-8">
-          <AuthorDashboardProfile
-            name={profile.name || "Anonymous Author"}
-            bio={profile.bio || "No bio available"}
-            imageUrl={profile.avatar_url || "/placeholder.svg"}
-            authorId={profile.id}
-            publicProfileLink={`/author/profile/${profile.id}`}
-          />
-        </div>
+      
+      {/* Sidebar */}
+      <div className={cn(
+        "fixed lg:relative inset-y-0 left-0 z-30 w-64 transform transition-transform duration-200 ease-in-out bg-background border-r mt-16",
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      )}>
+        <nav className="p-4 space-y-2">
+          {sidebarItems.map((item) => (
+            <Button
+              key={item.id}
+              variant={activeTab === item.id ? "secondary" : "ghost"}
+              className="w-full justify-start gap-2"
+              onClick={() => setActiveTab(item.id)}
+            >
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </Button>
+          ))}
+        </nav>
+      </div>
 
-        <div className="flex gap-8">
-          {/* Sidebar Toggle for Mobile */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden fixed bottom-4 right-4 z-50 bg-background shadow-lg rounded-full"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <Menu className="h-6 w-6" />
-          </Button>
-
-          {/* Sidebar */}
-          <div className={cn(
-            "fixed lg:relative inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 ease-in-out bg-background border-r",
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-          )}>
-            <nav className="p-4 space-y-2">
-              {sidebarItems.map((item) => (
-                <Button
-                  key={item.id}
-                  variant={activeTab === item.id ? "secondary" : "ghost"}
-                  className="w-full justify-start gap-2"
-                  onClick={() => setActiveTab(item.id)}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              ))}
-            </nav>
+      {/* Main Content */}
+      <div className="flex-1 min-w-0 pt-16">
+        <div className="container mx-auto p-6">
+          <div className="mb-8">
+            <AuthorDashboardProfile
+              name={profile.name || "Anonymous Author"}
+              bio={profile.bio || "No bio available"}
+              imageUrl={profile.avatar_url || "/placeholder.svg"}
+              authorId={profile.id}
+              publicProfileLink={`/author/profile/${profile.id}`}
+            />
           </div>
 
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
+          {/* Content Area */}
+          <div className="lg:pl-4">
             {activeTab === "qrcodes" && <AuthorQRCodesList authorId={profile.id} />}
             {activeTab === "tips" && <TipHistory authorId={profile.id} />}
             {activeTab === "settings" && <ProfileSettings profile={profile} />}
           </div>
         </div>
       </div>
+
+      {/* Sidebar Toggle for Mobile */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="lg:hidden fixed bottom-4 right-4 z-50 bg-background shadow-lg rounded-full"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        <Menu className="h-6 w-6" />
+      </Button>
     </div>
   );
 };
