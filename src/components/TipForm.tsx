@@ -5,7 +5,6 @@ import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Alert, AlertDescription } from "./ui/alert";
 import { useNavigate } from "react-router-dom";
 
 interface TipFormProps {
@@ -37,7 +36,10 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
+      }
 
       if (data.error) {
         if (data.code === 'ACCOUNT_SETUP_INCOMPLETE') {
@@ -50,6 +52,10 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
           return;
         }
         throw new Error(data.error);
+      }
+
+      if (!data.url) {
+        throw new Error('No checkout URL received from server');
       }
 
       // Redirect to Stripe Checkout
