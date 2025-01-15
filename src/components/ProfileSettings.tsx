@@ -3,6 +3,11 @@ import { AvatarUpload } from "./profile/AvatarUpload";
 import { ProfileForm } from "./profile/ProfileForm";
 import { BankAccountConnect } from "./profile/BankAccountConnect";
 
+interface SocialLink {
+  url: string;
+  label: string;
+}
+
 interface ProfileSettingsProps {
   profile: {
     id: string;
@@ -10,6 +15,7 @@ interface ProfileSettingsProps {
     bio: string;
     avatar_url?: string | null;
     stripe_account_id?: string | null;
+    social_links?: SocialLink[];
   };
 }
 
@@ -27,6 +33,7 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
           profileId={profile.id}
           initialName={profile.name}
           initialBio={profile.bio}
+          initialSocialLinks={profile.social_links}
         />
 
         <div className="flex flex-col sm:flex-row gap-4">
