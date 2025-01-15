@@ -2,12 +2,16 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { ExternalLink, User } from "lucide-react";
 
+interface SocialLink {
+  url: string;
+  label: string;
+}
+
 interface AuthorDashboardProfileProps {
   name: string;
   bio: string;
   imageUrl: string;
-  socialLink?: string;
-  authorId?: string;
+  socialLinks?: SocialLink[];
   publicProfileLink?: string;
 }
 
@@ -15,7 +19,7 @@ export const AuthorDashboardProfile = ({
   name, 
   bio, 
   imageUrl, 
-  socialLink, 
+  socialLinks = [],
   publicProfileLink 
 }: AuthorDashboardProfileProps) => {
   return (
@@ -48,19 +52,20 @@ export const AuthorDashboardProfile = ({
               </a>
             )}
             
-            {socialLink && (
+            {socialLinks.map((link, index) => (
               <a
-                href={socialLink}
+                key={index}
+                href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block"
               >
                 <Button variant="outline" className="hover-lift">
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  Connect
+                  {link.label}
                 </Button>
               </a>
-            )}
+            ))}
           </div>
         </div>
       </div>

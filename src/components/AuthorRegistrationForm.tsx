@@ -23,6 +23,7 @@ export const AuthorRegistrationForm = () => {
     const password = formData.get("password") as string;
     const name = formData.get("name") as string;
     const bio = formData.get("bio") as string;
+    const socialLinks = JSON.parse(formData.get("socialLinks") as string || "[]");
 
     try {
       console.log("Starting registration process...");
@@ -33,7 +34,8 @@ export const AuthorRegistrationForm = () => {
           data: {
             name,
             bio,
-            role: "author"
+            role: "author",
+            social_links: socialLinks
           }
         }
       });
@@ -41,7 +43,6 @@ export const AuthorRegistrationForm = () => {
       if (signUpError) {
         console.error("Signup error:", signUpError);
         
-        // Handle specific error cases
         if (signUpError.message === "User already registered") {
           throw new Error("This email is already registered. Please try logging in instead.");
         }

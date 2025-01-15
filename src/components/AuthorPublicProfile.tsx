@@ -10,11 +10,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+interface SocialLink {
+  url: string;
+  label: string;
+}
+
 interface AuthorPublicProfileProps {
   name: string;
   bio: string;
   imageUrl: string;
-  socialLink?: string;
+  socialLinks?: SocialLink[];
   authorId: string;
 }
 
@@ -22,7 +27,7 @@ export const AuthorPublicProfileView = ({
   name, 
   bio, 
   imageUrl, 
-  socialLink, 
+  socialLinks = [],
   authorId,
 }: AuthorPublicProfileProps) => {
   const [showTipDialog, setShowTipDialog] = useState(false);
@@ -46,19 +51,20 @@ export const AuthorPublicProfileView = ({
             </div>
             
             <div className="flex flex-wrap gap-3">
-              {socialLink && (
+              {socialLinks.map((link, index) => (
                 <a
-                  href={socialLink}
+                  key={index}
+                  href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block"
                 >
                   <Button variant="outline" className="hover-lift">
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    Connect
+                    {link.label}
                   </Button>
                 </a>
-              )}
+              ))}
               
               <Button 
                 onClick={() => setShowTipDialog(true)}
