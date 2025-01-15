@@ -118,7 +118,7 @@ const AuthorDashboard = () => {
                     tooltip={item.label}
                     isActive={activeTab === item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`${
+                    className={`justify-center ${
                       activeTab === item.id 
                         ? "bg-primary/10 font-semibold text-primary" 
                         : ""
