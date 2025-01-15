@@ -84,7 +84,12 @@ const QRCodeDetails = () => {
               </div>
 
               <div className="p-4 border rounded-lg space-y-2">
-                <p className="font-medium">Published by {qrCode.publisher || 'Unknown'}</p>
+                <p className="font-medium">Book Details</p>
+                {qrCode.publisher && (
+                  <p className="text-sm text-muted-foreground">
+                    Publisher: {qrCode.publisher}
+                  </p>
+                )}
                 {qrCode.isbn && <p className="text-sm text-muted-foreground">ISBN: {qrCode.isbn}</p>}
                 {qrCode.release_date && (
                   <p className="text-sm text-muted-foreground">
