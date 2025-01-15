@@ -103,14 +103,14 @@ const AuthorDashboard = () => {
         <Navigation />
         
         <Sidebar 
-          className="mt-16 pt-4 pb-8" 
+          className="mt-16 pt-4 pb-8 max-h-[calc(100vh-4rem)]" 
           variant="floating"
           collapsible="icon"
         >
           <SidebarHeader className="px-2 flex items-center justify-between">
             <SidebarTrigger />
           </SidebarHeader>
-          <SidebarContent className="h-[calc(100vh-10rem)]">
+          <SidebarContent className="h-[calc(100%-4rem)] overflow-hidden">
             <SidebarMenu>
               {sidebarItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
