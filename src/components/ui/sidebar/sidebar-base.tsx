@@ -3,6 +3,9 @@ import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { useSidebar } from "./sidebar-provider"
 
+// Add the missing constant
+const SIDEBAR_WIDTH_MOBILE = "18rem"
+
 interface SidebarProps extends React.ComponentProps<"div"> {
   side?: "left" | "right"
   variant?: "sidebar" | "floating" | "inset"
