@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { ExternalLink, DollarSign } from "lucide-react";
+import { ExternalLink, DollarSign, Globe, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 import { TipForm } from "./TipForm";
 import {
   Dialog,
@@ -22,6 +22,15 @@ interface AuthorPublicProfileProps {
   socialLinks?: SocialLink[];
   authorId: string;
 }
+
+const getSocialIcon = (label: string) => {
+  const label_lower = label.toLowerCase();
+  if (label_lower.includes('twitter')) return Twitter;
+  if (label_lower.includes('instagram')) return Instagram;
+  if (label_lower.includes('linkedin')) return Linkedin;
+  if (label_lower.includes('github')) return Github;
+  return Globe;
+};
 
 export const AuthorPublicProfileView = ({ 
   name, 
@@ -50,25 +59,26 @@ export const AuthorPublicProfileView = ({
               <p className="text-muted-foreground mt-2">{bio}</p>
             </div>
             
-            <div className="flex flex-wrap gap-3">
-              {socialLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block"
-                >
-                  <Button variant="outline" className="hover-lift">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    {link.label}
-                  </Button>
-                </a>
-              ))}
+            <div className="flex flex-wrap items-center gap-4">
+              {socialLinks.map((link, index) => {
+                const IconComponent = getSocialIcon(link.label);
+                return (
+                  <a
+                    key={index}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    title={link.label}
+                  >
+                    <IconComponent className="h-5 w-5" />
+                  </a>
+                );
+              })}
               
               <Button 
                 onClick={() => setShowTipDialog(true)}
-                className="hover-lift"
+                className="hover-lift ml-auto"
               >
                 <DollarSign className="h-4 w-4 mr-2" />
                 Tip Author
