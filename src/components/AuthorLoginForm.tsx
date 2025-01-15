@@ -13,6 +13,7 @@ export const AuthorLoginForm = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [showResetForm, setShowResetForm] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -116,81 +117,109 @@ export const AuthorLoginForm = () => {
 
   return (
     <Card className="glass-card p-6 max-w-md mx-auto animate-enter">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-semibold">Author Login</h2>
-          <p className="text-muted-foreground">
-            Welcome back! Sign in to manage your profile and tips
-          </p>
-        </div>
-
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        <div className="space-y-4">
+      {!showResetForm ? (
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              required
-              disabled={isLoading}
-              className="hover-lift"
-            />
+            <h2 className="text-2xl font-semibold">Author Login</h2>
+            <p className="text-muted-foreground">
+              Welcome back! Sign in to manage your profile and tips
+            </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              required
-              disabled={isLoading}
-              className="hover-lift"
-            />
-          </div>
-        </div>
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-        <Button
-          type="submit"
-          className="w-full hover-lift"
-          disabled={isLoading}
-        >
-          {isLoading ? "Signing in..." : "Sign In"}
-        </Button>
-      </form>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                disabled={isLoading}
+                className="hover-lift"
+              />
+            </div>
 
-      <div className="mt-6 pt-6 border-t">
-        <h3 className="text-sm font-medium mb-4">Forgot your password?</h3>
-        <form onSubmit={handleResetPassword} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="resetEmail">Email</Label>
-            <Input
-              id="resetEmail"
-              type="email"
-              value={resetEmail}
-              onChange={(e) => setResetEmail(e.target.value)}
-              required
-              disabled={isResetting}
-              className="hover-lift"
-              placeholder="Enter your email"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                disabled={isLoading}
+                className="hover-lift"
+              />
+            </div>
           </div>
+
           <Button
             type="submit"
-            variant="outline"
             className="w-full hover-lift"
-            disabled={isResetting}
+            disabled={isLoading}
           >
-            {isResetting ? "Sending Reset Link..." : "Send Reset Link"}
+            {isLoading ? "Signing in..." : "Sign In"}
           </Button>
+
+          <button
+            type="button"
+            onClick={() => setShowResetForm(true)}
+            className="text-sm text-muted-foreground hover:text-primary mt-2 w-full text-center"
+          >
+            Forgot password?
+          </button>
         </form>
-      </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold">Reset Password</h2>
+            <p className="text-muted-foreground">
+              Enter your email to receive a password reset link
+            </p>
+          </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <form onSubmit={handleResetPassword} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="resetEmail">Email</Label>
+              <Input
+                id="resetEmail"
+                type="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                required
+                disabled={isResetting}
+                className="hover-lift"
+                placeholder="Enter your email"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full hover-lift"
+              disabled={isResetting}
+            >
+              {isResetting ? "Sending Reset Link..." : "Send Reset Link"}
+            </Button>
+            <button
+              type="button"
+              onClick={() => setShowResetForm(false)}
+              className="text-sm text-muted-foreground hover:text-primary w-full text-center"
+            >
+              Back to login
+            </button>
+          </form>
+        </div>
+      )}
     </Card>
   );
 };
