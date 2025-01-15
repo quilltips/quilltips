@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, X } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Search, Menu, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,10 +9,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Navigation = () => {
   const [isAuthor, setIsAuthor] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const session = useSession();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+
+  const showBackButton = session && location.pathname !== '/author/dashboard';
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -51,7 +53,10 @@ export const Navigation = () => {
       });
       navigate('/');
     }
-    setIsMobileMenuOpen(false);
+  };
+
+  const handleBack = () => {
+    navigate(-1);
   };
 
   const NavLinks = () => (
@@ -89,17 +94,29 @@ export const Navigation = () => {
   return (
     <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm border-b border-border z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link 
-          to={isAuthor ? "/author/dashboard" : "/"} 
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-        >
-          <img 
-            src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" 
-            alt="Quilltips Logo" 
-            className="h-6 w-auto"
-          />
-          <span className="text-xl font-semibold">quilltips</span>
-        </Link>
+        <div className="flex items-center gap-2">
+          {showBackButton && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+              className="mr-2 hover-lift"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          )}
+          <Link 
+            to={isAuthor ? "/author/dashboard" : "/"} 
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <img 
+              src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" 
+              alt="Quilltips Logo" 
+              className="h-6 w-auto"
+            />
+            <span className="text-xl font-semibold">quilltips</span>
+          </Link>
+        </div>
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-4">
