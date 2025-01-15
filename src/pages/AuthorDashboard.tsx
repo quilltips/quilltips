@@ -98,19 +98,19 @@ const AuthorDashboard = () => {
   ];
 
   return (
-    <SidebarProvider defaultOpen>
+    <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
         <Navigation />
         
         <Sidebar 
-          className="mt-16 pt-4" 
+          className="mt-16 pt-4 pb-8" 
           variant="floating"
           collapsible="icon"
         >
           <SidebarHeader className="px-2 flex items-center justify-between">
             <SidebarTrigger />
           </SidebarHeader>
-          <SidebarContent>
+          <SidebarContent className="h-[calc(100vh-10rem)]">
             <SidebarMenu>
               {sidebarItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
