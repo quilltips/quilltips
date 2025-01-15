@@ -144,8 +144,8 @@ const AuthorDashboard = () => {
                 name={profile.name || "Anonymous Author"}
                 bio={profile.bio || "No bio available"}
                 imageUrl={profile.avatar_url || "/placeholder.svg"}
-                authorId={profile.id}
                 publicProfileLink={`/author/profile/${profile.id}`}
+                socialLinks={profile.social_links || []}
               />
             </div>
 
