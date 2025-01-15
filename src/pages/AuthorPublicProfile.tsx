@@ -58,6 +58,11 @@ const AuthorPublicProfile = () => {
     );
   }
 
+  // Convert the social_links from JSON to the expected format
+  const socialLinks = author.social_links ? 
+    (author.social_links as { url: string; label: string }[]) : 
+    [];
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -67,6 +72,7 @@ const AuthorPublicProfile = () => {
           bio={author.bio || 'No bio available'}
           imageUrl={author.avatar_url || "/placeholder.svg"}
           authorId={author.id}
+          socialLinks={socialLinks}
         />
         
         <div className="max-w-6xl mx-auto">
