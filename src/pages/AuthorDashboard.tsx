@@ -118,8 +118,17 @@ const AuthorDashboard = () => {
                     tooltip={item.label}
                     isActive={activeTab === item.id}
                     onClick={() => setActiveTab(item.id)}
+                    className={`${
+                      activeTab === item.id 
+                        ? "bg-primary/10 font-semibold text-primary" 
+                        : ""
+                    }`}
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className={`${
+                      activeTab === item.id 
+                        ? "text-primary" 
+                        : ""
+                    }`} />
                     <span>{item.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
