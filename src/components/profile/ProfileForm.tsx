@@ -6,6 +6,7 @@ import { Label } from "../ui/label";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Json } from "@/integrations/supabase/types";
 
 interface SocialLink {
   url: string;
@@ -50,12 +51,18 @@ export const ProfileForm = ({
     setIsLoading(true);
 
     try {
+      // Convert socialLinks to a format that matches the Json type
+      const socialLinksJson: Json = socialLinks.map(link => ({
+        url: link.url,
+        label: link.label
+      }));
+
       const { error } = await supabase
         .from('profiles')
         .update({ 
           name, 
           bio,
-          social_links: socialLinks
+          social_links: socialLinksJson
         })
         .eq('id', profileId);
 
