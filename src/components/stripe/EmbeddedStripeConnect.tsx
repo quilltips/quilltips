@@ -55,7 +55,7 @@ export const EmbeddedStripeConnect = ({ onComplete }: EmbeddedStripeConnectProps
       }
     };
 
-    const loadStripe = async (key: string) => {
+    const loadStripe = async (key: string): Promise<any> => {
       if (!window.Stripe) {
         const script = document.createElement('script');
         script.src = 'https://js.stripe.com/v3/';
@@ -63,7 +63,7 @@ export const EmbeddedStripeConnect = ({ onComplete }: EmbeddedStripeConnectProps
         document.body.appendChild(script);
         await new Promise(resolve => script.onload = resolve);
       }
-      return window.Stripe(key);
+      return window.Stripe?.(key);
     };
 
     initializeStripeConnect();
