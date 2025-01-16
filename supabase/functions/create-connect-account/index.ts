@@ -67,20 +67,22 @@ serve(async (req) => {
         }
       }
 
-      // Create an account link for onboarding
-      console.log('Creating account link for:', accountId);
-      const accountLink = await stripe.accountLinks.create({
+      // Create an account session for embedded onboarding
+      console.log('Creating account session for:', accountId);
+      const accountSession = await stripe.accountLinks.create({
         account: accountId,
         refresh_url: `${req.headers.get('origin')}/author/bank-account?refresh=true`,
         return_url: `${req.headers.get('origin')}/author/dashboard`,
         type: 'account_onboarding',
+        collect: 'eventually_due',
       });
 
-      console.log('Account link created:', accountLink.url);
+      console.log('Account session created');
       
       return new Response(
         JSON.stringify({ 
-          url: accountLink.url,
+          clientSecret: accountSession.client_secret,
+          publishableKey: Deno.env.get('STRIPE_PUBLISHABLE_KEY'),
           accountId: accountId
         }),
         { 
@@ -90,21 +92,6 @@ serve(async (req) => {
       );
     } catch (stripeError: any) {
       console.error('Stripe API error:', stripeError);
-      
-      // Check for platform profile setup error
-      if (stripeError.message?.includes('platform-profile')) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'Platform profile setup required',
-            details: 'Please complete the Stripe Connect Platform Profile setup at https://dashboard.stripe.com/settings/connect/platform-profile'
-          }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 400,
-          }
-        );
-      }
-      
       throw stripeError;
     }
   } catch (error) {

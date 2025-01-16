@@ -6,10 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import { AuthorRegistrationFields } from "./AuthorRegistrationFields";
 import { Alert, AlertDescription } from "./ui/alert";
 import { supabase } from "@/integrations/supabase/client";
+import { EmbeddedStripeConnect } from "./stripe/EmbeddedStripeConnect";
 
 export const AuthorRegistrationForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showStripeOnboarding, setShowStripeOnboarding] = useState(false);
+  const [registeredUserId, setRegisteredUserId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -51,13 +54,13 @@ export const AuthorRegistrationForm = () => {
       }
 
       console.log("Registration successful:", data);
+      setRegisteredUserId(data.user?.id);
+      setShowStripeOnboarding(true);
+      
       toast({
         title: "Registration successful!",
-        description: "Please check your email to verify your account. Next, you'll need to connect your bank account to receive tips.",
+        description: "Please complete the Stripe Connect onboarding to start receiving tips.",
       });
-
-      // Redirect to bank account connection page
-      navigate("/author/bank-account");
     } catch (err) {
       console.error("Registration error:", err);
       setError(err.message || "An error occurred during registration");
@@ -69,44 +72,61 @@ export const AuthorRegistrationForm = () => {
           : err.message || "An error occurred during registration",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
 
+  const handleOnboardingComplete = () => {
+    toast({
+      title: "Onboarding Complete",
+      description: "Your Stripe Connect account has been set up successfully.",
+    });
+    navigate("/author/dashboard");
+  };
+
   return (
     <Card className="glass-card p-6 max-w-md mx-auto animate-enter">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-semibold">Register as an Author</h2>
-          <p className="text-muted-foreground">
-            Create an account to start receiving tips from your readers
+      {!showStripeOnboarding ? (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold">Register as an Author</h2>
+            <p className="text-muted-foreground">
+              Create an account to start receiving tips from your readers
+            </p>
+          </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <AuthorRegistrationFields isLoading={isLoading} />
+
+          <Button
+            type="submit"
+            className="w-full hover-lift"
+            disabled={isLoading}
+          >
+            {isLoading ? "Creating account..." : "Create Author Account"}
+          </Button>
+
+          <p className="text-sm text-center text-muted-foreground">
+            Already have an account?{" "}
+            <a href="/author/login" className="text-primary hover:underline">
+              Log in
+            </a>
           </p>
+        </form>
+      ) : (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-semibold">Set Up Payments</h2>
+          <p className="text-muted-foreground">
+            Complete your Stripe Connect onboarding to start receiving tips
+          </p>
+          <EmbeddedStripeConnect onComplete={handleOnboardingComplete} />
         </div>
-
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        <AuthorRegistrationFields isLoading={isLoading} />
-
-        <Button
-          type="submit"
-          className="w-full hover-lift"
-          disabled={isLoading}
-        >
-          {isLoading ? "Creating account..." : "Create Author Account"}
-        </Button>
-
-        <p className="text-sm text-center text-muted-foreground">
-          Already have an account?{" "}
-          <a href="/author/login" className="text-primary hover:underline">
-            Log in
-          </a>
-        </p>
-      </form>
+      )}
     </Card>
   );
 };
