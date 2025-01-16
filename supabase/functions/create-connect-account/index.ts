@@ -20,6 +20,7 @@ serve(async (req) => {
     
     // First check if platform profile is complete
     try {
+      // Create a new Express account
       const account = await stripe.accounts.create({
         type: 'express',
         country: 'US',
@@ -27,18 +28,21 @@ serve(async (req) => {
           card_payments: { requested: true },
           transfers: { requested: true },
         },
+        business_type: 'individual',
       })
 
       console.log('Stripe account created:', account.id)
 
+      // Create an account link for onboarding
       const accountLink = await stripe.accountLinks.create({
         account: account.id,
-        refresh_url: `${req.headers.get('origin')}/author/dashboard`,
-        return_url: `${req.headers.get('origin')}/author/dashboard`,
+        refresh_url: `${req.headers.get('origin')}/author/bank-account?refresh=true`,
+        return_url: `${req.headers.get('origin')}/author/dashboard?setup=complete`,
         type: 'account_onboarding',
+        collect: 'currently_due',
       })
 
-      console.log('Account link created successfully')
+      console.log('Account link created successfully:', accountLink.url)
 
       return new Response(
         JSON.stringify({ 
