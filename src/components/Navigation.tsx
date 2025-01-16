@@ -47,7 +47,7 @@ export const Navigation = () => {
   const handleLogout = async () => {
     setIsLoading(true);
     try {
-      // First clear any existing session
+      // First check if we have a valid session
       const { error: sessionError } = await supabase.auth.getSession();
       if (sessionError) throw sessionError;
 
@@ -59,9 +59,6 @@ export const Navigation = () => {
         title: "Success",
         description: "You have been logged out.",
       });
-      
-      // Clear any local session state
-      await supabase.auth.clearSession();
       
       // Navigate after successful logout
       navigate('/');
