@@ -1,7 +1,7 @@
 import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +9,39 @@ import { Loader2, Wallet } from "lucide-react";
 
 const AuthorBankAccount = () => {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasStripeAccount, setHasStripeAccount] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          navigate("/author/login");
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('stripe_account_id')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile?.stripe_account_id) {
+          setHasStripeAccount(true);
+          navigate('/author/dashboard');
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
 
   const connectBankAccount = async () => {
     setIsConnecting(true);
@@ -61,6 +92,19 @@ const AuthorBankAccount = () => {
   const skipForNow = () => {
     navigate('/author/dashboard');
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <Navigation />
+        <main className="container mx-auto px-4 pt-24 pb-12">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">

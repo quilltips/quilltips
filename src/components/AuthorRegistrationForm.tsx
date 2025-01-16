@@ -53,9 +53,10 @@ export const AuthorRegistrationForm = () => {
       console.log("Registration successful:", data);
       toast({
         title: "Registration successful!",
-        description: "Please check your email to verify your account.",
+        description: "Please check your email to verify your account. Next, you'll need to connect your bank account to receive tips.",
       });
 
+      // Redirect to bank account connection page
       navigate("/author/bank-account");
     } catch (err) {
       console.error("Registration error:", err);
