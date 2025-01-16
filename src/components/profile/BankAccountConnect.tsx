@@ -62,17 +62,8 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         },
       });
 
-      if (error) {
-        console.error("Function error:", error);
-        throw error;
-      }
-
-      if (!data?.url) {
-        if (data?.error === 'Platform profile setup required') {
-          throw new Error(data.details || 'Platform setup required');
-        }
-        throw new Error('No URL returned from Stripe');
-      }
+      if (error) throw error;
+      if (!data?.url) throw new Error('No URL returned from Stripe');
 
       const { error: updateError } = await supabase
         .from('profiles')
