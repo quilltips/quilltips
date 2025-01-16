@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Navigation = () => {
   const [isAuthor, setIsAuthor] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const session = useSession();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,14 +19,19 @@ export const Navigation = () => {
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-        
-        setIsAuthor(profile?.role === 'author');
+      try {
+        if (session?.user) {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (error) throw error;
+          setIsAuthor(profile?.role === 'author');
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
       }
     };
 
@@ -39,19 +45,35 @@ export const Navigation = () => {
   }, [session]);
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-      });
-    } else {
+    setIsLoading(true);
+    try {
+      // First clear any existing session
+      const { error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      // Then sign out
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
       toast({
         title: "Success",
         description: "You have been logged out.",
       });
+      
+      // Clear any local session state
+      await supabase.auth.clearSession();
+      
+      // Navigate after successful logout
       navigate('/');
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to log out. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -70,9 +92,10 @@ export const Navigation = () => {
         <Button 
           variant="ghost" 
           onClick={handleLogout}
+          disabled={isLoading}
           className="hover-lift"
         >
-          Log out
+          {isLoading ? "Logging out..." : "Log out"}
         </Button>
       ) : (
         <>
