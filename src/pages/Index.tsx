@@ -14,7 +14,7 @@ const Index = () => {
         <div className="max-w-4xl mx-auto text-center space-y-6 animate-enter">
           <h1 className="text-4xl font-bold">Connecting Authors And Readers</h1>
           <p className="text-xl text-muted-foreground">
-            Engage with your most passionate fans, and allow them to support you!
+            Engage with your most passionate fans, and allow them to support your work!
           </p>
         </div>
 
@@ -39,7 +39,7 @@ const Index = () => {
             <BookOpen className="h-8 w-8 mx-auto text-primary" />
             <h3 className="font-semibold">Simple linking</h3>
             <p className="text-sm text-muted-foreground">
-              Link readers to your website and socials all from one place
+              Link readers to your website and socials, all from one place
             </p>
           </Card>
         </div>
