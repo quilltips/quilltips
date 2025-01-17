@@ -12,34 +12,34 @@ const Index = () => {
       
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="max-w-4xl mx-auto text-center space-y-6 animate-enter">
-          <h1 className="text-4xl font-bold">Helping Authors Get Paid</h1>
+          <h1 className="text-4xl font-bold">Connecting Authors And Readers</h1>
           <p className="text-xl text-muted-foreground">
-            Support your favorite authors directly and share your appreciation for their work
+            Engage with your most passionate fans, and allow them to show you love!
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12">
           <Card className="glass-card p-6 text-center space-y-4 hover-lift">
             <QrCode className="h-8 w-8 mx-auto text-primary" />
-            <h3 className="font-semibold">Scan & Connect</h3>
+            <h3 className="font-semibold">Scan and paste</h3>
             <p className="text-sm text-muted-foreground">
-              Scan the QR code on your book to connect instantly
+              Build QR codes for your book and paste them on the cover or inside the jacket
             </p>
           </Card>
 
           <Card className="glass-card p-6 text-center space-y-4 hover-lift">
             <MessageSquare className="h-8 w-8 mx-auto text-primary" />
-            <h3 className="font-semibold">Share & Support</h3>
+            <h3 className="font-semibold">Meet your readers</h3>
             <p className="text-sm text-muted-foreground">
-              Send messages and tips directly to authors for your favorite books
+              Receive tips and messages directly from your most passionate readers
             </p>
           </Card>
 
           <Card className="glass-card p-6 text-center space-y-4 hover-lift">
             <BookOpen className="h-8 w-8 mx-auto text-primary" />
-            <h3 className="font-semibold">Find Authors</h3>
+            <h3 className="font-semibold">Simple linking</h3>
             <p className="text-sm text-muted-foreground">
-              Search and discover authors to support their work
+              Link readers to your website and socials all from one place
             </p>
           </Card>
         </div>
