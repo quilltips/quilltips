@@ -54,6 +54,17 @@ serve(async (req) => {
 
     console.log('Account link created:', accountLink.url);
     
+    // Save the account ID to the user's profile
+    const { error: updateError } = await supabaseClient
+      .from('profiles')
+      .update({ stripe_account_id: account.id })
+      .eq('id', user.id);
+
+    if (updateError) {
+      console.error('Error updating profile:', updateError);
+      throw updateError;
+    }
+
     return new Response(
       JSON.stringify({ 
         url: accountLink.url,

@@ -27,15 +27,7 @@ export const EmbeddedStripeConnect = ({ onComplete }: EmbeddedStripeConnectProps
         });
 
         if (error) throw error;
-        if (!data?.accountId) throw new Error('No account ID returned');
-
-        // Save the account ID to the user's profile
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ stripe_account_id: data.accountId })
-          .eq('id', session.user.id);
-
-        if (updateError) throw updateError;
+        if (!data?.url) throw new Error('No onboarding URL returned');
 
         // Redirect to Stripe Connect onboarding
         window.location.href = data.url;
