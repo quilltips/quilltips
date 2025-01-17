@@ -19,6 +19,7 @@ export const EmbeddedStripeConnect = ({ onComplete }: EmbeddedStripeConnectProps
           throw new Error('No session found');
         }
 
+        // Call the edge function to create a Connect account
         const { data, error } = await supabase.functions.invoke('create-connect-account', {
           headers: {
             Authorization: `Bearer ${session.access_token}`,
@@ -26,44 +27,28 @@ export const EmbeddedStripeConnect = ({ onComplete }: EmbeddedStripeConnectProps
         });
 
         if (error) throw error;
-        if (!data?.clientSecret) throw new Error('No client secret returned');
+        if (!data?.accountId) throw new Error('No account ID returned');
 
-        const stripe = await loadStripe(data.publishableKey);
-        if (!stripe) throw new Error('Failed to load Stripe');
+        // Save the account ID to the user's profile
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ stripe_account_id: data.accountId })
+          .eq('id', session.user.id);
 
-        const elements = stripe.elements({
-          clientSecret: data.clientSecret,
-        });
+        if (updateError) throw updateError;
 
-        const onboardingElement = elements.create('expressOnboarding');
-        onboardingElement.mount('#stripe-onboarding-element');
-
-        onboardingElement.on('onboarding_complete', () => {
-          if (onComplete) {
-            onComplete();
-          }
-        });
-
-        setIsLoading(false);
-      } catch (error) {
+        // Redirect to Stripe Connect onboarding
+        window.location.href = data.url;
+      } catch (error: any) {
         console.error('Error initializing Stripe Connect:', error);
         toast({
           title: 'Error',
           description: error.message || 'Failed to initialize Stripe Connect',
           variant: 'destructive',
         });
+      } finally {
+        setIsLoading(false);
       }
-    };
-
-    const loadStripe = async (key: string): Promise<any> => {
-      if (!window.Stripe) {
-        const script = document.createElement('script');
-        script.src = 'https://js.stripe.com/v3/';
-        script.async = true;
-        document.body.appendChild(script);
-        await new Promise(resolve => script.onload = resolve);
-      }
-      return window.Stripe?.(key);
     };
 
     initializeStripeConnect();
@@ -76,7 +61,6 @@ export const EmbeddedStripeConnect = ({ onComplete }: EmbeddedStripeConnectProps
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       )}
-      <div id="stripe-onboarding-element" className="w-full h-full" />
     </div>
   );
 };

@@ -12,7 +12,6 @@ export const AuthorRegistrationForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showStripeOnboarding, setShowStripeOnboarding] = useState(false);
-  const [registeredUserId, setRegisteredUserId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -54,14 +53,13 @@ export const AuthorRegistrationForm = () => {
       }
 
       console.log("Registration successful:", data);
-      setRegisteredUserId(data.user?.id);
       setShowStripeOnboarding(true);
       
       toast({
         title: "Registration successful!",
         description: "Please complete the Stripe Connect onboarding to start receiving tips.",
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Registration error:", err);
       setError(err.message || "An error occurred during registration");
       
@@ -72,6 +70,7 @@ export const AuthorRegistrationForm = () => {
           : err.message || "An error occurred during registration",
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };

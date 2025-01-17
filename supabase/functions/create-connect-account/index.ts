@@ -33,67 +33,37 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    // Get user profile to check if they already have a Stripe account
-    const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('stripe_account_id')
-      .eq('id', user.id)
-      .single();
+    // Create a new Connect account
+    console.log('Creating new Stripe Connect account for user:', user.id);
+    const account = await stripe.accounts.create({
+      type: 'express',
+      email: user.email,
+      metadata: {
+        supabaseUserId: user.id,
+      },
+    });
 
-    let accountId = profile?.stripe_account_id;
+    // Create an account link for onboarding
+    console.log('Creating account link for:', account.id);
+    const accountLink = await stripe.accountLinks.create({
+      account: account.id,
+      refresh_url: `${req.headers.get('origin')}/author/register?refresh=true`,
+      return_url: `${req.headers.get('origin')}/author/dashboard`,
+      type: 'account_onboarding',
+    });
 
-    try {
-      // Create a new Connect account if one doesn't exist
-      if (!accountId) {
-        console.log('Creating new Stripe Connect account for user:', user.id);
-        const account = await stripe.accounts.create({
-          type: 'express',
-          email: user.email,
-          metadata: {
-            supabaseUserId: user.id,
-          },
-        });
-        accountId = account.id;
-
-        // Update the user's profile with their Stripe account ID
-        const { error: updateError } = await supabaseClient
-          .from('profiles')
-          .update({ stripe_account_id: accountId })
-          .eq('id', user.id);
-
-        if (updateError) {
-          console.error('Error updating profile:', updateError);
-          throw updateError;
-        }
+    console.log('Account link created:', accountLink.url);
+    
+    return new Response(
+      JSON.stringify({ 
+        url: accountLink.url,
+        accountId: account.id
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
       }
-
-      // Create an account session for embedded onboarding
-      console.log('Creating account session for:', accountId);
-      const accountSession = await stripe.accountLinks.create({
-        account: accountId,
-        refresh_url: `${req.headers.get('origin')}/author/bank-account?refresh=true`,
-        return_url: `${req.headers.get('origin')}/author/dashboard`,
-        type: 'account_onboarding',
-        collect: 'eventually_due',
-      });
-
-      console.log('Account session created');
-      
-      return new Response(
-        JSON.stringify({ 
-          clientSecret: accountSession.client_secret,
-          publishableKey: Deno.env.get('STRIPE_PUBLISHABLE_KEY'),
-          accountId: accountId
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        }
-      );
-    } catch (stripeError: any) {
-      console.error('Stripe API error:', stripeError);
-      throw stripeError;
-    }
+    );
   } catch (error) {
     console.error('Error in create-connect-account:', error);
     return new Response(
