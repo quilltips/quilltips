@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,24 +7,24 @@
 @layer base {
   :root {
     --background: 210 50% 98%;
-    --foreground: 210 50% 10%;
+    --foreground: 215 25% 27%;
     --card: 0 0% 100%;
-    --card-foreground: 210 50% 10%;
+    --card-foreground: 215 25% 27%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 50% 10%;
-    --primary: 210 80% 50%;
+    --popover-foreground: 215 25% 27%;
+    --primary: 215 25% 27%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 47 95% 85%;
-    --secondary-foreground: 47 80% 15%;
+    --secondary: 45 93% 77%;
+    --secondary-foreground: 215 25% 27%;
     --muted: 210 40% 96%;
-    --muted-foreground: 210 40% 40%;
-    --accent: 47 95% 85%;
-    --accent-foreground: 47 80% 15%;
+    --muted-foreground: 215 25% 47%;
+    --accent: 45 93% 77%;
+    --accent-foreground: 215 25% 27%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 210 30% 90%;
-    --input: 210 30% 90%;
-    --ring: 210 80% 50%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 215 25% 27%;
     --radius: 0.75rem;
     --sidebar-width: 14rem;
     --sidebar-width-icon: 3rem;
@@ -35,11 +35,11 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-work-sans antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif;
+    @apply font-work-sans font-medium;
   }
 }
 
@@ -61,7 +61,7 @@
   }
 
   .card-title {
-    @apply text-2xl font-serif font-medium tracking-tight;
+    @apply text-2xl font-work-sans font-medium tracking-tight;
   }
 
   .card-subtitle {
