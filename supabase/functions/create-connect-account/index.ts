@@ -65,16 +65,7 @@ serve(async (req) => {
       throw updateError;
     }
 
-    return new Response(
-      JSON.stringify({ 
-        url: accountLink.url,
-        accountId: account.id
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
-    );
+    
   } catch (error) {
     console.error('Error in create-connect-account:', error);
     return new Response(
