@@ -14,7 +14,7 @@ const Index = () => {
         <div className="max-w-4xl mx-auto text-center space-y-6 animate-enter">
           <h1 className="text-4xl font-bold">Connecting Authors And Readers</h1>
           <p className="text-xl text-muted-foreground">
-            Engage with your most passionate fans, and allow them to show you love!
+            Engage with your most passionate fans, and allow them to support you!
           </p>
         </div>
 
