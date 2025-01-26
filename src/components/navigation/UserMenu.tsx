@@ -23,7 +23,7 @@ export const UserMenu = ({ isAuthor, userId, onLogout, isLoading }: UserMenuProp
               Profile
             </Button>
           </Link>
-          <Link to="/author/bank-account" className="hover-lift hidden md:block">
+          <Link to="/author/settings" className="hover-lift hidden md:block">
             <Button variant="ghost">
               <Settings className="h-4 w-4 mr-2" />
               Settings

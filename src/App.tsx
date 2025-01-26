@@ -7,6 +7,7 @@ import AuthorDashboard from "./pages/AuthorDashboard";
 import AuthorBankAccount from "./pages/AuthorBankAccount";
 import CreateQRPage from "./pages/CreateQRPage";
 import AuthorPublicProfile from "./pages/AuthorPublicProfile";
+import AuthorSettings from "./pages/AuthorSettings";
 import QRCodeDetails from "./pages/QRCodeDetails";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
@@ -23,6 +24,7 @@ function App() {
           <Route path="/author/register" element={<AuthorRegister />} />
           <Route path="/author/dashboard" element={<AuthorDashboard />} />
           <Route path="/author/bank-account" element={<AuthorBankAccount />} />
+          <Route path="/author/settings" element={<AuthorSettings />} />
           <Route path="/author/create-qr" element={<CreateQRPage />} />
           <Route path="/author/profile/:id" element={<AuthorPublicProfile />} />
           <Route path="/qr/:id" element={<QRCodeDetails />} />
