@@ -1,6 +1,5 @@
 import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { ExternalLink, User } from "lucide-react";
+import { ExternalLink, User, Globe, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 
 interface SocialLink {
   url: string;
@@ -15,6 +14,15 @@ interface AuthorDashboardProfileProps {
   publicProfileLink?: string;
 }
 
+const getSocialIcon = (label: string) => {
+  const label_lower = label.toLowerCase();
+  if (label_lower.includes('twitter')) return Twitter;
+  if (label_lower.includes('instagram')) return Instagram;
+  if (label_lower.includes('linkedin')) return Linkedin;
+  if (label_lower.includes('github')) return Github;
+  return Globe;
+};
+
 export const AuthorDashboardProfile = ({ 
   name, 
   bio, 
@@ -23,9 +31,9 @@ export const AuthorDashboardProfile = ({
   publicProfileLink 
 }: AuthorDashboardProfileProps) => {
   return (
-    <Card className="glass-card p-6 max-w-2xl mx-auto animate-enter">
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="w-32 h-32 mx-auto md:mx-0 rounded-full overflow-hidden border-2 border-border">
+    <div className="max-w-2xl mx-auto animate-enter bg-[#FEF7CD]/30 rounded-3xl p-8 shadow-sm">
+      <div className="flex flex-col items-center text-center space-y-6">
+        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#FEC6A1] shadow-lg">
           <img
             src={imageUrl}
             alt={name}
@@ -33,26 +41,30 @@ export const AuthorDashboardProfile = ({
           />
         </div>
         
-        <div className="flex-1 space-y-4">
-          <div>
-            <h2 className="text-2xl font-semibold">{name}</h2>
-            <p className="text-muted-foreground mt-2">{bio}</p>
-          </div>
-          
-          <div className="flex flex-wrap gap-3">
-            {publicProfileLink && (
-              <a
-                href={publicProfileLink}
-                className="inline-block"
+        <div className="space-y-4">
+          <h2 className="text-3xl font-semibold text-[#2D3748]">{name}</h2>
+          <p className="text-[#4A5568] max-w-lg mx-auto leading-relaxed">{bio}</p>
+        </div>
+        
+        <div className="flex flex-wrap justify-center gap-4 w-full">
+          {publicProfileLink && (
+            <a
+              href={publicProfileLink}
+              className="inline-block"
+            >
+              <Button 
+                variant="outline" 
+                className="hover-lift bg-white border-[#FEC6A1] hover:bg-[#FEC6A1]/10 text-[#2D3748]"
               >
-                <Button variant="outline" className="hover-lift">
-                  <User className="h-4 w-4 mr-2" />
-                  Public Profile
-                </Button>
-              </a>
-            )}
-            
-            {socialLinks.map((link, index) => (
+                <User className="h-4 w-4 mr-2" />
+                Public Profile
+              </Button>
+            </a>
+          )}
+          
+          {socialLinks.map((link, index) => {
+            const IconComponent = getSocialIcon(link.label);
+            return (
               <a
                 key={index}
                 href={link.url}
@@ -60,15 +72,18 @@ export const AuthorDashboardProfile = ({
                 rel="noopener noreferrer"
                 className="inline-block"
               >
-                <Button variant="outline" className="hover-lift">
-                  <ExternalLink className="h-4 w-4 mr-2" />
+                <Button 
+                  variant="outline" 
+                  className="hover-lift bg-white border-[#FEC6A1] hover:bg-[#FEC6A1]/10 text-[#2D3748]"
+                >
+                  <IconComponent className="h-4 w-4 mr-2" />
                   {link.label}
                 </Button>
               </a>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
