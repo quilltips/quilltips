@@ -129,33 +129,32 @@ const AuthorDashboard = () => {
           </SidebarContent>
         </Sidebar>
 
-         p-6">
-            <div className="mb-8">
-              <AuthorDashboardProfile
-                name={profile.name || "Anonymous Author"}
-                bio={profile.bio || "No bio available"}
-                imageUrl={profile.avatar_url || "/placeholder.svg"}
-                publicProfileLink={`/author/profile/${profile.id}`}
-                socialLinks={profile.social_links || []}
-              />
-            </div>
+        <SidebarInset className="p-6">
+          <div className="mb-8">
+            <AuthorDashboardProfile
+              name={profile.name || "Anonymous Author"}
+              bio={profile.bio || "No bio available"}
+              imageUrl={profile.avatar_url || "/placeholder.svg"}
+              publicProfileLink={`/author/profile/${profile.id}`}
+              socialLinks={profile.social_links || []}
+            />
+          </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {activeTab === "qrcodes" && (
-                <>
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-semibold">Your QR Codes</h2>
-                    <AuthorQRCodesList authorId={profile.id} />
-                  </div>
-                  <div className="space-y-6">
-                    <h2 className="text-2xl font-semibold">Recent Tips</h2>
-                    <TipHistory authorId={profile.id} limit={5} />
-                  </div>
-                </>
-              )}
-              {activeTab === "tips" && <TipHistory authorId={profile.id} />}
-              {activeTab === "settings" && <ProfileSettings profile={profile} />}
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {activeTab === "qrcodes" && (
+              <>
+                <div className="space-y-6">
+                  <h2 className="text-2xl font-semibold">Your QR Codes</h2>
+                  <AuthorQRCodesList authorId={profile.id} />
+                </div>
+                <div className="space-y-6">
+                  <h2 className="text-2xl font-semibold">Recent Tips</h2>
+                  <TipHistory authorId={profile.id} limit={5} />
+                </div>
+              </>
+            )}
+            {activeTab === "tips" && <TipHistory authorId={profile.id} />}
+            {activeTab === "settings" && <ProfileSettings profile={profile} />}
           </div>
         </SidebarInset>
       </div>
