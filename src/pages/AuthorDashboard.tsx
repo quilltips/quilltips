@@ -74,7 +74,7 @@ const AuthorDashboard = () => {
   if (!profile) return null;
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 pt-24 pb-12">
       <div className="mb-8">
         <AuthorDashboardProfile
           name={profile.name || "Anonymous Author"}

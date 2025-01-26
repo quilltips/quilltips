@@ -6,7 +6,6 @@ import AuthorRegister from "./pages/AuthorRegister";
 import AuthorDashboard from "./pages/AuthorDashboard";
 import AuthorBankAccount from "./pages/AuthorBankAccount";
 import CreateQRPage from "./pages/CreateQRPage";
-import SearchPage from "./pages/SearchPage";
 import AuthorPublicProfile from "./pages/AuthorPublicProfile";
 import QRCodeDetails from "./pages/QRCodeDetails";
 import About from "./pages/About";
@@ -25,7 +24,6 @@ function App() {
           <Route path="/author/dashboard" element={<AuthorDashboard />} />
           <Route path="/author/bank-account" element={<AuthorBankAccount />} />
           <Route path="/author/create-qr" element={<CreateQRPage />} />
-          <Route path="/search" element={<SearchPage />} />
           <Route path="/author/profile/:id" element={<AuthorPublicProfile />} />
           <Route path="/qr/:id" element={<QRCodeDetails />} />
           <Route path="/about" element={<About />} />
