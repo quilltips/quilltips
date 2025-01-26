@@ -85,39 +85,6 @@ const AuthorDashboard = () => {
         />
       </div>
 
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => setActiveTab("qrcodes")}
-          className={`px-4 py-2 rounded-lg transition-colors ${
-            activeTab === "qrcodes" 
-              ? "bg-primary text-primary-foreground" 
-              : "hover:bg-muted"
-          }`}
-        >
-          QR Codes
-        </button>
-        <button
-          onClick={() => setActiveTab("tips")}
-          className={`px-4 py-2 rounded-lg transition-colors ${
-            activeTab === "tips" 
-              ? "bg-primary text-primary-foreground" 
-              : "hover:bg-muted"
-          }`}
-        >
-          Tip History
-        </button>
-        <button
-          onClick={() => setActiveTab("settings")}
-          className={`px-4 py-2 rounded-lg transition-colors ${
-            activeTab === "settings" 
-              ? "bg-primary text-primary-foreground" 
-              : "hover:bg-muted"
-          }`}
-        >
-          Settings
-        </button>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {activeTab === "qrcodes" && (
           <>
