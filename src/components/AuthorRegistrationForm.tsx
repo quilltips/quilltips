@@ -7,10 +7,12 @@ import { AuthorRegistrationFields } from "./AuthorRegistrationFields";
 import { Alert, AlertDescription } from "./ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { EmbeddedStripeConnect } from "./stripe/EmbeddedStripeConnect";
+import { PaymentSetupChoice } from "./PaymentSetupChoice";
 
 export const AuthorRegistrationForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPaymentChoice, setShowPaymentChoice] = useState(false);
   const [showStripeOnboarding, setShowStripeOnboarding] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -53,11 +55,11 @@ export const AuthorRegistrationForm = () => {
       }
 
       console.log("Registration successful:", data);
-      setShowStripeOnboarding(true);
+      setShowPaymentChoice(true);
       
       toast({
         title: "Registration successful!",
-        description: "Please complete the Stripe Connect onboarding to start receiving tips.",
+        description: "Please choose whether to set up payments now or later.",
       });
     } catch (err: any) {
       console.error("Registration error:", err);
@@ -83,12 +85,20 @@ export const AuthorRegistrationForm = () => {
     navigate("/author/dashboard");
   };
 
+  const handleSkipOnboarding = () => {
+    toast({
+      title: "Setup Skipped",
+      description: "You can set up payments later from your dashboard.",
+    });
+    navigate("/author/dashboard");
+  };
+
   return (
     <Card className="glass-card p-6 max-w-md mx-auto animate-enter">
-      {!showStripeOnboarding ? (
+      {!showPaymentChoice && !showStripeOnboarding ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <h2 className="text-2xl font-semibold">Register as an Author</h2>
+            <h2 className="text-2xl font-medium">Register as an Author</h2>
             <p className="text-muted-foreground">
               Create an account to start receiving tips from your readers
             </p>
@@ -117,14 +127,19 @@ export const AuthorRegistrationForm = () => {
             </a>
           </p>
         </form>
-      ) : (
+      ) : showStripeOnboarding ? (
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold">Set Up Payments</h2>
+          <h2 className="text-2xl font-medium">Set Up Payments</h2>
           <p className="text-muted-foreground">
             Complete your Stripe Connect onboarding to start receiving tips
           </p>
           <EmbeddedStripeConnect onComplete={handleOnboardingComplete} />
         </div>
+      ) : (
+        <PaymentSetupChoice
+          onContinue={() => setShowStripeOnboarding(true)}
+          onSkip={handleSkipOnboarding}
+        />
       )}
     </Card>
   );
