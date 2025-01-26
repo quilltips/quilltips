@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Navigation } from "@/components/Navigation";
 import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
 import { useToast } from "@/hooks/use-toast";
 import { QrCode, History, Settings } from "lucide-react";
@@ -80,12 +79,7 @@ const AuthorDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <main className="container mx-auto px-4 pt-24 pb-12">
-          <div className="text-center">Loading...</div>
-        </main>
-      </div>
+      <div className="text-center pt-24">Loading...</div>
     );
   }
 
@@ -99,11 +93,9 @@ const AuthorDashboard = () => {
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen flex w-full">
-        <Navigation />
-        
+      <div className="flex w-full">
         <Sidebar 
-          className="mt-16 pt-4 pb-8 max-h-[calc(100vh-4rem)]" 
+          className="pt-4 pb-8 max-h-[calc(100vh-4rem)]" 
           variant="floating"
           collapsible="icon"
         >
@@ -137,7 +129,7 @@ const AuthorDashboard = () => {
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset className="pt-16">
+        <SidebarInset>
           <div className="container p-6">
             <div className="mb-8">
               <AuthorDashboardProfile
