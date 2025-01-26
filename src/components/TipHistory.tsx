@@ -14,7 +14,7 @@ import { TipCommentButton } from "./TipCommentButton";
 import { useState } from "react";
 import { TipDetailsDialog } from "./TipDetailsDialog";
 import { Button } from "./ui/button";
-import { Download } from "lucide-react";
+import { ChevronDown, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface TipHistoryProps {
@@ -34,6 +34,7 @@ interface Tip {
 
 export const TipHistory = ({ authorId, qrCodeId, limit }: TipHistoryProps) => {
   const [selectedTip, setSelectedTip] = useState<Tip | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const { toast } = useToast();
 
   const { data: tips, isLoading } = useQuery({
@@ -129,6 +130,8 @@ export const TipHistory = ({ authorId, qrCodeId, limit }: TipHistoryProps) => {
     return likes?.some(like => like.tip_id === tipId);
   };
 
+  const displayedTips = showAll ? tips : tips?.slice(0, 5);
+
   return (
     <Card className="p-6">
       {!limit && (
@@ -158,7 +161,7 @@ export const TipHistory = ({ authorId, qrCodeId, limit }: TipHistoryProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tips?.map((tip) => (
+          {displayedTips?.map((tip) => (
             <TableRow 
               key={tip.id}
               className="cursor-pointer hover:bg-muted/50"
@@ -196,6 +199,17 @@ export const TipHistory = ({ authorId, qrCodeId, limit }: TipHistoryProps) => {
           )}
         </TableBody>
       </Table>
+
+      {tips && tips.length > 5 && !limit && (
+        <Button
+          variant="ghost"
+          className="w-full mt-4 text-muted-foreground hover:text-foreground"
+          onClick={() => setShowAll(!showAll)}
+        >
+          <ChevronDown className={`h-4 w-4 mr-2 transition-transform duration-200 ${showAll ? 'rotate-180' : ''}`} />
+          {showAll ? 'Show Less' : `Show ${tips.length - 5} More Tips`}
+        </Button>
+      )}
 
       <TipDetailsDialog
         isOpen={!!selectedTip}
