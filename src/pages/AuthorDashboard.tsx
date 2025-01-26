@@ -3,21 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
 import { useToast } from "@/hooks/use-toast";
-import { QrCode, History, Settings } from "lucide-react";
 import { AuthorQRCodesList } from "@/components/AuthorQRCodesList";
 import { TipHistory } from "@/components/TipHistory";
 import { ProfileSettings } from "@/components/ProfileSettings";
-import { 
-  Sidebar, 
-  SidebarContent,
-  SidebarHeader,
-  SidebarTrigger,
-  SidebarProvider,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset
-} from "@/components/ui/sidebar";
 
 const AuthorDashboard = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -85,80 +73,68 @@ const AuthorDashboard = () => {
 
   if (!profile) return null;
 
-  const sidebarItems = [
-    { id: 'qrcodes', label: 'QR Codes', icon: QrCode },
-    { id: 'tips', label: 'Tip History', icon: History },
-    { id: 'settings', label: 'Settings', icon: Settings },
-  ];
-
   return (
-    <SidebarProvider defaultOpen={false}>
-      <div className="flex w-full">
-        <Sidebar 
-          className="pt-4 pb-8 max-h-[calc(100vh-4rem)]" 
-          variant="floating"
-          collapsible="icon"
-        >
-          <SidebarHeader className="px-2 flex items-center justify-between">
-            <SidebarTrigger />
-          </SidebarHeader>
-          <SidebarContent className="h-[calc(100%-4rem)] overflow-hidden">
-            <SidebarMenu>
-              {sidebarItems.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    tooltip={item.label}
-                    isActive={activeTab === item.id}
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center justify-center ${
-                      activeTab === item.id 
-                        ? "bg-primary/10 font-semibold text-primary" 
-                        : ""
-                    }`}
-                  >
-                    <item.icon className={`${
-                      activeTab === item.id 
-                        ? "text-primary" 
-                        : ""
-                    }`} />
-                    <span>{item.label}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-        </Sidebar>
-
-        <SidebarInset className="p-6">
-          <div className="mb-8">
-            <AuthorDashboardProfile
-              name={profile.name || "Anonymous Author"}
-              bio={profile.bio || "No bio available"}
-              imageUrl={profile.avatar_url || "/placeholder.svg"}
-              publicProfileLink={`/author/profile/${profile.id}`}
-              socialLinks={profile.social_links || []}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {activeTab === "qrcodes" && (
-              <>
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-semibold">Your QR Codes</h2>
-                  <AuthorQRCodesList authorId={profile.id} />
-                </div>
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-semibold">Recent Tips</h2>
-                  <TipHistory authorId={profile.id} limit={5} />
-                </div>
-              </>
-            )}
-            {activeTab === "tips" && <TipHistory authorId={profile.id} />}
-            {activeTab === "settings" && <ProfileSettings profile={profile} />}
-          </div>
-        </SidebarInset>
+    <div className="container mx-auto px-4 py-6">
+      <div className="mb-8">
+        <AuthorDashboardProfile
+          name={profile.name || "Anonymous Author"}
+          bio={profile.bio || "No bio available"}
+          imageUrl={profile.avatar_url || "/placeholder.svg"}
+          publicProfileLink={`/author/profile/${profile.id}`}
+          socialLinks={profile.social_links || []}
+        />
       </div>
-    </SidebarProvider>
+
+      <div className="flex gap-4 mb-6">
+        <button
+          onClick={() => setActiveTab("qrcodes")}
+          className={`px-4 py-2 rounded-lg transition-colors ${
+            activeTab === "qrcodes" 
+              ? "bg-primary text-primary-foreground" 
+              : "hover:bg-muted"
+          }`}
+        >
+          QR Codes
+        </button>
+        <button
+          onClick={() => setActiveTab("tips")}
+          className={`px-4 py-2 rounded-lg transition-colors ${
+            activeTab === "tips" 
+              ? "bg-primary text-primary-foreground" 
+              : "hover:bg-muted"
+          }`}
+        >
+          Tip History
+        </button>
+        <button
+          onClick={() => setActiveTab("settings")}
+          className={`px-4 py-2 rounded-lg transition-colors ${
+            activeTab === "settings" 
+              ? "bg-primary text-primary-foreground" 
+              : "hover:bg-muted"
+          }`}
+        >
+          Settings
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {activeTab === "qrcodes" && (
+          <>
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold">Your QR Codes</h2>
+              <AuthorQRCodesList authorId={profile.id} />
+            </div>
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold">Recent Tips</h2>
+              <TipHistory authorId={profile.id} limit={5} />
+            </div>
+          </>
+        )}
+        {activeTab === "tips" && <TipHistory authorId={profile.id} />}
+        {activeTab === "settings" && <ProfileSettings profile={profile} />}
+      </div>
+    </div>
   );
 };
 

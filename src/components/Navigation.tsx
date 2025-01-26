@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Search, Menu, ArrowLeft } from "lucide-react";
+import { Search, Menu, ArrowLeft, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 export const Navigation = () => {
   const [isAuthor, setIsAuthor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const session = useSession();
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,6 +22,7 @@ export const Navigation = () => {
     const checkAuthStatus = async () => {
       try {
         if (session?.user) {
+          setUserId(session.user.id);
           const { data: profile, error } = await supabase
             .from('profiles')
             .select('role')
@@ -47,11 +49,9 @@ export const Navigation = () => {
   const handleLogout = async () => {
     setIsLoading(true);
     try {
-      // First check if we have a valid session
       const { error: sessionError } = await supabase.auth.getSession();
       if (sessionError) throw sessionError;
 
-      // Then sign out
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
 
@@ -60,7 +60,6 @@ export const Navigation = () => {
         description: "You have been logged out.",
       });
       
-      // Navigate after successful logout
       navigate('/');
     } catch (error: any) {
       console.error("Logout error:", error);
@@ -86,14 +85,35 @@ export const Navigation = () => {
         </Button>
       </Link>
       {session ? (
-        <Button 
-          variant="ghost" 
-          onClick={handleLogout}
-          disabled={isLoading}
-          className="hover-lift"
-        >
-          {isLoading ? "Logging out..." : "Log out"}
-        </Button>
+        <>
+          {isAuthor && (
+            <>
+              <Link to="/author/dashboard" className="hover-lift hidden md:block">
+                <Button variant="ghost">Dashboard</Button>
+              </Link>
+              <Link to={`/author/profile/${userId}`} className="hover-lift hidden md:block">
+                <Button variant="ghost">
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
+                </Button>
+              </Link>
+              <Link to="/author/bank-account" className="hover-lift hidden md:block">
+                <Button variant="ghost">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </Button>
+              </Link>
+            </>
+          )}
+          <Button 
+            variant="ghost" 
+            onClick={handleLogout}
+            disabled={isLoading}
+            className="hover-lift"
+          >
+            {isLoading ? "Logging out..." : "Log out"}
+          </Button>
+        </>
       ) : (
         <>
           <Link to="/author/login">
