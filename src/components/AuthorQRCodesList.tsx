@@ -57,7 +57,7 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2">
           {qrCodes.map((qr) => (
             <QRCodeCard
               key={qr.id}
