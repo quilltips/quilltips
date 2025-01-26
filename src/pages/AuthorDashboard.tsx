@@ -129,8 +129,7 @@ const AuthorDashboard = () => {
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset>
-          <div className="container p-6">
+         p-6">
             <div className="mb-8">
               <AuthorDashboardProfile
                 name={profile.name || "Anonymous Author"}
@@ -141,8 +140,19 @@ const AuthorDashboard = () => {
               />
             </div>
 
-            <div className="space-y-8">
-              {activeTab === "qrcodes" && <AuthorQRCodesList authorId={profile.id} />}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {activeTab === "qrcodes" && (
+                <>
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-semibold">Your QR Codes</h2>
+                    <AuthorQRCodesList authorId={profile.id} />
+                  </div>
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-semibold">Recent Tips</h2>
+                    <TipHistory authorId={profile.id} limit={5} />
+                  </div>
+                </>
+              )}
               {activeTab === "tips" && <TipHistory authorId={profile.id} />}
               {activeTab === "settings" && <ProfileSettings profile={profile} />}
             </div>

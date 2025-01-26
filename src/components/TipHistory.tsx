@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 interface TipHistoryProps {
   authorId: string;
   qrCodeId?: string;
+  limit?: number;
 }
 
 interface Tip {
@@ -31,12 +32,12 @@ interface Tip {
   author_id: string;
 }
 
-export const TipHistory = ({ authorId, qrCodeId }: TipHistoryProps) => {
+export const TipHistory = ({ authorId, qrCodeId, limit }: TipHistoryProps) => {
   const [selectedTip, setSelectedTip] = useState<Tip | null>(null);
   const { toast } = useToast();
 
   const { data: tips, isLoading } = useQuery({
-    queryKey: ['tips', authorId, qrCodeId],
+    queryKey: ['tips', authorId, qrCodeId, limit],
     queryFn: async () => {
       let query = supabase
         .from('tips')
@@ -46,6 +47,10 @@ export const TipHistory = ({ authorId, qrCodeId }: TipHistoryProps) => {
 
       if (qrCodeId) {
         query = query.eq('qr_code_id', qrCodeId);
+      }
+
+      if (limit) {
+        query = query.limit(limit);
       }
 
       const { data, error } = await query;
@@ -126,19 +131,21 @@ export const TipHistory = ({ authorId, qrCodeId }: TipHistoryProps) => {
 
   return (
     <Card className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">
-          {qrCodeId ? "QR Code Tips" : "Tip History"}
-        </h2>
-        <Button
-          variant="outline"
-          className="flex items-center gap-2"
-          onClick={handleDownloadAll}
-        >
-          <Download className="h-4 w-4" />
-          Download {qrCodeId ? "QR Code" : "All"} Tips
-        </Button>
-      </div>
+      {!limit && (
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">
+            {qrCodeId ? "QR Code Tips" : "Tip History"}
+          </h2>
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={handleDownloadAll}
+          >
+            <Download className="h-4 w-4" />
+            Download {qrCodeId ? "QR Code" : "All"} Tips
+          </Button>
+        </div>
+      )}
 
       <Table>
         <TableHeader>
