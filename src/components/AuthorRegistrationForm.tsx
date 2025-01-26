@@ -94,11 +94,11 @@ export const AuthorRegistrationForm = () => {
   };
 
   return (
-    <Card className="glass-card p-6 max-w-md mx-auto animate-enter">
+    <Card className="auth-card max-w-md mx-auto animate-enter">
       {!showPaymentChoice && !showStripeOnboarding ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <h2 className="text-2xl font-medium">Register as an Author</h2>
+            <h2 className="text-2xl font-semibold text-[#2D3748]">Register as an Author</h2>
             <p className="text-muted-foreground">
               Create an account to start receiving tips from your readers
             </p>
@@ -114,7 +114,7 @@ export const AuthorRegistrationForm = () => {
 
           <Button
             type="submit"
-            className="w-full hover-lift"
+            className="w-full bg-[#FEC6A1] hover:bg-[#FEC6A1]/90 text-[#2D3748]"
             disabled={isLoading}
           >
             {isLoading ? "Creating account..." : "Create Author Account"}
@@ -122,14 +122,14 @@ export const AuthorRegistrationForm = () => {
 
           <p className="text-sm text-center text-muted-foreground">
             Already have an account?{" "}
-            <a href="/author/login" className="text-primary hover:underline">
+            <a href="/author/login" className="text-[#2D3748] hover:underline">
               Log in
             </a>
           </p>
         </form>
       ) : showStripeOnboarding ? (
         <div className="space-y-6">
-          <h2 className="text-2xl font-medium">Set Up Payments</h2>
+          <h2 className="text-2xl font-semibold text-[#2D3748]">Set Up Payments</h2>
           <p className="text-muted-foreground">
             Complete your Stripe Connect onboarding to start receiving tips
           </p>

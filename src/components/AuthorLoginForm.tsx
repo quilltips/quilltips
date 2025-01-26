@@ -116,11 +116,11 @@ export const AuthorLoginForm = () => {
   };
 
   return (
-    <Card className="glass-card p-6 max-w-md mx-auto animate-enter">
+    <Card className="auth-card max-w-md mx-auto animate-enter">
       {!showResetForm ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <h2 className="text-2xl font-semibold">Author Login</h2>
+            <h2 className="text-2xl font-semibold text-[#2D3748]">Author Login</h2>
             <p className="text-muted-foreground">
               Welcome back! Sign in to manage your profile and tips
             </p>
@@ -141,7 +141,7 @@ export const AuthorLoginForm = () => {
                 type="email"
                 required
                 disabled={isLoading}
-                className="hover-lift"
+                className="hover-lift bg-white/50"
               />
             </div>
 
@@ -153,14 +153,14 @@ export const AuthorLoginForm = () => {
                 type="password"
                 required
                 disabled={isLoading}
-                className="hover-lift"
+                className="hover-lift bg-white/50"
               />
             </div>
           </div>
 
           <Button
             type="submit"
-            className="w-full hover-lift"
+            className="w-full bg-[#FEC6A1] hover:bg-[#FEC6A1]/90 text-[#2D3748]"
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign In"}
@@ -169,7 +169,7 @@ export const AuthorLoginForm = () => {
           <button
             type="button"
             onClick={() => setShowResetForm(true)}
-            className="text-sm text-muted-foreground hover:text-primary mt-2 w-full text-center"
+            className="text-sm text-muted-foreground hover:text-[#2D3748] mt-2 w-full text-center"
           >
             Forgot password?
           </button>
@@ -177,7 +177,7 @@ export const AuthorLoginForm = () => {
       ) : (
         <div className="space-y-6">
           <div className="space-y-2">
-            <h2 className="text-2xl font-semibold">Reset Password</h2>
+            <h2 className="text-2xl font-semibold text-[#2D3748]">Reset Password</h2>
             <p className="text-muted-foreground">
               Enter your email to receive a password reset link
             </p>
@@ -199,13 +199,13 @@ export const AuthorLoginForm = () => {
                 onChange={(e) => setResetEmail(e.target.value)}
                 required
                 disabled={isResetting}
-                className="hover-lift"
+                className="hover-lift bg-white/50"
                 placeholder="Enter your email"
               />
             </div>
             <Button
               type="submit"
-              className="w-full hover-lift"
+              className="w-full bg-[#FEC6A1] hover:bg-[#FEC6A1]/90 text-[#2D3748]"
               disabled={isResetting}
             >
               {isResetting ? "Sending Reset Link..." : "Send Reset Link"}
@@ -213,7 +213,7 @@ export const AuthorLoginForm = () => {
             <button
               type="button"
               onClick={() => setShowResetForm(false)}
-              className="text-sm text-muted-foreground hover:text-primary w-full text-center"
+              className="text-sm text-muted-foreground hover:text-[#2D3748] w-full text-center"
             >
               Back to login
             </button>

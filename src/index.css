@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 210 50% 98%;
+    --background: 48 100% 98%;
     --foreground: 215 25% 27%;
     --card: 0 0% 100%;
     --card-foreground: 215 25% 27%;
@@ -26,8 +26,6 @@
     --input: 214 32% 91%;
     --ring: 215 25% 27%;
     --radius: 0.75rem;
-    --sidebar-width: 16.8rem;
-    --sidebar-width-icon: 3.9rem;
   }
 
   * {
@@ -66,6 +64,14 @@
 
   .card-subtitle {
     @apply text-sm text-muted-foreground;
+  }
+
+  .auth-card {
+    @apply bg-[#FEF7CD]/30 rounded-3xl p-8 shadow-sm backdrop-blur-sm border border-[#FEC6A1]/20;
+  }
+
+  .feature-card {
+    @apply bg-white/90 backdrop-blur-sm border border-[#FEC6A1]/20 rounded-3xl p-8 shadow-sm hover:-translate-y-1 transition-all duration-200;
   }
 }
 
