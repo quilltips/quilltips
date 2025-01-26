@@ -23,6 +23,7 @@ export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const session = useSession();
   const navigate = useNavigate();
   const location = useLocation();
@@ -124,30 +125,43 @@ export const Navigation = () => {
     navigate(-1);
   };
 
+  const handleSearchClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsSearchOpen(true);
+  };
+
   const NavLinks = () => (
     <>
       <div className="relative w-64">
-        <Popover>
+        <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
           <PopoverTrigger asChild>
-            <div className="relative">
+            <div className="relative" onClick={handleSearchClick}>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
                 placeholder="Search authors or books..."
                 className="pl-10 hover-lift w-full"
               />
             </div>
           </PopoverTrigger>
           {query && searchResults && (
-            <PopoverContent className="w-[400px] p-0" align="start">
+            <PopoverContent 
+              className="w-[400px] p-0" 
+              align="start"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Card className="divide-y">
                 {searchResults.authors.map((author) => (
                   <Link 
                     key={author.id} 
                     to={`/author/profile/${author.id}`} 
                     className="block p-4 hover:bg-accent"
-                    onClick={() => setQuery("")}
+                    onClick={() => {
+                      setQuery("");
+                      setIsSearchOpen(false);
+                    }}
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <User className="h-4 w-4" />
@@ -166,7 +180,10 @@ export const Navigation = () => {
                     key={book.id} 
                     to={`/author/profile/${book.author.id}`} 
                     className="block p-4 hover:bg-accent"
-                    onClick={() => setQuery("")}
+                    onClick={() => {
+                      setQuery("");
+                      setIsSearchOpen(false);
+                    }}
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <Book className="h-4 w-4" />
