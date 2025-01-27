@@ -11,7 +11,7 @@ const Index = () => {
           Connecting Authors And Readers
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Engage with your most passionate fans, and allow them to support your work!
+          QR codes for books that allow authors to engage with their most passionate readers, and allow them to show support!
         </p>
       </div>
 
