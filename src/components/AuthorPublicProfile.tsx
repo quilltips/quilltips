@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { ExternalLink, DollarSign, Globe, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { CreditCard, Globe, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 import { TipForm } from "./TipForm";
+import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -43,9 +44,9 @@ export const AuthorPublicProfileView = ({
 
   return (
     <>
-      <Card className="glass-card p-6 max-w-2xl mx-auto animate-enter">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="w-32 h-32 mx-auto md:mx-0 rounded-full overflow-hidden border-2 border-border">
+      <div className="max-w-2xl mx-auto animate-enter">
+        <div className="flex flex-col items-center text-center space-y-6 bg-[#FEF7CD]/30 rounded-3xl p-8">
+          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#FEC6A1] shadow-lg">
             <img
               src={imageUrl}
               alt={name}
@@ -53,40 +54,38 @@ export const AuthorPublicProfileView = ({
             />
           </div>
           
-          <div className="flex-1 space-y-4">
-            <div>
-              <h2 className="text-2xl font-semibold">{name}</h2>
-              <p className="text-muted-foreground mt-2">{bio}</p>
-            </div>
-            
-            <div className="flex flex-wrap items-center gap-4">
-              {socialLinks.map((link, index) => {
-                const IconComponent = getSocialIcon(link.label);
-                return (
-                  <a
-                    key={index}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                    title={link.label}
-                  >
-                    <IconComponent className="h-5 w-5" />
-                  </a>
-                );
-              })}
-              
-              <Button 
-                onClick={() => setShowTipDialog(true)}
-                className="hover-lift ml-auto"
-              >
-                <DollarSign className="h-4 w-4 mr-2" />
-                Tip Author
-              </Button>
-            </div>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-semibold text-[#2D3748]">{name}</h2>
+            <p className="text-[#4A5568] max-w-lg mx-auto leading-relaxed">{bio}</p>
           </div>
+          
+          <div className="flex flex-col gap-3">
+            {socialLinks.map((link, index) => {
+              const IconComponent = getSocialIcon(link.label);
+              return (
+                <a
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 text-[#2D3748] hover:text-[#4A5568] transition-colors"
+                >
+                  <IconComponent className="h-5 w-5" />
+                  <span>{link.label}</span>
+                </a>
+              );
+            })}
+          </div>
+
+          <Button 
+            onClick={() => setShowTipDialog(true)}
+            className="hover-lift bg-[#2D3748] text-white hover:bg-[#4A5568] transition-colors"
+          >
+            Tip Author
+            <CreditCard className="ml-2 h-4 w-4" />
+          </Button>
         </div>
-      </Card>
+      </div>
 
       <Dialog open={showTipDialog} onOpenChange={setShowTipDialog}>
         <DialogContent>

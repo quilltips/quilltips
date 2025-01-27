@@ -17,49 +17,6 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleDownload = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      const { data: tips, error } = await supabase
-        .from('tips')
-        .select('*')
-        .eq('book_title', qrCode.book_title)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      const csvContent = [
-        ['Date', 'Amount', 'Message'].join(','),
-        ...(tips || []).map(tip => [
-          new Date(tip.created_at).toLocaleDateString(),
-          tip.amount,
-          `"${(tip.message || '').replace(/"/g, '""')}"` // Escape quotes in messages
-        ].join(','))
-      ].join('\n');
-
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${qrCode.book_title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_tips.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-
-      toast({
-        title: "Download Started",
-        description: "Your tip data is being downloaded.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Download Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <Card className="overflow-hidden transition-all duration-200">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -74,24 +31,14 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDownload}
-              className="h-8 w-8"
-            >
-              <Download className="h-4 w-4" />
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <ChevronDown className={cn(
+                "h-4 w-4 transition-transform duration-200",
+                isOpen && "transform rotate-180"
+              )} />
             </Button>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <ChevronDown className={cn(
-                  "h-4 w-4 transition-transform duration-200",
-                  isOpen && "transform rotate-180"
-                )} />
-              </Button>
-            </CollapsibleTrigger>
-          </div>
+          </CollapsibleTrigger>
         </div>
 
         <CollapsibleContent className="animate-accordion-down">
@@ -117,27 +64,21 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Published by {qrCode.publisher || 'Unknown'}</p>
-                {qrCode.isbn && <p className="text-sm text-muted-foreground">ISBN: {qrCode.isbn}</p>}
-                {qrCode.release_date && (
-                  <p className="text-sm text-muted-foreground">
-                    Release Date: {format(new Date(qrCode.release_date), 'PPP')}
-                  </p>
-                )}
-              </div>
-              {qrCode.is_paid ? (
-                <Button variant="outline" onClick={(e) => {
-                  e.stopPropagation();
-                  window.open(`/qr/${qrCode.id}`, '_blank');
-                }}>
-                  View QR Code
-                </Button>
-              ) : (
-                <Button variant="secondary" disabled>
-                  Payment Pending
-                </Button>
+            <div className="space-y-2 pt-2 border-t">
+              {qrCode.publisher && (
+                <p className="text-sm">
+                  <span className="font-medium">Publisher:</span> {qrCode.publisher}
+                </p>
+              )}
+              {qrCode.release_date && (
+                <p className="text-sm">
+                  <span className="font-medium">Release Date:</span> {format(new Date(qrCode.release_date), 'PPP')}
+                </p>
+              )}
+              {qrCode.isbn && (
+                <p className="text-sm">
+                  <span className="font-medium">ISBN:</span> {qrCode.isbn}
+                </p>
               )}
             </div>
           </div>
