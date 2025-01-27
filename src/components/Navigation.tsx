@@ -1,5 +1,5 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Menu } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,11 +15,7 @@ export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const session = useSession();
-  const navigate = useNavigate();
-  const location = useLocation();
   const { toast } = useToast();
-
-  const showBackButton = session && location.pathname !== '/author/dashboard';
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -62,8 +58,6 @@ export const Navigation = () => {
         title: "Success",
         description: "You have been logged out.",
       });
-      
-      navigate('/');
     } catch (error: any) {
       console.error("Logout error:", error);
       toast({
@@ -74,10 +68,6 @@ export const Navigation = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleBack = () => {
-    navigate(-1);
   };
 
   const NavLinks = () => (
@@ -100,16 +90,6 @@ export const Navigation = () => {
     <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm border-b border-border z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {showBackButton && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBack}
-              className="mr-2 hover-lift"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          )}
           <Link 
             to={isAuthor ? "/author/dashboard" : "/"} 
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
