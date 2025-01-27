@@ -21,37 +21,43 @@ export const SearchBar = () => {
     queryFn: async () => {
       if (!debouncedQuery.trim()) return { authors: [], books: [] };
       
-      const { data: authors, error: authorsError } = await supabase
-        .from('profiles')
-        .select('*')
-        .ilike('name', `%${debouncedQuery}%`)
-        .eq('role', 'author')
-        .order('name')
-        .limit(5);
+      try {
+        const [authorsResponse, booksResponse] = await Promise.all([
+          supabase
+            .from('profiles')
+            .select('*')
+            .ilike('name', `%${debouncedQuery}%`)
+            .eq('role', 'author')
+            .order('name')
+            .limit(5),
+          
+          supabase
+            .from('qr_codes')
+            .select(`
+              *,
+              author:profiles(*)
+            `)
+            .ilike('book_title', `%${debouncedQuery}%`)
+            .order('book_title')
+            .limit(5)
+        ]);
 
-      if (authorsError) throw authorsError;
+        if (authorsResponse.error) throw authorsResponse.error;
+        if (booksResponse.error) throw booksResponse.error;
 
-      const { data: books, error: booksError } = await supabase
-        .from('qr_codes')
-        .select(`
-          *,
-          author:profiles(*)
-        `)
-        .ilike('book_title', `%${debouncedQuery}%`)
-        .order('book_title')
-        .limit(5);
-
-      if (booksError) throw booksError;
-
-      return {
-        authors: authors || [],
-        books: books || []
-      };
+        return {
+          authors: authorsResponse.data || [],
+          books: booksResponse.data || []
+        };
+      } catch (error) {
+        console.error('Search error:', error);
+        return { authors: [], books: [] };
+      }
     },
-    enabled: debouncedQuery.length > 0
+    enabled: debouncedQuery.length > 0,
+    retry: false
   });
 
-  // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchInputRef.current && !searchInputRef.current.contains(event.target as Node)) {
@@ -66,20 +72,12 @@ export const SearchBar = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-    setIsSearchOpen(true);
+    setIsSearchOpen(!!value);
   };
 
   const handleSearchFocus = () => {
     if (query.trim()) {
       setIsSearchOpen(true);
-    }
-  };
-
-  const handleSearchBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Only close if clicking outside the search container
-    const relatedTarget = e.relatedTarget as HTMLElement;
-    if (!relatedTarget?.closest('.search-container')) {
-      setIsSearchOpen(false);
     }
   };
 
@@ -98,7 +96,6 @@ export const SearchBar = () => {
               value={query}
               onChange={handleSearchChange}
               onFocus={handleSearchFocus}
-              onBlur={handleSearchBlur}
               placeholder="Search authors or books..."
               className="pl-10 hover-lift w-full"
               aria-label="Search authors or books"
