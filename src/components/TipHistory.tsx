@@ -136,17 +136,19 @@ export const TipHistory = ({ authorId, qrCodeId, limit }: TipHistoryProps) => {
     <Card className="p-6">
       {!limit && (
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">
-            {qrCodeId ? "QR Code Tips" : "Tip History"}
-          </h2>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={handleDownloadAll}
-          >
-            <Download className="h-4 w-4" />
-            Download {qrCodeId ? "QR Code" : "All"} Tips
-          </Button>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-semibold">
+              {qrCodeId ? "QR Code Tips" : "Recent Tips"}
+            </h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDownloadAll}
+              className="ml-2"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       )}
 
