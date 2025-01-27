@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 
@@ -14,7 +13,7 @@ export const AuthorQRCodeStats = ({ authorId }: AuthorQRCodeStatsProps) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('qr_codes')
-        .select('total_tips, total_amount, average_tip, last_tip_date')
+        .select('total_tips, total_amount, last_tip_date')
         .eq('author_id', authorId);
 
       if (error) throw error;
@@ -22,7 +21,6 @@ export const AuthorQRCodeStats = ({ authorId }: AuthorQRCodeStatsProps) => {
       return data.reduce((acc, qr) => ({
         totalTips: acc.totalTips + (qr.total_tips || 0),
         totalAmount: acc.totalAmount + (qr.total_amount || 0),
-        averageTip: acc.totalTips > 0 ? acc.totalAmount / acc.totalTips : 0,
         lastTipDate: qr.last_tip_date ? 
           (acc.lastTipDate ? 
             (new Date(qr.last_tip_date) > new Date(acc.lastTipDate) ? qr.last_tip_date : acc.lastTipDate)
@@ -31,7 +29,6 @@ export const AuthorQRCodeStats = ({ authorId }: AuthorQRCodeStatsProps) => {
       }), {
         totalTips: 0,
         totalAmount: 0,
-        averageTip: 0,
         lastTipDate: null as string | null
       });
     }
@@ -46,7 +43,7 @@ export const AuthorQRCodeStats = ({ authorId }: AuthorQRCodeStatsProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
         <div className="text-sm font-medium text-muted-foreground mb-2">Total Tips</div>
         <div className="text-2xl font-bold">
@@ -58,13 +55,6 @@ export const AuthorQRCodeStats = ({ authorId }: AuthorQRCodeStatsProps) => {
         <div className="text-sm font-medium text-muted-foreground mb-2">Total Value</div>
         <div className="text-2xl font-bold">
           ${stats?.totalAmount.toFixed(2) || '0.00'}
-        </div>
-      </div>
-
-      <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
-        <div className="text-sm font-medium text-muted-foreground mb-2">Average Tip</div>
-        <div className="text-2xl font-bold">
-          ${stats?.averageTip.toFixed(2) || '0.00'}
         </div>
       </div>
 
