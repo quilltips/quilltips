@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Settings, User } from "lucide-react";
+import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface UserMenuProps {
@@ -18,10 +18,7 @@ export const UserMenu = ({ isAuthor, userId, onLogout, isLoading }: UserMenuProp
             <Button variant="ghost">Dashboard</Button>
           </Link>
           <Link to={`/author/profile/${userId}`} className="hover-lift hidden md:block">
-            <Button variant="ghost">
-              <User className="h-4 w-4 mr-2" />
-              Profile
-            </Button>
+            <Button variant="ghost">Profile</Button>
           </Link>
           <Link to="/author/settings" className="hover-lift hidden md:block">
             <Button variant="ghost" size="icon">
