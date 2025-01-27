@@ -17,6 +17,7 @@ export const SearchBar = () => {
   const { data: searchResults, isLoading } = useQuery({
     queryKey: ['search', query],
     queryFn: async () => {
+      console.log('Executing search query with:', query);
       if (!query.trim()) return { authors: [], books: [] };
       
       const { data: authors, error: authorsError } = await supabase
@@ -41,6 +42,7 @@ export const SearchBar = () => {
 
       if (booksError) throw booksError;
 
+      console.log('Search results:', { authors, books });
       return {
         authors: authors || [],
         books: books || []
@@ -52,7 +54,9 @@ export const SearchBar = () => {
   // Close search results when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      console.log('Click event target:', event.target);
       if (searchInputRef.current && !searchInputRef.current.contains(event.target as Node)) {
+        console.log('Click outside search component detected');
         setIsSearchOpen(false);
       }
     };
@@ -63,11 +67,13 @@ export const SearchBar = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    console.log('Search input changed:', value);
     setQuery(value);
     setIsSearchOpen(value.length > 0);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log('Key pressed:', e.key);
     if (e.key === 'Escape') {
       setIsSearchOpen(false);
     }
@@ -78,7 +84,7 @@ export const SearchBar = () => {
       <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
         <PopoverTrigger asChild>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
             <Input
               id="search-input"
               name="search"
@@ -113,6 +119,7 @@ export const SearchBar = () => {
                       to={`/author/profile/${author.id}`} 
                       className="block p-4 hover:bg-accent"
                       onClick={() => {
+                        console.log('Author link clicked');
                         setQuery("");
                         setIsSearchOpen(false);
                       }}
@@ -135,6 +142,7 @@ export const SearchBar = () => {
                       to={`/author/profile/${book.author.id}`} 
                       className="block p-4 hover:bg-accent"
                       onClick={() => {
+                        console.log('Book link clicked');
                         setQuery("");
                         setIsSearchOpen(false);
                       }}
