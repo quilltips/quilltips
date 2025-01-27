@@ -95,11 +95,11 @@ const AuthorDashboard = () => {
               </div>
               <div className="space-y-6">
                 <h2 className="text-2xl font-semibold text-[#2D3748]">Recent Tips</h2>
-                <TipHistory authorId={profile.id} limit={5} />
+                <TipHistory authorId={profile.id} limit={5} isDashboard={true} />
               </div>
             </>
           )}
-          {activeTab === "tips" && <TipHistory authorId={profile.id} />}
+          {activeTab === "tips" && <TipHistory authorId={profile.id} isDashboard={true} />}
           {activeTab === "settings" && <ProfileSettings profile={profile} />}
         </div>
       </div>

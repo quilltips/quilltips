@@ -21,6 +21,8 @@ interface TipHistoryProps {
   authorId: string;
   qrCodeId?: string;
   limit?: number;
+  isDashboard?: boolean;
+  authorName?: string;
 }
 
 interface Tip {
@@ -32,7 +34,7 @@ interface Tip {
   author_id: string;
 }
 
-export const TipHistory = ({ authorId, qrCodeId, limit }: TipHistoryProps) => {
+export const TipHistory = ({ authorId, qrCodeId, limit, isDashboard, authorName }: TipHistoryProps) => {
   const [selectedTip, setSelectedTip] = useState<Tip | null>(null);
   const [showAll, setShowAll] = useState(false);
   const { toast } = useToast();
@@ -138,16 +140,20 @@ export const TipHistory = ({ authorId, qrCodeId, limit }: TipHistoryProps) => {
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-semibold">
-              {qrCodeId ? "QR Code Tips" : "Recent Tips"}
+              {isDashboard 
+                ? (qrCodeId ? "QR Code Tips" : "Recent Tips")
+                : `${authorName}'s Activity`}
             </h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDownloadAll}
-              className="ml-2"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
+            {isDashboard && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleDownloadAll}
+                className="ml-2"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       )}

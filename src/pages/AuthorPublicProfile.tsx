@@ -84,8 +84,11 @@ const AuthorPublicProfile = () => {
         </div>
         
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-4">Recent Tips</h2>
-          <TipHistory authorId={author.id} />
+          <TipHistory 
+            authorId={author.id}
+            authorName={author.name || 'Anonymous Author'}
+            isDashboard={false}
+          />
         </div>
       </main>
     </div>
