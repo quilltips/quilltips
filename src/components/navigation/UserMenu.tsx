@@ -24,9 +24,8 @@ export const UserMenu = ({ isAuthor, userId, onLogout, isLoading }: UserMenuProp
             </Button>
           </Link>
           <Link to="/author/settings" className="hover-lift hidden md:block">
-            <Button variant="ghost">
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
+            <Button variant="ghost" size="icon">
+              <Settings className="h-4 w-4" />
             </Button>
           </Link>
         </>
