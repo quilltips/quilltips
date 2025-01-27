@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
@@ -15,6 +15,7 @@ export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const session = useSession();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -38,12 +39,20 @@ export const Navigation = () => {
 
     checkAuthStatus();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       checkAuthStatus();
+      
+      // Show toast for login events
+      if (event === 'SIGNED_IN') {
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, [session]);
+  }, [session, toast]);
 
   const handleLogout = async () => {
     setIsLoading(true);
@@ -58,6 +67,9 @@ export const Navigation = () => {
         title: "Success",
         description: "You have been logged out.",
       });
+      
+      // Redirect to home page after successful logout
+      navigate('/');
     } catch (error: any) {
       console.error("Logout error:", error);
       toast({
