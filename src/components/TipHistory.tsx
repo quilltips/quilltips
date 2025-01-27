@@ -1,21 +1,10 @@
 import { Card } from "./ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { TipLikeButton } from "./TipLikeButton";
-import { TipCommentButton } from "./TipCommentButton";
 import { useState } from "react";
 import { TipDetailsDialog } from "./TipDetailsDialog";
-import { Button } from "./ui/button";
-import { ChevronDown, Download } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { TipTable } from "./tips/TipTable";
+import { TipDownloadButton } from "./tips/TipDownloadButton";
 
 interface TipHistoryProps {
   authorId: string;
@@ -25,19 +14,15 @@ interface TipHistoryProps {
   authorName?: string;
 }
 
-interface Tip {
-  id: string;
-  amount: number;
-  message: string;
-  created_at: string;
-  book_title: string;
-  author_id: string;
-}
-
-export const TipHistory = ({ authorId, qrCodeId, limit, isDashboard, authorName }: TipHistoryProps) => {
-  const [selectedTip, setSelectedTip] = useState<Tip | null>(null);
+export const TipHistory = ({ 
+  authorId, 
+  qrCodeId, 
+  limit, 
+  isDashboard, 
+  authorName 
+}: TipHistoryProps) => {
+  const [selectedTip, setSelectedTip] = useState<any | null>(null);
   const [showAll, setShowAll] = useState(false);
-  const { toast } = useToast();
 
   const { data: tips, isLoading } = useQuery({
     queryKey: ['tips', authorId, qrCodeId, limit],
@@ -57,7 +42,6 @@ export const TipHistory = ({ authorId, qrCodeId, limit, isDashboard, authorName 
       }
 
       const { data, error } = await query;
-
       if (error) throw error;
       return data || [];
     }
@@ -89,50 +73,9 @@ export const TipHistory = ({ authorId, qrCodeId, limit, isDashboard, authorName 
     }
   });
 
-  const handleDownloadAll = async () => {
-    try {
-      // Create CSV content
-      const csvContent = [
-        ['Date', 'Book', 'Amount', 'Message', 'Likes', 'Comments'].join(','),
-        ...(tips || []).map(tip => [
-          new Date(tip.created_at).toLocaleDateString(),
-          `"${(tip.book_title || 'N/A').replace(/"/g, '""')}"`,
-          tip.amount,
-          `"${(tip.message || '').replace(/"/g, '""')}"`,
-          likes?.filter(like => like.tip_id === tip.id).length || 0,
-          comments?.filter(comment => comment.tip_id === tip.id).length || 0
-        ].join(','))
-      ].join('\n');
-
-      // Create and download the file
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `tips_${qrCodeId ? `qr_${qrCodeId}_` : ''}${new Date().toISOString().split('T')[0]}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-
-      toast({
-        title: "Download Started",
-        description: "Your tip data is being downloaded.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Download Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const isLiked = (tipId: string) => {
-    return likes?.some(like => like.tip_id === tipId);
-  };
-
-  const displayedTips = showAll ? tips : tips?.slice(0, 5);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Card className="p-6">
@@ -145,79 +88,27 @@ export const TipHistory = ({ authorId, qrCodeId, limit, isDashboard, authorName 
                 : `${authorName}'s Activity`}
             </h2>
             {isDashboard && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleDownloadAll}
-                className="ml-2"
-              >
-                <Download className="h-4 w-4" />
-              </Button>
+              <TipDownloadButton
+                tips={tips || []}
+                likes={likes || []}
+                comments={comments || []}
+                qrCodeId={qrCodeId}
+              />
             )}
           </div>
         </div>
       )}
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Book</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Message</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {displayedTips?.map((tip) => (
-            <TableRow 
-              key={tip.id}
-              className="cursor-pointer hover:bg-muted/50"
-              onClick={() => setSelectedTip(tip)}
-            >
-              <TableCell>
-                {new Date(tip.created_at).toLocaleDateString()}
-              </TableCell>
-              <TableCell>{tip.book_title || "N/A"}</TableCell>
-              <TableCell>${tip.amount}</TableCell>
-              <TableCell>{tip.message || "No message"}</TableCell>
-              <TableCell onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center gap-4">
-                  <TipLikeButton
-                    tipId={tip.id}
-                    authorId={authorId}
-                    isLiked={isLiked(tip.id)}
-                    likeCount={likes?.filter(like => like.tip_id === tip.id).length || 0}
-                  />
-                  <TipCommentButton
-                    tipId={tip.id}
-                    authorId={authorId}
-                    commentCount={comments?.filter(comment => comment.tip_id === tip.id).length || 0}
-                  />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-          {!tips?.length && (
-            <TableRow>
-              <TableCell colSpan={5} className="text-center">
-                No tips received yet
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-
-      {tips && tips.length > 5 && !limit && (
-        <Button
-          variant="ghost"
-          className="w-full mt-4 text-muted-foreground hover:text-foreground"
-          onClick={() => setShowAll(!showAll)}
-        >
-          <ChevronDown className={`h-4 w-4 mr-2 transition-transform duration-200 ${showAll ? 'rotate-180' : ''}`} />
-          {showAll ? 'Show Less' : `Show ${tips.length - 5} More Tips`}
-        </Button>
-      )}
+      <TipTable
+        tips={tips || []}
+        authorId={authorId}
+        likes={likes || []}
+        comments={comments || []}
+        showAll={showAll}
+        setShowAll={setShowAll}
+        onSelectTip={setSelectedTip}
+        limit={limit}
+      />
 
       <TipDetailsDialog
         isOpen={!!selectedTip}
