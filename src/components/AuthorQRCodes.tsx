@@ -2,11 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { DollarSign, CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { useState } from "react";
-import { TipForm } from "./TipForm";
+import { QRCodeDialog } from "./qr/QRCodeDialog";
 
 interface AuthorQRCodesProps {
   authorId: string;
@@ -56,12 +53,6 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
                     Published by {qrCode.publisher}
                   </p>
                 )}
-                {qrCode.release_date && (
-                  <p className="text-sm text-muted-foreground flex items-center gap-2">
-                    <CalendarIcon className="h-4 w-4" />
-                    {format(new Date(qrCode.release_date), 'PPP')}
-                  </p>
-                )}
                 <Button 
                   className="w-full"
                   onClick={() => setSelectedQRCode({
@@ -77,26 +68,12 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
         ))}
       </div>
 
-      <Dialog 
-        open={!!selectedQRCode} 
-        onOpenChange={() => setSelectedQRCode(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Send a tip for "{selectedQRCode?.bookTitle}"
-            </DialogTitle>
-          </DialogHeader>
-          {selectedQRCode && (
-            <TipForm 
-              authorId={authorId}
-              bookTitle={selectedQRCode.bookTitle}
-              qrCodeId={selectedQRCode.id}
-              onSuccess={() => setSelectedQRCode(null)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      <QRCodeDialog
+        isOpen={!!selectedQRCode}
+        onClose={() => setSelectedQRCode(null)}
+        selectedQRCode={selectedQRCode}
+        authorId={authorId}
+      />
     </>
   );
 };

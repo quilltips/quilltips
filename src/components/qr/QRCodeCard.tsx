@@ -1,12 +1,10 @@
-import { format } from "date-fns";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { Download, ChevronDown, QrCode } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { ChevronDown, QrCode } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { QRCodeCardDetails } from "./QRCodeCardDetails";
 
 interface QRCodeCardProps {
   qrCode: any;
@@ -14,7 +12,6 @@ interface QRCodeCardProps {
 }
 
 export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
-  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -42,46 +39,7 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
         </div>
 
         <CollapsibleContent className="animate-accordion-down">
-          <div className="px-4 pb-4 space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Total Tips</p>
-                <p className="font-semibold">{qrCode.total_tips || 0}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Total Value</p>
-                <p className="font-semibold">${qrCode.total_amount?.toFixed(2) || '0.00'}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Average Tip</p>
-                <p className="font-semibold">${qrCode.average_tip?.toFixed(2) || '0.00'}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Last Tip</p>
-                <p className="font-semibold">
-                  {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), 'MMM d, yyyy') : 'No tips yet'}
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-2 border-t">
-              {qrCode.publisher && (
-                <p className="text-sm">
-                  <span className="font-medium">Publisher:</span> {qrCode.publisher}
-                </p>
-              )}
-              {qrCode.release_date && (
-                <p className="text-sm">
-                  <span className="font-medium">Release Date:</span> {format(new Date(qrCode.release_date), 'PPP')}
-                </p>
-              )}
-              {qrCode.isbn && (
-                <p className="text-sm">
-                  <span className="font-medium">ISBN:</span> {qrCode.isbn}
-                </p>
-              )}
-            </div>
-          </div>
+          <QRCodeCardDetails qrCode={qrCode} />
         </CollapsibleContent>
       </Collapsible>
     </Card>
