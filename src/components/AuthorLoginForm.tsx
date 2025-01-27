@@ -32,7 +32,14 @@ export const AuthorLoginForm = () => {
         password,
       });
 
-      if (signInError) throw signInError;
+      if (signInError) {
+        if (signInError.message.includes('session_not_found')) {
+          // Handle session not found error specifically
+          await supabase.auth.refreshSession();
+          throw new Error("Session expired. Please try logging in again.");
+        }
+        throw signInError;
+      }
 
       if (!data?.user) {
         throw new Error("No user data returned");
@@ -61,6 +68,12 @@ export const AuthorLoginForm = () => {
           }]);
 
         if (createError) throw createError;
+      }
+
+      // Ensure we have a valid session
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) {
+        throw new Error("Failed to create session");
       }
 
       toast({
