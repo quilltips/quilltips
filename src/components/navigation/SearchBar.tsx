@@ -8,22 +8,23 @@ import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export const SearchBar = () => {
   const [query, setQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const debouncedQuery = useDebounce(query, 300);
 
   const { data: searchResults, isLoading } = useQuery({
-    queryKey: ['search', query],
+    queryKey: ['search', debouncedQuery],
     queryFn: async () => {
-      console.log('Executing search query with:', query);
-      if (!query.trim()) return { authors: [], books: [] };
+      if (!debouncedQuery.trim()) return { authors: [], books: [] };
       
       const { data: authors, error: authorsError } = await supabase
         .from('profiles')
         .select('*')
-        .ilike('name', `%${query}%`)
+        .ilike('name', `%${debouncedQuery}%`)
         .eq('role', 'author')
         .order('name')
         .limit(5);
@@ -36,27 +37,24 @@ export const SearchBar = () => {
           *,
           author:profiles(*)
         `)
-        .ilike('book_title', `%${query}%`)
+        .ilike('book_title', `%${debouncedQuery}%`)
         .order('book_title')
         .limit(5);
 
       if (booksError) throw booksError;
 
-      console.log('Search results:', { authors, books });
       return {
         authors: authors || [],
         books: books || []
       };
     },
-    enabled: query.length > 0
+    enabled: debouncedQuery.length > 0
   });
 
-  // Close search results when clicking outside
+  // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      console.log('Click event target:', event.target);
       if (searchInputRef.current && !searchInputRef.current.contains(event.target as Node)) {
-        console.log('Click outside search component detected');
         setIsSearchOpen(false);
       }
     };
@@ -67,30 +65,40 @@ export const SearchBar = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    console.log('Search input changed:', value);
     setQuery(value);
-    setIsSearchOpen(value.length > 0);
+    setIsSearchOpen(true);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log('Key pressed:', e.key);
-    if (e.key === 'Escape') {
+  const handleSearchFocus = () => {
+    if (query.trim()) {
+      setIsSearchOpen(true);
+    }
+  };
+
+  const handleSearchBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Only close if clicking outside the search container
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    if (!relatedTarget?.closest('.search-container')) {
       setIsSearchOpen(false);
     }
   };
 
+  const handleResultClick = () => {
+    setQuery("");
+    setIsSearchOpen(false);
+  };
+
   return (
-    <div className="relative w-64" ref={searchInputRef}>
+    <div className="relative w-64 search-container" ref={searchInputRef}>
       <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
         <PopoverTrigger asChild>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
             <Input
-              id="search-input"
-              name="search"
               value={query}
               onChange={handleSearchChange}
-              onKeyDown={handleKeyDown}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
               placeholder="Search authors or books..."
               className="pl-10 hover-lift w-full"
               aria-label="Search authors or books"
@@ -118,11 +126,7 @@ export const SearchBar = () => {
                       key={author.id} 
                       to={`/author/profile/${author.id}`} 
                       className="block p-4 hover:bg-accent"
-                      onClick={() => {
-                        console.log('Author link clicked');
-                        setQuery("");
-                        setIsSearchOpen(false);
-                      }}
+                      onClick={handleResultClick}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <User className="h-4 w-4" />
@@ -141,11 +145,7 @@ export const SearchBar = () => {
                       key={book.id} 
                       to={`/author/profile/${book.author.id}`} 
                       className="block p-4 hover:bg-accent"
-                      onClick={() => {
-                        console.log('Book link clicked');
-                        setQuery("");
-                        setIsSearchOpen(false);
-                      }}
+                      onClick={handleResultClick}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <Book className="h-4 w-4" />
