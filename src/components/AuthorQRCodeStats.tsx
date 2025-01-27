@@ -19,7 +19,6 @@ export const AuthorQRCodeStats = ({ authorId }: AuthorQRCodeStatsProps) => {
 
       if (error) throw error;
 
-      // Calculate totals across all QR codes
       return data.reduce((acc, qr) => ({
         totalTips: acc.totalTips + (qr.total_tips || 0),
         totalAmount: acc.totalAmount + (qr.total_amount || 0),
@@ -48,49 +47,33 @@ export const AuthorQRCodeStats = ({ authorId }: AuthorQRCodeStatsProps) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Total Tips</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {stats?.totalTips || 0}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
+        <div className="text-sm font-medium text-muted-foreground mb-2">Total Tips</div>
+        <div className="text-2xl font-bold">
+          {stats?.totalTips || 0}
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Total Value</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            ${stats?.totalAmount.toFixed(2) || '0.00'}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
+        <div className="text-sm font-medium text-muted-foreground mb-2">Total Value</div>
+        <div className="text-2xl font-bold">
+          ${stats?.totalAmount.toFixed(2) || '0.00'}
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Average Tip</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            ${stats?.averageTip.toFixed(2) || '0.00'}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
+        <div className="text-sm font-medium text-muted-foreground mb-2">Average Tip</div>
+        <div className="text-2xl font-bold">
+          ${stats?.averageTip.toFixed(2) || '0.00'}
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Last Tip Received</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {stats?.lastTipDate ? format(new Date(stats.lastTipDate), 'MMM d, yyyy') : 'No tips yet'}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
+        <div className="text-sm font-medium text-muted-foreground mb-2">Last Tip Received</div>
+        <div className="text-2xl font-bold">
+          {stats?.lastTipDate ? format(new Date(stats.lastTipDate), 'MMM d, yyyy') : 'No tips yet'}
+        </div>
+      </div>
     </div>
   );
 };
