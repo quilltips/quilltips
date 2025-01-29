@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,24 +7,24 @@
 @layer base {
   :root {
     --background: 48 100% 98%;
-    --foreground: 215 25% 27%;
+    --foreground: 197 39% 16%;
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 197 39% 16%;
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
-    --primary: 215 25% 27%;
+    --popover-foreground: 197 39% 16%;
+    --primary: 197 39% 16%;
     --primary-foreground: 210 40% 98%;
     --secondary: 45 93% 77%;
-    --secondary-foreground: 215 25% 27%;
+    --secondary-foreground: 197 39% 16%;
     --muted: 210 40% 96%;
-    --muted-foreground: 215 25% 47%;
+    --muted-foreground: 197 39% 36%;
     --accent: 45 93% 77%;
-    --accent-foreground: 215 25% 27%;
+    --accent-foreground: 197 39% 16%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 215 25% 27%;
+    --ring: 197 39% 16%;
     --radius: 0.75rem;
   }
 
@@ -33,11 +33,11 @@
   }
 
   body {
-    @apply bg-background text-foreground font-work-sans antialiased;
+    @apply bg-background text-foreground antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-work-sans font-medium;
+    @apply font-playfair font-medium;
   }
 }
 
@@ -47,11 +47,11 @@
   }
 
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 transition-colors;
+    @apply bg-primary text-white hover:bg-primary-light rounded-lg px-4 py-2 transition-colors;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-lg px-4 py-2 transition-colors;
+    @apply bg-secondary text-primary hover:bg-secondary-light rounded-lg px-4 py-2 transition-colors;
   }
 
   .input-field {
@@ -59,7 +59,7 @@
   }
 
   .card-title {
-    @apply text-2xl font-work-sans font-medium tracking-tight;
+    @apply text-2xl font-playfair font-medium tracking-tight;
   }
 
   .card-subtitle {
@@ -67,11 +67,11 @@
   }
 
   .auth-card {
-    @apply bg-[#FEF7CD]/30 rounded-3xl p-8 shadow-sm backdrop-blur-sm border border-[#FEC6A1]/20;
+    @apply bg-[#FEF7CD]/30 rounded-3xl p-8 shadow-sm backdrop-blur-sm border border-[#FFD166]/20;
   }
 
   .feature-card {
-    @apply bg-white/90 backdrop-blur-sm border border-[#FEC6A1]/20 rounded-3xl p-8 shadow-sm hover:-translate-y-1 transition-all duration-200;
+    @apply bg-white/90 backdrop-blur-sm border border-[#FFD166]/20 rounded-3xl p-8 shadow-sm hover:-translate-y-1 transition-all duration-200;
   }
 }
 
