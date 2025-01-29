@@ -27,22 +27,37 @@ export const AuthorLoginForm = () => {
     const password = formData.get("password") as string;
 
     try {
+      // First, clear any existing session
+      await supabase.auth.signOut();
+
+      // Attempt to sign in
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
-        if (signInError.message.includes('session_not_found')) {
-          // Handle session not found error specifically
-          await supabase.auth.refreshSession();
-          throw new Error("Session expired. Please try logging in again.");
+        // Handle specific error cases
+        if (signInError.message.includes('Invalid login credentials')) {
+          throw new Error("Invalid email or password");
         }
         throw signInError;
       }
 
       if (!data?.user) {
         throw new Error("No user data returned");
+      }
+
+      // Get a fresh session
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        throw new Error("Failed to establish session");
+      }
+
+      if (!sessionData.session) {
+        throw new Error("No valid session established");
       }
 
       // Check if profile exists
@@ -68,12 +83,6 @@ export const AuthorLoginForm = () => {
           }]);
 
         if (createError) throw createError;
-      }
-
-      // Ensure we have a valid session
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session) {
-        throw new Error("Failed to create session");
       }
 
       toast({
