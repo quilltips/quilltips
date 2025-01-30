@@ -29,8 +29,7 @@ export const Search = () => {
     queryFn: async () => {
       if (!debouncedQuery.trim()) return [];
       
-      // Search QR codes (books) with author information
-      const { data: books, error: booksError } = await supabase
+      const { data: books, error } = await supabase
         .from('qr_codes')
         .select(`
           id,
@@ -43,10 +42,10 @@ export const Search = () => {
             avatar_url
           )
         `)
-        .or(`book_title.ilike.%${debouncedQuery}%,author.name.ilike.%${debouncedQuery}%`)
+        .or(`book_title.ilike.%${debouncedQuery}%,profiles.name.ilike.%${debouncedQuery}%`)
         .order('book_title');
 
-      if (booksError) throw booksError;
+      if (error) throw error;
       return books || [];
     },
     enabled: debouncedQuery.length > 0,
