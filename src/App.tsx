@@ -13,6 +13,7 @@ import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import TermsOfService from "./pages/TermsOfService";
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/author/login" element={<AuthorLogin />} />
           <Route path="/author/register" element={<AuthorRegister />} />
           <Route path="/author/dashboard" element={<AuthorDashboard />} />

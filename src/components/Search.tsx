@@ -2,12 +2,23 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
-import { Search as SearchIcon, Loader2, Book, User } from "lucide-react";
+import { Search as SearchIcon, Loader2, Book } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { AuthorPublicProfileView } from "./AuthorPublicProfile";
 import { Badge } from "./ui/badge";
 import { useDebounce } from "@/hooks/use-debounce";
+
+interface SearchResult {
+  id: string;
+  book_title: string;
+  publisher?: string;
+  cover_image?: string;
+  author: {
+    id: string;
+    name: string;
+    avatar_url?: string;
+  };
+}
 
 export const Search = () => {
   const [query, setQuery] = useState("");
@@ -16,34 +27,27 @@ export const Search = () => {
   const { data: searchResults, isLoading } = useQuery({
     queryKey: ['search', debouncedQuery],
     queryFn: async () => {
-      if (!debouncedQuery.trim()) return { authors: [], books: [] };
+      if (!debouncedQuery.trim()) return [];
       
-      // Search authors by name
-      const { data: authors, error: authorsError } = await supabase
-        .from('profiles')
-        .select('*')
-        .ilike('name', `%${debouncedQuery}%`)
-        .eq('role', 'author')
-        .order('name');
-
-      if (authorsError) throw authorsError;
-
-      // Search QR codes by book title
+      // Search QR codes (books) with author information
       const { data: books, error: booksError } = await supabase
         .from('qr_codes')
         .select(`
-          *,
-          author:profiles(*)
+          id,
+          book_title,
+          publisher,
+          cover_image,
+          author:profiles (
+            id,
+            name,
+            avatar_url
+          )
         `)
-        .ilike('book_title', `%${debouncedQuery}%`)
+        .or(`book_title.ilike.%${debouncedQuery}%,author.name.ilike.%${debouncedQuery}%`)
         .order('book_title');
 
       if (booksError) throw booksError;
-
-      return {
-        authors: authors || [],
-        books: books || []
-      };
+      return books || [];
     },
     enabled: debouncedQuery.length > 0,
     staleTime: 1000,
@@ -57,14 +61,14 @@ export const Search = () => {
   return (
     <div className="container mx-auto px-4 pt-24 pb-12">
       <div className="space-y-6 max-w-2xl mx-auto animate-fadeIn">
-        <Card className="glass-card p-6 shadow-lg">
+        <Card className="p-6 shadow-lg bg-white/80 backdrop-blur-sm">
           <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               value={query}
               onChange={handleSearchChange}
-              placeholder="Search authors or books..."
-              className="pl-10 hover-lift text-lg py-6"
+              placeholder="Search books or authors..."
+              className="pl-10 py-6 text-lg"
               autoFocus
             />
           </div>
@@ -76,46 +80,45 @@ export const Search = () => {
           </div>
         )}
 
-        {searchResults && (searchResults.authors.length > 0 || searchResults.books.length > 0) && (
+        {searchResults && searchResults.length > 0 && (
           <div className="space-y-4 animate-slideUp">
-            {searchResults.authors.map((author) => (
-              <Link key={author.id} to={`/author/profile/${author.id}`} className="block transition-transform hover:scale-102">
-                <Card className="glass-card p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-center gap-2 mb-2">
-                    <User className="h-5 w-5" />
-                    <Badge variant="secondary" className="text-sm">Author</Badge>
-                  </div>
-                  <AuthorPublicProfileView
-                    name={author.name || 'Anonymous Author'}
-                    bio={author.bio || 'No bio available'}
-                    imageUrl={author.avatar_url || "/placeholder.svg"}
-                    authorId={author.id}
-                  />
-                </Card>
-              </Link>
-            ))}
-
-            {searchResults.books.map((book) => (
+            {searchResults.map((result: SearchResult) => (
               <Link 
-                key={book.id} 
-                to={`/author/profile/${book.author.id}`} 
+                key={result.id} 
+                to={`/qr/${result.id}`}
                 className="block transition-transform hover:scale-102"
               >
-                <Card className="glass-card p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Book className="h-5 w-5" />
-                    <Badge variant="secondary" className="text-sm">Book</Badge>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">{book.book_title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      By {book.author.name || 'Anonymous Author'}
-                    </p>
-                    {book.publisher && (
-                      <p className="text-sm text-muted-foreground">
-                        Published by {book.publisher}
-                      </p>
+                <Card className="p-6 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-sm">
+                  <div className="flex items-start gap-4">
+                    {result.cover_image ? (
+                      <img 
+                        src={result.cover_image} 
+                        alt={result.book_title}
+                        className="w-20 h-28 object-cover rounded-sm"
+                      />
+                    ) : (
+                      <div className="w-20 h-28 bg-muted rounded-sm flex items-center justify-center">
+                        <Book className="h-8 w-8 text-muted-foreground" />
+                      </div>
                     )}
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-sm">Book</Badge>
+                      </div>
+                      <h3 className="text-lg font-semibold">{result.book_title}</h3>
+                      <Link 
+                        to={`/author/profile/${result.author.id}`}
+                        className="text-sm text-muted-foreground hover:text-primary"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        by {result.author.name || 'Anonymous Author'}
+                      </Link>
+                      {result.publisher && (
+                        <p className="text-sm text-muted-foreground">
+                          Published by {result.publisher}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </Card>
               </Link>
@@ -123,8 +126,8 @@ export const Search = () => {
           </div>
         )}
 
-        {query && (!searchResults?.authors.length && !searchResults?.books.length) && !isLoading && (
-          <Card className="glass-card p-6 text-center text-muted-foreground animate-fadeIn">
+        {query && (!searchResults?.length) && !isLoading && (
+          <Card className="p-6 text-center text-muted-foreground animate-fadeIn bg-white/80 backdrop-blur-sm">
             No results found for "{query}"
           </Card>
         )}
