@@ -7,20 +7,22 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthorPublicProfileView } from "./AuthorPublicProfile";
 import { Badge } from "./ui/badge";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export const Search = () => {
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
 
   const { data: searchResults, isLoading } = useQuery({
-    queryKey: ['search', query],
+    queryKey: ['search', debouncedQuery],
     queryFn: async () => {
-      if (!query.trim()) return { authors: [], books: [] };
+      if (!debouncedQuery.trim()) return { authors: [], books: [] };
       
       // Search authors by name
       const { data: authors, error: authorsError } = await supabase
         .from('profiles')
         .select('*')
-        .ilike('name', `%${query}%`)
+        .ilike('name', `%${debouncedQuery}%`)
         .eq('role', 'author')
         .order('name');
 
@@ -33,7 +35,7 @@ export const Search = () => {
           *,
           author:profiles(*)
         `)
-        .ilike('book_title', `%${query}%`)
+        .ilike('book_title', `%${debouncedQuery}%`)
         .order('book_title');
 
       if (booksError) throw booksError;
@@ -43,9 +45,9 @@ export const Search = () => {
         books: books || []
       };
     },
-    enabled: query.length > 0,
-    staleTime: 1000, // Add a small delay to prevent too frequent refetches
-    refetchOnWindowFocus: false // Prevent refetches on window focus
+    enabled: debouncedQuery.length > 0,
+    staleTime: 1000,
+    refetchOnWindowFocus: false
   });
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
