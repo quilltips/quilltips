@@ -1,12 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from '@supabase/auth-helpers-react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { SearchBar } from "./navigation/SearchBar";
 import { UserMenu } from "./navigation/UserMenu";
 import { GuestMenu } from "./navigation/GuestMenu";
 
@@ -42,7 +41,6 @@ export const Navigation = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       checkAuthStatus();
       
-      // Show toast for login events
       if (event === 'SIGNED_IN') {
         toast({
           title: "Welcome back!",
@@ -68,7 +66,6 @@ export const Navigation = () => {
         description: "You have been logged out.",
       });
       
-      // Redirect to home page after successful logout
       navigate('/');
     } catch (error: any) {
       console.error("Logout error:", error);
@@ -84,7 +81,14 @@ export const Navigation = () => {
 
   const NavLinks = () => (
     <>
-      <SearchBar />
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={() => navigate('/search')}
+        className="hover:bg-secondary/20"
+      >
+        <Search className="h-5 w-5" />
+      </Button>
       {session ? (
         <UserMenu 
           isAuthor={isAuthor}
@@ -100,7 +104,7 @@ export const Navigation = () => {
 
   return (
     <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm border-b border-border z-50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link 
             to={isAuthor ? "/author/dashboard" : "/"} 
@@ -115,12 +119,10 @@ export const Navigation = () => {
           </Link>
         </div>
         
-        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-4">
           <NavLinks />
         </div>
 
-        {/* Mobile Navigation */}
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
