@@ -42,7 +42,7 @@ export const Search = () => {
             avatar_url
           )
         `)
-        .or('book_title.ilike.%' + debouncedQuery + '%,profiles(name).ilike.%' + debouncedQuery + '%')
+        .or(`book_title.ilike.%${debouncedQuery}%,author.name.ilike.%${debouncedQuery}%`)
         .order('book_title');
 
       if (error) throw error;
