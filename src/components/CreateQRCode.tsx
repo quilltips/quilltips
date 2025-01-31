@@ -48,7 +48,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         coverImageUrl = publicUrl;
       }
 
-      // Instead of creating the QR code here, we'll pass the data to the design page
+      // Navigate to the QR design page with the form data
       navigate('/author/qr-design', {
         state: {
           qrCodeData: {
