@@ -7,9 +7,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const QR_CODE_TEMPLATES = [
-  { id: 'basic', name: 'Basic QR', preview: '/placeholder.svg' },
-  { id: 'circular', name: 'Circular Design', preview: '/placeholder.svg' },
-  { id: 'artistic', name: 'Artistic Pattern', preview: '/placeholder.svg' },
+  { 
+    id: 'basic', 
+    name: 'Basic QR', 
+    preview: '/lovable-uploads/0bce5689-316d-436b-9c15-70c3a925c4cd.png',
+    description: 'A clean, professional QR code design'
+  },
+  { 
+    id: 'circular', 
+    name: 'Circular Design', 
+    preview: '/lovable-uploads/0bce5689-316d-436b-9c15-70c3a925c4cd.png',
+    description: 'Round-styled QR code with enhanced scanning capabilities'
+  },
+  { 
+    id: 'artistic', 
+    name: 'Artistic Pattern', 
+    preview: '/lovable-uploads/0bce5689-316d-436b-9c15-70c3a925c4cd.png',
+    description: 'Beautifully designed QR code with artistic elements'
+  },
 ];
 
 const QRCodeDesign = () => {
@@ -17,6 +32,7 @@ const QRCodeDesign = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedTemplate, setSelectedTemplate] = useState<string>('basic');
+  const [isLoading, setIsLoading] = useState(false);
   const qrCodeData = location.state?.qrCodeData;
 
   if (!qrCodeData) {
@@ -25,6 +41,7 @@ const QRCodeDesign = () => {
   }
 
   const handleCheckout = async () => {
+    setIsLoading(true);
     try {
       // Create QR code record with selected template
       const { data: qrCode, error: qrError } = await supabase
@@ -59,6 +76,7 @@ const QRCodeDesign = () => {
         description: error.message || "Failed to process checkout",
         variant: "destructive",
       });
+      setIsLoading(false);
     }
   };
 
@@ -69,25 +87,34 @@ const QRCodeDesign = () => {
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
             <h1 className="text-2xl font-bold">Choose QR Code Design</h1>
-            <p className="text-muted-foreground">Select a template for your QR code</p>
+            <p className="text-muted-foreground">
+              Select a template for your QR code for "{qrCodeData.book_title}"
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {QR_CODE_TEMPLATES.map((template) => (
               <Card 
                 key={template.id}
-                className={`cursor-pointer transition-all ${
+                className={`cursor-pointer transition-all hover:shadow-lg ${
                   selectedTemplate === template.id ? 'ring-2 ring-primary' : ''
                 }`}
                 onClick={() => setSelectedTemplate(template.id)}
               >
                 <CardContent className="p-4 space-y-4">
-                  <img
-                    src={template.preview}
-                    alt={template.name}
-                    className="w-full aspect-square object-cover rounded-lg"
-                  />
-                  <p className="font-medium text-center">{template.name}</p>
+                  <div className="aspect-square relative overflow-hidden rounded-lg">
+                    <img
+                      src={template.preview}
+                      alt={template.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-medium text-center">{template.name}</h3>
+                    <p className="text-sm text-muted-foreground text-center">
+                      {template.description}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -98,8 +125,9 @@ const QRCodeDesign = () => {
               onClick={handleCheckout}
               size="lg"
               className="w-full md:w-auto"
+              disabled={isLoading}
             >
-              Checkout and Download ($9.99)
+              {isLoading ? "Processing..." : "Checkout and Download ($9.99)"}
             </Button>
           </div>
         </div>
