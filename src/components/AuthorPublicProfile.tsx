@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 
 interface SocialLink {
@@ -49,13 +50,26 @@ export const AuthorPublicProfileView = ({
     <>
       <div className="max-w-2xl mx-auto animate-enter">
         <div className="flex flex-col items-center text-center space-y-6 bg-[#FEF7CD]/30 rounded-3xl p-8">
-          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#FEC6A1] shadow-lg">
-            <img
-              src={imageUrl}
-              alt={name}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#FEC6A1] shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FEC6A1] focus:ring-offset-2">
+                <img
+                  src={imageUrl}
+                  alt={name}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-lg">
+              <div className="aspect-square w-full overflow-hidden rounded-lg">
+                <img
+                  src={imageUrl}
+                  alt={name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
           
           <div className="space-y-4">
             <h2 className="text-3xl font-semibold text-[#2D3748]">{name}</h2>
