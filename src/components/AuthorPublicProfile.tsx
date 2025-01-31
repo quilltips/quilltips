@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { CreditCard, Globe, Twitter, Facebook, TikTok } from "lucide-react";
+import { CreditCard, Globe, Twitter, Facebook, Share2 } from "lucide-react";
 import { TipForm } from "./TipForm";
 import {
   Dialog,
@@ -30,7 +30,7 @@ const getSocialIcon = (label: string) => {
     case 'Facebook':
       return <Facebook className="h-5 w-5 text-blue-600" />;
     case 'TikTok':
-      return <TikTok className="h-5 w-5" />;
+      return <Share2 className="h-5 w-5 text-black" />;
     default:
       return <Globe className="h-5 w-5 text-gray-500" />;
   }

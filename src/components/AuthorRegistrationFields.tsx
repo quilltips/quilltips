@@ -3,7 +3,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { Plus, Trash2, Camera, Globe, Twitter, Facebook, TikTok } from "lucide-react";
+import { Plus, Trash2, Camera, Globe, Twitter, Facebook, Share2 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { cn } from "@/lib/utils";
 
@@ -32,7 +32,7 @@ const getSocialIcon = (platform: string) => {
     case 'Facebook':
       return <Facebook className="h-4 w-4 text-blue-600" />;
     case 'TikTok':
-      return <TikTok className="h-4 w-4" />;
+      return <Share2 className="h-4 w-4 text-black" />;
     default:
       return <Globe className="h-4 w-4 text-gray-500" />;
   }
