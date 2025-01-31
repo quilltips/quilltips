@@ -20,6 +20,7 @@ export const AuthorRegistrationForm = () => {
     email?: string;
     password?: string;
   }>({});
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -61,6 +62,38 @@ export const AuthorRegistrationForm = () => {
         }
         
         throw signUpError;
+      }
+
+      // Handle avatar upload after successful registration
+      if (avatarFile && data.user) {
+        const fileExt = avatarFile.name.split('.').pop();
+        const filePath = `${data.user.id}-${Date.now()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, avatarFile);
+
+        if (uploadError) {
+          console.error("Avatar upload error:", uploadError);
+          toast({
+            title: "Avatar Upload Failed",
+            description: "Your account was created but we couldn't upload your profile picture. You can try again later.",
+            variant: "destructive",
+          });
+        } else {
+          const { data: { publicUrl } } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ avatar_url: publicUrl })
+            .eq('id', data.user.id);
+
+          if (updateError) {
+            console.error("Profile update error:", updateError);
+          }
+        }
       }
 
       console.log("Registration successful:", data);
@@ -126,7 +159,10 @@ export const AuthorRegistrationForm = () => {
             </Alert>
           )}
 
-          <AuthorRegistrationFields isLoading={isLoading} />
+          <AuthorRegistrationFields 
+            isLoading={isLoading} 
+            onAvatarSelected={(file) => setAvatarFile(file)}
+          />
 
           <Button
             type="submit"

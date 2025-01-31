@@ -5,7 +5,6 @@ import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Plus, Trash2, Camera } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
 
 interface SocialLink {
   url: string;
@@ -14,12 +13,12 @@ interface SocialLink {
 
 interface AuthorRegistrationFieldsProps {
   isLoading: boolean;
+  onAvatarSelected: (file: File) => void;
 }
 
-export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFieldsProps) => {
+export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: AuthorRegistrationFieldsProps) => {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   const addSocialLink = () => {
     setSocialLinks([...socialLinks, { url: "", label: "" }]);
@@ -35,38 +34,21 @@ export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFields
     setSocialLinks(newLinks);
   };
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${Date.now()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      setAvatarUrl(publicUrl);
-    } catch (error) {
-      console.error("Error uploading avatar:", error);
-    } finally {
-      setIsUploading(false);
-    }
+    // Create a preview URL for the avatar
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+    onAvatarSelected(file);
   };
 
   return (
     <div className="space-y-6 text-left">
       <div className="flex flex-col items-center space-y-4">
         <Avatar className="w-24 h-24">
-          <AvatarImage src={avatarUrl || undefined} />
+          <AvatarImage src={avatarPreview || undefined} />
           <AvatarFallback>
             <Camera className="w-8 h-8 text-muted-foreground" />
           </AvatarFallback>
@@ -75,18 +57,18 @@ export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFields
           <Input
             type="file"
             accept="image/*"
-            onChange={handleAvatarUpload}
+            onChange={handleAvatarSelect}
             className="hidden"
             id="avatar-upload"
-            disabled={isLoading || isUploading}
+            disabled={isLoading}
           />
           <Button
             type="button"
             variant="outline"
             onClick={() => document.getElementById('avatar-upload')?.click()}
-            disabled={isLoading || isUploading}
+            disabled={isLoading}
           >
-            {isUploading ? "Uploading..." : "Add a photo"}
+            Add a photo
           </Button>
         </div>
       </div>
@@ -162,12 +144,6 @@ export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFields
           Add Social Link
         </Button>
       </div>
-
-      <input 
-        type="hidden" 
-        name="avatarUrl" 
-        value={avatarUrl || ''} 
-      />
     </div>
   );
 };
