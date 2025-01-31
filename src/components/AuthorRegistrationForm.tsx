@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
+import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AuthorRegistrationFields } from "./AuthorRegistrationFields";
 import { InitialRegistrationFields } from "./InitialRegistrationFields";
