@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { CreditCard, Globe, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { CreditCard, Globe, Twitter, Facebook, TikTok } from "lucide-react";
 import { TipForm } from "./TipForm";
-import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -25,12 +24,16 @@ interface AuthorPublicProfileProps {
 }
 
 const getSocialIcon = (label: string) => {
-  const label_lower = label.toLowerCase();
-  if (label_lower.includes('twitter')) return Twitter;
-  if (label_lower.includes('instagram')) return Instagram;
-  if (label_lower.includes('linkedin')) return Linkedin;
-  if (label_lower.includes('github')) return Github;
-  return Globe;
+  switch (label) {
+    case 'Twitter':
+      return <Twitter className="h-5 w-5 text-blue-400" />;
+    case 'Facebook':
+      return <Facebook className="h-5 w-5 text-blue-600" />;
+    case 'TikTok':
+      return <TikTok className="h-5 w-5" />;
+    default:
+      return <Globe className="h-5 w-5 text-gray-500" />;
+  }
 };
 
 export const AuthorPublicProfileView = ({ 
@@ -60,21 +63,18 @@ export const AuthorPublicProfileView = ({
           </div>
           
           <div className="flex flex-col gap-3">
-            {socialLinks.map((link, index) => {
-              const IconComponent = getSocialIcon(link.label);
-              return (
-                <a
-                  key={index}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 text-[#2D3748] hover:text-[#4A5568] transition-colors"
-                >
-                  <IconComponent className="h-5 w-5" />
-                  <span>{link.label}</span>
-                </a>
-              );
-            })}
+            {socialLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 text-[#2D3748] hover:text-[#4A5568] transition-colors group"
+              >
+                {getSocialIcon(link.label)}
+                <span className="group-hover:underline">{link.label}</span>
+              </a>
+            ))}
           </div>
 
           <Button 

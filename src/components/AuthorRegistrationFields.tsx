@@ -3,8 +3,9 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { Plus, Trash2, Camera } from "lucide-react";
+import { Plus, Trash2, Camera, Globe, Twitter, Facebook, TikTok } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { cn } from "@/lib/utils";
 
 interface SocialLink {
   url: string;
@@ -16,32 +17,58 @@ interface AuthorRegistrationFieldsProps {
   onAvatarSelected: (file: File) => void;
 }
 
+const identifySocialPlatform = (url: string): string => {
+  const urlLower = url.toLowerCase();
+  if (urlLower.includes('x.com') || urlLower.includes('twitter.com')) return 'Twitter';
+  if (urlLower.includes('facebook.com')) return 'Facebook';
+  if (urlLower.includes('tiktok.com')) return 'TikTok';
+  return 'Website';
+};
+
+const getSocialIcon = (platform: string) => {
+  switch (platform) {
+    case 'Twitter':
+      return <Twitter className="h-4 w-4 text-blue-400" />;
+    case 'Facebook':
+      return <Facebook className="h-4 w-4 text-blue-600" />;
+    case 'TikTok':
+      return <TikTok className="h-4 w-4" />;
+    default:
+      return <Globe className="h-4 w-4 text-gray-500" />;
+  }
+};
+
 export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: AuthorRegistrationFieldsProps) => {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [newUrl, setNewUrl] = useState('');
 
   const addSocialLink = () => {
-    setSocialLinks([...socialLinks, { url: "", label: "" }]);
+    if (!newUrl.trim()) return;
+    
+    const platform = identifySocialPlatform(newUrl);
+    setSocialLinks([...socialLinks, { url: newUrl, label: platform }]);
+    setNewUrl('');
   };
 
   const removeSocialLink = (index: number) => {
     setSocialLinks(socialLinks.filter((_, i) => i !== index));
   };
 
-  const updateSocialLink = (index: number, field: keyof SocialLink, value: string) => {
-    const newLinks = [...socialLinks];
-    newLinks[index][field] = value;
-    setSocialLinks(newLinks);
-  };
-
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Create a preview URL for the avatar
     const previewUrl = URL.createObjectURL(file);
     setAvatarPreview(previewUrl);
     onAvatarSelected(file);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addSocialLink();
+    }
   };
 
   return (
@@ -105,44 +132,43 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
           value={JSON.stringify(socialLinks)} 
         />
         
-        {socialLinks.map((link, index) => (
-          <div key={index} className="flex gap-2 items-start">
-            <div className="flex-1 space-y-2">
-              <Input
-                placeholder="Label (e.g., Website, Twitter)"
-                value={link.label}
-                onChange={(e) => updateSocialLink(index, "label", e.target.value)}
+        <div className="flex gap-2">
+          <Input
+            placeholder="Enter social media or website URL"
+            value={newUrl}
+            onChange={(e) => setNewUrl(e.target.value)}
+            onKeyPress={handleKeyPress}
+            disabled={isLoading}
+            className="flex-1"
+          />
+          <Button
+            type="button"
+            onClick={addSocialLink}
+            disabled={isLoading || !newUrl.trim()}
+            className="shrink-0"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="space-y-2 mt-4">
+          {socialLinks.map((link, index) => (
+            <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-md animate-fadeIn">
+              {getSocialIcon(link.label)}
+              <span className="flex-1 text-sm truncate">{link.url}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => removeSocialLink(index)}
                 disabled={isLoading}
-              />
-              <Input
-                placeholder="URL (e.g., https://your-website.com)"
-                value={link.url}
-                onChange={(e) => updateSocialLink(index, "url", e.target.value)}
-                disabled={isLoading}
-              />
+                className="h-8 w-8 p-0"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => removeSocialLink(index)}
-              disabled={isLoading}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        ))}
-        
-        <Button
-          type="button"
-          variant="outline"
-          onClick={addSocialLink}
-          disabled={isLoading}
-          className="w-full"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Social Link
-        </Button>
+          ))}
+        </div>
       </div>
     </div>
   );
