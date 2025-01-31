@@ -45,33 +45,6 @@ export const AuthorRegistrationFields = ({ isLoading }: AuthorRegistrationFields
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="your@email.com"
-          required
-          className="hover-lift text-left"
-          disabled={isLoading}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          placeholder="Create a secure password"
-          required
-          minLength={8}
-          className="hover-lift text-left"
-          disabled={isLoading}
-        />
-      </div>
-
-      <div className="space-y-2">
         <Label htmlFor="bio">Short Bio</Label>
         <Input
           id="bio"
