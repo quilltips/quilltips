@@ -48,16 +48,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         coverImageUrl = publicUrl;
       }
 
-      console.log("Navigating to QR design page with data:", {
-        author_id: authorId,
-        book_title: bookTitle,
-        publisher,
-        isbn,
-        release_date: releaseDate?.toISOString(),
-        cover_image: coverImageUrl
-      });
-
-      // Navigate to the QR design page with the form data
+      // Instead of creating the QR code here, we'll pass the data to the design page
       navigate('/author/qr-design', {
         state: {
           qrCodeData: {
@@ -68,8 +59,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             release_date: releaseDate?.toISOString(),
             cover_image: coverImageUrl
           }
-        },
-        replace: true
+        }
       });
     } catch (error: any) {
       console.error("Error preparing QR code:", error);
