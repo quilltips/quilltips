@@ -3,7 +3,7 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ interface CreateQRCodeProps {
 }
 
 export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
+  const navigate = useNavigate();
   const [bookTitle, setBookTitle] = useState("");
   const [publisher, setPublisher] = useState("");
   const [isbn, setIsbn] = useState("");
@@ -23,25 +24,6 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleImageUpload = async (file: File) => {
-    const fileExt = file.name.split('.').pop();
-    const filePath = `${crypto.randomUUID()}.${fileExt}`;
-
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('covers')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      throw uploadError;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('covers')
-      .getPublicUrl(filePath);
-
-    return publicUrl;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -49,70 +31,42 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
     try {
       let coverImageUrl = null;
       if (coverImage) {
-        coverImageUrl = await handleImageUpload(coverImage);
+        const fileExt = coverImage.name.split('.').pop();
+        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('covers')
+          .upload(filePath, coverImage);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('covers')
+          .getPublicUrl(filePath);
+
+        coverImageUrl = publicUrl;
       }
 
-      console.log("Creating QR code for author:", authorId);
-      
-      // Create QR code record
-      const { data: qrCode, error: qrError } = await supabase
-        .from('qr_codes')
-        .insert([
-          { 
-            author_id: authorId, 
+      // Instead of creating the QR code here, we'll pass the data to the design page
+      navigate('/author/qr-design', {
+        state: {
+          qrCodeData: {
+            author_id: authorId,
             book_title: bookTitle,
             publisher,
             isbn,
             release_date: releaseDate?.toISOString(),
             cover_image: coverImageUrl
           }
-        ])
-        .select()
-        .single();
-
-      if (qrError) {
-        console.error("QR code creation error:", qrError);
-        throw qrError;
-      }
-
-      console.log("QR code created:", qrCode);
-
-      // Create Stripe checkout session
-      const { data, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
-        body: { 
-          qrCodeId: qrCode.id,
-          bookTitle: bookTitle
         }
       });
-
-      if (checkoutError) {
-        console.error("Checkout error:", checkoutError);
-        throw checkoutError;
-      }
-
-      if (!data?.url) {
-        throw new Error("No checkout URL returned");
-      }
-
-      console.log("Redirecting to checkout:", data.url);
-      window.location.href = data.url;
-
     } catch (error: any) {
-      console.error("Error creating QR code:", error);
+      console.error("Error preparing QR code:", error);
       toast({
         title: "Error",
-        description: error?.message || "Failed to create QR code",
+        description: error.message || "Failed to prepare QR code",
         variant: "destructive",
       });
-      
-      // Clean up the QR code if checkout fails
-      if (error?.message?.includes("checkout")) {
-        await supabase
-          .from('qr_codes')
-          .delete()
-          .eq('author_id', authorId)
-          .eq('book_title', bookTitle);
-      }
     } finally {
       setIsLoading(false);
     }
@@ -192,7 +146,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         </div>
         
         <Button type="submit" disabled={isLoading} className="w-full text-center">
-          {isLoading ? "Creating..." : "Create QR Code ($9.99)"}
+          {isLoading ? "Processing..." : "Configure QR Code"}
         </Button>
       </form>
     </Card>

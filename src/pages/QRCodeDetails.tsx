@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
@@ -6,9 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { QrCode } from "lucide-react";
 import { TipHistory } from "@/components/TipHistory";
+import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { QRCodePublisherInvite } from "@/components/qr/QRCodePublisherInvite";
 
 const QRCodeDetails = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+  const [showPublisherInvite, setShowPublisherInvite] = useState(false);
 
   const { data: qrCode, isLoading } = useQuery({
     queryKey: ['qr-code', id],
@@ -23,6 +29,16 @@ const QRCodeDetails = () => {
       return data;
     }
   });
+
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      toast({
+        title: "QR Code Created",
+        description: "Your QR code has been created successfully!",
+      });
+      setShowPublisherInvite(true);
+    }
+  }, [searchParams, toast]);
 
   if (isLoading) {
     return (
@@ -105,6 +121,12 @@ const QRCodeDetails = () => {
           <h2 className="text-2xl font-semibold">Tip History</h2>
           <TipHistory authorId={qrCode.author_id} qrCodeId={qrCode.id} />
         </div>
+
+        <QRCodePublisherInvite
+          isOpen={showPublisherInvite}
+          onClose={() => setShowPublisherInvite(false)}
+          bookTitle={qrCode.book_title}
+        />
       </main>
     </div>
   );
