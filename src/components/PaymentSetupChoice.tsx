@@ -15,9 +15,16 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
         <div className="space-y-2 text-center">
           <h2 className="text-2xl font-medium">Connect a bank account</h2>
           <p className="text-muted-foreground">
-            When readers tip you we need a place to send your money!
+            Set up Stripe to receive tips from your readers
           </p>
         </div>
+
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            You'll need to provide some basic information to verify your identity and connect your bank account. This typically takes 5-10 minutes.
+          </AlertDescription>
+        </Alert>
 
         <div className="space-y-4">
           <Button
@@ -26,7 +33,7 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
             size="lg"
           >
             <Wallet className="mr-2 h-4 w-4" />
-            Link bank account
+            Set up payments now
           </Button>
 
           <div className="relative">
@@ -50,12 +57,9 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
 
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              You'll need to link a bank account to get paid.
-            </AlertDescription>
-          </Alert>
+          <p className="text-sm text-center text-muted-foreground">
+            You can always set up payments later from your dashboard
+          </p>
         </div>
       </div>
     </Card>
