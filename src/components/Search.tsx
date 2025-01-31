@@ -42,10 +42,15 @@ export const Search = () => {
             avatar_url
           )
         `)
-        .or(`book_title.ilike.%${debouncedQuery}%,author.name.ilike.%${debouncedQuery}%`)
+        .or(`book_title.ilike.%${debouncedQuery}%,author_id.eq.profiles.id,profiles.name.ilike.%${debouncedQuery}%`)
         .order('book_title');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Search error:', error);
+        throw error;
+      }
+      
+      console.log('Search results:', books);
       return books || [];
     },
     enabled: debouncedQuery.length > 0,
