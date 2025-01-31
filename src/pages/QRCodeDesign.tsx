@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -33,16 +33,37 @@ const QRCodeDesign = () => {
   const { toast } = useToast();
   const [selectedTemplate, setSelectedTemplate] = useState<string>('basic');
   const [isLoading, setIsLoading] = useState(false);
-  const qrCodeData = location.state?.qrCodeData;
+  const [qrCodeData, setQrCodeData] = useState<any>(null);
+
+  useEffect(() => {
+    console.log("Location state:", location.state);
+    if (!location.state?.qrCodeData) {
+      console.log("No QR code data found, redirecting...");
+      navigate('/author/create-qr');
+      return;
+    }
+    setQrCodeData(location.state.qrCodeData);
+  }, [location.state, navigate]);
 
   if (!qrCodeData) {
-    navigate('/author/create-qr');
-    return null;
+    return (
+      <div className="min-h-screen">
+        <Navigation />
+        <main className="container mx-auto px-4 pt-24 pb-12">
+          <div className="text-center">Loading...</div>
+        </main>
+      </div>
+    );
   }
 
   const handleCheckout = async () => {
     setIsLoading(true);
     try {
+      console.log("Processing checkout with data:", {
+        ...qrCodeData,
+        template: selectedTemplate,
+      });
+
       // Create QR code record with selected template
       const { data: qrCode, error: qrError } = await supabase
         .from('qr_codes')
