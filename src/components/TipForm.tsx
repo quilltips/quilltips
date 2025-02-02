@@ -6,7 +6,6 @@ import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Checkbox } from "./ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { loadStripe } from "@stripe/stripe-js";
@@ -29,33 +28,33 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormProps) => {
   const [amount, setAmount] = useState("5");
+  const [customAmount, setCustomAmount] = useState("");
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
-  const [isMonthly, setIsMonthly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
 
-  const predefinedAmounts = ["1", "3", "5"];
+  const predefinedAmounts = ["3", "5", "10"];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!stripe || !elements) return;
 
     setIsLoading(true);
+    const finalAmount = amount === 'custom' ? customAmount : amount;
 
     try {
       const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
         body: {
-          amount: Number(amount),
+          amount: Number(finalAmount),
           authorId,
           message,
           name,
           bookTitle,
           qrCodeId,
-          isMonthly
         },
       });
 
@@ -119,7 +118,7 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
     <Card className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         <div className="space-y-2">
-          <Label className="text-lg font-semibold text-primary">Choose Amount</Label>
+          <Label className="text-2xl font-semibold text-[#1A2B3B]">Choose Amount</Label>
           <RadioGroup 
             value={amount}
             onValueChange={setAmount}
@@ -134,17 +133,41 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
                 />
                 <Label
                   htmlFor={`amount-${value}`}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border-2 peer-data-[state=checked]:bg-primary peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-white hover:border-primary cursor-pointer transition-colors"
+                  className="flex h-16 w-16 items-center justify-center rounded-full border-2 peer-data-[state=checked]:bg-primary peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-white hover:border-primary cursor-pointer transition-colors"
                 >
                   ${value}
                 </Label>
               </div>
             ))}
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem
+                value="custom"
+                id="amount-custom"
+                className="peer sr-only"
+              />
+              <Label
+                htmlFor="amount-custom"
+                className="flex h-16 w-16 items-center justify-center rounded-full border-2 peer-data-[state=checked]:border-primary hover:border-primary cursor-pointer transition-colors"
+              >
+                Other
+              </Label>
+            </div>
           </RadioGroup>
+          {amount === 'custom' && (
+            <Input
+              type="number"
+              min="1"
+              step="1"
+              value={customAmount}
+              onChange={(e) => setCustomAmount(e.target.value)}
+              placeholder="Enter amount"
+              className="mt-2 w-32"
+            />
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="name" className="text-lg font-semibold text-primary">Your Name</Label>
+          <Label htmlFor="name" className="text-2xl font-semibold text-[#1A2B3B]">Your Name</Label>
           <Input
             id="name"
             type="text"
@@ -156,7 +179,7 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="message" className="text-lg font-semibold text-primary">Message</Label>
+          <Label htmlFor="message" className="text-2xl font-semibold text-[#1A2B3B]">Message</Label>
           <Textarea
             id="message"
             value={message}
@@ -168,7 +191,7 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
         </div>
 
         <div className="space-y-2">
-          <Label className="text-lg font-semibold text-primary">Card Details</Label>
+          <Label className="text-2xl font-semibold text-[#1A2B3B]">Card Details</Label>
           <div className="p-4 border rounded-lg bg-background">
             <CardElement 
               options={{
@@ -189,24 +212,10 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="monthly"
-            checked={isMonthly}
-            onCheckedChange={(checked) => setIsMonthly(checked as boolean)}
-          />
-          <label
-            htmlFor="monthly"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Make this monthly
-          </label>
-        </div>
-
         <Button 
           type="submit" 
-          className="w-full bg-primary hover:bg-primary-light text-white font-semibold py-3 rounded-lg transition-colors"
-          disabled={isLoading || !stripe}
+          className="w-full bg-[#94A3B8] hover:bg-[#64748B] text-white font-semibold py-3 rounded-lg transition-colors"
+          disabled={isLoading || !stripe || (amount === 'custom' && !customAmount)}
         >
           {isLoading ? (
             <>
@@ -214,7 +223,7 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
               Processing...
             </>
           ) : (
-            `Support $${amount}`
+            `Support $${amount === 'custom' ? customAmount || '0' : amount}`
           )}
         </Button>
       </form>
