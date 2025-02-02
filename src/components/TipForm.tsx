@@ -18,14 +18,14 @@ import {
 } from "@stripe/react-stripe-js";
 import { Loader2 } from "lucide-react";
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-
 interface TipFormProps {
   authorId: string;
   onSuccess?: () => void;
   bookTitle?: string;
   qrCodeId?: string;
 }
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormProps) => {
   const [amount, setAmount] = useState("5");
