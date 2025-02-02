@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
@@ -10,6 +10,7 @@ import { Checkbox } from "./ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { loadStripe } from "@stripe/stripe-js";
+import { Elements, useStripe, useElements, CardElement } from "@stripe/stripe-js";
 import { Loader2 } from "lucide-react";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -21,7 +22,7 @@ interface TipFormProps {
   qrCodeId?: string;
 }
 
-export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormProps) => {
+const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormProps) => {
   const [amount, setAmount] = useState("5");
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
@@ -29,17 +30,18 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const stripe = useStripe();
+  const elements = useElements();
 
   const predefinedAmounts = ["1", "3", "5"];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!stripe || !elements) return;
+
     setIsLoading(true);
 
     try {
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error('Stripe failed to load');
-
       const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
         body: {
           amount: Number(amount),
@@ -70,11 +72,14 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
         throw new Error('No payment intent received from server');
       }
 
+      const cardElement = elements.getElement(CardElement);
+      if (!cardElement) {
+        throw new Error('Card element not found');
+      }
+
       const { error: stripeError } = await stripe.confirmCardPayment(data.clientSecret, {
         payment_method: {
-          card: {
-            // Stripe Elements will inject the card element here
-          },
+          card: cardElement,
           billing_details: {
             name: name || 'Anonymous',
           },
@@ -157,8 +162,26 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
           />
         </div>
 
-        <div id="card-element" className="p-4 border rounded-lg bg-background">
-          {/* Stripe Elements will be injected here */}
+        <div className="space-y-2">
+          <Label className="text-lg font-semibold text-primary">Card Details</Label>
+          <div className="p-4 border rounded-lg bg-background">
+            <CardElement 
+              options={{
+                style: {
+                  base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    '::placeholder': {
+                      color: '#aab7c4',
+                    },
+                  },
+                  invalid: {
+                    color: '#9e2146',
+                  },
+                },
+              }}
+            />
+          </div>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -178,7 +201,7 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
         <Button 
           type="submit" 
           className="w-full bg-primary hover:bg-primary-light text-white font-semibold py-3 rounded-lg transition-colors"
-          disabled={isLoading}
+          disabled={isLoading || !stripe}
         >
           {isLoading ? (
             <>
@@ -191,5 +214,13 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
         </Button>
       </form>
     </Card>
+  );
+};
+
+export const TipForm = (props: TipFormProps) => {
+  return (
+    <Elements stripe={stripePromise}>
+      <TipFormContent {...props} />
+    </Elements>
   );
 };
