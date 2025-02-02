@@ -24,36 +24,26 @@ serve(async (req) => {
     }
 
     // Get request body
-    const { amount, authorId, bookTitle, qrCodeId } = await req.json();
+    const { amount, authorId, message, name, bookTitle, qrCodeId, isMonthly } = await req.json();
 
-    // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `Tip for ${bookTitle}`,
-              description: 'Thank you for supporting the author!',
-            },
-            unit_amount: amount * 100, // Convert to cents
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/cancel`,
+    // Create PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100, // Convert to cents
+      currency: 'usd',
       metadata: {
         authorId,
         bookTitle,
         qrCodeId,
+        message,
+        tipper_name: name,
+      },
+      automatic_payment_methods: {
+        enabled: true,
       },
     });
 
     return new Response(
-      JSON.stringify({ url: session.url }),
+      JSON.stringify({ clientSecret: paymentIntent.client_secret }),
       { 
         headers: { 
           ...corsHeaders,

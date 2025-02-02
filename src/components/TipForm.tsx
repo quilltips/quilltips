@@ -9,6 +9,10 @@ import { useNavigate } from "react-router-dom";
 import { Checkbox } from "./ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
+import { loadStripe } from "@stripe/stripe-js";
+import { Loader2 } from "lucide-react";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 interface TipFormProps {
   authorId: string;
@@ -20,6 +24,7 @@ interface TipFormProps {
 export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormProps) => {
   const [amount, setAmount] = useState("5");
   const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
   const [isMonthly, setIsMonthly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -32,22 +37,22 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
     setIsLoading(true);
 
     try {
+      const stripe = await stripePromise;
+      if (!stripe) throw new Error('Stripe failed to load');
+
       const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
         body: {
           amount: Number(amount),
           authorId,
           message,
+          name,
           bookTitle,
           qrCodeId,
           isMonthly
         },
       });
 
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw error;
-      }
-
+      if (error) throw error;
       if (data.error) {
         if (data.code === 'ACCOUNT_SETUP_INCOMPLETE') {
           toast({
@@ -61,18 +66,41 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
         throw new Error(data.error);
       }
 
-      if (!data.url) {
-        throw new Error('No checkout URL received from server');
+      if (!data.clientSecret) {
+        throw new Error('No payment intent received from server');
       }
 
-      window.location.href = data.url;
-    } catch (error: any) {
-      console.error('Error creating checkout session:', error);
+      const { error: stripeError } = await stripe.confirmCardPayment(data.clientSecret, {
+        payment_method: {
+          card: {
+            // Stripe Elements will inject the card element here
+          },
+          billing_details: {
+            name: name || 'Anonymous',
+          },
+        }
+      });
+
+      if (stripeError) {
+        throw stripeError;
+      }
+
       toast({
-        title: "Error",
-        description: error.message || "Failed to process tip",
+        title: "Thank you for your support!",
+        description: "Your tip has been processed successfully.",
+      });
+
+      if (onSuccess) onSuccess();
+      navigate(`/author/${authorId}`);
+
+    } catch (error: any) {
+      console.error('Error processing payment:', error);
+      toast({
+        title: "Payment Error",
+        description: error.message || "Failed to process payment",
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -80,9 +108,8 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
   return (
     <Card className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        <div className="flex items-center justify-center gap-4">
-          <span className="text-2xl">☕️</span>
-          <span className="text-xl font-medium">×</span>
+        <div className="space-y-2">
+          <Label className="text-lg font-semibold text-primary">Choose Amount</Label>
           <RadioGroup 
             value={amount}
             onValueChange={setAmount}
@@ -97,28 +124,42 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
                 />
                 <Label
                   htmlFor={`amount-${value}`}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border-2 peer-data-[state=checked]:bg-secondary peer-data-[state=checked]:border-secondary peer-data-[state=checked]:text-secondary-foreground hover:border-secondary cursor-pointer transition-colors"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border-2 peer-data-[state=checked]:bg-primary peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-white hover:border-primary cursor-pointer transition-colors"
                 >
-                  {value}
+                  ${value}
                 </Label>
               </div>
             ))}
           </RadioGroup>
         </div>
 
-        <Input
-          type="text"
-          placeholder="Name or @yoursocial"
-          className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-secondary"
-        />
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-lg font-semibold text-primary">Your Name</Label>
+          <Input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name or @yoursocial (optional)"
+            className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary"
+          />
+        </div>
 
-        <Textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Say something nice..."
-          className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-secondary resize-none"
-          rows={3}
-        />
+        <div className="space-y-2">
+          <Label htmlFor="message" className="text-lg font-semibold text-primary">Message</Label>
+          <Textarea
+            id="message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Say something nice... (optional)"
+            className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary resize-none"
+            rows={3}
+          />
+        </div>
+
+        <div id="card-element" className="p-4 border rounded-lg bg-background">
+          {/* Stripe Elements will be injected here */}
+        </div>
 
         <div className="flex items-center space-x-2">
           <Checkbox
@@ -136,10 +177,17 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
 
         <Button 
           type="submit" 
-          className="w-full bg-secondary hover:bg-secondary-dark text-secondary-foreground font-semibold py-3 rounded-lg transition-colors"
+          className="w-full bg-primary hover:bg-primary-light text-white font-semibold py-3 rounded-lg transition-colors"
           disabled={isLoading}
         >
-          {isLoading ? "Processing..." : `Support $${amount}`}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            `Support $${amount}`
+          )}
         </Button>
       </form>
     </Card>
