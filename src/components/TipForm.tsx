@@ -10,7 +10,7 @@ import { Checkbox } from "./ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements, useStripe, useElements, CardElement } from "@stripe/stripe-js";
+import { Elements, useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { Loader2 } from "lucide-react";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
