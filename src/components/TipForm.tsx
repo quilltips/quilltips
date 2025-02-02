@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
@@ -214,7 +214,7 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
 
         <Button 
           type="submit" 
-          className="w-full bg-[#94A3B8] hover:bg-[#64748B] text-white font-semibold py-3 rounded-lg transition-colors"
+          className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg transition-colors"
           disabled={isLoading || !stripe || (amount === 'custom' && !customAmount)}
         >
           {isLoading ? (
