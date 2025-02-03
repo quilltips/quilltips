@@ -1,21 +1,17 @@
 import { useState } from "react";
 import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
-import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Label } from "./ui/label";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
   useStripe,
   useElements,
-  CardElement,
 } from "@stripe/react-stripe-js";
-import { Loader2 } from "lucide-react";
+import { TipAmountSelector } from "./tip/TipAmountSelector";
+import { TipMessageForm } from "./tip/TipMessageForm";
+import { PaymentForm } from "./tip/PaymentForm";
 
 interface TipFormProps {
   authorId: string;
@@ -36,8 +32,6 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
-
-  const predefinedAmounts = ["3", "5", "10"];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,117 +110,29 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
 
   return (
     <Card className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        <div className="space-y-2">
-          <Label className="text-2xl font-semibold text-[#1A2B3B]">Choose Amount</Label>
-          <RadioGroup 
-            value={amount}
-            onValueChange={setAmount}
-            className="flex gap-3"
-          >
-            {predefinedAmounts.map((value) => (
-              <div key={value} className="flex items-center space-x-2">
-                <RadioGroupItem
-                  value={value}
-                  id={`amount-${value}`}
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor={`amount-${value}`}
-                  className="flex h-16 w-16 items-center justify-center rounded-full border-2 peer-data-[state=checked]:bg-primary peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-white hover:border-primary cursor-pointer transition-colors"
-                >
-                  ${value}
-                </Label>
-              </div>
-            ))}
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="custom"
-                id="amount-custom"
-                className="peer sr-only"
-              />
-              <Label
-                htmlFor="amount-custom"
-                className="flex h-16 w-16 items-center justify-center rounded-full border-2 peer-data-[state=checked]:border-primary hover:border-primary cursor-pointer transition-colors"
-              >
-                Other
-              </Label>
-            </div>
-          </RadioGroup>
-          {amount === 'custom' && (
-            <Input
-              type="number"
-              min="1"
-              step="1"
-              value={customAmount}
-              onChange={(e) => setCustomAmount(e.target.value)}
-              placeholder="Enter amount"
-              className="mt-2 w-32"
-            />
-          )}
-        </div>
+      <div className="p-6 space-y-6">
+        <TipAmountSelector
+          amount={amount}
+          customAmount={customAmount}
+          onAmountChange={setAmount}
+          onCustomAmountChange={setCustomAmount}
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="name" className="text-2xl font-semibold text-[#1A2B3B]">Your Name</Label>
-          <Input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name or @yoursocial (optional)"
-            className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary"
-          />
-        </div>
+        <TipMessageForm
+          name={name}
+          message={message}
+          onNameChange={setName}
+          onMessageChange={setMessage}
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="message" className="text-2xl font-semibold text-[#1A2B3B]">Message</Label>
-          <Textarea
-            id="message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Say something nice... (optional)"
-            className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary resize-none"
-            rows={3}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label className="text-2xl font-semibold text-[#1A2B3B]">Card Details</Label>
-          <div className="p-4 border rounded-lg bg-background">
-            <CardElement 
-              options={{
-                style: {
-                  base: {
-                    fontSize: '16px',
-                    color: '#424770',
-                    '::placeholder': {
-                      color: '#aab7c4',
-                    },
-                  },
-                  invalid: {
-                    color: '#9e2146',
-                  },
-                },
-              }}
-            />
-          </div>
-        </div>
-
-        <Button 
-          type="submit" 
-          className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg transition-colors"
-          disabled={isLoading || !stripe || (amount === 'custom' && !customAmount)}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            `Support $${amount === 'custom' ? customAmount || '0' : amount}`
-          )}
-        </Button>
-      </form>
+        <PaymentForm
+          isLoading={isLoading}
+          amount={amount}
+          customAmount={customAmount}
+          onSubmit={handleSubmit}
+          stripe={stripe}
+        />
+      </div>
     </Card>
   );
 };
