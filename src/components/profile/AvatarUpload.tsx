@@ -104,7 +104,7 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
           ) : (
             <Upload className="mr-2 h-4 w-4" />
           )}
-          Upload Picture
+          {avatarUrl ? "Change picture" : "Upload picture"}
         </Button>
       </div>
     </div>
