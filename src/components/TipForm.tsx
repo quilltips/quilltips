@@ -8,6 +8,7 @@ import {
   Elements,
   useStripe,
   useElements,
+  CardElement,
 } from "@stripe/react-stripe-js";
 import { TipAmountSelector } from "./tip/TipAmountSelector";
 import { TipMessageForm } from "./tip/TipMessageForm";
