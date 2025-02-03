@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Book } from "lucide-react";
 
 const QR_CODE_TEMPLATES = [
   { id: 'basic', name: 'Basic QR', preview: '/placeholder.svg' },
@@ -26,21 +27,17 @@ const QRCodeDesign = () => {
 
   const handleCheckout = async () => {
     try {
-      // Create QR code record with selected template
       const { data: qrCode, error: qrError } = await supabase
         .from('qr_codes')
-        .insert([
-          { 
-            ...qrCodeData,
-            template: selectedTemplate,
-          }
-        ])
+        .insert([{ 
+          ...qrCodeData,
+          template: selectedTemplate,
+        }])
         .select()
         .single();
 
       if (qrError) throw qrError;
 
-      // Create Stripe checkout session
       const { data, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
         body: { 
           qrCodeId: qrCode.id,
@@ -67,9 +64,24 @@ const QRCodeDesign = () => {
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto space-y-8">
-          <div>
-            <h1 className="text-2xl font-bold">Choose QR Code Design</h1>
-            <p className="text-muted-foreground">Select a template for your QR code</p>
+          <div className="flex items-start gap-6">
+            <div className="w-32 h-44 flex-shrink-0 overflow-hidden rounded-lg shadow-md">
+              {qrCodeData.cover_image ? (
+                <img
+                  src={qrCodeData.cover_image}
+                  alt={qrCodeData.book_title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center">
+                  <Book className="h-8 w-8 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">{qrCodeData.book_title}</h1>
+              <p className="text-muted-foreground">Select a template for your QR code</p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

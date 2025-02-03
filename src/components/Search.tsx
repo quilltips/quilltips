@@ -95,13 +95,15 @@ export const Search = () => {
                 <Card className="p-6 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-sm">
                   <div className="flex items-start gap-4">
                     {result.cover_image ? (
-                      <img 
-                        src={result.cover_image} 
-                        alt={result.book_title}
-                        className="w-20 h-28 object-cover rounded-sm"
-                      />
+                      <div className="w-24 h-32 flex-shrink-0 overflow-hidden rounded-md">
+                        <img 
+                          src={result.cover_image} 
+                          alt={result.book_title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     ) : (
-                      <div className="w-20 h-28 bg-muted rounded-sm flex items-center justify-center">
+                      <div className="w-24 h-32 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
                         <Book className="h-8 w-8 text-muted-foreground" />
                       </div>
                     )}
