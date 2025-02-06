@@ -1,5 +1,4 @@
-
-import { corsHeaders } from './config';
+import { corsHeaders } from './config.ts';
 
 export const handlePlatformSetupError = (error: any) => {
   return new Response(
