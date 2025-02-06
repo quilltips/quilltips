@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -5,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Book } from "lucide-react";
+import { Book, Loader2 } from "lucide-react";
 
 const QR_CODE_TEMPLATES = [
   { id: 'basic', name: 'Basic QR', preview: '/placeholder.svg' },
@@ -18,6 +19,7 @@ const QRCodeDesign = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedTemplate, setSelectedTemplate] = useState<string>('basic');
+  const [isGenerating, setIsGenerating] = useState(false);
   const qrCodeData = location.state?.qrCodeData;
 
   if (!qrCodeData) {
@@ -27,6 +29,9 @@ const QRCodeDesign = () => {
 
   const handleCheckout = async () => {
     try {
+      setIsGenerating(true);
+
+      // First, create the QR code record
       const { data: qrCode, error: qrError } = await supabase
         .from('qr_codes')
         .insert([{ 
@@ -38,6 +43,18 @@ const QRCodeDesign = () => {
 
       if (qrError) throw qrError;
 
+      // Generate the QR code using our Edge Function
+      const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke('generate-qr-code', {
+        body: {
+          bookTitle: qrCodeData.book_title,
+          authorId: qrCodeData.author_id,
+          qrCodeId: qrCode.id
+        }
+      });
+
+      if (qrGenError) throw qrGenError;
+
+      // Create Stripe checkout session
       const { data, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
         body: { 
           qrCodeId: qrCode.id,
@@ -56,6 +73,7 @@ const QRCodeDesign = () => {
         description: error.message || "Failed to process checkout",
         variant: "destructive",
       });
+      setIsGenerating(false);
     }
   };
 
@@ -110,8 +128,16 @@ const QRCodeDesign = () => {
               onClick={handleCheckout}
               size="lg"
               className="w-full md:w-auto"
+              disabled={isGenerating}
             >
-              Checkout and Download ($9.99)
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating QR Code...
+                </>
+              ) : (
+                'Checkout and Download ($9.99)'
+              )}
             </Button>
           </div>
         </div>
