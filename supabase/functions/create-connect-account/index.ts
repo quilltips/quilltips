@@ -9,7 +9,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -55,62 +54,93 @@ serve(async (req) => {
     console.log('Profile data:', profile);
     let accountId = profile?.stripe_account_id;
 
-    if (!accountId) {
-      // Create a new Connect account
-      console.log('Creating new Stripe Connect account for user:', user.id);
-      const account = await stripe.accounts.create({
-        type: 'express',
-        email: user.email,
-        metadata: {
-          supabaseUserId: user.id,
-        },
-      });
-      accountId = account.id;
-      console.log('Created Stripe account:', accountId);
-
-      // Save the account ID to the user's profile
-      const { error: updateError } = await supabaseClient
-        .from('profiles')
-        .update({ stripe_account_id: accountId })
-        .eq('id', user.id);
-
-      if (updateError) {
-        console.error('Error updating profile:', updateError);
-        throw updateError;
-      }
-    }
-
-    // Check account status
-    const account = await stripe.accounts.retrieve(accountId);
-    console.log('Account status:', account.details_submitted, account.payouts_enabled);
-
-    // Create an account link for onboarding
-    console.log('Creating account link for:', accountId);
-    const origin = req.headers.get('origin') || '';
-    const accountLink = await stripe.accountLinks.create({
-      account: accountId,
-      refresh_url: `${origin}/author/settings?refresh=true`,
-      return_url: `${origin}/author/dashboard`,
-      type: 'account_onboarding',
-    });
-
-    console.log('Account link created:', accountLink.url);
-    
-    return new Response(
-      JSON.stringify({ 
-        url: accountLink.url,
-        accountId: accountId,
-        status: {
-          detailsSubmitted: account.details_submitted,
-          payoutsEnabled: account.payouts_enabled,
+    try {
+      if (accountId) {
+        // Try to retrieve the existing account
+        try {
+          console.log('Retrieving existing Stripe account:', accountId);
+          const existingAccount = await stripe.accounts.retrieve(accountId);
+          console.log('Existing account status:', existingAccount.details_submitted, existingAccount.payouts_enabled);
+        } catch (accountError: any) {
+          // If account doesn't exist or access was revoked, create a new one
+          if (accountError.code === 'account_invalid') {
+            console.log('Invalid account, creating new one');
+            accountId = null;
+          } else {
+            throw accountError;
+          }
         }
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
       }
-    );
-  } catch (error) {
+
+      if (!accountId) {
+        // Create a new Connect account
+        console.log('Creating new Stripe Connect account for user:', user.id);
+        const account = await stripe.accounts.create({
+          type: 'express',
+          email: user.email,
+          metadata: {
+            supabaseUserId: user.id,
+          },
+        });
+        accountId = account.id;
+        console.log('Created new Stripe account:', accountId);
+
+        // Update the profile with new account ID
+        const { error: updateError } = await supabaseClient
+          .from('profiles')
+          .update({ stripe_account_id: accountId })
+          .eq('id', user.id);
+
+        if (updateError) {
+          console.error('Error updating profile:', updateError);
+          throw updateError;
+        }
+      }
+
+      // Create an account link for onboarding
+      console.log('Creating account link for:', accountId);
+      const origin = req.headers.get('origin') || '';
+      const accountLink = await stripe.accountLinks.create({
+        account: accountId,
+        refresh_url: `${origin}/author/settings?refresh=true`,
+        return_url: `${origin}/author/dashboard`,
+        type: 'account_onboarding',
+      });
+
+      // Get the latest account status
+      const account = await stripe.accounts.retrieve(accountId);
+      console.log('Current account status:', account.details_submitted, account.payouts_enabled);
+
+      return new Response(
+        JSON.stringify({ 
+          url: accountLink.url,
+          accountId: accountId,
+          status: {
+            detailsSubmitted: account.details_submitted,
+            payoutsEnabled: account.payouts_enabled,
+          }
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
+    } catch (stripeError: any) {
+      console.error('Stripe operation error:', stripeError);
+      return new Response(
+        JSON.stringify({ 
+          error: stripeError.message,
+          code: stripeError.code,
+          details: stripeError.stack,
+          type: 'stripe_error'
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
+    }
+  } catch (error: any) {
     console.error('Error in create-connect-account:', error);
     return new Response(
       JSON.stringify({ 

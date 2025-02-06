@@ -23,6 +23,23 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
     }
   }, [searchParams, stripeAccountId]);
 
+  const handleStripeError = (error: any) => {
+    console.error('Stripe error:', error);
+    let errorMessage = 'Failed to connect bank account. Please try again.';
+
+    if (error.code === 'account_invalid') {
+      errorMessage = 'Your Stripe account needs to be reconnected. Click again to set up a new connection.';
+    } else if (error.type === 'stripe_error') {
+      errorMessage = error.message || 'There was an issue with the Stripe connection.';
+    }
+
+    toast({
+      title: "Connection Error",
+      description: errorMessage,
+      variant: "destructive",
+    });
+  };
+
   const handleRefresh = async () => {
     setIsConnecting(true);
     try {
@@ -41,6 +58,12 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         throw error;
       }
 
+      if (data.error) {
+        console.error('Stripe error response:', data);
+        handleStripeError(data);
+        return;
+      }
+
       if (!data?.url) {
         console.error('No URL returned from Stripe:', data);
         throw new Error('Failed to get Stripe onboarding URL');
@@ -50,11 +73,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       window.location.href = data.url;
     } catch (error: any) {
       console.error("Error refreshing onboarding:", error);
-      toast({
-        title: "Refresh Error",
-        description: error.message || "Failed to refresh onboarding. Please try again.",
-        variant: "destructive",
-      });
+      handleStripeError(error);
     } finally {
       setIsConnecting(false);
     }
@@ -78,6 +97,12 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         throw error;
       }
 
+      if (data.error) {
+        console.error('Stripe error response:', data);
+        handleStripeError(data);
+        return;
+      }
+
       if (!data?.url) {
         console.error('No URL returned from Stripe:', data);
         throw new Error('Failed to get Stripe onboarding URL');
@@ -87,11 +112,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       window.location.href = data.url;
     } catch (error: any) {
       console.error("Error connecting bank account:", error);
-      toast({
-        title: "Connection Error",
-        description: error.message || "Failed to connect bank account. Please try again.",
-        variant: "destructive",
-      });
+      handleStripeError(error);
     } finally {
       setIsConnecting(false);
     }
