@@ -19,6 +19,7 @@ export type Database = {
           role: string | null
           social_links: Json | null
           stripe_account_id: string | null
+          stripe_setup_complete: boolean | null
           updated_at: string
         }
         Insert: {
@@ -30,6 +31,7 @@ export type Database = {
           role?: string | null
           social_links?: Json | null
           stripe_account_id?: string | null
+          stripe_setup_complete?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -41,6 +43,7 @@ export type Database = {
           role?: string | null
           social_links?: Json | null
           stripe_account_id?: string | null
+          stripe_setup_complete?: boolean | null
           updated_at?: string
         }
         Relationships: []
