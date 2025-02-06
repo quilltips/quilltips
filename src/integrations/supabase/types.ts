@@ -60,8 +60,11 @@ export type Database = {
           isbn: string | null
           last_tip_date: string | null
           publisher: string | null
+          qr_code_image_url: string | null
+          qr_code_status: string
           release_date: string | null
           stripe_session_id: string | null
+          template: string
           total_amount: number | null
           total_tips: number | null
         }
@@ -76,8 +79,11 @@ export type Database = {
           isbn?: string | null
           last_tip_date?: string | null
           publisher?: string | null
+          qr_code_image_url?: string | null
+          qr_code_status?: string
           release_date?: string | null
           stripe_session_id?: string | null
+          template?: string
           total_amount?: number | null
           total_tips?: number | null
         }
@@ -92,8 +98,11 @@ export type Database = {
           isbn?: string | null
           last_tip_date?: string | null
           publisher?: string | null
+          qr_code_image_url?: string | null
+          qr_code_status?: string
           release_date?: string | null
           stripe_session_id?: string | null
+          template?: string
           total_amount?: number | null
           total_tips?: number | null
         }
