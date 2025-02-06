@@ -96,6 +96,7 @@ serve(async (req) => {
     console.log('QR code generated successfully:', qrCodeData);
 
     // Get the QR code image URL from the response
+    // The qr_image field contains the actual QR code image URL
     const qrCodeImageUrl = qrCodeData.qr_image || qrCodeData.url;
 
     if (!qrCodeImageUrl) {
