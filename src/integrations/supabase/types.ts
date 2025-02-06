@@ -188,6 +188,8 @@ export type Database = {
           id: string
           message: string | null
           qr_code_id: string | null
+          status: string | null
+          stripe_session_id: string | null
         }
         Insert: {
           amount: number
@@ -197,6 +199,8 @@ export type Database = {
           id?: string
           message?: string | null
           qr_code_id?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
         }
         Update: {
           amount?: number
@@ -206,6 +210,8 @@ export type Database = {
           id?: string
           message?: string | null
           qr_code_id?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
         }
         Relationships: [
           {
