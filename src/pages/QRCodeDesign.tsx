@@ -17,6 +17,7 @@ const QR_CODE_TEMPLATES = [
 interface QRCodeResponse {
   url: string;
   error?: string;
+  details?: string;
 }
 
 const QRCodeDesign = () => {
@@ -25,6 +26,7 @@ const QRCodeDesign = () => {
   const { toast } = useToast();
   const [selectedTemplate, setSelectedTemplate] = useState<string>('basic');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [qrCodePreview, setQrCodePreview] = useState<string | null>(null);
   const qrCodeData = location.state?.qrCodeData;
 
@@ -38,10 +40,20 @@ const QRCodeDesign = () => {
     const generatePreview = async () => {
       try {
         setIsGenerating(true);
+        setQrCodePreview(null); // Clear previous preview
+
+        console.log('Generating QR code preview with data:', {
+          bookTitle: qrCodeData.book_title,
+          authorId: qrCodeData.author_id,
+          qrCodeId: qrCodeData.id,
+          template: selectedTemplate
+        });
+
         const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
           body: {
             bookTitle: qrCodeData.book_title,
             authorId: qrCodeData.author_id,
+            qrCodeId: qrCodeData.id,
             template: selectedTemplate
           }
         });
@@ -54,6 +66,7 @@ const QRCodeDesign = () => {
           throw new Error('No QR code URL returned');
         }
 
+        console.log('QR code preview generated:', qrResponse.url);
         setQrCodePreview(qrResponse.url);
       } catch (error: any) {
         console.error("Error generating preview:", error);
@@ -72,25 +85,12 @@ const QRCodeDesign = () => {
 
   const handleCheckout = async () => {
     try {
-      setIsGenerating(true);
+      setIsCheckingOut(true);
+      console.log('Starting checkout process for QR code:', qrCodeData.id);
 
-      // First, create the QR code record
-      const { data: qrCode, error: qrError } = await supabase
-        .from('qr_codes')
-        .insert([{ 
-          ...qrCodeData,
-          template: selectedTemplate,
-          qr_code_status: 'pending'
-        }])
-        .select()
-        .single();
-
-      if (qrError) throw qrError;
-
-      // Create Stripe checkout session
       const { data: checkoutResponse, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
         body: { 
-          qrCodeId: qrCode.id,
+          qrCodeId: qrCodeData.id,
           bookTitle: qrCodeData.book_title
         }
       });
@@ -103,13 +103,12 @@ const QRCodeDesign = () => {
         throw new Error("No checkout URL returned");
       }
 
-      // Redirect to Stripe checkout
+      console.log('Redirecting to checkout:', checkoutResponse.url);
       window.location.href = checkoutResponse.url;
     } catch (error: any) {
       console.error("Error in checkout process:", error);
       let errorMessage = error.message;
       
-      // Handle specific error cases
       if (error.status === 401) {
         errorMessage = "Please log in to complete your purchase";
       } else if (error.status === 400) {
@@ -121,7 +120,8 @@ const QRCodeDesign = () => {
         description: errorMessage || "Failed to process checkout",
         variant: "destructive",
       });
-      setIsGenerating(false);
+    } finally {
+      setIsCheckingOut(false);
     }
   };
 
@@ -196,9 +196,9 @@ const QRCodeDesign = () => {
               onClick={handleCheckout}
               size="lg"
               className="w-full md:w-auto"
-              disabled={isGenerating || !qrCodePreview}
+              disabled={isCheckingOut || isGenerating || !qrCodePreview}
             >
-              {isGenerating ? (
+              {isCheckingOut ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Processing...
@@ -215,3 +215,4 @@ const QRCodeDesign = () => {
 };
 
 export default QRCodeDesign;
+
