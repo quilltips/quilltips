@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from 'https://esm.sh/stripe@14.21.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
@@ -17,7 +18,13 @@ serve(async (req) => {
     const { qrCodeId, bookTitle } = await req.json();
     
     if (!qrCodeId) {
-      throw new Error('QR code ID is required');
+      return new Response(
+        JSON.stringify({ error: 'QR code ID is required' }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Get the authenticated user
@@ -31,11 +38,29 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
     
     if (authError || !user) {
-      throw new Error('Unauthorized');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { 
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
+    if (!stripeKey) {
+      console.error('Stripe secret key not found');
+      return new Response(
+        JSON.stringify({ error: 'Stripe configuration error' }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
     });
 
@@ -55,14 +80,14 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      mode: 'payment', // Explicitly set to one-time payment
+      mode: 'payment',
       success_url: `${req.headers.get('origin')}/author/dashboard?success=true&qr_code=${qrCodeId}`,
       cancel_url: `${req.headers.get('origin')}/author/dashboard?canceled=true`,
       metadata: {
         qrCodeId,
         authorId: user.id,
       },
-      customer_email: user.email, // Pre-fill customer email
+      customer_email: user.email,
     });
 
     // Update QR code with Stripe session ID
@@ -74,7 +99,13 @@ serve(async (req) => {
 
     if (updateError) {
       console.error('Error updating QR code:', updateError);
-      throw updateError;
+      return new Response(
+        JSON.stringify({ error: 'Failed to update QR code' }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     console.log('Payment session created:', session.id);

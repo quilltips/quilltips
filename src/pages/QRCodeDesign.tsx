@@ -33,7 +33,42 @@ const QRCodeDesign = () => {
       navigate('/author/create-qr');
       return;
     }
-  }, [qrCodeData, navigate]);
+
+    // Generate preview on template selection
+    const generatePreview = async () => {
+      try {
+        setIsGenerating(true);
+        const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
+          body: {
+            bookTitle: qrCodeData.book_title,
+            authorId: qrCodeData.author_id,
+            template: selectedTemplate
+          }
+        });
+
+        if (qrGenError) {
+          throw qrGenError;
+        }
+
+        if (!qrResponse?.url) {
+          throw new Error('No QR code URL returned');
+        }
+
+        setQrCodePreview(qrResponse.url);
+      } catch (error: any) {
+        console.error("Error generating preview:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to generate QR code preview",
+          variant: "destructive",
+        });
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+
+    generatePreview();
+  }, [qrCodeData, navigate, selectedTemplate, toast]);
 
   const handleCheckout = async () => {
     try {
@@ -52,42 +87,38 @@ const QRCodeDesign = () => {
 
       if (qrError) throw qrError;
 
-      // Generate the QR code using our Edge Function
-      const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
-        body: {
-          bookTitle: qrCodeData.book_title,
-          authorId: qrCodeData.author_id,
-          qrCodeId: qrCode.id
-        }
-      });
-
-      if (qrGenError || qrResponse?.error) {
-        throw new Error(qrGenError?.message || qrResponse?.error || 'Failed to generate QR code');
-      }
-
-      if (!qrResponse?.url) {
-        throw new Error('No QR code URL returned');
-      }
-
-      setQrCodePreview(qrResponse.url);
-
       // Create Stripe checkout session
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
+      const { data: checkoutResponse, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
         body: { 
           qrCodeId: qrCode.id,
           bookTitle: qrCodeData.book_title
         }
       });
 
-      if (checkoutError) throw checkoutError;
-      if (!checkoutData?.url) throw new Error("No checkout URL returned");
+      if (checkoutError) {
+        throw new Error(`Checkout error: ${checkoutError.message}`);
+      }
 
-      window.location.href = checkoutData.url;
+      if (!checkoutResponse?.url) {
+        throw new Error("No checkout URL returned");
+      }
+
+      // Redirect to Stripe checkout
+      window.location.href = checkoutResponse.url;
     } catch (error: any) {
       console.error("Error in checkout process:", error);
+      let errorMessage = error.message;
+      
+      // Handle specific error cases
+      if (error.status === 401) {
+        errorMessage = "Please log in to complete your purchase";
+      } else if (error.status === 400) {
+        errorMessage = "Invalid request. Please try again";
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Failed to process checkout",
+        description: errorMessage || "Failed to process checkout",
         variant: "destructive",
       });
       setIsGenerating(false);
@@ -133,39 +164,44 @@ const QRCodeDesign = () => {
                 onClick={() => setSelectedTemplate(template.id)}
               >
                 <CardContent className="p-4 space-y-4">
-                  <img
-                    src={qrCodePreview || template.preview}
-                    alt={template.name}
-                    className="w-full aspect-square object-cover rounded-lg"
-                  />
+                  <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                    {qrCodePreview && selectedTemplate === template.id ? (
+                      <img
+                        src={qrCodePreview}
+                        alt={template.name}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        {isGenerating ? (
+                          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        ) : (
+                          <img
+                            src={template.preview}
+                            alt={template.name}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
                   <p className="font-medium text-center">{template.name}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          {qrCodePreview && (
-            <div className="text-center">
-              <h2 className="text-xl font-semibold mb-4">Preview Your QR Code</h2>
-              <img 
-                src={qrCodePreview} 
-                alt="QR Code Preview" 
-                className="mx-auto max-w-xs rounded-lg shadow-lg"
-              />
-            </div>
-          )}
-
           <div className="flex justify-end">
             <Button 
               onClick={handleCheckout}
               size="lg"
               className="w-full md:w-auto"
-              disabled={isGenerating}
+              disabled={isGenerating || !qrCodePreview}
             >
               {isGenerating ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating QR Code...
+                  Processing...
                 </>
               ) : (
                 'Checkout and Download ($9.99)'
