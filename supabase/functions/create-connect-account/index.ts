@@ -36,7 +36,6 @@ serve(async (req) => {
     // Initialize Stripe
     const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
     if (!stripeSecretKey) {
-      console.error('Stripe secret key not found');
       throw new Error('Stripe configuration error');
     }
 
@@ -44,10 +43,10 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    // Check if user already has a Stripe account
+    // Get existing account info
     const { data: profile } = await supabaseClient
       .from('profiles')
-      .select('stripe_account_id')
+      .select('stripe_account_id, stripe_setup_complete')
       .eq('id', user.id)
       .single();
 
@@ -56,25 +55,39 @@ serve(async (req) => {
 
     try {
       if (accountId) {
-        // Try to retrieve the existing account
-        try {
-          console.log('Retrieving existing Stripe account:', accountId);
-          const existingAccount = await stripe.accounts.retrieve(accountId);
-          console.log('Existing account status:', existingAccount.details_submitted, existingAccount.payouts_enabled);
-        } catch (accountError: any) {
-          // If account doesn't exist or access was revoked, create a new one
-          if (accountError.code === 'account_invalid') {
-            console.log('Invalid account, creating new one');
-            accountId = null;
-          } else {
-            throw accountError;
+        console.log('Checking existing Stripe account:', accountId);
+        const account = await stripe.accounts.retrieve(accountId);
+        
+        // If account exists but setup is not complete, generate a new account link
+        if (!account.details_submitted || !account.payouts_enabled) {
+          console.log('Account exists but setup incomplete');
+          try {
+            const accountLink = await stripe.accountLinks.create({
+              account: accountId,
+              refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
+              return_url: `${req.headers.get('origin')}/author/settings?setup=complete`,
+              type: 'account_onboarding',
+            });
+
+            return new Response(
+              JSON.stringify({ url: accountLink.url, status: 'incomplete_setup' }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          } catch (linkError) {
+            console.error('Error creating account link:', linkError);
+            throw linkError;
           }
         }
-      }
-
-      if (!accountId) {
+        
+        console.log('Account status:', {
+          details_submitted: account.details_submitted,
+          payouts_enabled: account.payouts_enabled,
+          requirements: account.requirements
+        });
+        
+      } else {
         // Create a new Connect account
-        console.log('Creating new Stripe Connect account for user:', user.id);
+        console.log('Creating new Stripe Connect account');
         const account = await stripe.accounts.create({
           type: 'express',
           email: user.email,
@@ -83,73 +96,112 @@ serve(async (req) => {
           },
         });
         accountId = account.id;
-        console.log('Created new Stripe account:', accountId);
 
-        // Update the profile with new account ID
+        // Update profile with new account ID
         const { error: updateError } = await supabaseClient
           .from('profiles')
-          .update({ stripe_account_id: accountId })
+          .update({ 
+            stripe_account_id: accountId,
+            stripe_setup_complete: false
+          })
           .eq('id', user.id);
 
         if (updateError) {
           console.error('Error updating profile:', updateError);
           throw updateError;
         }
+
+        // Create initial account link for setup
+        const accountLink = await stripe.accountLinks.create({
+          account: accountId,
+          refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
+          return_url: `${req.headers.get('origin')}/author/settings?setup=complete`,
+          type: 'account_onboarding',
+        });
+
+        return new Response(
+          JSON.stringify({ 
+            url: accountLink.url,
+            status: 'new_account',
+            accountId: accountId
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
 
-      // Create an account link for onboarding
-      console.log('Creating account link for:', accountId);
-      const origin = req.headers.get('origin') || '';
+      // Generate account link for existing account updates
       const accountLink = await stripe.accountLinks.create({
         account: accountId,
-        refresh_url: `${origin}/author/settings?refresh=true`,
-        return_url: `${origin}/author/dashboard`,
+        refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
+        return_url: `${req.headers.get('origin')}/author/settings?setup=complete`,
         type: 'account_onboarding',
       });
-
-      // Get the latest account status
-      const account = await stripe.accounts.retrieve(accountId);
-      console.log('Current account status:', account.details_submitted, account.payouts_enabled);
 
       return new Response(
         JSON.stringify({ 
           url: accountLink.url,
-          accountId: accountId,
-          status: {
-            detailsSubmitted: account.details_submitted,
-            payoutsEnabled: account.payouts_enabled,
-          }
+          status: 'update_existing',
+          accountId: accountId
         }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+
     } catch (stripeError: any) {
-      console.error('Stripe operation error:', stripeError);
-      return new Response(
-        JSON.stringify({ 
-          error: stripeError.message,
-          code: stripeError.code,
-          details: stripeError.stack,
-          type: 'stripe_error'
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400,
-        }
-      );
+      console.error('Stripe error:', stripeError);
+      
+      // Handle platform setup requirements
+      if (stripeError.message?.includes('review the responsibilities')) {
+        return new Response(
+          JSON.stringify({
+            error: 'platform_setup_required',
+            message: 'The platform needs to complete Stripe Connect setup. Please contact support.',
+            details: stripeError.message
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400
+          }
+        );
+      }
+      
+      // Handle invalid/revoked accounts
+      if (stripeError.code === 'account_invalid') {
+        console.log('Invalid account, will create new one on next attempt');
+        await supabaseClient
+          .from('profiles')
+          .update({ 
+            stripe_account_id: null,
+            stripe_setup_complete: false
+          })
+          .eq('id', user.id);
+          
+        return new Response(
+          JSON.stringify({
+            error: 'account_invalid',
+            message: 'Your previous account setup was incomplete. Please try connecting again.',
+            shouldRetry: true
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400
+          }
+        );
+      }
+
+      throw stripeError;
     }
+
   } catch (error: any) {
     console.error('Error in create-connect-account:', error);
     return new Response(
       JSON.stringify({ 
         error: error.message,
+        type: error.type || 'unknown_error',
         details: error.stack
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
+        status: 500
       }
     );
   }

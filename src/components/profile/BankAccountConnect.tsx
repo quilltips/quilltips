@@ -17,8 +17,15 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
+    // Handle completion flow
+    if (searchParams.get('setup') === 'complete') {
+      toast({
+        title: "Account Setup",
+        description: "Your Stripe account setup has been completed successfully.",
+      });
+    }
     // Handle refresh flow
-    if (searchParams.get('refresh') === 'true' && stripeAccountId) {
+    else if (searchParams.get('refresh') === 'true' && stripeAccountId) {
       handleRefresh();
     }
   }, [searchParams, stripeAccountId]);
@@ -26,18 +33,27 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
   const handleStripeError = (error: any) => {
     console.error('Stripe error:', error);
     let errorMessage = 'Failed to connect bank account. Please try again.';
+    let variant: 'default' | 'destructive' = 'destructive';
 
-    if (error.code === 'account_invalid') {
-      errorMessage = 'Your Stripe account needs to be reconnected. Click again to set up a new connection.';
+    if (error.error === 'platform_setup_required') {
+      errorMessage = 'Platform setup is required. Please contact support for assistance.';
+    } else if (error.error === 'account_invalid') {
+      errorMessage = 'Your previous account setup was incomplete. Please try connecting again.';
+      variant = 'default';
     } else if (error.type === 'stripe_error') {
       errorMessage = error.message || 'There was an issue with the Stripe connection.';
     }
 
     toast({
-      title: "Connection Error",
+      title: "Connection Status",
       description: errorMessage,
-      variant: "destructive",
+      variant: variant,
     });
+
+    // If account was invalid and needs retry, clear the stored account ID
+    if (error.error === 'account_invalid' && error.shouldRetry) {
+      handleRefresh();
+    }
   };
 
   const handleRefresh = async () => {
@@ -53,23 +69,17 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         },
       });
 
-      if (error) {
-        console.error('Stripe Connect refresh error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       if (data.error) {
-        console.error('Stripe error response:', data);
         handleStripeError(data);
         return;
       }
 
       if (!data?.url) {
-        console.error('No URL returned from Stripe:', data);
         throw new Error('Failed to get Stripe onboarding URL');
       }
 
-      console.log('Redirecting to Stripe onboarding:', data.url);
       window.location.href = data.url;
     } catch (error: any) {
       console.error("Error refreshing onboarding:", error);
@@ -92,23 +102,17 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         },
       });
 
-      if (error) {
-        console.error('Stripe Connect setup error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       if (data.error) {
-        console.error('Stripe error response:', data);
         handleStripeError(data);
         return;
       }
 
       if (!data?.url) {
-        console.error('No URL returned from Stripe:', data);
         throw new Error('Failed to get Stripe onboarding URL');
       }
 
-      console.log('Redirecting to Stripe onboarding:', data.url);
       window.location.href = data.url;
     } catch (error: any) {
       console.error("Error connecting bank account:", error);
@@ -124,6 +128,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       variant="outline"
       onClick={stripeAccountId ? handleRefresh : connectBankAccount}
       disabled={isConnecting}
+      className="w-full sm:w-auto"
     >
       {isConnecting ? (
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
