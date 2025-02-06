@@ -9,6 +9,7 @@ import { QRCodePreview } from "@/components/qr/QRCodePreview";
 
 interface QRCodeResponse {
   url: string;
+  uniqodeId: string;
   error?: string;
   details?: string;
 }
@@ -32,6 +33,21 @@ const QRCodeDesign = () => {
       try {
         setIsGenerating(true);
         setQrCodePreview(null);
+
+        // First check if the QR code image already exists
+        const { data: existingQrCode, error: fetchError } = await supabase
+          .from('qr_codes')
+          .select('qr_code_image_url, qr_code_status')
+          .eq('id', qrCodeData.id)
+          .maybeSingle();
+
+        if (fetchError) throw fetchError;
+
+        if (existingQrCode?.qr_code_image_url && existingQrCode.qr_code_status === 'generated') {
+          console.log('Using existing QR code:', existingQrCode.qr_code_image_url);
+          setQrCodePreview(existingQrCode.qr_code_image_url);
+          return;
+        }
 
         console.log('Generating QR code with data:', {
           bookTitle: qrCodeData.book_title,

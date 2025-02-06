@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -48,17 +49,27 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         coverImageUrl = publicUrl;
       }
 
-      // Instead of creating the QR code here, we'll pass the data to the design page
+      // Create a record in the qr_codes table first
+      const { data: qrCode, error: qrError } = await supabase
+        .from('qr_codes')
+        .insert({
+          author_id: authorId,
+          book_title: bookTitle,
+          publisher,
+          isbn,
+          release_date: releaseDate?.toISOString(),
+          cover_image: coverImageUrl,
+          qr_code_status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (qrError) throw qrError;
+
+      // Navigate to the QR code design page with the created record
       navigate('/author/qr-design', {
         state: {
-          qrCodeData: {
-            author_id: authorId,
-            book_title: bookTitle,
-            publisher,
-            isbn,
-            release_date: releaseDate?.toISOString(),
-            cover_image: coverImageUrl
-          }
+          qrCodeData: qrCode
         }
       });
     } catch (error: any) {
