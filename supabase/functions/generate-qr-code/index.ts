@@ -11,7 +11,6 @@ interface QRCodeParams {
   bookTitle: string;
   authorId: string;
   qrCodeId: string;
-  template?: string;
 }
 
 serve(async (req) => {
@@ -21,8 +20,8 @@ serve(async (req) => {
   }
 
   try {
-    const { bookTitle, authorId, qrCodeId, template = 'basic' } = await req.json() as QRCodeParams;
-    console.log('Generating QR code for:', { bookTitle, authorId, qrCodeId, template });
+    const { bookTitle, authorId, qrCodeId } = await req.json() as QRCodeParams;
+    console.log('Generating QR code for:', { bookTitle, authorId, qrCodeId });
 
     // Create Supabase client
     const supabaseClient = createClient(
@@ -46,12 +45,12 @@ serve(async (req) => {
     const tipUrl = `${req.headers.get('origin')}/author/profile/${authorId}?qr=${qrCodeId}`;
     console.log('Generated tip URL:', tipUrl);
 
-    // Configure QR code options based on template
+    // Configure QR code payload
     const qrCodePayload = {
       name: `QR Code for ${bookTitle}`,
-      qr_type: 2, // Custom URL type
+      qr_type: 2, // Dynamic QR code
       campaign: {
-        content_type: 1,
+        content_type: 1, // Custom URL type
         custom_url: tipUrl
       },
       location_enabled: false,
@@ -62,7 +61,7 @@ serve(async (req) => {
         isVCard: false,
         frameText: 'Tip the author!',
         logoImage: 'https://quilltips.dev/public/lovable-uploads/4c722b40-1ed8-45e5-a9db-b2653f1b148b.png',
-        logoScale: 0.15,
+        logoScale: 0.1992,
         frameColor: '#2595ff',
         frameStyle: 'banner-bottom',
         logoMargin: 10,
@@ -74,25 +73,9 @@ serve(async (req) => {
       }
     };
 
-    // Add template-specific customizations
-    switch (template) {
-      case 'circular':
-        qrCodePayload.attributes.colorDark = '#1a365d';
-        qrCodePayload.attributes.frameColor = '#1a365d';
-        qrCodePayload.attributes.eyeFrameColor = '#1a365d';
-        break;
-      case 'artistic':
-        qrCodePayload.attributes.colorDark = '#2b6cb0';
-        qrCodePayload.attributes.frameColor = '#2b6cb0';
-        qrCodePayload.attributes.eyeFrameColor = '#2b6cb0';
-        break;
-      default:
-        break;
-    }
-
     console.log('Sending request to Uniqode API with payload:', JSON.stringify(qrCodePayload, null, 2));
 
-    // Call Uniqode API to generate QR code using v2.0 endpoint
+    // Call Uniqode API to generate QR code
     const uniqodeResponse = await fetch('https://api.uniqode.com/api/2.0/qrcodes/', {
       method: 'POST',
       headers: {
@@ -123,8 +106,7 @@ serve(async (req) => {
       .from('qr_codes')
       .update({
         qr_code_image_url: qrCodeImageUrl,
-        qr_code_status: 'generated',
-        template
+        qr_code_status: 'generated'
       })
       .eq('id', qrCodeId);
 

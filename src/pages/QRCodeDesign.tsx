@@ -8,12 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Book, Loader2 } from "lucide-react";
 
-const QR_CODE_TEMPLATES = [
-  { id: 'basic', name: 'Basic QR', preview: '/placeholder.svg' },
-  { id: 'circular', name: 'Circular Design', preview: '/placeholder.svg' },
-  { id: 'artistic', name: 'Artistic Pattern', preview: '/placeholder.svg' },
-];
-
 interface QRCodeResponse {
   url: string;
   error?: string;
@@ -24,7 +18,6 @@ const QRCodeDesign = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('basic');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [qrCodePreview, setQrCodePreview] = useState<string | null>(null);
@@ -36,25 +29,23 @@ const QRCodeDesign = () => {
       return;
     }
 
-    // Generate preview on template selection
-    const generatePreview = async () => {
+    // Generate QR code on component mount
+    const generateQRCode = async () => {
       try {
         setIsGenerating(true);
         setQrCodePreview(null); // Clear previous preview
 
-        console.log('Generating QR code preview with data:', {
+        console.log('Generating QR code with data:', {
           bookTitle: qrCodeData.book_title,
           authorId: qrCodeData.author_id,
-          qrCodeId: qrCodeData.id,
-          template: selectedTemplate
+          qrCodeId: qrCodeData.id
         });
 
         const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
           body: {
             bookTitle: qrCodeData.book_title,
             authorId: qrCodeData.author_id,
-            qrCodeId: qrCodeData.id,
-            template: selectedTemplate
+            qrCodeId: qrCodeData.id
           }
         });
 
@@ -80,8 +71,8 @@ const QRCodeDesign = () => {
       }
     };
 
-    generatePreview();
-  }, [qrCodeData, navigate, selectedTemplate, toast]);
+    generateQRCode();
+  }, [qrCodeData, navigate, toast]);
 
   const handleCheckout = async () => {
     try {
@@ -150,64 +141,45 @@ const QRCodeDesign = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold">{qrCodeData.book_title}</h1>
-              <p className="text-muted-foreground">Select a template for your QR code</p>
+              <p className="text-muted-foreground">Your QR code is being generated</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {QR_CODE_TEMPLATES.map((template) => (
-              <Card 
-                key={template.id}
-                className={`cursor-pointer transition-all ${
-                  selectedTemplate === template.id ? 'ring-2 ring-primary' : ''
-                }`}
-                onClick={() => setSelectedTemplate(template.id)}
-              >
-                <CardContent className="p-4 space-y-4">
-                  <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-                    {qrCodePreview && selectedTemplate === template.id ? (
-                      <img
-                        src={qrCodePreview}
-                        alt={template.name}
-                        className="w-full h-full object-contain"
-                      />
+          <Card className="overflow-hidden">
+            <CardContent className="p-6 flex flex-col items-center justify-center min-h-[400px]">
+              {isGenerating ? (
+                <div className="flex flex-col items-center gap-4">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p>Generating your QR code...</p>
+                </div>
+              ) : qrCodePreview ? (
+                <div className="flex flex-col items-center gap-6">
+                  <img
+                    src={qrCodePreview}
+                    alt="QR Code Preview"
+                    className="max-w-[300px] w-full"
+                  />
+                  <Button 
+                    onClick={handleCheckout}
+                    size="lg"
+                    className="w-full md:w-auto"
+                    disabled={isCheckingOut}
+                  >
+                    {isCheckingOut ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        {isGenerating ? (
-                          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                        ) : (
-                          <img
-                            src={template.preview}
-                            alt={template.name}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </div>
+                      'Purchase QR Code ($9.99)'
                     )}
-                  </div>
-                  <p className="font-medium text-center">{template.name}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="flex justify-end">
-            <Button 
-              onClick={handleCheckout}
-              size="lg"
-              className="w-full md:w-auto"
-              disabled={isCheckingOut || isGenerating || !qrCodePreview}
-            >
-              {isCheckingOut ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
+                  </Button>
+                </div>
               ) : (
-                'Checkout and Download ($9.99)'
+                <p className="text-muted-foreground">Failed to generate QR code preview</p>
               )}
-            </Button>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
@@ -215,4 +187,3 @@ const QRCodeDesign = () => {
 };
 
 export default QRCodeDesign;
-
