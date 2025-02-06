@@ -47,45 +47,59 @@ serve(async (req) => {
     console.log('Generated tip URL:', tipUrl);
 
     // Configure QR code options based on template
-    const qrOptions = {
-      backgroundColor: '#FFFFFF',
-      foregroundColor: '#000000',
-      logo: {
-        image: 'https://quilltips.dev/public/lovable-uploads/4c722b40-1ed8-45e5-a9db-b2653f1b148b.png',
-        size: 0.2
+    const qrCodePayload = {
+      name: `QR Code for ${bookTitle}`,
+      qr_type: 2, // Custom URL type
+      campaign: {
+        content_type: 1,
+        custom_url: tipUrl
       },
-      caption: {
-        text: 'Like the book? Tip the author!',
-        fontSize: 14,
-        color: '#000000',
-        position: 'bottom'
+      location_enabled: false,
+      attributes: {
+        color: '#2595ff',
+        colorDark: '#2595ff',
+        margin: 80,
+        isVCard: false,
+        frameText: 'Tip the author!',
+        logoImage: 'https://quilltips.dev/public/lovable-uploads/4c722b40-1ed8-45e5-a9db-b2653f1b148b.png',
+        logoScale: 0.15,
+        frameColor: '#2595ff',
+        frameStyle: 'banner-bottom',
+        logoMargin: 10,
+        dataPattern: 'square',
+        eyeBallShape: 'circle',
+        gradientType: 'none',
+        eyeFrameColor: '#2595ff',
+        eyeFrameShape: 'rounded'
       }
     };
 
     // Add template-specific customizations
     switch (template) {
       case 'circular':
-        qrOptions.foregroundColor = '#1a365d';
+        qrCodePayload.attributes.colorDark = '#1a365d';
+        qrCodePayload.attributes.frameColor = '#1a365d';
+        qrCodePayload.attributes.eyeFrameColor = '#1a365d';
         break;
       case 'artistic':
-        qrOptions.foregroundColor = '#2b6cb0';
+        qrCodePayload.attributes.colorDark = '#2b6cb0';
+        qrCodePayload.attributes.frameColor = '#2b6cb0';
+        qrCodePayload.attributes.eyeFrameColor = '#2b6cb0';
         break;
       default:
         break;
     }
 
-    // Call Uniqode API to generate QR code
-    const uniqodeResponse = await fetch('https://api.uniqode.com/v2/qr', {
+    console.log('Sending request to Uniqode API with payload:', JSON.stringify(qrCodePayload, null, 2));
+
+    // Call Uniqode API to generate QR code using v2.0 endpoint
+    const uniqodeResponse = await fetch('https://api.uniqode.com/api/2.0/qrcodes/', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('UNIQODE_API_KEY')}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Authorization': `Token ${Deno.env.get('UNIQODE_API_KEY')}`,
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        data: tipUrl,
-        options: qrOptions
-      })
+      body: JSON.stringify(qrCodePayload)
     });
 
     if (!uniqodeResponse.ok) {
@@ -95,13 +109,20 @@ serve(async (req) => {
     }
 
     const qrCodeData = await uniqodeResponse.json();
-    console.log('QR code generated successfully:', qrCodeData.url);
+    console.log('QR code generated successfully:', qrCodeData);
+
+    // Get the QR code image URL from the response
+    const qrCodeImageUrl = qrCodeData.qr_image || qrCodeData.url;
+
+    if (!qrCodeImageUrl) {
+      throw new Error('No QR code image URL in response');
+    }
 
     // Update the QR code record with the generated image URL
     const { error: updateError } = await supabaseClient
       .from('qr_codes')
       .update({
-        qr_code_image_url: qrCodeData.url,
+        qr_code_image_url: qrCodeImageUrl,
         qr_code_status: 'generated',
         template
       })
@@ -113,7 +134,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ url: qrCodeData.url }),
+      JSON.stringify({ url: qrCodeImageUrl }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200 
@@ -133,4 +154,3 @@ serve(async (req) => {
     );
   }
 });
-
