@@ -24,7 +24,7 @@ const QRCodeDesign = () => {
   const qrCodeData = location.state?.qrCodeData;
 
   useEffect(() => {
-    if (!qrCodeData) {
+    if (!qrCodeData?.id) {
       navigate('/author/create-qr');
       return;
     }

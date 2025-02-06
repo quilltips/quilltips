@@ -67,6 +67,7 @@ export type Database = {
           template: string
           total_amount: number | null
           total_tips: number | null
+          uniqode_qr_code_id: string | null
         }
         Insert: {
           author_id: string
@@ -86,6 +87,7 @@ export type Database = {
           template?: string
           total_amount?: number | null
           total_tips?: number | null
+          uniqode_qr_code_id?: string | null
         }
         Update: {
           author_id?: string
@@ -105,6 +107,7 @@ export type Database = {
           template?: string
           total_amount?: number | null
           total_tips?: number | null
+          uniqode_qr_code_id?: string | null
         }
         Relationships: [
           {
