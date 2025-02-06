@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from 'https://esm.sh/stripe@14.21.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
@@ -14,6 +15,8 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Starting create-connect-account function');
+    
     // Get the authenticated user
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -25,11 +28,20 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
     
     if (authError || !user) {
+      console.error('Auth error:', authError);
       throw new Error('Unauthorized');
     }
 
+    console.log('User authenticated:', user.id);
+
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+    if (!stripeSecretKey) {
+      console.error('Stripe secret key not found');
+      throw new Error('Stripe configuration error');
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
       apiVersion: '2023-10-16',
     });
 
@@ -40,6 +52,7 @@ serve(async (req) => {
       .eq('id', user.id)
       .single();
 
+    console.log('Profile data:', profile);
     let accountId = profile?.stripe_account_id;
 
     if (!accountId) {
@@ -53,6 +66,7 @@ serve(async (req) => {
         },
       });
       accountId = account.id;
+      console.log('Created Stripe account:', accountId);
 
       // Save the account ID to the user's profile
       const { error: updateError } = await supabaseClient
@@ -66,12 +80,17 @@ serve(async (req) => {
       }
     }
 
+    // Check account status
+    const account = await stripe.accounts.retrieve(accountId);
+    console.log('Account status:', account.details_submitted, account.payouts_enabled);
+
     // Create an account link for onboarding
     console.log('Creating account link for:', accountId);
+    const origin = req.headers.get('origin') || '';
     const accountLink = await stripe.accountLinks.create({
       account: accountId,
-      refresh_url: `${req.headers.get('origin')}/author/register?refresh=true`,
-      return_url: `${req.headers.get('origin')}/author/dashboard`,
+      refresh_url: `${origin}/author/settings?refresh=true`,
+      return_url: `${origin}/author/dashboard`,
       type: 'account_onboarding',
     });
 
@@ -80,7 +99,11 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         url: accountLink.url,
-        accountId: accountId 
+        accountId: accountId,
+        status: {
+          detailsSubmitted: account.details_submitted,
+          payoutsEnabled: account.payouts_enabled,
+        }
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -90,7 +113,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in create-connect-account:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: error.stack
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

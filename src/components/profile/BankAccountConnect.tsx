@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Loader2, Wallet } from "lucide-react";
@@ -28,21 +29,30 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('No session found');
 
+      console.log('Refreshing Stripe Connect account setup');
       const { data, error } = await supabase.functions.invoke('create-connect-account', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
 
-      if (error) throw error;
-      if (!data?.url) throw new Error('No URL returned from Stripe');
+      if (error) {
+        console.error('Stripe Connect refresh error:', error);
+        throw error;
+      }
 
+      if (!data?.url) {
+        console.error('No URL returned from Stripe:', data);
+        throw new Error('Failed to get Stripe onboarding URL');
+      }
+
+      console.log('Redirecting to Stripe onboarding:', data.url);
       window.location.href = data.url;
     } catch (error: any) {
       console.error("Error refreshing onboarding:", error);
       toast({
         title: "Refresh Error",
-        description: error.message || "Failed to refresh onboarding",
+        description: error.message || "Failed to refresh onboarding. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -56,21 +66,30 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('No session found');
 
+      console.log('Initiating Stripe Connect account setup');
       const { data, error } = await supabase.functions.invoke('create-connect-account', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
 
-      if (error) throw error;
-      if (!data?.url) throw new Error('No URL returned from Stripe');
+      if (error) {
+        console.error('Stripe Connect setup error:', error);
+        throw error;
+      }
 
+      if (!data?.url) {
+        console.error('No URL returned from Stripe:', data);
+        throw new Error('Failed to get Stripe onboarding URL');
+      }
+
+      console.log('Redirecting to Stripe onboarding:', data.url);
       window.location.href = data.url;
     } catch (error: any) {
       console.error("Error connecting bank account:", error);
       toast({
         title: "Connection Error",
-        description: error.message || "Failed to connect bank account",
+        description: error.message || "Failed to connect bank account. Please try again.",
         variant: "destructive",
       });
     } finally {
