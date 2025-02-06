@@ -30,6 +30,8 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
     const finalAmount = amount === 'custom' ? customAmount : amount;
 
     try {
+      console.log('Creating checkout session with params:', { amount: finalAmount, authorId, message, name, bookTitle, qrCodeId });
+      
       const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
         body: {
           amount: Number(finalAmount),
@@ -42,6 +44,7 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
       });
 
       if (error) throw error;
+      
       if (data.error) {
         if (data.code === 'ACCOUNT_SETUP_INCOMPLETE') {
           toast({
@@ -57,6 +60,7 @@ export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
 
       // Redirect to Stripe Checkout
       if (data.url) {
+        console.log('Redirecting to Stripe checkout:', data.url);
         window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received from server');
