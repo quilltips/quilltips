@@ -53,8 +53,7 @@ serve(async (req) => {
           backgroundColor: '#FFFFFF',
           foregroundColor: '#000000',
           logo: {
-            // TODO: Replace with actual Quilltips logo URL
-            // image: 'https://quilltips.com/logo.png',
+            image: 'https://quilltips.dev/public/lovable-uploads/4c722b40-1ed8-45e5-a9db-b2653f1b148b.png',
             size: 0.2 // 20% of QR code size
           },
           caption: {
