@@ -1,12 +1,11 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Book, Loader2 } from "lucide-react";
+import { QRCodeHeader } from "@/components/qr/QRCodeHeader";
+import { QRCodePreview } from "@/components/qr/QRCodePreview";
 
 interface QRCodeResponse {
   url: string;
@@ -29,11 +28,10 @@ const QRCodeDesign = () => {
       return;
     }
 
-    // Generate QR code on component mount
     const generateQRCode = async () => {
       try {
         setIsGenerating(true);
-        setQrCodePreview(null); // Clear previous preview
+        setQrCodePreview(null);
 
         console.log('Generating QR code with data:', {
           bookTitle: qrCodeData.book_title,
@@ -125,61 +123,16 @@ const QRCodeDesign = () => {
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto space-y-8">
-          <div className="flex items-start gap-6">
-            <div className="w-32 h-44 flex-shrink-0 overflow-hidden rounded-lg shadow-md">
-              {qrCodeData.cover_image ? (
-                <img
-                  src={qrCodeData.cover_image}
-                  alt={qrCodeData.book_title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-muted flex items-center justify-center">
-                  <Book className="h-8 w-8 text-muted-foreground" />
-                </div>
-              )}
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">{qrCodeData.book_title}</h1>
-              <p className="text-muted-foreground">Your QR code is being generated</p>
-            </div>
-          </div>
-
-          <Card className="overflow-hidden">
-            <CardContent className="p-6 flex flex-col items-center justify-center min-h-[400px]">
-              {isGenerating ? (
-                <div className="flex flex-col items-center gap-4">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  <p>Generating your QR code...</p>
-                </div>
-              ) : qrCodePreview ? (
-                <div className="flex flex-col items-center gap-6">
-                  <img
-                    src={qrCodePreview}
-                    alt="QR Code Preview"
-                    className="max-w-[300px] w-full"
-                  />
-                  <Button 
-                    onClick={handleCheckout}
-                    size="lg"
-                    className="w-full md:w-auto"
-                    disabled={isCheckingOut}
-                  >
-                    {isCheckingOut ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      'Purchase QR Code ($9.99)'
-                    )}
-                  </Button>
-                </div>
-              ) : (
-                <p className="text-muted-foreground">Failed to generate QR code preview</p>
-              )}
-            </CardContent>
-          </Card>
+          <QRCodeHeader
+            coverImage={qrCodeData.cover_image}
+            bookTitle={qrCodeData.book_title}
+          />
+          <QRCodePreview
+            isGenerating={isGenerating}
+            qrCodePreview={qrCodePreview}
+            onCheckout={handleCheckout}
+            isCheckingOut={isCheckingOut}
+          />
         </div>
       </main>
     </div>
