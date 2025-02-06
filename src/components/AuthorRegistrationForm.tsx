@@ -8,9 +8,8 @@ import { InitialRegistrationFields } from "./InitialRegistrationFields";
 import { Alert, AlertDescription } from "./ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { EmbeddedStripeConnect } from "./stripe/EmbeddedStripeConnect";
-import { PaymentSetupChoice } from "./PaymentSetupChoice";
 
-type RegistrationStep = "initial" | "details" | "payment-choice" | "stripe-onboarding";
+type RegistrationStep = "initial" | "details" | "stripe-onboarding";
 
 export const AuthorRegistrationForm = () => {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>("initial");
@@ -97,11 +96,11 @@ export const AuthorRegistrationForm = () => {
       }
 
       console.log("Registration successful:", data);
-      setCurrentStep("payment-choice");
+      setCurrentStep("stripe-onboarding");
       
       toast({
         title: "Registration successful!",
-        description: "Please choose whether to set up payments now or later.",
+        description: "Let's set up your payment details to start receiving tips.",
       });
     } catch (err: any) {
       console.error("Registration error:", err);
@@ -123,14 +122,6 @@ export const AuthorRegistrationForm = () => {
     toast({
       title: "Onboarding Complete",
       description: "Your Stripe Connect account has been set up successfully.",
-    });
-    navigate("/author/dashboard");
-  };
-
-  const handleSkipOnboarding = () => {
-    toast({
-      title: "Setup Skipped",
-      description: "You can set up payments later from your dashboard.",
     });
     navigate("/author/dashboard");
   };
@@ -174,19 +165,14 @@ export const AuthorRegistrationForm = () => {
         </form>
       )}
 
-      {currentStep === "payment-choice" && (
-        <PaymentSetupChoice
-          onContinue={() => setCurrentStep("stripe-onboarding")}
-          onSkip={handleSkipOnboarding}
-        />
-      )}
-
       {currentStep === "stripe-onboarding" && (
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-[#2D3748]">Set Up Payments</h2>
-          <p className="text-muted-foreground">
-            Complete your Stripe Connect onboarding to start receiving tips
-          </p>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold text-[#2D3748]">Set Up Payments</h2>
+            <p className="text-muted-foreground">
+              Complete your Stripe Connect onboarding to start receiving tips
+            </p>
+          </div>
           <EmbeddedStripeConnect onComplete={handleOnboardingComplete} />
         </div>
       )}
