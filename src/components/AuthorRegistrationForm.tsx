@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
-import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { AuthorRegistrationFields } from "./AuthorRegistrationFields";
-import { InitialRegistrationFields } from "./InitialRegistrationFields";
-import { Alert, AlertDescription } from "./ui/alert";
 import { supabase } from "@/integrations/supabase/client";
-import { EmbeddedStripeConnect } from "./stripe/EmbeddedStripeConnect";
+import { RegistrationStepInitial } from "./registration/RegistrationStepInitial";
+import { RegistrationStepDetails } from "./registration/RegistrationStepDetails";
+import { RegistrationStepStripe } from "./registration/RegistrationStepStripe";
 
 type RegistrationStep = "initial" | "details" | "stripe-onboarding";
 
@@ -63,7 +61,6 @@ export const AuthorRegistrationForm = () => {
         throw signUpError;
       }
 
-      // Handle avatar upload after successful registration
       if (avatarFile && data.user) {
         const fileExt = avatarFile.name.split('.').pop();
         const filePath = `${data.user.id}-${Date.now()}.${fileExt}`;
@@ -129,52 +126,23 @@ export const AuthorRegistrationForm = () => {
   return (
     <Card className="auth-card max-w-md mx-auto animate-enter">
       {currentStep === "initial" && (
-        <InitialRegistrationFields
+        <RegistrationStepInitial
           isLoading={isLoading}
           onNext={handleInitialSubmit}
         />
       )}
 
       {currentStep === "details" && (
-        <form onSubmit={handleDetailsSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-semibold text-[#2D3748]">Complete your profile</h2>
-            <p className="text-muted-foreground">
-              Tell readers about yourself
-            </p>
-          </div>
-
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          <AuthorRegistrationFields 
-            isLoading={isLoading} 
-            onAvatarSelected={(file) => setAvatarFile(file)}
-          />
-
-          <Button
-            type="submit"
-            className="w-full bg-[#FEC6A1] hover:bg-[#FEC6A1]/90 text-[#2D3748]"
-            disabled={isLoading}
-          >
-            {isLoading ? "Creating account..." : "Continue"}
-          </Button>
-        </form>
+        <RegistrationStepDetails
+          isLoading={isLoading}
+          error={error}
+          onAvatarSelected={(file) => setAvatarFile(file)}
+          onSubmit={handleDetailsSubmit}
+        />
       )}
 
       {currentStep === "stripe-onboarding" && (
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-semibold text-[#2D3748]">Set Up Payments</h2>
-            <p className="text-muted-foreground">
-              Complete your Stripe Connect onboarding to start receiving tips
-            </p>
-          </div>
-          <EmbeddedStripeConnect onComplete={handleOnboardingComplete} />
-        </div>
+        <RegistrationStepStripe onComplete={handleOnboardingComplete} />
       )}
     </Card>
   );
