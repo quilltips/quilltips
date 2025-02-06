@@ -65,13 +65,6 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       if (error) throw error;
       if (!data?.url) throw new Error('No URL returned from Stripe');
 
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ stripe_account_id: data.accountId })
-        .eq('id', profileId);
-
-      if (updateError) throw updateError;
-
       window.location.href = data.url;
     } catch (error: any) {
       console.error("Error connecting bank account:", error);

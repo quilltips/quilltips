@@ -33,20 +33,43 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    // Create a new Connect account
-    console.log('Creating new Stripe Connect account for user:', user.id);
-    const account = await stripe.accounts.create({
-      type: 'express',
-      email: user.email,
-      metadata: {
-        supabaseUserId: user.id,
-      },
-    });
+    // Check if user already has a Stripe account
+    const { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('stripe_account_id')
+      .eq('id', user.id)
+      .single();
+
+    let accountId = profile?.stripe_account_id;
+
+    if (!accountId) {
+      // Create a new Connect account
+      console.log('Creating new Stripe Connect account for user:', user.id);
+      const account = await stripe.accounts.create({
+        type: 'express',
+        email: user.email,
+        metadata: {
+          supabaseUserId: user.id,
+        },
+      });
+      accountId = account.id;
+
+      // Save the account ID to the user's profile
+      const { error: updateError } = await supabaseClient
+        .from('profiles')
+        .update({ stripe_account_id: accountId })
+        .eq('id', user.id);
+
+      if (updateError) {
+        console.error('Error updating profile:', updateError);
+        throw updateError;
+      }
+    }
 
     // Create an account link for onboarding
-    console.log('Creating account link for:', account.id);
+    console.log('Creating account link for:', accountId);
     const accountLink = await stripe.accountLinks.create({
-      account: account.id,
+      account: accountId,
       refresh_url: `${req.headers.get('origin')}/author/register?refresh=true`,
       return_url: `${req.headers.get('origin')}/author/dashboard`,
       type: 'account_onboarding',
@@ -54,18 +77,16 @@ serve(async (req) => {
 
     console.log('Account link created:', accountLink.url);
     
-    // Save the account ID to the user's profile
-    const { error: updateError } = await supabaseClient
-      .from('profiles')
-      .update({ stripe_account_id: account.id })
-      .eq('id', user.id);
-
-    if (updateError) {
-      console.error('Error updating profile:', updateError);
-      throw updateError;
-    }
-
-    
+    return new Response(
+      JSON.stringify({ 
+        url: accountLink.url,
+        accountId: accountId 
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      }
+    );
   } catch (error) {
     console.error('Error in create-connect-account:', error);
     return new Response(
