@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import Index from "./pages/Index";
@@ -9,6 +10,7 @@ import CreateQRPage from "./pages/CreateQRPage";
 import AuthorPublicProfile from "./pages/AuthorPublicProfile";
 import AuthorSettings from "./pages/AuthorSettings";
 import QRCodeDetails from "./pages/QRCodeDetails";
+import QRCodeDesign from "./pages/QRCodeDesign";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
@@ -28,6 +30,7 @@ function App() {
           <Route path="/author/bank-account" element={<AuthorBankAccount />} />
           <Route path="/author/settings" element={<AuthorSettings />} />
           <Route path="/author/create-qr" element={<CreateQRPage />} />
+          <Route path="/author/qr-design" element={<QRCodeDesign />} />
           <Route path="/author/profile/:id" element={<AuthorPublicProfile />} />
           <Route path="/qr/:id" element={<QRCodeDetails />} />
           <Route path="/about" element={<About />} />

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Book, Loader2 } from "lucide-react";
@@ -14,18 +14,26 @@ const QR_CODE_TEMPLATES = [
   { id: 'artistic', name: 'Artistic Pattern', preview: '/placeholder.svg' },
 ];
 
+interface QRCodeResponse {
+  url: string;
+  error?: string;
+}
+
 const QRCodeDesign = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedTemplate, setSelectedTemplate] = useState<string>('basic');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [qrCodePreview, setQrCodePreview] = useState<string | null>(null);
   const qrCodeData = location.state?.qrCodeData;
 
-  if (!qrCodeData) {
-    navigate('/author/create-qr');
-    return null;
-  }
+  useEffect(() => {
+    if (!qrCodeData) {
+      navigate('/author/create-qr');
+      return;
+    }
+  }, [qrCodeData, navigate]);
 
   const handleCheckout = async () => {
     try {
@@ -37,6 +45,7 @@ const QRCodeDesign = () => {
         .insert([{ 
           ...qrCodeData,
           template: selectedTemplate,
+          qr_code_status: 'pending'
         }])
         .select()
         .single();
@@ -44,7 +53,7 @@ const QRCodeDesign = () => {
       if (qrError) throw qrError;
 
       // Generate the QR code using our Edge Function
-      const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke('generate-qr-code', {
+      const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
         body: {
           bookTitle: qrCodeData.book_title,
           authorId: qrCodeData.author_id,
@@ -52,10 +61,18 @@ const QRCodeDesign = () => {
         }
       });
 
-      if (qrGenError) throw qrGenError;
+      if (qrGenError || qrResponse?.error) {
+        throw new Error(qrGenError?.message || qrResponse?.error || 'Failed to generate QR code');
+      }
+
+      if (!qrResponse?.url) {
+        throw new Error('No QR code URL returned');
+      }
+
+      setQrCodePreview(qrResponse.url);
 
       // Create Stripe checkout session
-      const { data, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
         body: { 
           qrCodeId: qrCode.id,
           bookTitle: qrCodeData.book_title
@@ -63,9 +80,9 @@ const QRCodeDesign = () => {
       });
 
       if (checkoutError) throw checkoutError;
-      if (!data?.url) throw new Error("No checkout URL returned");
+      if (!checkoutData?.url) throw new Error("No checkout URL returned");
 
-      window.location.href = data.url;
+      window.location.href = checkoutData.url;
     } catch (error: any) {
       console.error("Error in checkout process:", error);
       toast({
@@ -76,6 +93,10 @@ const QRCodeDesign = () => {
       setIsGenerating(false);
     }
   };
+
+  if (!qrCodeData) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen">
@@ -113,7 +134,7 @@ const QRCodeDesign = () => {
               >
                 <CardContent className="p-4 space-y-4">
                   <img
-                    src={template.preview}
+                    src={qrCodePreview || template.preview}
                     alt={template.name}
                     className="w-full aspect-square object-cover rounded-lg"
                   />
@@ -122,6 +143,17 @@ const QRCodeDesign = () => {
               </Card>
             ))}
           </div>
+
+          {qrCodePreview && (
+            <div className="text-center">
+              <h2 className="text-xl font-semibold mb-4">Preview Your QR Code</h2>
+              <img 
+                src={qrCodePreview} 
+                alt="QR Code Preview" 
+                className="mx-auto max-w-xs rounded-lg shadow-lg"
+              />
+            </div>
+          )}
 
           <div className="flex justify-end">
             <Button 
