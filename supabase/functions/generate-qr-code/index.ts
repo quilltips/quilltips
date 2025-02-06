@@ -48,6 +48,7 @@ serve(async (req) => {
     // Configure QR code payload
     const qrCodePayload = {
       name: `QR Code for ${bookTitle}`,
+      organization: parseInt(Deno.env.get('UNIQODE_ORGANIZATION_ID') || '0', 10),
       qr_type: 2, // Dynamic QR code
       campaign: {
         content_type: 1, // Custom URL type
