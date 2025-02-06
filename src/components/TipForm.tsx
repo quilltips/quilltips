@@ -1,15 +1,9 @@
+
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  Elements,
-  useStripe,
-  useElements,
-  CardElement,
-} from "@stripe/react-stripe-js";
 import { TipAmountSelector } from "./tip/TipAmountSelector";
 import { TipMessageForm } from "./tip/TipMessageForm";
 import { PaymentForm } from "./tip/PaymentForm";
@@ -21,9 +15,7 @@ interface TipFormProps {
   qrCodeId?: string;
 }
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-
-const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormProps) => {
+export const TipForm = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormProps) => {
   const [amount, setAmount] = useState("5");
   const [customAmount, setCustomAmount] = useState("");
   const [message, setMessage] = useState("");
@@ -31,13 +23,9 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const stripe = useStripe();
-  const elements = useElements();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!stripe || !elements) return;
-
     setIsLoading(true);
     const finalAmount = amount === 'custom' ? customAmount : amount;
 
@@ -67,40 +55,17 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
         throw new Error(data.error);
       }
 
-      if (!data.clientSecret) {
-        throw new Error('No payment intent received from server');
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received from server');
       }
-
-      const cardElement = elements.getElement(CardElement);
-      if (!cardElement) {
-        throw new Error('Card element not found');
-      }
-
-      const { error: stripeError } = await stripe.confirmCardPayment(data.clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: name || 'Anonymous',
-          },
-        }
-      });
-
-      if (stripeError) {
-        throw stripeError;
-      }
-
-      toast({
-        title: "Thank you for your support!",
-        description: "Your tip has been processed successfully.",
-      });
-
-      if (onSuccess) onSuccess();
-      navigate(`/author/${authorId}`);
 
     } catch (error: any) {
-      console.error('Error processing payment:', error);
+      console.error('Error creating checkout session:', error);
       toast({
-        title: "Payment Error",
+        title: "Error",
         description: error.message || "Failed to process payment",
         variant: "destructive",
       });
@@ -131,17 +96,8 @@ const TipFormContent = ({ authorId, onSuccess, bookTitle, qrCodeId }: TipFormPro
           amount={amount}
           customAmount={customAmount}
           onSubmit={handleSubmit}
-          stripe={stripe}
         />
       </div>
     </Card>
-  );
-};
-
-export const TipForm = (props: TipFormProps) => {
-  return (
-    <Elements stripe={stripePromise}>
-      <TipFormContent {...props} />
-    </Elements>
   );
 };
