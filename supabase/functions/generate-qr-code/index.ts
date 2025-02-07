@@ -93,11 +93,14 @@ serve(async (req) => {
     }
 
     const qrCodeData = await uniqodeResponse.json();
-    console.log('QR code generated successfully:', qrCodeData);
+    console.log('Initial QR code response:', qrCodeData);
 
     // Get the uniqode QR code ID for future reference
     const uniqodeQrCodeId = qrCodeData.id.toString();
     
+    // Wait a moment to ensure the QR code is processed
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     // Retrieve the QR code image specifically
     const retrieveQrResponse = await fetch(`https://api.uniqode.com/api/2.0/qrcodes/${uniqodeQrCodeId}/`, {
       headers: {
@@ -113,11 +116,19 @@ serve(async (req) => {
     }
 
     const qrDetails = await retrieveQrResponse.json();
-    const qrCodeImageUrl = qrDetails.qr_image;
+    console.log('Retrieved QR code details:', qrDetails);
 
-    if (!qrCodeImageUrl) {
-      throw new Error('No QR code image URL in response');
+    if (!qrDetails.qr_image) {
+      // Try to get the image URL from the original response if available
+      const qrCodeImageUrl = qrCodeData.qr_image || qrDetails.url;
+      if (!qrCodeImageUrl) {
+        throw new Error('No QR code image URL found in either response');
+      }
+      console.log('Using fallback QR code URL:', qrCodeImageUrl);
     }
+
+    const qrCodeImageUrl = qrDetails.qr_image;
+    console.log('Final QR code image URL:', qrCodeImageUrl);
 
     // Update the QR code record with the generated image URL and Uniqode ID
     const { error: updateError } = await supabaseClient

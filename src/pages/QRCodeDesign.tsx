@@ -73,6 +73,19 @@ const QRCodeDesign = () => {
 
         console.log('QR code preview generated:', qrResponse.url);
         setQrCodePreview(qrResponse.url);
+
+        // Verify the QR code was properly stored
+        const { data: verifyQrCode, error: verifyError } = await supabase
+          .from('qr_codes')
+          .select('qr_code_image_url')
+          .eq('id', qrCodeData.id)
+          .single();
+
+        if (verifyError || !verifyQrCode.qr_code_image_url) {
+          console.error('Failed to verify QR code storage:', verifyError);
+          throw new Error('Failed to verify QR code was properly stored');
+        }
+
       } catch (error: any) {
         console.error("Error generating preview:", error);
         toast({
