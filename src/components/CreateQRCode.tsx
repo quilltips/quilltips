@@ -40,7 +40,12 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           .from('covers')
           .upload(filePath, coverImage);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          if (uploadError.message.includes('duplicate')) {
+            throw new Error('A QR code with this ISBN already exists');
+          }
+          throw uploadError;
+        }
 
         const { data: { publicUrl } } = supabase.storage
           .from('covers')
@@ -64,7 +69,12 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         .select()
         .single();
 
-      if (qrError) throw qrError;
+      if (qrError) {
+        if (qrError.message.includes('qr_codes_isbn_unique')) {
+          throw new Error('A QR code with this ISBN already exists');
+        }
+        throw qrError;
+      }
 
       // Navigate to the QR code design page with the created record
       navigate('/author/qr-design', {
@@ -76,7 +86,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
       console.error("Error preparing QR code:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to prepare QR code",
+        description: error.message || "Failed to prepare QR code. Please try again.",
         variant: "destructive",
       });
     } finally {
