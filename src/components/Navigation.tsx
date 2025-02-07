@@ -8,6 +8,7 @@ import { useSession } from '@supabase/auth-helpers-react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { UserMenu } from "./navigation/UserMenu";
 import { GuestMenu } from "./navigation/GuestMenu";
+import { SearchBar } from "./navigation/SearchBar";
 
 export const Navigation = () => {
   const [isAuthor, setIsAuthor] = useState(false);
@@ -80,15 +81,8 @@ export const Navigation = () => {
   };
 
   const NavLinks = () => (
-    <>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        onClick={() => navigate('/search')}
-        className="hover:bg-secondary/20"
-      >
-        <Search className="h-5 w-5" />
-      </Button>
+    <div className="flex items-center gap-4">
+      <SearchBar />
       {session ? (
         <UserMenu 
           isAuthor={isAuthor}
@@ -99,34 +93,34 @@ export const Navigation = () => {
       ) : (
         <GuestMenu />
       )}
-    </>
+    </div>
   );
 
   return (
-    <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm border-b border-border z-50">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+    <nav className="fixed top-0 w-full bg-white/60 backdrop-blur-xl border-b border-border/40 z-50">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link 
             to={isAuthor ? "/author/dashboard" : "/"} 
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
             <img 
               src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" 
               alt="Quilltips Logo" 
-              className="h-6 w-auto"
+              className="h-5 w-auto"
             />
-            <span className="text-xl font-semibold">quilltips</span>
+            <span className="text-lg font-medium">quilltips</span>
           </Link>
         </div>
         
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:block">
           <NavLinks />
         </div>
 
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="hover:bg-accent/10">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>

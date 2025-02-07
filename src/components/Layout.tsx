@@ -1,3 +1,4 @@
+
 import { Navigation } from "./Navigation";
 import { Footer } from "./Footer";
 
@@ -7,9 +8,9 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navigation />
-      <main className="flex-grow">
+      <main className="flex-grow pt-16">
         {children}
       </main>
       <Footer />
