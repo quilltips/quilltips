@@ -2,6 +2,7 @@
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { QRCodeCanvas } from "qrcode.react";
 
 interface QRCodePreviewProps {
   isGenerating: boolean;
@@ -26,11 +27,17 @@ export const QRCodePreview = ({
           </div>
         ) : qrCodePreview ? (
           <div className="flex flex-col items-center gap-6">
-            <img
-              src={qrCodePreview}
-              alt="QR Code Preview"
-              className="max-w-[300px] w-full"
-            />
+            <div className="max-w-[300px] w-full p-4 bg-white rounded-lg">
+              <QRCodeCanvas
+                value={qrCodePreview}
+                size={300}
+                level="H"
+                includeMargin
+                bgColor="#ffffff"
+                fgColor="#000000"
+                style={{ width: '100%', height: 'auto' }}
+              />
+            </div>
             <Button 
               onClick={onCheckout}
               size="lg"

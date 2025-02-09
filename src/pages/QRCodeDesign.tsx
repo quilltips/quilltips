@@ -34,7 +34,7 @@ const QRCodeDesign = () => {
         setIsGenerating(true);
         setQrCodePreview(null);
 
-        // First check if the QR code image already exists
+        // First check if the QR code already exists
         const { data: existingQrCode, error: fetchError } = await supabase
           .from('qr_codes')
           .select('qr_code_image_url, qr_code_status')
@@ -43,13 +43,19 @@ const QRCodeDesign = () => {
 
         if (fetchError) throw fetchError;
 
+        // If we have an existing QR code that's been generated, use its URL
         if (existingQrCode?.qr_code_image_url && existingQrCode.qr_code_status === 'generated') {
-          console.log('Using existing QR code:', existingQrCode.qr_code_image_url);
+          console.log('Using existing QR code URL:', existingQrCode.qr_code_image_url);
           setQrCodePreview(existingQrCode.qr_code_image_url);
           return;
         }
 
-        // Call the edge function to generate the QR code
+        // Generate a new QR code URL for scanning
+        const tipUrl = `${window.location.origin}/author/profile/${qrCodeData.author_id}?qr=${qrCodeData.id}`;
+        console.log('Setting QR code preview URL:', tipUrl);
+        setQrCodePreview(tipUrl);
+
+        // Call the edge function to generate and store the QR code
         const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
           body: {
             bookTitle: qrCodeData.book_title,
@@ -61,8 +67,7 @@ const QRCodeDesign = () => {
         if (qrGenError) throw qrGenError;
         if (!qrResponse?.url) throw new Error('No QR code URL returned');
 
-        console.log('QR code generated:', qrResponse.url);
-        setQrCodePreview(qrResponse.url);
+        console.log('QR code generated and stored:', qrResponse.url);
 
       } catch (error: any) {
         console.error("Error generating QR code:", error);
