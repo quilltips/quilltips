@@ -93,49 +93,18 @@ serve(async (req) => {
     }
 
     const qrCodeData = await uniqodeResponse.json();
-    console.log('Initial QR code response:', qrCodeData);
+    console.log('QR code response:', qrCodeData);
 
-    // Get the uniqode QR code ID for future reference
-    const uniqodeQrCodeId = qrCodeData.id.toString();
-    
-    // Wait a moment to ensure the QR code is processed
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Retrieve the QR code image specifically
-    const retrieveQrResponse = await fetch(`https://api.uniqode.com/api/2.0/qrcodes/${uniqodeQrCodeId}/`, {
-      headers: {
-        'Authorization': `Token ${Deno.env.get('UNIQODE_API_KEY')}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!retrieveQrResponse.ok) {
-      const errorText = await retrieveQrResponse.text();
-      console.error('Error retrieving QR code details:', errorText);
-      throw new Error(`Failed to retrieve QR code details: ${retrieveQrResponse.status} ${errorText}`);
+    if (!qrCodeData.url) {
+      throw new Error('No QR code URL found in response');
     }
 
-    const qrDetails = await retrieveQrResponse.json();
-    console.log('Retrieved QR code details:', qrDetails);
-
-    if (!qrDetails.qr_image) {
-      // Try to get the image URL from the original response if available
-      const qrCodeImageUrl = qrCodeData.qr_image || qrDetails.url;
-      if (!qrCodeImageUrl) {
-        throw new Error('No QR code image URL found in either response');
-      }
-      console.log('Using fallback QR code URL:', qrCodeImageUrl);
-    }
-
-    const qrCodeImageUrl = qrDetails.qr_image;
-    console.log('Final QR code image URL:', qrCodeImageUrl);
-
-    // Update the QR code record with the generated image URL and Uniqode ID
+    // Update the QR code record with the generated URL and Uniqode ID
     const { error: updateError } = await supabaseClient
       .from('qr_codes')
       .update({
-        qr_code_image_url: qrCodeImageUrl,
-        uniqode_qr_code_id: uniqodeQrCodeId,
+        qr_code_image_url: qrCodeData.url,
+        uniqode_qr_code_id: qrCodeData.id.toString(),
         qr_code_status: 'generated'
       })
       .eq('id', qrCodeId);
@@ -147,8 +116,8 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ 
-        url: qrCodeImageUrl,
-        uniqodeId: uniqodeQrCodeId 
+        url: qrCodeData.url,
+        uniqodeId: qrCodeData.id.toString()
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
