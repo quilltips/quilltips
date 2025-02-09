@@ -49,12 +49,7 @@ const QRCodeDesign = () => {
           return;
         }
 
-        console.log('Generating QR code with data:', {
-          bookTitle: qrCodeData.book_title,
-          authorId: qrCodeData.author_id,
-          qrCodeId: qrCodeData.id
-        });
-
+        // Call the edge function to generate the QR code
         const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
           body: {
             bookTitle: qrCodeData.book_title,
@@ -63,34 +58,17 @@ const QRCodeDesign = () => {
           }
         });
 
-        if (qrGenError) {
-          throw qrGenError;
-        }
+        if (qrGenError) throw qrGenError;
+        if (!qrResponse?.url) throw new Error('No QR code URL returned');
 
-        if (!qrResponse?.url) {
-          throw new Error('No QR code URL returned');
-        }
-
-        console.log('QR code preview generated:', qrResponse.url);
+        console.log('QR code generated:', qrResponse.url);
         setQrCodePreview(qrResponse.url);
 
-        // Verify the QR code was properly stored
-        const { data: verifyQrCode, error: verifyError } = await supabase
-          .from('qr_codes')
-          .select('qr_code_image_url')
-          .eq('id', qrCodeData.id)
-          .single();
-
-        if (verifyError || !verifyQrCode.qr_code_image_url) {
-          console.error('Failed to verify QR code storage:', verifyError);
-          throw new Error('Failed to verify QR code was properly stored');
-        }
-
       } catch (error: any) {
-        console.error("Error generating preview:", error);
+        console.error("Error generating QR code:", error);
         toast({
           title: "Error",
-          description: error.message || "Failed to generate QR code preview",
+          description: error.message || "Failed to generate QR code",
           variant: "destructive",
         });
       } finally {
@@ -113,29 +91,16 @@ const QRCodeDesign = () => {
         }
       });
 
-      if (checkoutError) {
-        throw new Error(`Checkout error: ${checkoutError.message}`);
-      }
-
-      if (!checkoutResponse?.url) {
-        throw new Error("No checkout URL returned");
-      }
+      if (checkoutError) throw checkoutError;
+      if (!checkoutResponse?.url) throw new Error("No checkout URL returned");
 
       console.log('Redirecting to checkout:', checkoutResponse.url);
       window.location.href = checkoutResponse.url;
     } catch (error: any) {
       console.error("Error in checkout process:", error);
-      let errorMessage = error.message;
-      
-      if (error.status === 401) {
-        errorMessage = "Please log in to complete your purchase";
-      } else if (error.status === 400) {
-        errorMessage = "Invalid request. Please try again";
-      }
-      
       toast({
         title: "Error",
-        description: errorMessage || "Failed to process checkout",
+        description: error.message || "Failed to process checkout",
         variant: "destructive",
       });
     } finally {
@@ -143,9 +108,7 @@ const QRCodeDesign = () => {
     }
   };
 
-  if (!qrCodeData) {
-    return null;
-  }
+  if (!qrCodeData) return null;
 
   return (
     <div className="min-h-screen">
