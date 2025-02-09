@@ -157,12 +157,11 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Cover Image</label>
+          <label className="text-sm font-medium">Cover Image (Optional)</label>
           <Input
             type="file"
             accept="image/*"
             onChange={(e) => setCoverImage(e.target.files?.[0] || null)}
-            required
             className="text-left"
           />
         </div>
