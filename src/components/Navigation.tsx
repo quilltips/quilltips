@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, Search } from "lucide-react";
 import { Button } from "./ui/button";
@@ -97,7 +98,7 @@ export const Navigation = () => {
   );
 
   return (
-    <nav className="fixed top-0 w-full bg-white/60 backdrop-blur-xl border-b border-border/40 z-50">
+    <nav className="fixed top-0 w-full bg-background/50 backdrop-blur-sm z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link 
