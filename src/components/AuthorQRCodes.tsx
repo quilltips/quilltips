@@ -1,9 +1,11 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { QRCodeDialog } from "./qr/QRCodeDialog";
+import { Loader2 } from "lucide-react";
 
 interface AuthorQRCodesProps {
   authorId: string;
@@ -23,7 +25,7 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
         .from('qr_codes')
         .select('*')
         .eq('author_id', authorId)
-        .limit(3);
+        .order('book_title', { ascending: true });
 
       if (error) throw error;
       return data;
@@ -31,23 +33,33 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
   });
 
   if (isLoading) {
-    return <div>Loading QR codes...</div>;
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
   if (!qrCodes?.length) {
-    return null;
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-center text-muted-foreground">
+            No books available yet.
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {qrCodes.map((qrCode) => (
           <Card key={qrCode.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-lg">{qrCode.book_title}</CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="space-y-4">
+                <h3 className="text-xl font-semibold">{qrCode.book_title}</h3>
                 {qrCode.publisher && (
                   <p className="text-sm text-muted-foreground">
                     Published by {qrCode.publisher}
