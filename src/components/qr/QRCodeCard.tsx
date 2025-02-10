@@ -7,6 +7,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { QRCodeCardDetails } from "./QRCodeCardDetails";
 import { QRCodeCanvas } from "qrcode.react";
+import { useNavigate } from "react-router-dom";
 
 interface QRCodeCardProps {
   qrCode: any;
@@ -15,8 +16,10 @@ interface QRCodeCardProps {
 
 export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleDownload = () => {
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const canvas = document.getElementById(`qr-${qrCode.id}`) as HTMLCanvasElement;
     if (canvas) {
       const url = canvas.toDataURL("image/png");
@@ -32,9 +35,12 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
   const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
   return (
-    <Card className="overflow-hidden transition-all duration-200">
+    <Card 
+      className="overflow-hidden transition-all duration-200 cursor-pointer hover:bg-muted/50" 
+      onClick={() => navigate(`/qr/${qrCode.id}`)}
+    >
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="p-4 grid grid-cols-12 items-center gap-4 hover:bg-muted/50 cursor-pointer">
+        <div className="p-4 grid grid-cols-12 items-center gap-4">
           <div className="col-span-2 bg-white p-2 rounded-lg">
             <QRCodeCanvas
               id={`qr-${qrCode.id}`}
@@ -45,8 +51,18 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
               className="w-full h-auto"
             />
           </div>
+
+          <div className="col-span-2">
+            <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted">
+              <img
+                src={qrCode.cover_image || "/placeholder.svg"}
+                alt={qrCode.book_title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
           
-          <div className="col-span-8">
+          <div className="col-span-6">
             <h3 className="font-semibold">{qrCode.book_title}</h3>
             <p className="text-sm text-muted-foreground">
               {qrCode.total_tips || 0} tips · ${qrCode.total_amount?.toFixed(2) || '0.00'} total
@@ -60,12 +76,12 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
               className="h-8 w-8"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDownload();
+                handleDownload(e);
               }}
             >
               <Download className="h-4 w-4" />
             </Button>
-            <CollapsibleTrigger asChild>
+            <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <ChevronDown className={cn(
                   "h-4 w-4 transition-transform duration-200",
@@ -76,7 +92,7 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
           </div>
         </div>
 
-        <CollapsibleContent className="animate-accordion-down">
+        <CollapsibleContent className="animate-accordion-down" onClick={(e) => e.stopPropagation()}>
           <QRCodeCardDetails qrCode={qrCode} />
         </CollapsibleContent>
       </Collapsible>
