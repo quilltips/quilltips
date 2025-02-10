@@ -10,6 +10,7 @@ import { TipHistory } from "@/components/TipHistory";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { QRCodePublisherInvite } from "@/components/qr/QRCodePublisherInvite";
+import { QRCodeCanvas } from "qrcode.react";
 
 const QRCodeDetails = () => {
   const { id } = useParams();
@@ -63,17 +64,36 @@ const QRCodeDetails = () => {
     );
   }
 
+  const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
+
   return (
     <div className="min-h-screen">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12 space-y-8">
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <QrCode className="h-6 w-6 text-muted-foreground" />
-              <div>
-                <CardTitle className="text-left">{qrCode.book_title}</CardTitle>
-                <p className="text-sm text-muted-foreground">QR Code Details</p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-1">
+                <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                  <img
+                    src={qrCode.cover_image || "/placeholder.svg"}
+                    alt={qrCode.book_title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <CardTitle className="text-left">{qrCode.book_title}</CardTitle>
+                  <p className="text-sm text-muted-foreground">QR Code Details</p>
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-lg">
+                <QRCodeCanvas
+                  id={`qr-${qrCode.id}`}
+                  value={qrValue}
+                  size={100}
+                  level="H"
+                  includeMargin={false}
+                />
               </div>
             </div>
           </CardHeader>
@@ -120,7 +140,11 @@ const QRCodeDetails = () => {
 
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold">Tip History</h2>
-          <TipHistory authorId={qrCode.author_id} qrCodeId={qrCode.id} />
+          <TipHistory 
+            authorId={qrCode.author_id} 
+            qrCodeId={qrCode.id}
+            authorName={`${qrCode.book_title}'s`}
+          />
         </div>
 
         <QRCodePublisherInvite
