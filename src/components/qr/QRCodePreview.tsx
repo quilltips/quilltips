@@ -38,6 +38,9 @@ export const QRCodePreview = ({
                 style={{ width: '100%', height: 'auto' }}
               />
             </div>
+            <div className="text-sm text-muted-foreground">
+              <p>Preview URL: {qrCodePreview}</p>
+            </div>
             <Button 
               onClick={onCheckout}
               size="lg"

@@ -9,6 +9,7 @@ import { QRCodePreview } from "@/components/qr/QRCodePreview";
 
 interface QRCodeResponse {
   url: string;
+  framedUrl: string;
   uniqodeId: string;
   error?: string;
   details?: string;
@@ -68,6 +69,18 @@ const QRCodeDesign = () => {
         if (!qrResponse?.url) throw new Error('No QR code URL returned');
 
         console.log('QR code generated and stored:', qrResponse.url);
+        console.log('Framed QR code generated and stored:', qrResponse.framedUrl);
+
+        // After generation, fetch the updated QR code to confirm storage
+        const { data: updatedQrCode, error: updateCheckError } = await supabase
+          .from('qr_codes')
+          .select('qr_code_image_url, framed_qr_code_image_url, qr_code_status')
+          .eq('id', qrCodeData.id)
+          .single();
+
+        if (updateCheckError) throw updateCheckError;
+
+        console.log('Updated QR code record:', updatedQrCode);
 
       } catch (error: any) {
         console.error("Error generating QR code:", error);
