@@ -18,33 +18,17 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleDownload = async (e: React.MouseEvent) => {
+  const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    if (qrCode.framed_qr_code_image_url) {
-      // Download the framed version directly from the URL
-      const response = await fetch(qrCode.framed_qr_code_image_url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+    const canvas = document.getElementById(`qr-${qrCode.id}`) as HTMLCanvasElement;
+    if (canvas) {
+      const url = canvas.toDataURL("image/png");
       const link = document.createElement('a');
       link.href = url;
       link.download = `${qrCode.book_title}-qr-code.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } else {
-      // Fallback to canvas download if framed version is not available
-      const canvas = document.getElementById(`qr-${qrCode.id}`) as HTMLCanvasElement;
-      if (canvas) {
-        const url = canvas.toDataURL("image/png");
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${qrCode.book_title}-qr-code.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
     }
   };
 

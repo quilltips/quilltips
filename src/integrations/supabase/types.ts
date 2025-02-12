@@ -55,7 +55,6 @@ export type Database = {
           book_title: string
           cover_image: string | null
           created_at: string
-          framed_qr_code_image_url: string | null
           id: string
           is_paid: boolean
           isbn: string | null
@@ -76,7 +75,6 @@ export type Database = {
           book_title: string
           cover_image?: string | null
           created_at?: string
-          framed_qr_code_image_url?: string | null
           id?: string
           is_paid?: boolean
           isbn?: string | null
@@ -97,7 +95,6 @@ export type Database = {
           book_title?: string
           cover_image?: string | null
           created_at?: string
-          framed_qr_code_image_url?: string | null
           id?: string
           is_paid?: boolean
           isbn?: string | null
