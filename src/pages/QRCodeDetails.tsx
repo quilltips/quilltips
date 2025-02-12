@@ -1,4 +1,3 @@
-
 import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +40,21 @@ const QRCodeDetails = () => {
       setShowPublisherInvite(true);
     }
   }, [searchParams, toast]);
+
+  const handleDownload = async () => {
+    if (qrCode?.framed_qr_code_image_url) {
+      const response = await fetch(qrCode.framed_qr_code_image_url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${qrCode.book_title}-qr-code.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -86,14 +100,22 @@ const QRCodeDetails = () => {
                   <p className="text-sm text-muted-foreground">QR Code Details</p>
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-lg">
-                <QRCodeCanvas
-                  id={`qr-${qrCode.id}`}
-                  value={qrValue}
-                  size={100}
-                  level="H"
-                  includeMargin={false}
-                />
+              <div className="bg-white p-4 rounded-lg cursor-pointer" onClick={handleDownload}>
+                {qrCode.framed_qr_code_image_url ? (
+                  <img
+                    src={qrCode.framed_qr_code_image_url}
+                    alt="Framed QR Code"
+                    className="w-[100px] h-[100px] object-contain"
+                  />
+                ) : (
+                  <QRCodeCanvas
+                    id={`qr-${qrCode.id}`}
+                    value={qrValue}
+                    size={100}
+                    level="H"
+                    includeMargin={false}
+                  />
+                )}
               </div>
             </div>
           </CardHeader>
