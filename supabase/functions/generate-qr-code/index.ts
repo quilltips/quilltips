@@ -21,7 +21,7 @@ serve(async (req) => {
 
   try {
     const { bookTitle, authorId, qrCodeId } = await req.json() as QRCodeParams;
-    console.log('Generating QR code for:', { bookTitle, authorId, qrCodeId });
+    console.log('Starting QR code generation for:', { bookTitle, authorId, qrCodeId });
 
     // Create Supabase client
     const supabaseClient = createClient(
@@ -86,7 +86,7 @@ serve(async (req) => {
         margin: 80,
         isVCard: false,
         frameText: 'Like the book? Tip the author!',
-        logoImage: 'https://quilltips.dev/public/lovable-uploads/4c722b40-1ed8-45e5-a9db-b2653f1b148b.png',
+        logoImage: 'https://quilltips.dev/public/lovable-uploads/9e643d19-106e-42b3-b358-0dd83952415a.png',
         logoScale: 0.1992,
         frameColor: '#2595ff',
         frameStyle: 'banner-bottom',
@@ -109,6 +109,10 @@ serve(async (req) => {
       body: JSON.stringify(basicQRCodePayload)
     });
 
+    console.log('Basic QR Response status:', basicQRResponse.status);
+    const basicQRData = await basicQRResponse.json();
+    console.log('Basic QR Response data:', basicQRData);
+
     console.log('Sending request to Uniqode API for framed QR code');
     const framedQRResponse = await fetch('https://api.uniqode.com/api/2.0/qrcodes/', {
       method: 'POST',
@@ -119,31 +123,36 @@ serve(async (req) => {
       body: JSON.stringify(framedQRCodePayload)
     });
 
+    console.log('Framed QR Response status:', framedQRResponse.status);
+    const framedQRData = await framedQRResponse.json();
+    console.log('Framed QR Response data:', framedQRData);
+
     if (!basicQRResponse.ok || !framedQRResponse.ok) {
-      const basicErrorText = await basicQRResponse.text();
-      const framedErrorText = await framedQRResponse.text();
-      console.error('QR code generation errors:', { basicErrorText, framedErrorText });
+      console.error('QR code generation failed. Basic QR:', basicQRData, 'Framed QR:', framedQRData);
       throw new Error(`Failed to generate QR codes: ${basicQRResponse.status} ${framedQRResponse.status}`);
     }
 
-    const basicQRData = await basicQRResponse.json();
-    const framedQRData = await framedQRResponse.json();
-
     // Update the QR code record with both URLs
+    const updateData = {
+      qr_code_image_url: basicQRData.url,
+      framed_qr_code_image_url: framedQRData.url,
+      uniqode_qr_code_id: basicQRData.id.toString(),
+      qr_code_status: 'generated'
+    };
+    
+    console.log('Updating QR code record with:', updateData);
+    
     const { error: updateError } = await supabaseClient
       .from('qr_codes')
-      .update({
-        qr_code_image_url: basicQRData.url,
-        framed_qr_code_image_url: framedQRData.url,
-        uniqode_qr_code_id: basicQRData.id.toString(),
-        qr_code_status: 'generated'
-      })
+      .update(updateData)
       .eq('id', qrCodeId);
 
     if (updateError) {
       console.error('Update error:', updateError);
       throw updateError;
     }
+
+    console.log('Successfully updated QR code record');
 
     return new Response(
       JSON.stringify({ 
