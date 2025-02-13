@@ -1,30 +1,20 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Index = () => {
-  return (
-    <div className="container mx-auto px-4 pt-16 pb-12">
+  return <div className="container mx-auto px-4 pt-16 pb-12">
       {/* Hero Section */}
       <div className="max-w-4xl mx-auto text-center space-y-8 animate-enter">
         <div className="space-y-4">
-          <img 
-            src="public/lovable-uploads/c5936a01-ca8f-4aee-8825-22fafad6a4a6.png" 
-            alt="Quilltips" 
-            className="h-12 mx-auto"
-          />
-          <h2 className="text-xl text-muted-foreground">
+          <img src="public/lovable-uploads/c5936a01-ca8f-4aee-8825-22fafad6a4a6.png" alt="Quilltips" className="h-12 mx-auto" />
+          <h2 className="text-muted-foreground text-4xl mx-[62px] px-[4px] py-[22px]">
             Helping authors get paid
           </h2>
         </div>
 
         <Link to="/author/register">
-          <Button 
-            size="lg" 
-            className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12"
-          >
+          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12">
             Create an account
           </Button>
         </Link>
@@ -74,16 +64,11 @@ const Index = () => {
           Create an account to connect with readers and collect tips!
         </p>
         <Link to="/author/register">
-          <Button 
-            size="lg" 
-            className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12"
-          >
+          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12">
             Create an account
           </Button>
         </Link>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
