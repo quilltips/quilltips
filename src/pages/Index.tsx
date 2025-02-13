@@ -8,7 +8,7 @@ const Index = () => {
       <div className="max-w-4xl mx-auto text-center space-y-8 animate-enter">
         <div className="space-y-4">
           <img src="public/lovable-uploads/c5936a01-ca8f-4aee-8825-22fafad6a4a6.png" alt="Quilltips" className="h-12 mx-auto" />
-          <h2 className="text-muted-foreground text-4xl mx-[62px] px-[4px] py-[22px]">
+          <h2 className="text-muted-foreground mx-[62px] px-[4px] py-[5px] text-xl">
             Helping authors get paid
           </h2>
         </div>
