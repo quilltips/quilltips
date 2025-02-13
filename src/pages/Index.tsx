@@ -2,14 +2,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search, BookOpen, QrCode, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Index = () => {
-  return (
-    <div className="container mx-auto px-4 pt-24 pb-12">
+  return <div className="container mx-auto px-4 pt-24 pb-12">
       <div className="max-w-4xl mx-auto text-center space-y-6 animate-enter">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#2D3748] to-[#4A5568] bg-clip-text text-transparent">
-          Connecting Authors And Readers
-        </h1>
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#2D3748] to-[#4A5568] bg-clip-text text-transparent">Connecting authors with readers</h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           QR codes for books that allow authors to engage with their most passionate readers, and build support!
         </p>
@@ -43,10 +39,7 @@ const Index = () => {
 
       <div className="text-center mt-12 space-y-4">
         <Link to="/author/register">
-          <Button 
-            size="lg" 
-            className="bg-[#FEC6A1] hover:bg-[#FEC6A1]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200"
-          >
+          <Button size="lg" className="bg-[#FEC6A1] hover:bg-[#FEC6A1]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200">
             Register as an Author
           </Button>
         </Link>
@@ -54,8 +47,6 @@ const Index = () => {
           Start receiving support and connecting with your readers today
         </p>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
