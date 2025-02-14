@@ -1,31 +1,21 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Index = () => {
-  return (
-    <div className="container mx-auto px-4 pt-16 pb-12">
+  return <div className="container mx-auto px-4 pt-16 pb-12">
       {/* Hero Section */}
       <div className="max-w-4xl mx-auto text-center space-y-8 animate-enter">
         <div className="space-y-4">
-          <img 
-            src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" 
-            alt="Quilltips" 
-            className="h-12 mx-auto"
-          />
+          <img src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" alt="Quilltips" className="h-12 mx-auto" />
           <h1 className="text-4xl font-playfair font-medium">Quilltips</h1>
-          <h2 className="text-muted-foreground mx-[62px] px-[4px] py-[5px] text-xl">
+          <h2 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
             Helping authors get paid
           </h2>
         </div>
 
         <Link to="/author/register">
-          <Button 
-            size="lg" 
-            className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12"
-          >
+          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]">
             Create an account
           </Button>
         </Link>
@@ -75,16 +65,11 @@ const Index = () => {
           Create an account to connect with readers and collect tips!
         </p>
         <Link to="/author/register">
-          <Button 
-            size="lg" 
-            className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12"
-          >
+          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12">
             Create an account
           </Button>
         </Link>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
