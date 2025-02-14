@@ -1,7 +1,9 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
 import { Link } from "react-router-dom";
+
 const Index = () => {
   return <div className="container mx-auto px-4 pt-16 pb-12">
       {/* Hero Section */}
@@ -66,6 +68,25 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Why Quilltips Section */}
+      <div className="max-w-4xl mx-auto mt-24 text-center space-y-6">
+        <h2 className="text-4xl font-playfair font-medium">Why Quilltips?</h2>
+        <div className="text-lg text-muted-foreground max-w-3xl mx-auto space-y-4">
+          <p>
+            Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on primary sales are super low and royalties on used books and library copies are nonexistent.
+          </p>
+          <p>
+            With the growth of e-commerce platforms such as Amazon, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accessible way.
+          </p>
+          <p>
+            Most readers would be happy to directly support their favorite authors, if only there was a way to do this! This is the idea that hatched Quilltips, and why we are working hard to create a platform that supports fair author compensation and connecting authors directly with their audience.
+          </p>
+          <p>
+            Join us on our journey, and launch your first Quilltips Jar today!
+          </p>
+        </div>
+      </div>
+
       {/* Get Started Section */}
       <div className="max-w-4xl mx-auto mt-24 text-center space-y-8">
         <h2 className="text-3xl font-semibold py-0">Get started</h2>
@@ -80,4 +101,5 @@ const Index = () => {
       </div>
     </div>;
 };
+
 export default Index;
