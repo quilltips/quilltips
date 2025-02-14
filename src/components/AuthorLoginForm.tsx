@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -188,13 +189,27 @@ export const AuthorLoginForm = () => {
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
 
-          <button
-            type="button"
-            onClick={() => setShowResetForm(true)}
-            className="text-sm text-muted-foreground hover:text-[#2D3748] mt-2 w-full text-center"
-          >
-            Forgot password?
-          </button>
+          <div className="space-y-2 text-center">
+            <button
+              type="button"
+              onClick={() => setShowResetForm(true)}
+              className="text-sm text-muted-foreground hover:text-[#2D3748]"
+            >
+              Forgot password?
+            </button>
+            
+            <div className="pt-4 border-t">
+              <p className="text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <Link 
+                  to="/author/register" 
+                  className="text-[#2D3748] hover:underline font-medium"
+                >
+                  Register as Author
+                </Link>
+              </p>
+            </div>
+          </div>
         </form>
       ) : (
         <div className="space-y-6">

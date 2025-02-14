@@ -13,14 +13,6 @@ export const GuestMenu = () => {
           Log in
         </Button>
       </Link>
-      <Link to="/author/register">
-        <Button 
-          variant="default"
-          className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium"
-        >
-          Register as Author
-        </Button>
-      </Link>
     </div>
   );
 };
