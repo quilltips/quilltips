@@ -59,8 +59,8 @@ const Index = () => {
 
       {/* Get Started Section */}
       <div className="max-w-4xl mx-auto mt-24 text-center space-y-8">
-        <h2 className="text-3xl font-semibold">Get started</h2>
-        <p className="text-lg text-muted-foreground">
+        <h2 className="text-3xl font-semibold py-0">Get started</h2>
+        <p className="text-lg text-muted-foreground py-[22px]">
           Create an account to connect with readers and collect tips!
         </p>
         <Link to="/author/register">
