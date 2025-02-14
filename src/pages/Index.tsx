@@ -1,7 +1,9 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
 import { Link } from "react-router-dom";
+
 const Index = () => {
   return <div className="container mx-auto px-4 pt-16 pb-12">
       {/* Hero Section */}
@@ -19,6 +21,14 @@ const Index = () => {
             Create an account
           </Button>
         </Link>
+      </div>
+
+      {/* Connecting Authors Section */}
+      <div className="max-w-4xl mx-auto mt-24 text-center space-y-6">
+        <h2 className="text-4xl font-playfair font-medium">Connecting Authors and Readers</h2>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltip Jar, where readers can leave a tip and message!
+        </p>
       </div>
 
       {/* How it works Section */}
@@ -72,4 +82,5 @@ const Index = () => {
       </div>
     </div>;
 };
+
 export default Index;
