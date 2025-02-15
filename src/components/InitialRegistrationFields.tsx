@@ -2,6 +2,7 @@
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 interface InitialRegistrationFieldsProps {
   isLoading: boolean;
@@ -54,23 +55,32 @@ export const InitialRegistrationFields = ({ isLoading, onNext }: InitialRegistra
 
       <Button
         type="submit"
-        className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+        className="w-full bg-[#2D3748] hover:bg-[#2D3748]/90 text-white"
         disabled={isLoading}
       >
         Next
       </Button>
 
-      <p className="text-sm text-center">
-        By signing up you agree to the{" "}
-        <a href="/terms" className="text-[#2D3748] hover:underline">
-          terms
-        </a>{" "}
-        and{" "}
-        <a href="/privacy" className="text-[#2D3748] hover:underline">
-          privacy policy
-        </a>
-        .
-      </p>
+      <div className="space-y-4 text-center">
+        <p className="text-sm">
+          By signing up you agree to the{" "}
+          <Link to="/terms" className="text-[#2D3748] hover:underline">
+            terms
+          </Link>{" "}
+          and{" "}
+          <Link to="/privacy" className="text-[#2D3748] hover:underline">
+            privacy policy
+          </Link>
+          .
+        </p>
+
+        <p className="text-sm text-muted-foreground">
+          Already signed up?{" "}
+          <Link to="/author/login" className="text-[#2D3748] hover:underline">
+            Log in here
+          </Link>
+        </p>
+      </div>
     </form>
   );
 };
