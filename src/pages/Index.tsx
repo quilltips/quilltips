@@ -1,9 +1,7 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Index = () => {
   return <div className="container mx-auto px-4 pt-16 pb-12">
       {/* Hero Section */}
@@ -87,28 +85,23 @@ const Index = () => {
             </p>
           </div>
           <div className="relative w-full h-full flex justify-center items-center">
-            <img 
-              src="/lovable-uploads/98a4ed1e-68c9-4e60-b65b-f6d2d3d15d53.png" 
-              alt="Quilltips mobile app preview showing tip feed and QR codes" 
-              className="w-full max-w-md"
-            />
+            <img src="/lovable-uploads/98a4ed1e-68c9-4e60-b65b-f6d2d3d15d53.png" alt="Quilltips mobile app preview showing tip feed and QR codes" className="w-full max-w-md" />
           </div>
         </div>
       </div>
 
       {/* Get Started Section */}
-      <div className="max-w-4xl mx-auto mt-24 text-center space-y-0">
-        <h2 className="text-3xl font-semibold">Get started</h2>
-        <p className="text-lg text-muted-foreground">
+      <div className="max-w-4xl mx-auto mt-24 text-center space-y-8 my-[94px]">
+        <h2 className="text-3xl font-semibold py-[15px]">Get started</h2>
+        <p className="text-lg text-muted-foreground py-[15px]">
           Create an account to connect with readers and collect tips!
         </p>
         <Link to="/author/register">
-          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12">
+          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 py-[15px] my-[16px] px-[61px]">
             Create an account
           </Button>
         </Link>
       </div>
     </div>;
 };
-
 export default Index;
