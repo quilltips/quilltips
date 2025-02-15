@@ -1,3 +1,4 @@
+
 import { Card } from "./ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -29,7 +30,7 @@ export const TipHistory = ({
     queryFn: async () => {
       let query = supabase
         .from('tips')
-        .select('*')
+        .select('*, profiles!tips_author_id_fkey(name, avatar_url)')
         .eq('author_id', authorId)
         .order('created_at', { ascending: false });
 
@@ -43,7 +44,13 @@ export const TipHistory = ({
 
       const { data, error } = await query;
       if (error) throw error;
-      return data || [];
+
+      // Map the nested profile data to the tip object
+      return data.map(tip => ({
+        ...tip,
+        reader_name: tip.profiles?.name || "Anonymous Reader",
+        reader_avatar_url: tip.profiles?.avatar_url
+      }));
     }
   });
 

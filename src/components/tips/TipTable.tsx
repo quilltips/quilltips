@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -38,8 +39,7 @@ export const TipTable = ({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Book</TableHead>
+            <TableHead>Reader</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Message</TableHead>
             <TableHead>Actions</TableHead>
@@ -58,7 +58,7 @@ export const TipTable = ({
           ))}
           {!tips?.length && (
             <TableRow>
-              <TableCell colSpan={5} className="text-center">
+              <TableCell colSpan={4} className="text-center">
                 No tips received yet
               </TableCell>
             </TableRow>
