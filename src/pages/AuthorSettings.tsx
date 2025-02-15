@@ -1,8 +1,10 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfileSettings } from "@/components/ProfileSettings";
 import { useToast } from "@/hooks/use-toast";
+import { Layout } from "@/components/Layout";
 
 const AuthorSettings = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -46,21 +48,25 @@ const AuthorSettings = () => {
 
   if (isLoading) {
     return (
-      <div className="text-center pt-24">Loading...</div>
+      <Layout>
+        <div className="text-center pt-24">Loading...</div>
+      </Layout>
     );
   }
 
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FEF7CD]/30 to-white">
-      <div className="container mx-auto px-4 pt-24 pb-12">
-        <h1 className="text-3xl font-semibold text-[#2D3748] mb-8">Account Settings</h1>
-        <div className="max-w-2xl mx-auto">
-          <ProfileSettings profile={profile} />
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-b from-[#FEF7CD]/30 to-white">
+        <div className="container mx-auto px-4 pt-24 pb-12">
+          <h1 className="text-3xl font-semibold text-[#2D3748] mb-8">Account Settings</h1>
+          <div className="max-w-2xl mx-auto">
+            <ProfileSettings profile={profile} />
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

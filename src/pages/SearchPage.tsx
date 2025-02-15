@@ -1,12 +1,12 @@
+
 import { Search } from "@/components/Search";
-import { Navigation } from "@/components/Navigation";
+import { Layout } from "@/components/Layout";
 
 const SearchPage = () => {
   return (
-    <div className="min-h-screen">
-      <Navigation />
+    <Layout>
       <Search />
-    </div>
+    </Layout>
   );
 };
 

@@ -1,10 +1,14 @@
+
 import { AuthorLoginForm } from "@/components/AuthorLoginForm";
+import { Layout } from "@/components/Layout";
 
 const AuthorLogin = () => {
   return (
-    <div className="container mx-auto px-4 pt-24 pb-12">
-      <AuthorLoginForm />
-    </div>
+    <Layout>
+      <div className="container mx-auto px-4 pt-24 pb-12">
+        <AuthorLoginForm />
+      </div>
+    </Layout>
   );
 };
 

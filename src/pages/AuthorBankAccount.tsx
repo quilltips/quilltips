@@ -1,4 +1,5 @@
-import { Navigation } from "@/components/Navigation";
+
+import { Layout } from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -95,56 +96,58 @@ const AuthorBankAccount = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <main className="container mx-auto px-4 pt-24 pb-12">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-          </div>
-        </main>
-      </div>
+      <Layout>
+        <div className="min-h-screen">
+          <main className="container mx-auto px-4 pt-24 pb-12">
+            <div className="text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+            </div>
+          </main>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <Card className="p-6 max-w-md mx-auto">
-          <div className="space-y-6">
-            <div className="space-y-2 text-center">
-              <h2 className="text-2xl font-semibold">Connect Your Bank Account</h2>
-              <p className="text-muted-foreground">
-                Set up your payment details to start receiving tips from your readers
-              </p>
-            </div>
+    <Layout>
+      <div className="min-h-screen">
+        <main className="container mx-auto px-4 pt-24 pb-12">
+          <Card className="p-6 max-w-md mx-auto">
+            <div className="space-y-6">
+              <div className="space-y-2 text-center">
+                <h2 className="text-2xl font-semibold">Connect Your Bank Account</h2>
+                <p className="text-muted-foreground">
+                  Set up your payment details to start receiving tips from your readers
+                </p>
+              </div>
 
-            <div className="space-y-4">
-              <Button
-                className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
-                onClick={connectBankAccount}
-                disabled={isConnecting}
-              >
-                {isConnecting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Wallet className="mr-2 h-4 w-4" />
-                )}
-                Connect Bank Account
-              </Button>
+              <div className="space-y-4">
+                <Button
+                  className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+                  onClick={connectBankAccount}
+                  disabled={isConnecting}
+                >
+                  {isConnecting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Wallet className="mr-2 h-4 w-4" />
+                  )}
+                  Connect Bank Account
+                </Button>
 
-              <Button
-                variant="outline"
-                className="w-full hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
-                onClick={skipForNow}
-              >
-                Skip for now
-              </Button>
+                <Button
+                  variant="outline"
+                  className="w-full hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
+                  onClick={skipForNow}
+                >
+                  Skip for now
+                </Button>
+              </div>
             </div>
-          </div>
-        </Card>
-      </main>
-    </div>
+          </Card>
+        </main>
+      </div>
+    </Layout>
   );
 };
 

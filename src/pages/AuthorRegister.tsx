@@ -1,14 +1,14 @@
-import { Navigation } from "@/components/Navigation";
+
+import { Layout } from "@/components/Layout";
 import { AuthorRegistrationForm } from "@/components/AuthorRegistrationForm";
 
 const AuthorRegister = () => {
   return (
-    <div className="min-h-screen">
-      <Navigation />
+    <Layout>
       <main className="container mx-auto px-4 pt-24 pb-12">
         <AuthorRegistrationForm />
       </main>
-    </div>
+    </Layout>
   );
 };
 
