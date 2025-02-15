@@ -94,6 +94,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             variant="outline"
             onClick={() => document.getElementById('avatar-upload')?.click()}
             disabled={isLoading}
+            className="hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
           >
             Add a photo
           </Button>
@@ -145,7 +146,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             type="button"
             onClick={addSocialLink}
             disabled={isLoading || !newUrl.trim()}
-            className="shrink-0"
+            className="shrink-0 bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
           >
             <Plus className="h-4 w-4" />
           </Button>

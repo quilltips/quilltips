@@ -1,3 +1,4 @@
+
 import { AuthorRegistrationFields } from "../AuthorRegistrationFields";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
@@ -37,7 +38,7 @@ export const RegistrationStepDetails = ({
 
       <Button
         type="submit"
-        className="w-full bg-[#FEC6A1] hover:bg-[#FEC6A1]/90 text-[#2D3748]"
+        className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
         disabled={isLoading}
       >
         {isLoading ? "Creating account..." : "Continue"}

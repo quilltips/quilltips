@@ -121,7 +121,7 @@ const AuthorBankAccount = () => {
 
             <div className="space-y-4">
               <Button
-                className="w-full"
+                className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
                 onClick={connectBankAccount}
                 disabled={isConnecting}
               >
@@ -135,7 +135,7 @@ const AuthorBankAccount = () => {
 
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
                 onClick={skipForNow}
               >
                 Skip for now

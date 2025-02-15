@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -166,7 +165,11 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           />
         </div>
         
-        <Button type="submit" disabled={isLoading} className="w-full text-center">
+        <Button 
+          type="submit" 
+          disabled={isLoading} 
+          className="w-full text-center bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+        >
           {isLoading ? "Processing..." : "Configure QR Code"}
         </Button>
       </form>
