@@ -1,9 +1,10 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Navigation } from "@/components/Navigation";
 import { CreateQRCode } from "@/components/CreateQRCode";
 import { useToast } from "@/hooks/use-toast";
+import { Layout } from "@/components/Layout";
 
 const CreateQRPage = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -52,23 +53,21 @@ const CreateQRPage = () => {
 
   if (!profile) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <main className="container mx-auto px-4 pt-24 pb-12">
+      <Layout>
+        <div className="container mx-auto px-4 pt-24 pb-12">
           <div className="text-center">Loading...</div>
-        </main>
-      </div>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <Navigation />
+    <Layout>
       <main className="container mx-auto px-4 pt-24 pb-12">
         <h1 className="text-2xl font-bold mb-6">Create New QR Code</h1>
         <CreateQRCode authorId={profile.id} />
       </main>
-    </div>
+    </Layout>
   );
 };
 

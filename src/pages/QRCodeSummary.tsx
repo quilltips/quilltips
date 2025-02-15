@@ -1,12 +1,12 @@
 
 import { useSearchParams, Link } from "react-router-dom";
-import { Navigation } from "@/components/Navigation";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download, Share2, ArrowLeft } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
+import { Layout } from "@/components/Layout";
 
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
@@ -57,20 +57,18 @@ const QRCodeSummary = () => {
 
   if (isLoading || !qrCode) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <main className="container mx-auto px-4 pt-24 pb-12">
+      <Layout>
+        <div className="container mx-auto px-4 pt-24 pb-12">
           <div>Loading...</div>
-        </main>
-      </div>
+        </div>
+      </Layout>
     );
   }
 
   const qrValue = `${window.location.origin}/author/profile/${qrCode.author_id}?qr=${qrCode.id}`;
 
   return (
-    <div className="min-h-screen bg-[#F1F0FB]">
-      <Navigation />
+    <Layout>
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto">
           <Link 
@@ -154,7 +152,7 @@ const QRCodeSummary = () => {
           </Card>
         </div>
       </main>
-    </div>
+    </Layout>
   );
 };
 
