@@ -1,22 +1,22 @@
+
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-
-import { Index } from "@/pages";
-import { About } from "@/pages/About";
-import { FAQ } from "@/pages/FAQ";
-import { Contact } from "@/pages/Contact";
-import { TermsOfService } from "@/pages/TermsOfService";
-import { SearchPage } from "@/pages/SearchPage";
-import { AuthorRegister } from "@/pages/AuthorRegister";
-import { AuthorLogin } from "@/pages/AuthorLogin";
-import { AuthorDashboard } from "@/pages/AuthorDashboard";
-import { AuthorSettings } from "@/pages/AuthorSettings";
-import { CreateQRPage } from "@/pages/CreateQRPage";
+import Index from "@/pages/Index";
+import About from "@/pages/About";
+import FAQ from "@/pages/FAQ";
+import Contact from "@/pages/Contact";
+import TermsOfService from "@/pages/TermsOfService";
+import SearchPage from "@/pages/SearchPage";
+import AuthorRegister from "@/pages/AuthorRegister";
+import AuthorLogin from "@/pages/AuthorLogin";
+import AuthorDashboard from "@/pages/AuthorDashboard";
+import AuthorSettings from "@/pages/AuthorSettings";
+import CreateQRPage from "@/pages/CreateQRPage";
 import QRCodeDesign from "@/pages/QRCodeDesign";
-import { AuthorBankAccount } from "@/pages/AuthorBankAccount";
-import { AuthorPublicProfile } from "@/pages/AuthorPublicProfile";
+import AuthorBankAccount from "@/pages/AuthorBankAccount";
+import AuthorPublicProfile from "@/pages/AuthorPublicProfile";
 import QRCodeSummary from "@/pages/QRCodeSummary";
 
 const queryClient = new QueryClient();
