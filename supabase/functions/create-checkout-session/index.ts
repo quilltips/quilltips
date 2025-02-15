@@ -81,7 +81,7 @@ serve(async (req) => {
         },
       ],
       mode: 'payment',
-      success_url: `${req.headers.get('origin')}/author/dashboard?success=true&qr_code=${qrCodeId}`,
+      success_url: `${req.headers.get('origin')}/qr-summary?qr_code=${qrCodeId}`,
       cancel_url: `${req.headers.get('origin')}/author/dashboard?canceled=true`,
       metadata: {
         qrCodeId,
