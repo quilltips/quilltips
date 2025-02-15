@@ -1,3 +1,4 @@
+
 import { Search, Book, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -97,7 +98,7 @@ export const SearchBar = () => {
               onChange={handleSearchChange}
               onFocus={handleSearchFocus}
               placeholder="Search authors or books..."
-              className="pl-10 hover-lift bg-white/50 backdrop-blur-sm border-0 shadow-none hover:bg-white/60 transition-colors w-full"
+              className="pl-10 hover-lift rounded-full"
               aria-label="Search authors or books"
               role="searchbox"
               autoComplete="off"
