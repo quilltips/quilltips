@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -43,7 +44,7 @@ export const AuthorQRCodeStats = ({ authorId }: AuthorQRCodeStatsProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
       <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
         <div className="text-sm font-medium text-muted-foreground mb-2">Total Tips</div>
         <div className="text-2xl font-bold">

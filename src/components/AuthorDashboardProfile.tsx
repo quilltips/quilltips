@@ -1,3 +1,4 @@
+
 import { Button } from "./ui/button";
 import { ExternalLink, User, Globe, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 import {
@@ -64,7 +65,7 @@ export const AuthorDashboardProfile = ({
           <p className="text-[#4A5568] max-w-lg mx-auto leading-relaxed">{bio}</p>
         </div>
         
-        <div className="flex flex-wrap justify-center gap-4 w-full">
+        <div className="flex flex-wrap justify-center gap-2 w-full">
           {publicProfileLink && (
             <a
               href={publicProfileLink}
@@ -72,9 +73,10 @@ export const AuthorDashboardProfile = ({
             >
               <Button 
                 variant="outline" 
-                className="hover-lift bg-white border-[#FEC6A1] hover:bg-[#FEC6A1]/10 text-[#2D3748]"
+                size="sm"
+                className="hover-lift bg-white border-[#FEC6A1] hover:bg-[#FEC6A1]/10 text-[#2D3748] text-xs"
               >
-                <User className="h-4 w-4 mr-2" />
+                <User className="h-3 w-3 mr-1.5" />
                 Public Profile
               </Button>
             </a>
@@ -92,9 +94,10 @@ export const AuthorDashboardProfile = ({
               >
                 <Button 
                   variant="outline" 
-                  className="hover-lift bg-white border-[#FEC6A1] hover:bg-[#FEC6A1]/10 text-[#2D3748]"
+                  size="sm"
+                  className="hover-lift bg-white border-[#FEC6A1] hover:bg-[#FEC6A1]/10 text-[#2D3748] text-xs"
                 >
-                  <IconComponent className="h-4 w-4 mr-2" />
+                  <IconComponent className="h-3 w-3 mr-1.5" />
                   {link.label}
                 </Button>
               </a>
