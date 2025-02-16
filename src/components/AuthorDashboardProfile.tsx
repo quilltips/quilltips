@@ -27,7 +27,7 @@ export const AuthorDashboardProfile = ({
   socialLinks = [],
   publicProfileLink
 }: AuthorDashboardProfileProps) => {
-  return <div className="max-w-2xl mx-auto animate-enter bg-[#FEF7CD]/30 rounded-3xl p-8 shadow-sm">
+  return <div className="max-w-2xl mx-auto animate-enter bg-[#FEF7CD]/30 p-8 shadow-sm rounded-2xl">
       <div className="flex flex-col items-center text-center space-y-6">
         <Dialog>
           <DialogTrigger asChild>
