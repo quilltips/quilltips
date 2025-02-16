@@ -42,7 +42,8 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold text-[#2D3748]">Quilltip Jars</h2>
         <Button 
           onClick={() => navigate('/author/create-qr')} 
           className="flex items-center gap-2"
@@ -61,7 +62,7 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {displayedQRCodes?.map((qr) => (
             <QRCodeCard
               key={qr.id}

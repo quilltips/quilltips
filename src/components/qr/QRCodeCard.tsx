@@ -40,20 +40,22 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
       onClick={() => navigate(`/qr/${qrCode.id}`)}
     >
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="p-4 grid grid-cols-12 items-center gap-4">
-          <div className="col-span-2 bg-white p-2 rounded-lg">
-            <QRCodeCanvas
-              id={`qr-${qrCode.id}`}
-              value={qrValue}
-              size={80}
-              level="H"
-              includeMargin={false}
-              className="w-full h-auto"
-            />
+        <div className="p-6 grid grid-cols-12 items-center gap-6">
+          <div className="col-span-2 md:col-span-1">
+            <div className="bg-white p-2 rounded-lg">
+              <QRCodeCanvas
+                id={`qr-${qrCode.id}`}
+                value={qrValue}
+                size={60}
+                level="H"
+                includeMargin={false}
+                className="w-full h-auto"
+              />
+            </div>
           </div>
 
-          <div className="col-span-2">
-            <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted">
+          <div className="col-span-2 md:col-span-1">
+            <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted">
               <img
                 src={qrCode.cover_image || "/placeholder.svg"}
                 alt={qrCode.book_title}
@@ -62,8 +64,8 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
             </div>
           </div>
           
-          <div className="col-span-6">
-            <h3 className="font-semibold">{qrCode.book_title}</h3>
+          <div className="col-span-6 md:col-span-8">
+            <h3 className="font-semibold text-base truncate">{qrCode.book_title}</h3>
             <p className="text-sm text-muted-foreground">
               {qrCode.total_tips || 0} tips · ${qrCode.total_amount?.toFixed(2) || '0.00'} total
             </p>
