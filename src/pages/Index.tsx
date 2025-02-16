@@ -73,9 +73,7 @@ const Index = () => {
           <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Quilltips?</h2>
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="text-lg text-muted-foreground space-y-4 text-left">
-              <p>
-                Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on primary sales are super low and royalties on used books and library copies are nonexistent.
-              </p>
+              <p>Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on primary sales are low and royalties on used books and reused library copies are nonexistent.</p>
               <p>
                 With the growth of e-commerce platforms such as Amazon, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accessible way.
               </p>
