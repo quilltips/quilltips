@@ -1,15 +1,15 @@
-
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-
 interface InitialRegistrationFieldsProps {
   isLoading: boolean;
   onNext: (email: string, password: string) => void;
 }
-
-export const InitialRegistrationFields = ({ isLoading, onNext }: InitialRegistrationFieldsProps) => {
+export const InitialRegistrationFields = ({
+  isLoading,
+  onNext
+}: InitialRegistrationFieldsProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -17,9 +17,7 @@ export const InitialRegistrationFields = ({ isLoading, onNext }: InitialRegistra
     const password = formData.get("password") as string;
     onNext(email, password);
   };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+  return <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold">Create account</h2>
       </div>
@@ -27,37 +25,16 @@ export const InitialRegistrationFields = ({ isLoading, onNext }: InitialRegistra
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Enter your email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="your@email.com"
-            required
-            className="hover-lift"
-            disabled={isLoading}
-          />
+          <Input id="email" name="email" type="email" placeholder="your@email.com" required className="hover-lift" disabled={isLoading} />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Create a secure password"
-            required
-            minLength={8}
-            className="hover-lift"
-            disabled={isLoading}
-          />
+          <Input id="password" name="password" type="password" placeholder="Create a secure password" required minLength={8} className="hover-lift" disabled={isLoading} />
         </div>
       </div>
 
-      <Button
-        type="submit"
-        className="w-full bg-[#2D3748] hover:bg-[#2D3748]/90 text-white"
-        disabled={isLoading}
-      >
+      <Button type="submit" disabled={isLoading} className="w-full bg-[#ffd166] text-slate-950">
         Next
       </Button>
 
@@ -81,6 +58,5 @@ export const InitialRegistrationFields = ({ isLoading, onNext }: InitialRegistra
           </Link>
         </p>
       </div>
-    </form>
-  );
+    </form>;
 };
