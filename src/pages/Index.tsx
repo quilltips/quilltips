@@ -1,19 +1,16 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
-
 const Index = () => {
-  return (
-    <Layout>
+  return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-enter">
           <div className="space-y-4">
             <img src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" alt="Quilltips" className="h-12 mx-auto" />
-            <h1 className="text-4xl font-playfair font-medium">Quilltips</h1>
+            <h1 className="font-playfair font-medium text-6xl">Quilltips</h1>
             <h2 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
               Helping authors get paid
             </h2>
@@ -110,8 +107,6 @@ const Index = () => {
           </Link>
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Index;
