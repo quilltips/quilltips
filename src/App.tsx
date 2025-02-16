@@ -18,6 +18,7 @@ import QRCodeDesign from "@/pages/QRCodeDesign";
 import AuthorBankAccount from "@/pages/AuthorBankAccount";
 import AuthorPublicProfile from "@/pages/AuthorPublicProfile";
 import QRCodeSummary from "@/pages/QRCodeSummary";
+import QRCodeDetails from "@/pages/QRCodeDetails";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ function App() {
         <Route path="/author/bank-account" element={<AuthorBankAccount />} />
         <Route path="/author/profile/:id" element={<AuthorPublicProfile />} />
         <Route path="/qr-summary" element={<QRCodeSummary />} />
+        <Route path="/qr/:id" element={<QRCodeDetails />} />
       </Routes>
       <Toaster />
     </QueryClientProvider>

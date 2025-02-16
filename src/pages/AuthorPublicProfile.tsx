@@ -10,9 +10,6 @@ import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
 
-// UUID validation regex
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
@@ -21,21 +18,32 @@ const AuthorPublicProfile = () => {
   const { data: author, isLoading, error } = useQuery({
     queryKey: ['author', id],
     queryFn: async () => {
-      if (!id) throw new Error('Author ID is required');
-      if (!UUID_REGEX.test(id)) throw new Error('Invalid author ID format');
+      if (!id) throw new Error('Author identifier is required');
       
+      // Try to fetch by ID first (for backward compatibility)
+      if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', id)
+          .eq('role', 'author')
+          .maybeSingle();
+
+        if (!error && data) return data;
+      }
+
+      // If not found by ID or not a UUID, try to find by name
       const { data, error } = await supabase
         .from('profiles')
         .select()
-        .eq('id', id)
         .eq('role', 'author')
+        .ilike('name', id.replace(/-/g, ' '))
         .maybeSingle();
 
       if (error) throw error;
       if (!data) throw new Error('Author not found');
       return data;
     },
-    enabled: !!id && UUID_REGEX.test(id),
     retry: false
   });
 
