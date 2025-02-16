@@ -15,7 +15,13 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tips')
-        .select('id, created_at, message, name, profiles:author_id (avatar_url)')
+        .select(`
+          id,
+          created_at,
+          message,
+          reader_name,
+          reader_avatar_url
+        `)
         .eq('qr_code_id', qrCodeId)
         .order('created_at', { ascending: false });
 
@@ -47,14 +53,14 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
       {tips.map((tip) => (
         <div key={tip.id} className="flex gap-4">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={tip.profiles?.avatar_url || "/placeholder.svg"} />
+            <AvatarImage src={tip.reader_avatar_url || "/placeholder.svg"} />
             <AvatarFallback>
-              {(tip.name || "Anonymous").charAt(0).toUpperCase()}
+              {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
-              <p className="font-medium">{tip.name || "Anonymous Reader"}</p>
+              <p className="font-medium">{tip.reader_name || "Anonymous Reader"}</p>
               <p className="text-sm text-muted-foreground">
                 {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
               </p>
