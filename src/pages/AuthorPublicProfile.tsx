@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+
+import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
@@ -6,12 +7,16 @@ import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
 import { TipHistory } from "@/components/TipHistory";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
 
 // UUID validation regex
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const [selectedQRCode, setSelectedQRCode] = useState<{ id: string; bookTitle: string } | null>(null);
 
   const { data: author, isLoading, error } = useQuery({
     queryKey: ['author', id],
@@ -33,6 +38,31 @@ const AuthorPublicProfile = () => {
     enabled: !!id && UUID_REGEX.test(id),
     retry: false
   });
+
+  // Handle auto-opening the tip dialog
+  useEffect(() => {
+    const qrId = searchParams.get('qr');
+    const autoOpenTip = searchParams.get('autoOpenTip');
+    
+    if (qrId && autoOpenTip === 'true') {
+      const fetchQRCode = async () => {
+        const { data: qrCode } = await supabase
+          .from('qr_codes')
+          .select('id, book_title')
+          .eq('id', qrId)
+          .single();
+          
+        if (qrCode) {
+          setSelectedQRCode({
+            id: qrCode.id,
+            bookTitle: qrCode.book_title
+          });
+        }
+      };
+      
+      fetchQRCode();
+    }
+  }, [searchParams]);
 
   if (isLoading) {
     return (
@@ -90,6 +120,14 @@ const AuthorPublicProfile = () => {
             isDashboard={false}
           />
         </div>
+
+        {/* QR Code Dialog */}
+        <QRCodeDialog
+          isOpen={!!selectedQRCode}
+          onClose={() => setSelectedQRCode(null)}
+          selectedQRCode={selectedQRCode}
+          authorId={author.id}
+        />
       </main>
     </div>
   );

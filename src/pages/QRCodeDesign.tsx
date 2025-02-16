@@ -50,8 +50,8 @@ const QRCodeDesign = () => {
           return;
         }
 
-        // Generate a new QR code URL for scanning
-        const tipUrl = `${window.location.origin}/author/profile/${qrCodeData.author_id}?qr=${qrCodeData.id}`;
+        // Generate a new QR code URL for scanning that includes auto-open parameter
+        const tipUrl = `${window.location.origin}/author/profile/${qrCodeData.author_id}?qr=${qrCodeData.id}&autoOpenTip=true`;
         console.log('Setting QR code preview URL:', tipUrl);
         setQrCodePreview(tipUrl);
 
