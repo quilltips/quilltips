@@ -2,11 +2,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import { useState } from "react";
-import { QRCodeDialog } from "./qr/QRCodeDialog";
-import { Loader2, GiftIcon } from "lucide-react";
-import { format } from "date-fns";
+import { Loader2 } from "lucide-react";
+import { BookCard } from "./BookCard";
 
 interface AuthorQRCodesProps {
   authorId: string;
@@ -14,11 +11,6 @@ interface AuthorQRCodesProps {
 }
 
 export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
-  const [selectedQRCode, setSelectedQRCode] = useState<{
-    id: string;
-    bookTitle: string;
-  } | null>(null);
-
   const { data: qrCodes, isLoading } = useQuery({
     queryKey: ['qrCodes', authorId],
     queryFn: async () => {
@@ -54,60 +46,20 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
   }
 
   return (
-    <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {qrCodes.map((qrCode) => (
-          <Card 
-            key={qrCode.id} 
-            className="overflow-hidden bg-white rounded-2xl hover:shadow-lg transition-all duration-300 border border-[#FEF7CD]"
-          >
-            <CardContent className="p-6">
-              <div className="flex gap-4">
-                <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-xl bg-[#F2FCE2]">
-                  <img
-                    src={qrCode.cover_image || "/placeholder.svg"}
-                    alt={qrCode.book_title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-lg line-clamp-2 mb-2">
-                    {qrCode.book_title}
-                  </h3>
-                  
-                  <div className="space-y-1 text-sm text-muted-foreground">
-                    {qrCode.publisher && (
-                      <p className="line-clamp-1">Published by {qrCode.publisher}</p>
-                    )}
-                    {qrCode.release_date && (
-                      <p>Released {format(new Date(qrCode.release_date), 'MMMM yyyy')}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <Button 
-                onClick={() => setSelectedQRCode({
-                  id: qrCode.id,
-                  bookTitle: qrCode.book_title,
-                })}
-                className="w-full mt-4 bg-[#FEF7CD] hover:bg-[#FDE1D3] text-[#403E43] transition-colors duration-200"
-              >
-                <GiftIcon className="mr-2 h-4 w-4" />
-                Send a Tip
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <QRCodeDialog
-        isOpen={!!selectedQRCode}
-        onClose={() => setSelectedQRCode(null)}
-        selectedQRCode={selectedQRCode}
-        authorId={authorId}
-      />
-    </>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {qrCodes.map((qrCode) => (
+        <BookCard
+          key={qrCode.id}
+          id={qrCode.id}
+          title={qrCode.book_title}
+          authorId={authorId}
+          authorName={authorName}
+          coverImage={qrCode.cover_image}
+          publisher={qrCode.publisher}
+          isbn={qrCode.isbn}
+          releaseDate={qrCode.release_date}
+        />
+      ))}
+    </div>
   );
 };
