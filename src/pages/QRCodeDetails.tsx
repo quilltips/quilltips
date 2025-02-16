@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { TipHistory } from "@/components/TipHistory";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { QRCodePublisherInvite } from "@/components/qr/QRCodePublisherInvite";
@@ -12,6 +11,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { TipAmountSelector } from "@/components/tip/TipAmountSelector";
 import { TipMessageForm } from "@/components/tip/TipMessageForm";
 import { PaymentForm } from "@/components/tip/PaymentForm";
+import { PublicTipHistory } from "@/components/tips/PublicTipHistory";
 
 const QRCodeDetails = () => {
   const { id } = useParams();
@@ -138,7 +138,7 @@ const QRCodeDetails = () => {
     <div className="min-h-screen">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12 space-y-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-8">
           <Card>
             <CardHeader>
               <div className="flex flex-col md:flex-row gap-8">
@@ -217,6 +217,11 @@ const QRCodeDetails = () => {
               </div>
             </CardContent>
           </Card>
+
+          <div className="space-y-4">
+            <h2 className="text-2xl font-semibold">Reader Messages</h2>
+            <PublicTipHistory qrCodeId={qrCode.id} />
+          </div>
         </div>
 
         <QRCodePublisherInvite
