@@ -5,7 +5,6 @@ import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { ChevronDown, Loader2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { AuthorQRCodeStats } from "./AuthorQRCodeStats";
 import { QRCodeCard } from "./qr/QRCodeCard";
 import { useState } from "react";
 
@@ -42,9 +41,8 @@ export const AuthorQRCodesList = ({ authorId }: AuthorQRCodesListProps) => {
   const displayedQRCodes = showAll ? qrCodes : qrCodes?.slice(0, 5);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Quilltip Jars</h2>
+    <div className="space-y-6">
+      <div className="flex justify-end">
         <Button 
           onClick={() => navigate('/author/create-qr')} 
           className="flex items-center gap-2"
