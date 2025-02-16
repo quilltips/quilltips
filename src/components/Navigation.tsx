@@ -20,46 +20,61 @@ export const Navigation = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Set up auth state listener
     const checkAuthStatus = async () => {
       try {
-        if (session?.user) {
-          setUserId(session.user.id);
+        // Get current session
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        
+        if (currentSession?.user) {
+          setUserId(currentSession.user.id);
           const { data: profile, error } = await supabase
             .from('profiles')
             .select('role')
-            .eq('id', session.user.id)
+            .eq('id', currentSession.user.id)
             .single();
           
           if (error) throw error;
           setIsAuthor(profile?.role === 'author');
+        } else {
+          setUserId(null);
+          setIsAuthor(false);
         }
       } catch (error) {
         console.error('Error checking auth status:', error);
+        // Handle session error by redirecting to login
+        navigate('/author/login');
       }
     };
 
+    // Initial check
     checkAuthStatus();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      checkAuthStatus();
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id);
       
       if (event === 'SIGNED_IN') {
+        await checkAuthStatus();
         toast({
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
+      } else if (event === 'SIGNED_OUT') {
+        setUserId(null);
+        setIsAuthor(false);
+        navigate('/');
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [session, toast]);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   const handleLogout = async () => {
     setIsLoading(true);
     try {
-      const { error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
 
