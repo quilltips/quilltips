@@ -51,8 +51,8 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+    // Initialize Stripe with test mode key
+    const stripe = new Stripe(Deno.env.get('STRIPE_TEST_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
       httpClient: Stripe.createFetchHttpClient(),
     });
@@ -104,7 +104,8 @@ serve(async (req) => {
         book_title: bookTitle || null,
         qr_code_id: qrCodeId || null,
         stripe_session_id: session.id,
-        status: 'pending'
+        status: 'pending',
+        reader_name: name || null
       });
 
     if (tipError) {
