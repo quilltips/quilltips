@@ -1,5 +1,4 @@
 
-import { TableCell, TableRow } from "../ui/table";
 import { TipLikeButton } from "../TipLikeButton";
 import { TipCommentButton } from "../TipCommentButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -34,50 +33,52 @@ export const TipTableRow = ({
   };
 
   return (
-    <TableRow 
-      key={tip.id}
-      className="cursor-pointer hover:bg-muted/50 group"
+    <div 
+      className="group cursor-pointer hover:bg-muted/50 p-4 rounded-lg transition-colors"
       onClick={() => onSelectTip(tip)}
     >
-      <TableCell className="flex items-center space-x-3">
-        <Avatar className="h-10 w-10">
+      <div className="flex gap-4">
+        <Avatar className="h-12 w-12">
           <AvatarImage src={tip.reader_avatar_url || "/placeholder.svg"} />
           <AvatarFallback>
             {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <div className="flex flex-col">
-          <span className="font-medium text-sm">
-            {tip.reader_name || "Anonymous Reader"}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
-          </span>
+
+        <div className="flex-1 space-y-2">
+          <div className="space-y-1">
+            <p className="text-base">
+              <span className="font-medium">{tip.reader_name || "Anonymous Reader"}</span>
+              {" sent "}
+              <span className="font-medium">${tip.amount}</span>
+            </p>
+            
+            {tip.message && (
+              <p className="text-muted-foreground">
+                "{tip.message}"
+              </p>
+            )}
+            
+            <p className="text-sm text-muted-foreground">
+              {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <TipLikeButton
+              tipId={tip.id}
+              authorId={authorId}
+              isLiked={isLiked(tip.id)}
+              likeCount={likes?.filter(like => like.tip_id === tip.id).length || 0}
+            />
+            <TipCommentButton
+              tipId={tip.id}
+              authorId={authorId}
+              commentCount={comments?.filter(comment => comment.tip_id === tip.id).length || 0}
+            />
+          </div>
         </div>
-      </TableCell>
-      <TableCell>
-        <span className="text-sm font-medium">${tip.amount}</span>
-      </TableCell>
-      <TableCell className="max-w-md">
-        <p className="text-sm line-clamp-2 group-hover:text-primary/90">
-          {tip.message || "No message"}
-        </p>
-      </TableCell>
-      <TableCell onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-4">
-          <TipLikeButton
-            tipId={tip.id}
-            authorId={authorId}
-            isLiked={isLiked(tip.id)}
-            likeCount={likes?.filter(like => like.tip_id === tip.id).length || 0}
-          />
-          <TipCommentButton
-            tipId={tip.id}
-            authorId={authorId}
-            commentCount={comments?.filter(comment => comment.tip_id === tip.id).length || 0}
-          />
-        </div>
-      </TableCell>
-    </TableRow>
+      </div>
+    </div>
   );
 };

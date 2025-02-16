@@ -1,23 +1,14 @@
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
 import { TipTableRow } from "./TipTableRow";
 import { Button } from "../ui/button";
-import { ChevronDown } from "lucide-react";
 
 interface TipTableProps {
   tips: any[];
   authorId: string;
-  likes: any[];
-  comments: any[];
-  showAll: boolean;
-  setShowAll: (show: boolean) => void;
+  likes?: any[];
+  comments?: any[];
+  showAll?: boolean;
+  setShowAll?: (show: boolean) => void;
   onSelectTip: (tip: any) => void;
   limit?: number;
 }
@@ -32,50 +23,33 @@ export const TipTable = ({
   onSelectTip,
   limit
 }: TipTableProps) => {
-  const displayedTips = showAll ? tips : tips?.slice(0, 5);
+  const displayTips = showAll ? tips : tips.slice(0, limit || tips.length);
 
   return (
-    <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Reader</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Message</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {displayedTips?.map((tip) => (
-            <TipTableRow
-              key={tip.id}
-              tip={tip}
-              authorId={authorId}
-              likes={likes}
-              comments={comments}
-              onSelectTip={onSelectTip}
-            />
-          ))}
-          {!tips?.length && (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center">
-                No tips received yet
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+    <div className="space-y-8">
+      <div className="space-y-6">
+        {displayTips.map((tip) => (
+          <TipTableRow
+            key={tip.id}
+            tip={tip}
+            authorId={authorId}
+            likes={likes}
+            comments={comments}
+            onSelectTip={onSelectTip}
+          />
+        ))}
+      </div>
 
-      {tips && tips.length > 5 && !limit && (
-        <Button
-          variant="ghost"
-          className="w-full mt-4 text-muted-foreground hover:text-foreground"
-          onClick={() => setShowAll(!showAll)}
-        >
-          <ChevronDown className={`h-4 w-4 mr-2 transition-transform duration-200 ${showAll ? 'rotate-180' : ''}`} />
-          {showAll ? 'Show Less' : `Show ${tips.length - 5} More Tips`}
-        </Button>
+      {limit && tips.length > limit && !showAll && (
+        <div className="text-center pt-4">
+          <Button
+            variant="ghost"
+            onClick={() => setShowAll?.(true)}
+          >
+            Show all tips
+          </Button>
+        </div>
       )}
-    </>
+    </div>
   );
 };
