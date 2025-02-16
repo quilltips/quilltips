@@ -31,8 +31,8 @@ export const AuthorLoginForm = () => {
       // First, clear any existing session
       await supabase.auth.signOut();
 
-      // Attempt to sign in
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      // Attempt to sign in with new credentials
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -45,19 +45,19 @@ export const AuthorLoginForm = () => {
         throw signInError;
       }
 
-      if (!data?.user) {
+      if (!signInData?.user) {
         throw new Error("No user data returned");
       }
 
-      // Get a fresh session
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      // Get the current session to verify it's valid
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
         console.error("Session error:", sessionError);
         throw new Error("Failed to establish session");
       }
 
-      if (!sessionData.session) {
+      if (!session) {
         throw new Error("No valid session established");
       }
 
@@ -65,12 +65,15 @@ export const AuthorLoginForm = () => {
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', data.user.id)
+        .eq('id', signInData.user.id)
         .single();
 
-      if (profileError && profileError.code !== 'PGRST116') {
+      if (profileError) {
         console.error("Profile fetch error:", profileError);
-        throw profileError;
+        // Only throw if it's not a "no rows returned" error
+        if (profileError.code !== 'PGRST116') {
+          throw profileError;
+        }
       }
 
       // Create profile if it doesn't exist
@@ -78,12 +81,15 @@ export const AuthorLoginForm = () => {
         const { error: createError } = await supabase
           .from('profiles')
           .insert([{
-            id: data.user.id,
-            name: email,
+            id: signInData.user.id,
+            name: email.split('@')[0], // Use email username as initial name
             role: 'author'
           }]);
 
-        if (createError) throw createError;
+        if (createError) {
+          console.error("Profile creation error:", createError);
+          throw createError;
+        }
       }
 
       toast({
@@ -91,7 +97,9 @@ export const AuthorLoginForm = () => {
         description: "You've successfully logged in.",
       });
 
+      // After successful login and profile check/creation
       navigate("/author/dashboard");
+
     } catch (err: any) {
       console.error("Login error:", err);
       setError(err.message || "An error occurred during login");
@@ -125,6 +133,7 @@ export const AuthorLoginForm = () => {
         description: "Check your email for the password reset link.",
       });
       setResetEmail("");
+      setShowResetForm(false);
     } catch (err: any) {
       console.error("Reset password error:", err);
       setError(err.message || "An error occurred while requesting password reset");
@@ -141,7 +150,7 @@ export const AuthorLoginForm = () => {
   return (
     <Card className="auth-card max-w-md mx-auto animate-enter">
       {!showResetForm ? (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 p-6">
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold text-[#2D3748]">Author Login</h2>
             <p className="text-muted-foreground">
@@ -212,7 +221,7 @@ export const AuthorLoginForm = () => {
           </div>
         </form>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-6 p-6">
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold text-[#2D3748]">Reset Password</h2>
             <p className="text-muted-foreground">
