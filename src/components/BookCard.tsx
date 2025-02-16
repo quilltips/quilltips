@@ -38,7 +38,7 @@ export const BookCard = ({
   return (
     <Card className="overflow-hidden group cursor-pointer">
       <Link to={`/qr/${id}`} className="block">
-        <div className="aspect-[2/3] relative">
+        <div className="h-32 relative">
           <img
             src={coverImage || "/placeholder.svg"}
             alt={title}
@@ -47,14 +47,14 @@ export const BookCard = ({
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
         
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-2">
           <div>
-            <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{title}</h3>
-            <p className="text-sm text-muted-foreground">by {authorName}</p>
+            <h3 className="font-semibold text-sm group-hover:text-primary transition-colors line-clamp-2">{title}</h3>
+            <p className="text-xs text-muted-foreground">by {authorName}</p>
           </div>
 
           {(publisher || isbn || releaseDate) && (
-            <div className="space-y-1 text-sm text-muted-foreground">
+            <div className="space-y-1 text-xs text-muted-foreground">
               {publisher && <p>Publisher: {publisher}</p>}
               {isbn && <p>ISBN: {isbn}</p>}
               {releaseDate && (
@@ -73,9 +73,10 @@ export const BookCard = ({
           }} 
           className="w-full"
           variant="secondary"
+          size="sm"
         >
           Send Tip
-          <CreditCard className="ml-2 h-4 w-4" />
+          <CreditCard className="ml-2 h-3 w-3" />
         </Button>
       </div>
 
