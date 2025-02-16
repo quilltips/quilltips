@@ -1,4 +1,3 @@
-
 import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -143,8 +142,7 @@ const QRCodeDetails = () => {
           <Card>
             <CardHeader>
               <div className="flex flex-col md:flex-row gap-8">
-                {/* Book Cover */}
-                <div className="w-full md:w-1/3 aspect-[2/3] relative rounded-lg overflow-hidden">
+                <div className="w-full md:w-1/6 aspect-[2/3] relative rounded-lg overflow-hidden">
                   <img
                     src={qrCode.cover_image || "/placeholder.svg"}
                     alt={qrCode.book_title}
@@ -152,7 +150,6 @@ const QRCodeDetails = () => {
                   />
                 </div>
 
-                {/* Book Details */}
                 <div className="flex-1 space-y-4">
                   <div>
                     <CardTitle className="text-2xl md:text-3xl">{qrCode.book_title}</CardTitle>
@@ -191,29 +188,6 @@ const QRCodeDetails = () => {
 
             <CardContent>
               <div className="space-y-6">
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Tips</p>
-                    <p className="text-lg font-semibold">{qrCode.total_tips || 0}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Value</p>
-                    <p className="text-lg font-semibold">${qrCode.total_amount?.toFixed(2) || '0.00'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Average Tip</p>
-                    <p className="text-lg font-semibold">${qrCode.average_tip?.toFixed(2) || '0.00'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Last Tip</p>
-                    <p className="text-lg font-semibold">
-                      {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), 'MMM d, yyyy') : 'No tips yet'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Tip Form */}
                 <Card className="mt-8">
                   <CardContent className="pt-6">
                     <form onSubmit={handleSubmit} className="space-y-8">
@@ -243,15 +217,6 @@ const QRCodeDetails = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="max-w-4xl mx-auto space-y-4">
-          <h2 className="text-2xl font-semibold">Tip History</h2>
-          <TipHistory 
-            authorId={qrCode.author_id} 
-            qrCodeId={qrCode.id}
-            authorName={`${qrCode.book_title}'s`}
-          />
         </div>
 
         <QRCodePublisherInvite
