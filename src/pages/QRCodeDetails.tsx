@@ -5,24 +5,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { CreditCard } from "lucide-react";
 import { TipHistory } from "@/components/TipHistory";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { QRCodePublisherInvite } from "@/components/qr/QRCodePublisherInvite";
 import { QRCodeCanvas } from "qrcode.react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { TipForm } from "@/components/TipForm";
+import { TipAmountSelector } from "@/components/tip/TipAmountSelector";
+import { TipMessageForm } from "@/components/tip/TipMessageForm";
+import { PaymentForm } from "@/components/tip/PaymentForm";
 
 const QRCodeDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [showPublisherInvite, setShowPublisherInvite] = useState(false);
-  const [showTipDialog, setShowTipDialog] = useState(false);
+  const [amount, setAmount] = useState("5");
+  const [customAmount, setCustomAmount] = useState("");
+  const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: qrCode, isLoading } = useQuery({
+  const { data: qrCode, isLoading: qrCodeLoading } = useQuery({
     queryKey: ['qr-code', id],
     queryFn: async () => {
       const { data: qrData, error: qrError } = await supabase
@@ -44,6 +47,55 @@ const QRCodeDetails = () => {
     }
   });
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const finalAmount = amount === 'custom' ? customAmount : amount;
+
+    try {
+      const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
+        body: {
+          amount: Number(finalAmount),
+          authorId: qrCode.author_id,
+          message,
+          name,
+          bookTitle: qrCode.book_title,
+          qrCodeId: qrCode.id,
+        },
+      });
+
+      if (error) throw error;
+      
+      if (data.error) {
+        if (data.code === 'ACCOUNT_SETUP_INCOMPLETE') {
+          toast({
+            title: "Account Setup Required",
+            description: "The author needs to complete their payment account setup before they can receive tips.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error(data.error);
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received from server');
+      }
+
+    } catch (error: any) {
+      console.error('Error creating checkout session:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to process payment",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
       toast({
@@ -54,7 +106,7 @@ const QRCodeDetails = () => {
     }
   }, [searchParams, toast]);
 
-  if (isLoading) {
+  if (qrCodeLoading) {
     return (
       <div className="min-h-screen">
         <Navigation />
@@ -133,21 +185,13 @@ const QRCodeDetails = () => {
                       </p>
                     )}
                   </div>
-
-                  <Button 
-                    onClick={() => setShowTipDialog(true)}
-                    size="lg"
-                    className="w-full md:w-auto"
-                  >
-                    Send a Tip
-                    <CreditCard className="ml-2 h-4 w-4" />
-                  </Button>
                 </div>
               </div>
             </CardHeader>
 
             <CardContent>
               <div className="space-y-6">
+                {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg">
                   <div>
                     <p className="text-sm text-muted-foreground">Total Tips</p>
@@ -168,6 +212,34 @@ const QRCodeDetails = () => {
                     </p>
                   </div>
                 </div>
+
+                {/* Tip Form */}
+                <Card className="mt-8">
+                  <CardContent className="pt-6">
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                      <TipAmountSelector
+                        amount={amount}
+                        customAmount={customAmount}
+                        onAmountChange={setAmount}
+                        onCustomAmountChange={setCustomAmount}
+                      />
+
+                      <TipMessageForm
+                        name={name}
+                        message={message}
+                        onNameChange={setName}
+                        onMessageChange={setMessage}
+                      />
+
+                      <PaymentForm
+                        isLoading={isLoading}
+                        amount={amount}
+                        customAmount={customAmount}
+                        onSubmit={handleSubmit}
+                      />
+                    </form>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
@@ -187,20 +259,6 @@ const QRCodeDetails = () => {
           onClose={() => setShowPublisherInvite(false)}
           bookTitle={qrCode.book_title}
         />
-
-        <Dialog open={showTipDialog} onOpenChange={setShowTipDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Send a tip for "{qrCode.book_title}"</DialogTitle>
-            </DialogHeader>
-            <TipForm
-              authorId={qrCode.author_id}
-              bookTitle={qrCode.book_title}
-              qrCodeId={qrCode.id}
-              onSuccess={() => setShowTipDialog(false)}
-            />
-          </DialogContent>
-        </Dialog>
       </main>
     </div>
   );
