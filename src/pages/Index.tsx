@@ -91,7 +91,7 @@ const Index = () => {
         </div>
 
         {/* Get Started Section */}
-        <div className="max-w-4xl mx-auto mt-24 text-center space-y-8 animate-enter">
+        <div className="max-w-4xl mx-auto mt-24 text-center space-y-8 animate-enter py-[75px]">
           <div className="space-y-4">
             <h2 className="text-4xl font-playfair font-medium">Get started</h2>
             <h3 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
