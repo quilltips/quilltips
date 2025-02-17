@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
-import { PublicTipHistory } from "@/components/tips/PublicTipHistory";
+import { TipHistory } from "@/components/TipHistory";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -44,8 +44,7 @@ const AuthorPublicProfile = () => {
       if (!data) throw new Error('Author not found');
       return data;
     },
-    retry: false,
-    staleTime: 1000 * 60 * 5 // Cache for 5 minutes
+    retry: false
   });
 
   // Handle auto-opening the tip dialog
@@ -123,8 +122,11 @@ const AuthorPublicProfile = () => {
         </div>
         
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-4">Tip History</h2>
-          <PublicTipHistory qrCodeId={selectedQRCode?.id || ''} />
+          <TipHistory 
+            authorId={author.id}
+            authorName={author.name || 'Anonymous Author'}
+            isDashboard={false}
+          />
         </div>
 
         {/* QR Code Dialog */}

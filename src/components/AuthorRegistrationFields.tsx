@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -44,18 +45,6 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState('');
 
-  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const previewUrl = URL.createObjectURL(file);
-    setAvatarPreview(previewUrl);
-    setSelectedFileName(file.name);
-    onAvatarSelected(file);
-
-    return () => URL.revokeObjectURL(previewUrl);
-  };
-
   const addSocialLink = () => {
     if (!newUrl.trim()) return;
     
@@ -66,6 +55,16 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
 
   const removeSocialLink = (index: number) => {
     setSocialLinks(socialLinks.filter((_, i) => i !== index));
+  };
+
+  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+    setSelectedFileName(file.name);
+    onAvatarSelected(file);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -79,13 +78,10 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
     <div className="space-y-6 text-left">
       <div className="flex flex-col items-center space-y-4">
         <Avatar className="w-24 h-24">
-          {avatarPreview ? (
-            <AvatarImage src={avatarPreview} alt="Profile preview" className="object-cover" />
-          ) : (
-            <AvatarFallback>
-              <Camera className="w-8 h-8 text-muted-foreground" />
-            </AvatarFallback>
-          )}
+          <AvatarImage src={avatarPreview || undefined} />
+          <AvatarFallback>
+            <Camera className="w-8 h-8 text-muted-foreground" />
+          </AvatarFallback>
         </Avatar>
         <div className="space-y-2 text-center">
           <Input
@@ -103,7 +99,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             disabled={isLoading}
             className="hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
           >
-            {avatarPreview ? 'Change photo' : 'Add a photo'}
+            {selectedFileName ? 'Change photo' : 'Add a photo'}
           </Button>
           {selectedFileName && (
             <p className="text-sm text-muted-foreground mt-1">

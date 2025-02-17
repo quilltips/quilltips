@@ -1,28 +1,47 @@
 
+import { useState } from "react";
 import { Button } from "../ui/button";
-import { ArrowRight, Wallet, Info } from "lucide-react";
+import { Card } from "../ui/card";
+import { ArrowRight, Wallet } from "lucide-react";
 import { Alert, AlertDescription } from "../ui/alert";
+import { Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 interface RegistrationStepStripeProps {
   onComplete: () => void;
 }
 
 export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripeProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleSetupStripe = () => {
-    // Navigate to the stripe onboarding page
-    navigate('/author/bank-account');
+  const handleSetupPayments = async () => {
+    setIsLoading(true);
+    try {
+      // Redirect to dashboard where they can set up payments
+      navigate('/author/bank-account');
+      onComplete();
+    } catch (error: any) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to proceed with payment setup. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSkip = () => {
-    // Skip stripe setup and complete registration
+    navigate('/author/dashboard');
     onComplete();
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold text-[#2D3748]">Set Up Payments</h2>
         <p className="text-muted-foreground">
@@ -39,7 +58,8 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
 
       <div className="space-y-4">
         <Button
-          onClick={handleSetupStripe}
+          onClick={handleSetupPayments}
+          disabled={isLoading}
           className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
         >
           <Wallet className="mr-2 h-4 w-4" />
@@ -60,7 +80,7 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
         <Button
           variant="outline"
           onClick={handleSkip}
-          className="w-full hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
+          className="w-full"
         >
           Skip for now
           <ArrowRight className="ml-2 h-4 w-4" />

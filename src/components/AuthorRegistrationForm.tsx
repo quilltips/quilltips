@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
@@ -51,7 +52,15 @@ export const AuthorRegistrationForm = () => {
         }
       });
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        console.error("Signup error:", signUpError);
+        
+        if (signUpError.message === "User already registered") {
+          throw new Error("This email is already registered. Please try logging in instead.");
+        }
+        
+        throw signUpError;
+      }
 
       if (avatarFile && data.user) {
         const fileExt = avatarFile.name.split('.').pop();
@@ -73,14 +82,18 @@ export const AuthorRegistrationForm = () => {
             .from('avatars')
             .getPublicUrl(filePath);
 
-          await supabase
+          const { error: updateError } = await supabase
             .from('profiles')
             .update({ avatar_url: publicUrl })
             .eq('id', data.user.id);
+
+          if (updateError) {
+            console.error("Profile update error:", updateError);
+          }
         }
       }
 
-      console.log("Moving to stripe onboarding step");
+      console.log("Registration successful:", data);
       setCurrentStep("stripe-onboarding");
       
       toast({
@@ -93,7 +106,9 @@ export const AuthorRegistrationForm = () => {
       
       toast({
         title: "Registration Failed",
-        description: err.message || "An error occurred during registration",
+        description: err.message === "User already registered" 
+          ? "This email is already registered. Please try logging in instead."
+          : err.message || "An error occurred during registration",
         variant: "destructive",
       });
     } finally {
@@ -104,7 +119,7 @@ export const AuthorRegistrationForm = () => {
   const handleOnboardingComplete = () => {
     toast({
       title: "Onboarding Complete",
-      description: "Your account setup is complete.",
+      description: "Your Stripe Connect account has been set up successfully.",
     });
     navigate("/author/dashboard");
   };
