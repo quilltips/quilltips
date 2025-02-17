@@ -17,7 +17,7 @@ export const RegistrationStepDetails = ({
   onSubmit,
 }: RegistrationStepDetailsProps) => {
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-6 p-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold text-[#2D3748]">Complete your profile</h2>
         <p className="text-muted-foreground">

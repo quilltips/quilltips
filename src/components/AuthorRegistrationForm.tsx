@@ -80,6 +80,7 @@ export const AuthorRegistrationForm = () => {
         }
       }
 
+      console.log("Moving to stripe onboarding step");
       setCurrentStep("stripe-onboarding");
       
       toast({
@@ -103,7 +104,7 @@ export const AuthorRegistrationForm = () => {
   const handleOnboardingComplete = () => {
     toast({
       title: "Onboarding Complete",
-      description: "Your Stripe Connect account has been set up successfully.",
+      description: "Your account setup is complete.",
     });
     navigate("/author/dashboard");
   };

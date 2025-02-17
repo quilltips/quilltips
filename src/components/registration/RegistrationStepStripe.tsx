@@ -2,15 +2,18 @@
 import { Button } from "../ui/button";
 import { ArrowRight, Wallet, Info } from "lucide-react";
 import { Alert, AlertDescription } from "../ui/alert";
+import { useNavigate } from "react-router-dom";
 
 interface RegistrationStepStripeProps {
   onComplete: () => void;
 }
 
 export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripeProps) => {
-  const handleSetupStripe = async () => {
+  const navigate = useNavigate();
+
+  const handleSetupStripe = () => {
     // Navigate to the stripe onboarding page
-    window.location.href = '/author/bank-account';
+    navigate('/author/bank-account');
   };
 
   const handleSkip = () => {
