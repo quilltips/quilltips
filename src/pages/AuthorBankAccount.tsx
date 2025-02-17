@@ -3,7 +3,7 @@ import { Layout } from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Wallet } from "lucide-react";
@@ -14,6 +14,7 @@ const AuthorBankAccount = () => {
   const [hasStripeAccount, setHasStripeAccount] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -26,11 +27,11 @@ const AuthorBankAccount = () => {
 
         const { data: profile } = await supabase
           .from('profiles')
-          .select('stripe_account_id')
+          .select('stripe_account_id, stripe_setup_complete')
           .eq('id', session.user.id)
           .single();
 
-        if (profile?.stripe_account_id) {
+        if (profile?.stripe_setup_complete) {
           setHasStripeAccount(true);
           navigate('/author/dashboard');
         }
@@ -44,6 +45,17 @@ const AuthorBankAccount = () => {
     checkAuth();
   }, [navigate]);
 
+  useEffect(() => {
+    // Handle completion flow
+    if (searchParams.get('setup') === 'complete') {
+      toast({
+        title: "Account Setup Complete",
+        description: "Your Stripe account has been connected successfully.",
+      });
+      navigate('/author/dashboard');
+    }
+  }, [searchParams, navigate, toast]);
+
   const connectBankAccount = async () => {
     setIsConnecting(true);
     try {
@@ -56,25 +68,14 @@ const AuthorBankAccount = () => {
         },
       });
 
-      if (error) {
-        console.error("Function error:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      if (!data?.url) {
-        if (data?.error === 'Platform profile setup required') {
+      if (data.error) {
+        if (data.error === 'Platform profile setup required') {
           throw new Error(data.details || 'Platform setup required');
         }
         throw new Error('No URL returned from Stripe');
       }
-
-      // Save the Stripe account ID
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ stripe_account_id: data.accountId })
-        .eq('id', session.user.id);
-
-      if (updateError) throw updateError;
 
       // Redirect to Stripe Connect onboarding
       window.location.href = data.url;
