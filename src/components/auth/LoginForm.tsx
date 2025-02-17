@@ -28,7 +28,6 @@ export const LoginForm = ({ onResetPassword }: LoginFormProps) => {
     const password = formData.get("password") as string;
 
     try {
-      await supabase.auth.signOut();
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -45,10 +44,19 @@ export const LoginForm = ({ onResetPassword }: LoginFormProps) => {
         throw new Error("No user data returned");
       }
 
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !session) {
-        throw new Error("Failed to establish session");
+      // Get the profile to check if they are an author
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', signInData.user.id)
+        .single();
+
+      if (profileError) {
+        throw new Error("Failed to load user profile");
+      }
+
+      if (profile?.role !== 'author') {
+        throw new Error("This login is only for authors");
       }
 
       toast({
@@ -56,6 +64,8 @@ export const LoginForm = ({ onResetPassword }: LoginFormProps) => {
         description: "You've successfully logged in."
       });
 
+      // Reset loading state before navigation to prevent UI freeze
+      setIsLoading(false);
       navigate("/author/dashboard");
     } catch (err: any) {
       console.error("Login error:", err);
@@ -65,7 +75,6 @@ export const LoginForm = ({ onResetPassword }: LoginFormProps) => {
         description: err.message || "An error occurred during login",
         variant: "destructive"
       });
-    } finally {
       setIsLoading(false);
     }
   };
