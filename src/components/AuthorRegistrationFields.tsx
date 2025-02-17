@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -41,6 +42,7 @@ const getSocialIcon = (platform: string) => {
 export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: AuthorRegistrationFieldsProps) => {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [newUrl, setNewUrl] = useState('');
 
   const addSocialLink = () => {
@@ -61,6 +63,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
 
     const previewUrl = URL.createObjectURL(file);
     setAvatarPreview(previewUrl);
+    setSelectedFileName(file.name);
     onAvatarSelected(file);
   };
 
@@ -80,7 +83,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             <Camera className="w-8 h-8 text-muted-foreground" />
           </AvatarFallback>
         </Avatar>
-        <div>
+        <div className="space-y-2 text-center">
           <Input
             type="file"
             accept="image/*"
@@ -96,8 +99,13 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             disabled={isLoading}
             className="hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
           >
-            Add a photo
+            {selectedFileName ? 'Change photo' : 'Add a photo'}
           </Button>
+          {selectedFileName && (
+            <p className="text-sm text-muted-foreground mt-1">
+              Selected: {selectedFileName}
+            </p>
+          )}
         </div>
       </div>
 
