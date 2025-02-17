@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
@@ -52,15 +51,7 @@ export const AuthorRegistrationForm = () => {
         }
       });
 
-      if (signUpError) {
-        console.error("Signup error:", signUpError);
-        
-        if (signUpError.message === "User already registered") {
-          throw new Error("This email is already registered. Please try logging in instead.");
-        }
-        
-        throw signUpError;
-      }
+      if (signUpError) throw signUpError;
 
       if (avatarFile && data.user) {
         const fileExt = avatarFile.name.split('.').pop();
@@ -82,18 +73,13 @@ export const AuthorRegistrationForm = () => {
             .from('avatars')
             .getPublicUrl(filePath);
 
-          const { error: updateError } = await supabase
+          await supabase
             .from('profiles')
             .update({ avatar_url: publicUrl })
             .eq('id', data.user.id);
-
-          if (updateError) {
-            console.error("Profile update error:", updateError);
-          }
         }
       }
 
-      console.log("Registration successful:", data);
       setCurrentStep("stripe-onboarding");
       
       toast({
@@ -106,9 +92,7 @@ export const AuthorRegistrationForm = () => {
       
       toast({
         title: "Registration Failed",
-        description: err.message === "User already registered" 
-          ? "This email is already registered. Please try logging in instead."
-          : err.message || "An error occurred during registration",
+        description: err.message || "An error occurred during registration",
         variant: "destructive",
       });
     } finally {
