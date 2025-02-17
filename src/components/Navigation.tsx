@@ -42,8 +42,6 @@ export const Navigation = () => {
         }
       } catch (error) {
         console.error('Error checking auth status:', error);
-        // Handle session error by redirecting to login
-        navigate('/author/login');
       }
     };
 
