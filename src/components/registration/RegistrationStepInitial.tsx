@@ -1,3 +1,4 @@
+
 import { InitialRegistrationFields } from "../InitialRegistrationFields";
 
 interface RegistrationStepInitialProps {
