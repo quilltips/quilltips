@@ -18,6 +18,12 @@ type Tip = Database['public']['Tables']['tips']['Row'];
 type TipLike = Database['public']['Tables']['tip_likes']['Row'];
 type TipComment = Database['public']['Tables']['tip_comments']['Row'];
 
+type TipData = {
+  tips: Tip[];
+  likes: TipLike[];
+  comments: TipComment[];
+};
+
 const AuthorQRCodeDetails = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -37,20 +43,14 @@ const AuthorQRCodeDetails = () => {
     }
   });
 
-  const { data: tipData } = useQuery({
+  const { data: tipData } = useQuery<TipData>({
     queryKey: ['qr-tips', id],
-    queryFn: async (): Promise<{
-      tips: Tip[];
-      likes: TipLike[];
-      comments: TipComment[];
-    }> => {
+    queryFn: async () => {
       if (!id) return { tips: [], likes: [], comments: [] };
 
-      const [tipsResponse, likesResponse, commentsResponse] = await Promise.all([
-        supabase.from('tips').select('*').eq('qr_code_id', id),
-        supabase.from('tip_likes').select('*').eq('qr_code_id', id),
-        supabase.from('tip_comments').select('*').eq('qr_code_id', id)
-      ]);
+      const tipsResponse = await supabase.from('tips').select('*').eq('qr_code_id', id);
+      const likesResponse = await supabase.from('tip_likes').select('*').eq('qr_code_id', id);
+      const commentsResponse = await supabase.from('tip_comments').select('*').eq('qr_code_id', id);
 
       return {
         tips: tipsResponse.data || [],
