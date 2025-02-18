@@ -1,8 +1,9 @@
 
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { supabase } from "@/integrations/supabase/client";
 import Index from "@/pages/Index";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
@@ -23,6 +24,31 @@ import QRCodeDetails from "@/pages/QRCodeDetails";
 const queryClient = new QueryClient();
 
 function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if user is an author and redirect accordingly
+    const checkAuthorAccess = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session && location.pathname === '/') {
+        // Check if user is an author
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+          
+        if (profile?.role === 'author') {
+          navigate('/author/dashboard');
+        }
+      }
+    };
+
+    checkAuthorAccess();
+  }, [navigate, location.pathname]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>
