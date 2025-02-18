@@ -1,103 +1,80 @@
 
-import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { ChevronDown, Download, QrCode } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { Book, ChevronDown } from "lucide-react";
 import { QRCodeCardDetails } from "./QRCodeCardDetails";
-import { QRCodeCanvas } from "qrcode.react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 interface QRCodeCardProps {
-  qrCode: any;
+  qrCode: {
+    id: string;
+    book_title: string;
+    cover_image?: string | null;
+    publisher?: string | null;
+    release_date?: string | null;
+    isbn?: string | null;
+    total_tips?: number;
+    total_amount?: number;
+    average_tip?: number;
+    last_tip_date?: string | null;
+  };
   onNavigate: (id: string) => void;
 }
 
 export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
-
-  const handleDownload = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const canvas = document.getElementById(`qr-${qrCode.id}`) as HTMLCanvasElement;
-    if (canvas) {
-      const url = canvas.toDataURL("image/png");
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${qrCode.book_title}-qr-code.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
-
-  const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Card 
-      className="overflow-hidden transition-all duration-200 cursor-pointer hover:bg-muted/50" 
-      onClick={() => navigate(`/qr/${qrCode.id}`)}
-    >
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="p-6 grid grid-cols-12 items-center gap-6">
-          <div className="col-span-2 md:col-span-1">
-            <div className="bg-white p-2 rounded-lg">
-              <QRCodeCanvas
-                id={`qr-${qrCode.id}`}
-                value={qrValue}
-                size={60}
-                level="H"
-                includeMargin={false}
-                className="w-full h-auto"
-              />
+    <Card className="overflow-hidden">
+      <div className="p-4 flex items-start gap-4">
+        <div 
+          className="w-16 h-24 flex-shrink-0 bg-muted rounded-lg overflow-hidden cursor-pointer"
+          onClick={() => onNavigate(`/author/qr/${qrCode.id}`)}
+        >
+          {qrCode.cover_image ? (
+            <img
+              src={qrCode.cover_image}
+              alt={qrCode.book_title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Book className="h-6 w-6 text-muted-foreground" />
             </div>
-          </div>
+          )}
+        </div>
 
-          <div className="col-span-2 md:col-span-1">
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted">
-              <img
-                src={qrCode.cover_image || "/placeholder.svg"}
-                alt={qrCode.book_title}
-                className="w-full h-full object-cover"
-              />
+        <div className="flex-1 min-w-0">
+          <h3 
+            className="text-lg font-semibold leading-tight mb-1 hover:text-[#9b87f5] cursor-pointer"
+            onClick={() => onNavigate(`/author/qr/${qrCode.id}`)}
+          >
+            {qrCode.book_title}
+          </h3>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+            <div>
+              <p className="text-sm text-muted-foreground">Total Tips</p>
+              <p className="font-semibold">{qrCode.total_tips || 0}</p>
             </div>
-          </div>
-          
-          <div className="col-span-6 md:col-span-8">
-            <h3 className="font-semibold text-base truncate">{qrCode.book_title}</h3>
-            <p className="text-sm text-muted-foreground">
-              {qrCode.total_tips || 0} tips · ${qrCode.total_amount?.toFixed(2) || '0.00'} total
-            </p>
-          </div>
-          
-          <div className="col-span-2 flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDownload(e);
-              }}
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-            <CollapsibleTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <ChevronDown className={cn(
-                  "h-4 w-4 transition-transform duration-200",
-                  isOpen && "transform rotate-180"
-                )} />
-              </Button>
-            </CollapsibleTrigger>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Value</p>
+              <p className="font-semibold">${qrCode.total_amount?.toFixed(2) || '0.00'}</p>
+            </div>
           </div>
         </div>
 
-        <CollapsibleContent className="animate-accordion-down" onClick={(e) => e.stopPropagation()}>
-          <QRCodeCardDetails qrCode={qrCode} />
-        </CollapsibleContent>
-      </Collapsible>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="flex-shrink-0"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+        </Button>
+      </div>
+
+      {isExpanded && <QRCodeCardDetails qrCode={qrCode} />}
     </Card>
   );
 };
