@@ -11,41 +11,34 @@ import { format } from "date-fns";
 import { TipHistory } from "@/components/TipHistory";
 import { TipDownloadButton } from "@/components/tips/TipDownloadButton";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import type { Database } from "@/integrations/supabase/types";
 
-type QRCode = Database['public']['Tables']['qr_codes']['Row'];
-type Tip = Database['public']['Tables']['tips']['Row'];
-type TipLike = Database['public']['Tables']['tip_likes']['Row'];
-type TipComment = Database['public']['Tables']['tip_comments']['Row'];
-
-interface TipDataResponse {
-  tips: Tip[];
-  likes: TipLike[];
-  comments: TipComment[];
+// Simplified interfaces to avoid deep type instantiation
+interface QRCodeData {
+  id: string;
+  author_id: string;
+  book_title: string;
+  publisher?: string;
+  release_date?: string;
+  isbn?: string;
+  cover_image?: string;
+  total_tips?: number;
+  total_amount?: number;
+  average_tip?: number;
+  last_tip_date?: string;
 }
 
-const fetchTipData = async (qrCodeId: string): Promise<TipDataResponse> => {
-  const { data: tips = [] } = await supabase
-    .from('tips')
-    .select()
-    .eq('qr_code_id', qrCodeId);
+interface TipData {
+  id: string;
+  amount: number;
+  message?: string;
+  created_at: string;
+}
 
-  const { data: likes = [] } = await supabase
-    .from('tip_likes')
-    .select()
-    .eq('qr_code_id', qrCodeId);
-
-  const { data: comments = [] } = await supabase
-    .from('tip_comments')
-    .select()
-    .eq('qr_code_id', qrCodeId);
-
-  return {
-    tips: tips as Tip[],
-    likes: likes as TipLike[],
-    comments: comments as TipComment[]
-  };
-};
+interface TipMetadata {
+  tips: TipData[];
+  likes: Array<{ id: string; tip_id: string }>;
+  comments: Array<{ id: string; tip_id: string }>;
+}
 
 const AuthorQRCodeDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,18 +50,37 @@ const AuthorQRCodeDetails = () => {
       
       const { data, error } = await supabase
         .from('qr_codes')
-        .select('*')
+        .select()
         .eq('id', id)
         .maybeSingle();
 
       if (error) throw error;
-      return data as QRCode;
+      return data as QRCodeData;
     }
   });
 
-  const { data: tipData } = useQuery({
+  const { data: tipData } = useQuery<TipMetadata>({
     queryKey: ['qr-tips', id],
-    queryFn: () => id ? fetchTipData(id) : Promise.resolve({ tips: [], likes: [], comments: [] }),
+    queryFn: async () => {
+      if (!id) return { tips: [], likes: [], comments: [] };
+
+      const { data: tips = [] } = await supabase
+        .from('tips')
+        .select()
+        .eq('qr_code_id', id);
+
+      const { data: likes = [] } = await supabase
+        .from('tip_likes')
+        .select()
+        .eq('qr_code_id', id);
+
+      const { data: comments = [] } = await supabase
+        .from('tip_comments')
+        .select()
+        .eq('qr_code_id', id);
+
+      return { tips, likes, comments };
+    },
     enabled: !!id
   });
 
