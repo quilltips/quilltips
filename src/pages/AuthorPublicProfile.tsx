@@ -9,11 +9,30 @@ import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { useState, useEffect } from "react";
 import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useToast } from "@/hooks/use-toast";
 
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const [selectedQRCode, setSelectedQRCode] = useState<{ id: string; bookTitle: string } | null>(null);
+  const { toast } = useToast();
+
+  // Add session check
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Session check error:', error);
+        toast({
+          title: "Session Error",
+          description: "There was an error checking your session. Please try logging in again.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    checkSession();
+  }, [toast]);
 
   const { data: author, isLoading, error } = useQuery({
     queryKey: ['author', id],
@@ -41,7 +60,10 @@ const AuthorPublicProfile = () => {
           .ilike('name', id.replace(/-/g, ' '))
           .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching author:', error);
+          throw error;
+        }
         if (!data) throw new Error('Author not found');
         
         return data;
