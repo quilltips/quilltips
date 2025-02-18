@@ -24,6 +24,29 @@ interface TipDataResponse {
   comments: TipComment[];
 }
 
+const fetchTipData = async (qrCodeId: string): Promise<TipDataResponse> => {
+  const { data: tips = [] } = await supabase
+    .from('tips')
+    .select()
+    .eq('qr_code_id', qrCodeId);
+
+  const { data: likes = [] } = await supabase
+    .from('tip_likes')
+    .select()
+    .eq('qr_code_id', qrCodeId);
+
+  const { data: comments = [] } = await supabase
+    .from('tip_comments')
+    .select()
+    .eq('qr_code_id', qrCodeId);
+
+  return {
+    tips: tips as Tip[],
+    likes: likes as TipLike[],
+    comments: comments as TipComment[]
+  };
+};
+
 const AuthorQRCodeDetails = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -43,29 +66,9 @@ const AuthorQRCodeDetails = () => {
     }
   });
 
-  const { data: tipData } = useQuery<TipDataResponse>({
+  const { data: tipData } = useQuery({
     queryKey: ['qr-tips', id],
-    queryFn: async () => {
-      if (!id) {
-        return {
-          tips: [],
-          likes: [],
-          comments: []
-        };
-      }
-
-      const [tipsResult, likesResult, commentsResult] = await Promise.all([
-        supabase.from('tips').select().eq('qr_code_id', id),
-        supabase.from('tip_likes').select().eq('qr_code_id', id),
-        supabase.from('tip_comments').select().eq('qr_code_id', id)
-      ]);
-
-      return {
-        tips: (tipsResult.data ?? []) as Tip[],
-        likes: (likesResult.data ?? []) as TipLike[],
-        comments: (commentsResult.data ?? []) as TipComment[]
-      };
-    },
+    queryFn: () => id ? fetchTipData(id) : Promise.resolve({ tips: [], likes: [], comments: [] }),
     enabled: !!id
   });
 
@@ -116,10 +119,10 @@ const AuthorQRCodeDetails = () => {
 
           <div className="grid md:grid-cols-2 gap-8">
             <Card className="p-6 space-y-6">
-              <h1 className="text-2xl font-bold">{qrCode?.book_title}</h1>
+              <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
               
               <div className="aspect-square relative bg-muted rounded-lg overflow-hidden">
-                {qrCode?.cover_image ? (
+                {qrCode.cover_image ? (
                   <img
                     src={qrCode.cover_image}
                     alt={qrCode.book_title}
@@ -133,9 +136,9 @@ const AuthorQRCodeDetails = () => {
               </div>
 
               <div className="space-y-2 text-sm">
-                <p><span className="font-medium">Publisher:</span> {qrCode?.publisher || 'Not specified'}</p>
-                <p><span className="font-medium">Release Date:</span> {qrCode?.release_date ? format(new Date(qrCode.release_date), 'PP') : 'Not specified'}</p>
-                <p><span className="font-medium">ISBN:</span> {qrCode?.isbn || 'Not specified'}</p>
+                <p><span className="font-medium">Publisher:</span> {qrCode.publisher || 'Not specified'}</p>
+                <p><span className="font-medium">Release Date:</span> {qrCode.release_date ? format(new Date(qrCode.release_date), 'PP') : 'Not specified'}</p>
+                <p><span className="font-medium">ISBN:</span> {qrCode.isbn || 'Not specified'}</p>
               </div>
             </Card>
 
@@ -145,7 +148,7 @@ const AuthorQRCodeDetails = () => {
                 <div className="bg-white p-6 rounded-lg shadow-sm flex justify-center">
                   <QRCodeCanvas
                     id="qr-canvas"
-                    value={`${window.location.origin}/qr/${qrCode?.id}`}
+                    value={`${window.location.origin}/qr/${qrCode.id}`}
                     size={200}
                     level="H"
                     includeMargin
@@ -166,22 +169,22 @@ const AuthorQRCodeDetails = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground">Total Tips</p>
-                    <p className="text-2xl font-bold">{qrCode?.total_tips || 0}</p>
+                    <p className="text-2xl font-bold">{qrCode.total_tips || 0}</p>
                   </div>
                   <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground">Total Amount</p>
-                    <p className="text-2xl font-bold">${qrCode?.total_amount?.toFixed(2) || '0.00'}</p>
+                    <p className="text-2xl font-bold">${qrCode.total_amount?.toFixed(2) || '0.00'}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground">Average Tip</p>
-                    <p className="text-2xl font-bold">${qrCode?.average_tip?.toFixed(2) || '0.00'}</p>
+                    <p className="text-2xl font-bold">${qrCode.average_tip?.toFixed(2) || '0.00'}</p>
                   </div>
                   <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground">Last Tip</p>
                     <p className="text-2xl font-bold">
-                      {qrCode?.last_tip_date ? format(new Date(qrCode.last_tip_date), 'MMM d') : '-'}
+                      {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), 'MMM d') : '-'}
                     </p>
                   </div>
                 </div>
@@ -199,7 +202,7 @@ const AuthorQRCodeDetails = () => {
                 qrCodeId={id}
               />}
             </div>
-            <TipHistory authorId={qrCode?.author_id} qrCodeId={id} isDashboard={true} />
+            <TipHistory authorId={qrCode.author_id} qrCodeId={id} isDashboard={true} />
           </Card>
         </div>
       </div>
