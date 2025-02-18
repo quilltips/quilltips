@@ -6,9 +6,9 @@ import { Navigation } from "@/components/Navigation";
 import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
 import { TipHistory } from "@/components/TipHistory";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
-import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,51 +20,62 @@ const AuthorPublicProfile = () => {
     queryFn: async () => {
       if (!id) throw new Error('Author identifier is required');
       
-      // Try to fetch by ID first (for backward compatibility)
-      if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+      try {
+        // First try UUID lookup
+        if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', id)
+            .eq('role', 'author')
+            .maybeSingle();
+
+          if (!error && data) return data;
+        }
+
+        // Then try name lookup
         const { data, error } = await supabase
           .from('profiles')
-          .select()
-          .eq('id', id)
+          .select('*')
           .eq('role', 'author')
+          .ilike('name', id.replace(/-/g, ' '))
           .maybeSingle();
 
-        if (!error && data) return data;
+        if (error) throw error;
+        if (!data) throw new Error('Author not found');
+        
+        return data;
+      } catch (error) {
+        console.error('Error fetching author:', error);
+        throw error;
       }
-
-      // If not found by ID or not a UUID, try to find by name
-      const { data, error } = await supabase
-        .from('profiles')
-        .select()
-        .eq('role', 'author')
-        .ilike('name', id.replace(/-/g, ' '))
-        .maybeSingle();
-
-      if (error) throw error;
-      if (!data) throw new Error('Author not found');
-      return data;
     },
-    retry: false
+    retry: 1,
+    staleTime: 1000 * 60 * 5 // Cache for 5 minutes
   });
 
-  // Handle auto-opening the tip dialog
   useEffect(() => {
     const qrId = searchParams.get('qr');
     const autoOpenTip = searchParams.get('autoOpenTip');
     
     if (qrId && autoOpenTip === 'true') {
       const fetchQRCode = async () => {
-        const { data: qrCode } = await supabase
-          .from('qr_codes')
-          .select('id, book_title')
-          .eq('id', qrId)
-          .single();
-          
-        if (qrCode) {
-          setSelectedQRCode({
-            id: qrCode.id,
-            bookTitle: qrCode.book_title
-          });
+        try {
+          const { data: qrCode, error } = await supabase
+            .from('qr_codes')
+            .select('id, book_title')
+            .eq('id', qrId)
+            .single();
+            
+          if (error) throw error;
+          if (qrCode) {
+            setSelectedQRCode({
+              id: qrCode.id,
+              bookTitle: qrCode.book_title
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching QR code:', error);
         }
       };
       
@@ -76,8 +87,8 @@ const AuthorPublicProfile = () => {
     return (
       <div className="min-h-screen">
         <Navigation />
-        <div className="container mx-auto px-4 pt-24 flex justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <div className="container mx-auto px-4 pt-24">
+          <LoadingSpinner />
         </div>
       </div>
     );
@@ -88,15 +99,14 @@ const AuthorPublicProfile = () => {
       <div className="min-h-screen">
         <Navigation />
         <div className="container mx-auto px-4 pt-24 text-center">
-          <h1 className="text-2xl font-semibold">
-            {error?.message || 'Author not found'}
+          <h1 className="text-2xl font-semibold text-red-500">
+            {error instanceof Error ? error.message : 'Author not found'}
           </h1>
         </div>
       </div>
     );
   }
 
-  // Convert the social_links from JSON to the expected format
   const socialLinks = author.social_links ? 
     (author.social_links as { url: string; label: string }[]) : 
     [];
@@ -122,6 +132,7 @@ const AuthorPublicProfile = () => {
         </div>
         
         <div className="max-w-2xl mx-auto">
+          <h2 className="text-2xl font-semibold mb-4">Tip History</h2>
           <TipHistory 
             authorId={author.id}
             authorName={author.name || 'Anonymous Author'}
@@ -129,7 +140,6 @@ const AuthorPublicProfile = () => {
           />
         </div>
 
-        {/* QR Code Dialog */}
         <QRCodeDialog
           isOpen={!!selectedQRCode}
           onClose={() => setSelectedQRCode(null)}
