@@ -11,10 +11,60 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useQuery } from "@tanstack/react-query";
 import { AuthorStats } from "@/components/dashboard/AuthorStats";
 
+// Define the type for social links
+interface SocialLink {
+  url: string;
+  label: string;
+}
+
 const AuthorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Handle session check
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!session) {
+          navigate("/author/login");
+          return;
+        }
+
+        // Verify the user is an author
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileError || profile?.role !== 'author') {
+          navigate("/author/login");
+        }
+      } catch (error) {
+        console.error('Session check error:', error);
+        navigate("/author/login");
+      }
+    };
+
+    checkSession();
+
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate("/author/login");
+      } else if (event === 'TOKEN_REFRESHED') {
+        console.log('Token refreshed successfully');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  // Fetch author profile
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['author-profile'],
     queryFn: async () => {
@@ -35,37 +85,18 @@ const AuthorDashboard = () => {
       return profileData;
     },
     retry: false,
-    onError: (error: Error) => {
-      console.error("Dashboard error:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to load profile",
-        variant: "destructive"
-      });
-      navigate("/author/login");
+    meta: {
+      errorHandler: (error: Error) => {
+        console.error("Dashboard error:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to load profile",
+          variant: "destructive"
+        });
+        navigate("/author/login");
+      }
     }
   });
-
-  // Check authentication status
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/author/login");
-      }
-    };
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        navigate("/author/login");
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
 
   if (isLoading) {
     return <Layout>
@@ -76,6 +107,16 @@ const AuthorDashboard = () => {
   }
 
   if (error || !profile) return null;
+
+  // Parse social links with type safety
+  const socialLinks: SocialLink[] = Array.isArray(profile.social_links) 
+    ? profile.social_links.map(link => {
+        if (typeof link === 'object' && link !== null && 'url' in link && 'label' in link) {
+          return { url: String(link.url), label: String(link.label) };
+        }
+        return { url: '', label: '' };
+      })
+    : [];
 
   return (
     <Layout>
@@ -88,7 +129,7 @@ const AuthorDashboard = () => {
                 bio={profile.bio || "No bio available"}
                 imageUrl={profile.avatar_url || "/placeholder.svg"}
                 publicProfileLink={`/author/profile/${profile.id}`}
-                socialLinks={profile.social_links || []}
+                socialLinks={socialLinks}
               />
               
               <AuthorStats authorId={profile.id} />
