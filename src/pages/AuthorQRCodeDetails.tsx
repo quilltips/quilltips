@@ -12,13 +12,9 @@ import { TipHistory } from "@/components/TipHistory";
 import { TipDownloadButton } from "@/components/tips/TipDownloadButton";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-// Flat types to prevent deep type instantiation
-type BasicData = {
+// Simplified types without deep nesting
+type QRCodeData = {
   id: string;
-  created_at: string;
-};
-
-type QRCodeData = BasicData & {
   author_id: string;
   book_title: string;
   publisher?: string;
@@ -31,15 +27,18 @@ type QRCodeData = BasicData & {
   last_tip_date?: string;
 };
 
-type TipData = BasicData & {
+type TipData = {
+  id: string;
   amount: number;
   message?: string;
+  created_at: string;
+  author_id: string;
+  qr_code_id?: string;
 };
 
-type TipMetadata = {
-  tips: TipData[];
-  likes: { id: string; tip_id: string }[];
-  comments: { id: string; tip_id: string }[];
+type Interaction = {
+  id: string;
+  tip_id: string;
 };
 
 const AuthorQRCodeDetails = () => {
@@ -61,10 +60,10 @@ const AuthorQRCodeDetails = () => {
     }
   });
 
-  const { data: tipData } = useQuery<{ data: TipMetadata }>({
+  const { data: tipData } = useQuery({
     queryKey: ['qr-tips', id],
     queryFn: async () => {
-      if (!id) return { data: { tips: [], likes: [], comments: [] } };
+      if (!id) return { tips: [], likes: [], comments: [] };
 
       const [tips, likes, comments] = await Promise.all([
         supabase.from('tips').select().eq('qr_code_id', id),
@@ -73,11 +72,9 @@ const AuthorQRCodeDetails = () => {
       ]);
 
       return {
-        data: {
-          tips: tips.data || [],
-          likes: likes.data || [],
-          comments: comments.data || []
-        }
+        tips: (tips.data || []) as TipData[],
+        likes: (likes.data || []) as Interaction[],
+        comments: (comments.data || []) as Interaction[]
       };
     },
     enabled: !!id
@@ -206,10 +203,10 @@ const AuthorQRCodeDetails = () => {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Tip History</h2>
-              {tipData?.data && <TipDownloadButton 
-                tips={tipData.data.tips} 
-                likes={tipData.data.likes} 
-                comments={tipData.data.comments}
+              {tipData && <TipDownloadButton 
+                tips={tipData.tips} 
+                likes={tipData.likes} 
+                comments={tipData.comments}
                 qrCodeId={id}
               />}
             </div>
