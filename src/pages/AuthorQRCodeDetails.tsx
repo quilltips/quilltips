@@ -12,9 +12,13 @@ import { TipHistory } from "@/components/TipHistory";
 import { TipDownloadButton } from "@/components/tips/TipDownloadButton";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-// Simplified interfaces to avoid deep type instantiation
-interface QRCodeData {
+// Flat types to prevent deep type instantiation
+type BasicData = {
   id: string;
+  created_at: string;
+};
+
+type QRCodeData = BasicData & {
   author_id: string;
   book_title: string;
   publisher?: string;
@@ -25,20 +29,18 @@ interface QRCodeData {
   total_amount?: number;
   average_tip?: number;
   last_tip_date?: string;
-}
+};
 
-interface TipData {
-  id: string;
+type TipData = BasicData & {
   amount: number;
   message?: string;
-  created_at: string;
-}
+};
 
-interface TipMetadata {
+type TipMetadata = {
   tips: TipData[];
-  likes: Array<{ id: string; tip_id: string }>;
-  comments: Array<{ id: string; tip_id: string }>;
-}
+  likes: { id: string; tip_id: string }[];
+  comments: { id: string; tip_id: string }[];
+};
 
 const AuthorQRCodeDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -59,27 +61,24 @@ const AuthorQRCodeDetails = () => {
     }
   });
 
-  const { data: tipData } = useQuery<TipMetadata>({
+  const { data: tipData } = useQuery<{ data: TipMetadata }>({
     queryKey: ['qr-tips', id],
     queryFn: async () => {
-      if (!id) return { tips: [], likes: [], comments: [] };
+      if (!id) return { data: { tips: [], likes: [], comments: [] } };
 
-      const { data: tips = [] } = await supabase
-        .from('tips')
-        .select()
-        .eq('qr_code_id', id);
+      const [tips, likes, comments] = await Promise.all([
+        supabase.from('tips').select().eq('qr_code_id', id),
+        supabase.from('tip_likes').select().eq('qr_code_id', id),
+        supabase.from('tip_comments').select().eq('qr_code_id', id)
+      ]);
 
-      const { data: likes = [] } = await supabase
-        .from('tip_likes')
-        .select()
-        .eq('qr_code_id', id);
-
-      const { data: comments = [] } = await supabase
-        .from('tip_comments')
-        .select()
-        .eq('qr_code_id', id);
-
-      return { tips, likes, comments };
+      return {
+        data: {
+          tips: tips.data || [],
+          likes: likes.data || [],
+          comments: comments.data || []
+        }
+      };
     },
     enabled: !!id
   });
@@ -207,10 +206,10 @@ const AuthorQRCodeDetails = () => {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Tip History</h2>
-              {tipData && <TipDownloadButton 
-                tips={tipData.tips} 
-                likes={tipData.likes} 
-                comments={tipData.comments}
+              {tipData?.data && <TipDownloadButton 
+                tips={tipData.data.tips} 
+                likes={tipData.data.likes} 
+                comments={tipData.data.comments}
                 qrCodeId={id}
               />}
             </div>
