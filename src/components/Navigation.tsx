@@ -1,6 +1,6 @@
 
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, Search } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,20 +23,24 @@ export const Navigation = () => {
     // Set up auth state listener
     const checkAuthStatus = async () => {
       try {
+        console.log('Checking Navigation auth status...');
         // Get current session
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         
         if (currentSession?.user) {
+          console.log('User is authenticated:', currentSession.user.id);
           setUserId(currentSession.user.id);
           const { data: profile, error } = await supabase
             .from('profiles')
             .select('role')
             .eq('id', currentSession.user.id)
-            .single();
+            .maybeSingle();
           
           if (error) throw error;
           setIsAuthor(profile?.role === 'author');
+          console.log('User role set:', profile?.role);
         } else {
+          console.log('No active session');
           setUserId(null);
           setIsAuthor(false);
         }
@@ -52,7 +56,7 @@ export const Navigation = () => {
 
     // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id);
+      console.log('Auth state changed in Navigation:', event, session?.user?.id);
       
       if (event === 'SIGNED_IN') {
         await checkAuthStatus();
