@@ -1,12 +1,12 @@
 
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
 import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
 import { TipHistory } from "@/components/TipHistory";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
@@ -14,69 +14,79 @@ import { useToast } from "@/hooks/use-toast";
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const [selectedQRCode, setSelectedQRCode] = useState<{ id: string; bookTitle: string } | null>(null);
+  const navigate = useNavigate();
   const { toast } = useToast();
-
-  // Add session check
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Session check error:', error);
-        toast({
-          title: "Session Error",
-          description: "There was an error checking your session. Please try logging in again.",
-          variant: "destructive"
-        });
-      }
-    };
-
-    checkSession();
-  }, [toast]);
+  const [selectedQRCode, setSelectedQRCode] = useState<{ id: string; bookTitle: string } | null>(null);
 
   const { data: author, isLoading, error } = useQuery({
-    queryKey: ['author', id],
+    queryKey: ['author-profile', id],
     queryFn: async () => {
-      if (!id) throw new Error('Author identifier is required');
+      if (!id) {
+        throw new Error('Author identifier is required');
+      }
+
+      console.log('Fetching author profile for ID:', id);
       
       try {
         // First try UUID lookup
         if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
-          const { data, error } = await supabase
+          console.log('Attempting UUID lookup');
+          const { data: uuidData, error: uuidError } = await supabase
             .from('profiles')
-            .select('*')
+            .select('id, name, bio, avatar_url, social_links, role')
             .eq('id', id)
             .eq('role', 'author')
             .maybeSingle();
 
-          if (!error && data) return data;
+          if (!uuidError && uuidData) {
+            console.log('Found author by UUID:', uuidData);
+            return uuidData;
+          }
         }
 
-        // Then try name lookup
-        const { data, error } = await supabase
+        // Then try name lookup if UUID fails or isn't provided
+        console.log('Attempting name lookup');
+        const { data: nameData, error: nameError } = await supabase
           .from('profiles')
-          .select('*')
+          .select('id, name, bio, avatar_url, social_links, role')
           .eq('role', 'author')
           .ilike('name', id.replace(/-/g, ' '))
           .maybeSingle();
 
-        if (error) {
-          console.error('Error fetching author:', error);
-          throw error;
+        if (nameError) {
+          console.error('Error fetching author by name:', nameError);
+          throw nameError;
         }
-        if (!data) throw new Error('Author not found');
-        
-        return data;
+
+        if (!nameData) {
+          console.error('Author not found');
+          throw new Error('Author not found');
+        }
+
+        console.log('Found author by name:', nameData);
+        return nameData;
       } catch (error) {
         console.error('Error fetching author:', error);
         throw error;
       }
     },
     retry: 1,
-    staleTime: 1000 * 60 * 5 // Cache for 5 minutes
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    onError: (error) => {
+      console.error('Query error:', error);
+      toast({
+        title: "Error loading profile",
+        description: error instanceof Error ? error.message : "Failed to load author profile",
+        variant: "destructive"
+      });
+      
+      // Redirect to home page if profile cannot be loaded
+      navigate('/');
+    }
   });
 
-  useEffect(() => {
+  // Handle QR code from URL params
+  useState(() => {
     const qrId = searchParams.get('qr');
     const autoOpenTip = searchParams.get('autoOpenTip');
     
@@ -98,18 +108,23 @@ const AuthorPublicProfile = () => {
           }
         } catch (error) {
           console.error('Error fetching QR code:', error);
+          toast({
+            title: "Error",
+            description: "Could not load QR code details",
+            variant: "destructive"
+          });
         }
       };
       
       fetchQRCode();
     }
-  }, [searchParams]);
+  }, [searchParams, toast]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen">
         <Navigation />
-        <div className="container mx-auto px-4 pt-24">
+        <div className="container mx-auto px-4 pt-24 flex items-center justify-center">
           <LoadingSpinner />
         </div>
       </div>
@@ -129,10 +144,6 @@ const AuthorPublicProfile = () => {
     );
   }
 
-  const socialLinks = author.social_links ? 
-    (author.social_links as { url: string; label: string }[]) : 
-    [];
-
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -142,7 +153,7 @@ const AuthorPublicProfile = () => {
           bio={author.bio || 'No bio available'}
           imageUrl={author.avatar_url || "/placeholder.svg"}
           authorId={author.id}
-          socialLinks={socialLinks}
+          socialLinks={author.social_links || []}
         />
         
         <div className="max-w-6xl mx-auto">
@@ -162,12 +173,14 @@ const AuthorPublicProfile = () => {
           />
         </div>
 
-        <QRCodeDialog
-          isOpen={!!selectedQRCode}
-          onClose={() => setSelectedQRCode(null)}
-          selectedQRCode={selectedQRCode}
-          authorId={author.id}
-        />
+        {selectedQRCode && (
+          <QRCodeDialog
+            isOpen={!!selectedQRCode}
+            onClose={() => setSelectedQRCode(null)}
+            selectedQRCode={selectedQRCode}
+            authorId={author.id}
+          />
+        )}
       </main>
     </div>
   );
