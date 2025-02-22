@@ -61,7 +61,7 @@ const AuthorQRCodeDetails = () => {
       
       const { data, error } = await supabase
         .from('qr_codes')
-        .select()
+        .select('id, author_id, book_title, publisher, release_date, isbn, cover_image, total_tips, total_amount, average_tip, last_tip_date')
         .eq('id', id)
         .maybeSingle();
 
@@ -75,28 +75,28 @@ const AuthorQRCodeDetails = () => {
     queryFn: async () => {
       if (!id) return { tips: [], likes: [], comments: [] };
 
-      const { data: tipsData, error: tipsError } = await supabase
+      const { data: tips, error: tipsError } = await supabase
         .from('tips')
-        .select()
+        .select('id, amount, message, created_at, author_id, qr_code_id')
         .eq('qr_code_id', id);
       if (tipsError) throw tipsError;
 
-      const { data: likesData, error: likesError } = await supabase
+      const { data: likes, error: likesError } = await supabase
         .from('tip_likes')
-        .select()
-        .eq('qr_code_id', id);
+        .select('id, tip_id, author_id, created_at')
+        .eq('tip_id', id);
       if (likesError) throw likesError;
 
-      const { data: commentsData, error: commentsError } = await supabase
+      const { data: comments, error: commentsError } = await supabase
         .from('tip_comments')
-        .select()
-        .eq('qr_code_id', id);
+        .select('id, tip_id, author_id, content, created_at')
+        .eq('tip_id', id);
       if (commentsError) throw commentsError;
 
       return {
-        tips: tipsData as Tip[],
-        likes: likesData as TipLike[],
-        comments: commentsData as TipComment[]
+        tips: tips || [],
+        likes: likes || [],
+        comments: comments || []
       };
     },
     enabled: !!id
