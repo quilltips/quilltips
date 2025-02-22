@@ -6,10 +6,24 @@ import { Navigation } from "@/components/Navigation";
 import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
 import { TipHistory } from "@/components/TipHistory";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
+
+type SocialLink = {
+  platform: string;
+  url: string;
+};
+
+interface AuthorProfile {
+  id: string;
+  name: string;
+  bio: string | null;
+  avatar_url: string | null;
+  social_links: SocialLink[] | null;
+  role: string;
+}
 
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +54,7 @@ const AuthorPublicProfile = () => {
 
           if (!uuidError && uuidData) {
             console.log('Found author by UUID:', uuidData);
-            return uuidData;
+            return uuidData as AuthorProfile;
           }
         }
 
@@ -64,7 +78,7 @@ const AuthorPublicProfile = () => {
         }
 
         console.log('Found author by name:', nameData);
-        return nameData;
+        return nameData as AuthorProfile;
       } catch (error) {
         console.error('Error fetching author:', error);
         throw error;
@@ -72,21 +86,22 @@ const AuthorPublicProfile = () => {
     },
     retry: 1,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    onError: (error) => {
+  });
+
+  useEffect(() => {
+    if (error) {
       console.error('Query error:', error);
       toast({
         title: "Error loading profile",
         description: error instanceof Error ? error.message : "Failed to load author profile",
         variant: "destructive"
       });
-      
-      // Redirect to home page if profile cannot be loaded
       navigate('/');
     }
-  });
+  }, [error, toast, navigate]);
 
   // Handle QR code from URL params
-  useState(() => {
+  useEffect(() => {
     const qrId = searchParams.get('qr');
     const autoOpenTip = searchParams.get('autoOpenTip');
     
