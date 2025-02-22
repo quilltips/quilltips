@@ -17,6 +17,12 @@ type SocialLink = {
   label: string;
 };
 
+interface DatabaseSocialLink {
+  url: string;
+  platform?: string;
+  label?: string;
+}
+
 interface AuthorProfile {
   id: string;
   name: string;
@@ -25,6 +31,27 @@ interface AuthorProfile {
   social_links: SocialLink[] | null;
   role: string;
 }
+
+interface DatabaseProfile {
+  id: string;
+  name: string;
+  bio: string | null;
+  avatar_url: string | null;
+  social_links: DatabaseSocialLink[] | null;
+  role: string;
+}
+
+const transformSocialLinks = (profile: DatabaseProfile): AuthorProfile => {
+  return {
+    ...profile,
+    social_links: Array.isArray(profile.social_links) 
+      ? profile.social_links.map(link => ({
+          url: link.url,
+          label: link.label || link.platform || 'Link'
+        }))
+      : []
+  };
+};
 
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -55,15 +82,7 @@ const AuthorPublicProfile = () => {
 
           if (!uuidError && uuidData) {
             console.log('Found author by UUID:', uuidData);
-            // Transform social_links to match expected format if needed
-            const transformedData = {
-              ...uuidData,
-              social_links: uuidData.social_links ? uuidData.social_links.map((link: any) => ({
-                url: link.url,
-                label: link.platform || link.label
-              })) : []
-            };
-            return transformedData as AuthorProfile;
+            return transformSocialLinks(uuidData as DatabaseProfile);
           }
         }
 
@@ -86,17 +105,7 @@ const AuthorPublicProfile = () => {
           throw new Error('Author not found');
         }
 
-        // Transform social_links to match expected format if needed
-        const transformedData = {
-          ...nameData,
-          social_links: nameData.social_links ? nameData.social_links.map((link: any) => ({
-            url: link.url,
-            label: link.platform || link.label
-          })) : []
-        };
-
-        console.log('Found author by name:', transformedData);
-        return transformedData as AuthorProfile;
+        return transformSocialLinks(nameData as DatabaseProfile);
       } catch (error) {
         console.error('Error fetching author:', error);
         throw error;
