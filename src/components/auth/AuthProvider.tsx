@@ -31,7 +31,7 @@ const fetchProfileWithTimeout = async (userId: string, timeoutMs: number = 5000)
       .select('role')
       .eq('id', userId)
       .maybeSingle()
-      .withAbortSignal(controller.signal);  // Changed from abortSignal to withAbortSignal
+      .abortSignal(controller.signal);
 
     clearTimeout(timeoutId);
 

@@ -34,7 +34,7 @@ export const transformSocialLinks = (profile: DatabaseProfile): AuthorProfile =>
   let socialLinks: SocialLink[] = [];
   
   if (Array.isArray(profile.social_links)) {
-    socialLinks = (profile.social_links as DatabaseSocialLink[]).map(link => ({
+    socialLinks = ((profile.social_links as unknown) as DatabaseSocialLink[]).map(link => ({
       url: link.url || '',
       label: link.label || link.platform || 'Link'
     }));
