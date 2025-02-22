@@ -1,62 +1,65 @@
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthorLoginForm } from "@/components/AuthorLoginForm";
 import { Layout } from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const AuthorLogin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Session check error:', error);
-        return;
-      }
-      
-      if (session) {
-        // Verify if the user is an author before redirecting
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-          
-        if (!profileError && profile?.role === 'author') {
-          navigate("/author/dashboard");
+    const checkAuthStatus = async () => {
+      try {
+        console.log('Checking login page auth status...');
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .maybeSingle();
+            
+          if (profile?.role === 'author') {
+            console.log('Author already logged in, redirecting to dashboard...');
+            navigate("/author/dashboard");
+            return;
+          }
         }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to check authentication status.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsCheckingAuth(false);
       }
     };
 
-    checkSession();
+    checkAuthStatus();
+  }, [navigate, toast]);
 
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        // Verify author role before redirecting
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-          
-        if (!profileError && profile?.role === 'author') {
-          navigate("/author/dashboard");
-        }
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
+  if (isCheckingAuth) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 pt-24">
+          <LoadingSpinner />
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 pt-24 pb-12 py-[75px]">
+      <div className="container mx-auto px-4 pt-24 pb-12">
         <AuthorLoginForm />
       </div>
     </Layout>
