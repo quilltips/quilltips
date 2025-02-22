@@ -11,9 +11,10 @@ import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 
+// Use the same SocialLink type as AuthorPublicProfileView component
 type SocialLink = {
-  platform: string;
   url: string;
+  label: string;
 };
 
 interface AuthorProfile {
@@ -54,7 +55,15 @@ const AuthorPublicProfile = () => {
 
           if (!uuidError && uuidData) {
             console.log('Found author by UUID:', uuidData);
-            return uuidData as AuthorProfile;
+            // Transform social_links to match expected format if needed
+            const transformedData = {
+              ...uuidData,
+              social_links: uuidData.social_links ? uuidData.social_links.map((link: any) => ({
+                url: link.url,
+                label: link.platform || link.label
+              })) : []
+            };
+            return transformedData as AuthorProfile;
           }
         }
 
@@ -77,8 +86,17 @@ const AuthorPublicProfile = () => {
           throw new Error('Author not found');
         }
 
-        console.log('Found author by name:', nameData);
-        return nameData as AuthorProfile;
+        // Transform social_links to match expected format if needed
+        const transformedData = {
+          ...nameData,
+          social_links: nameData.social_links ? nameData.social_links.map((link: any) => ({
+            url: link.url,
+            label: link.platform || link.label
+          })) : []
+        };
+
+        console.log('Found author by name:', transformedData);
+        return transformedData as AuthorProfile;
       } catch (error) {
         console.error('Error fetching author:', error);
         throw error;
