@@ -12,33 +12,43 @@ import { TipHistory } from "@/components/TipHistory";
 import { TipDownloadButton } from "@/components/tips/TipDownloadButton";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-// Simplified types without deep nesting
-type QRCodeData = {
+// Define explicit database types
+type QRCode = {
   id: string;
   author_id: string;
   book_title: string;
-  publisher?: string;
-  release_date?: string;
-  isbn?: string;
-  cover_image?: string;
-  total_tips?: number;
-  total_amount?: number;
-  average_tip?: number;
-  last_tip_date?: string;
+  publisher: string | null;
+  release_date: string | null;
+  isbn: string | null;
+  cover_image: string | null;
+  total_tips: number | null;
+  total_amount: number | null;
+  average_tip: number | null;
+  last_tip_date: string | null;
 };
 
-type TipData = {
+type Tip = {
   id: string;
   amount: number;
-  message?: string;
+  message: string | null;
   created_at: string;
   author_id: string;
-  qr_code_id?: string;
+  qr_code_id: string | null;
 };
 
-type Interaction = {
+type TipLike = {
   id: string;
   tip_id: string;
+  author_id: string;
+  created_at: string;
+};
+
+type TipComment = {
+  id: string;
+  tip_id: string;
+  author_id: string;
+  content: string;
+  created_at: string;
 };
 
 const AuthorQRCodeDetails = () => {
@@ -56,7 +66,7 @@ const AuthorQRCodeDetails = () => {
         .maybeSingle();
 
       if (error) throw error;
-      return data as QRCodeData;
+      return data as QRCode;
     }
   });
 
@@ -65,16 +75,28 @@ const AuthorQRCodeDetails = () => {
     queryFn: async () => {
       if (!id) return { tips: [], likes: [], comments: [] };
 
-      const [tips, likes, comments] = await Promise.all([
-        supabase.from('tips').select().eq('qr_code_id', id),
-        supabase.from('tip_likes').select().eq('qr_code_id', id),
-        supabase.from('tip_comments').select().eq('qr_code_id', id)
-      ]);
+      const { data: tipsData, error: tipsError } = await supabase
+        .from('tips')
+        .select()
+        .eq('qr_code_id', id);
+      if (tipsError) throw tipsError;
+
+      const { data: likesData, error: likesError } = await supabase
+        .from('tip_likes')
+        .select()
+        .eq('qr_code_id', id);
+      if (likesError) throw likesError;
+
+      const { data: commentsData, error: commentsError } = await supabase
+        .from('tip_comments')
+        .select()
+        .eq('qr_code_id', id);
+      if (commentsError) throw commentsError;
 
       return {
-        tips: (tips.data || []) as TipData[],
-        likes: (likes.data || []) as Interaction[],
-        comments: (comments.data || []) as Interaction[]
+        tips: tipsData as Tip[],
+        likes: likesData as TipLike[],
+        comments: commentsData as TipComment[]
       };
     },
     enabled: !!id
