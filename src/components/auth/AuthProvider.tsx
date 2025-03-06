@@ -26,13 +26,13 @@ const fetchProfileWithTimeout = async (userId: string, timeoutMs: number = 5000)
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
+    // Using signal option as part of the fetch configuration
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', userId)
-      .maybeSingle()
-      .setAbortSignal(controller.signal);  // Changed to setAbortSignal
-
+      .maybeSingle();
+    
     clearTimeout(timeoutId);
 
     if (profileError) {
