@@ -1,5 +1,5 @@
 
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { QRCodeCanvas } from "qrcode.react";
@@ -8,6 +8,7 @@ interface QRCodePreviewProps {
   isGenerating: boolean;
   qrCodePreview: string | null;
   onCheckout: () => void;
+  onCancel: () => void;
   isCheckingOut: boolean;
 }
 
@@ -15,6 +16,7 @@ export const QRCodePreview = ({
   isGenerating,
   qrCodePreview,
   onCheckout,
+  onCancel,
   isCheckingOut,
 }: QRCodePreviewProps) => {
   return (
@@ -38,21 +40,32 @@ export const QRCodePreview = ({
                 style={{ width: '100%', height: 'auto' }}
               />
             </div>
-            <Button 
-              onClick={onCheckout}
-              size="lg"
-              className="w-full md:w-auto"
-              disabled={isCheckingOut}
-            >
-              {isCheckingOut ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                'Purchase QR Code ($9.99)'
-              )}
-            </Button>
+            <div className="flex w-full flex-col sm:flex-row gap-4">
+              <Button 
+                onClick={onCancel}
+                size="lg"
+                variant="outline"
+                className="w-full flex items-center gap-2"
+              >
+                <X className="h-4 w-4" />
+                Cancel
+              </Button>
+              <Button 
+                onClick={onCheckout}
+                size="lg"
+                className="w-full"
+                disabled={isCheckingOut}
+              >
+                {isCheckingOut ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Purchase QR Code ($9.99)'
+                )}
+              </Button>
+            </div>
           </div>
         ) : (
           <p className="text-muted-foreground">Failed to generate QR code preview</p>
