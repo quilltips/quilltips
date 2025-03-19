@@ -9,8 +9,17 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { AuthorProfileHeader } from "@/components/author/AuthorProfileHeader";
 import { AuthorProfileContent } from "@/components/author/AuthorProfileContent";
-import { transformSocialLinks, type AuthorProfile } from "@/types/author";
-import type { PublicProfileResponse } from "@/types/public-profile";
+import { type AuthorProfile } from "@/types/author";
+import type { PublicProfile } from "@/types/public-profile";
+
+interface PublicProfileData {
+  id: string;
+  name: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  social_links: any | null;
+  created_at?: string;
+}
 
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,11 +36,12 @@ const AuthorPublicProfile = () => {
       try {
         // First try UUID lookup in public profiles using RPC function
         if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
-          const { data: uuidData, error: uuidError } = await supabase
+          const { data, error: uuidError } = await supabase
             .rpc('get_public_profile_by_id', { profile_id: id });
 
-          if (!uuidError && uuidData && uuidData.length > 0) {
-            const profileData = uuidData[0];
+          if (!uuidError && data && Array.isArray(data) && data.length > 0) {
+            const profileData = data[0] as PublicProfileData;
+            
             // Transform social links if needed and return
             return {
               id: profileData.id,
@@ -50,13 +60,13 @@ const AuthorPublicProfile = () => {
         }
 
         // Then try name lookup using RPC function
-        const { data: nameData, error: nameError } = await supabase
+        const { data, error: nameError } = await supabase
           .rpc('get_public_profile_by_name', { profile_name: id.replace(/-/g, ' ') });
 
         if (nameError) throw nameError;
-        if (!nameData || nameData.length === 0) throw new Error('Author not found');
+        if (!data || !Array.isArray(data) || data.length === 0) throw new Error('Author not found');
 
-        const profileData = nameData[0];
+        const profileData = data[0] as PublicProfileData;
         
         // Transform the data to match our expected format
         return {

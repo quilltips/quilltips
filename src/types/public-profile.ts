@@ -35,7 +35,7 @@ export const syncProfileToPublic = async (profileId: string) => {
     return { success: false, error: fetchError };
   }
   
-  // Check if public profile already exists using raw SQL query to work around type issues
+  // Check if public profile already exists
   const { data: existingPublic, error: checkError } = await supabase
     .rpc('get_public_profile_by_id', { profile_id: profileId });
     
@@ -55,8 +55,8 @@ export const syncProfileToPublic = async (profileId: string) => {
   
   let result;
   
-  // Insert or update as appropriate using raw SQL to work around type issues
-  if (existingPublic && existingPublic.length > 0) {
+  // Insert or update as appropriate
+  if (existingPublic && Array.isArray(existingPublic) && existingPublic.length > 0) {
     // Update existing record
     result = await supabase.rpc('update_public_profile', {
       profile_id: profileId,
