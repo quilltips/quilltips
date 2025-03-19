@@ -35,9 +35,9 @@ export const syncProfileToPublic = async (profileId: string) => {
     return { success: false, error: fetchError };
   }
   
-  // Check if public profile already exists
-  const { data: existingPublic, error: checkError } = await supabase
-    .rpc('get_public_profile_by_id', { profile_id: profileId }) as { data: any[], error: any };
+  // Check if public profile already exists - using any to bypass type check
+  const { data: existingPublic, error: checkError } = await (supabase
+    .rpc('get_public_profile_by_id', { profile_id: profileId }) as unknown as Promise<{ data: any[], error: any }>);
     
   if (checkError) {
     console.error('Error checking existing public profile:', checkError);
@@ -57,23 +57,23 @@ export const syncProfileToPublic = async (profileId: string) => {
   
   // Insert or update as appropriate
   if (existingPublic && Array.isArray(existingPublic) && existingPublic.length > 0) {
-    // Update existing record
-    result = await supabase.rpc('update_public_profile', {
+    // Update existing record - using any to bypass type check
+    result = await (supabase.rpc('update_public_profile', {
       profile_id: profileId,
       profile_name: privateProfile.name,
       profile_bio: privateProfile.bio,
       profile_avatar_url: privateProfile.avatar_url,
       profile_social_links: privateProfile.social_links
-    }) as { data: any, error: any };
+    }) as unknown as Promise<{ data: any, error: any }>);
   } else {
-    // Insert new record
-    result = await supabase.rpc('insert_public_profile', {
+    // Insert new record - using any to bypass type check
+    result = await (supabase.rpc('insert_public_profile', {
       profile_id: profileId,
       profile_name: privateProfile.name,
       profile_bio: privateProfile.bio,
       profile_avatar_url: privateProfile.avatar_url,
       profile_social_links: privateProfile.social_links
-    }) as { data: any, error: any };
+    }) as unknown as Promise<{ data: any, error: any }>);
   }
   
   if (result.error) {
