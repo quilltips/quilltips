@@ -20,6 +20,10 @@ const QRCodeDesign = () => {
     bookTitle: qrCodeData?.book_title
   });
 
+  const handleCancel = () => {
+    navigate('/author/dashboard');
+  };
+
   if (!qrCodeData?.id) {
     navigate('/author/create-qr');
     return null;
@@ -38,6 +42,7 @@ const QRCodeDesign = () => {
             isGenerating={isGenerating}
             qrCodePreview={qrCodePreview}
             onCheckout={handleCheckout}
+            onCancel={handleCancel}
             isCheckingOut={isCheckingOut}
           />
         </div>

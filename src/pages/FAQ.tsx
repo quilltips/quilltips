@@ -1,5 +1,5 @@
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+
+import { Layout } from "@/components/Layout";
 import {
   Accordion,
   AccordionContent,
@@ -9,10 +9,8 @@ import {
 
 const FAQ = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navigation />
-      
-      <main className="container mx-auto px-4 py-24 flex-grow">
+    <Layout>
+      <div className="container mx-auto px-4 py-16 flex-grow">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">Frequently Asked Questions</h1>
           
@@ -61,10 +59,8 @@ const FAQ = () => {
             </AccordionItem>
           </Accordion>
         </div>
-      </main>
-
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

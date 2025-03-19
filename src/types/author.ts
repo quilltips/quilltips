@@ -31,15 +31,17 @@ export interface DatabaseProfile {
 }
 
 export const transformSocialLinks = (profile: DatabaseProfile): AuthorProfile => {
-  const socialLinks = profile.social_links as DatabaseSocialLink[] | null;
+  let socialLinks: SocialLink[] = [];
+  
+  if (Array.isArray(profile.social_links)) {
+    socialLinks = ((profile.social_links as unknown) as DatabaseSocialLink[]).map(link => ({
+      url: link.url || '',
+      label: link.label || link.platform || 'Link'
+    }));
+  }
   
   return {
     ...profile,
-    social_links: Array.isArray(socialLinks) 
-      ? socialLinks.map(link => ({
-          url: link.url,
-          label: link.label || link.platform || 'Link'
-        }))
-      : []
+    social_links: socialLinks.length > 0 ? socialLinks : null
   };
 };
