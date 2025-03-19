@@ -22,31 +22,34 @@ export const useAuth = () => useContext(AuthContext);
 
 // Helper function to fetch profile with timeout
 const fetchProfileWithTimeout = async (userId: string, timeoutMs: number = 5000) => {
+  console.log(`Fetching profile for user: ${userId}`);
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  const timeoutId = setTimeout(() => {
+    console.error("Profile fetch timed out!");
+    controller.abort();
+  }, timeoutMs);
 
   try {
-    // Using signal option as part of the fetch configuration
+    console.log("Sending request to Supabase...");
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', userId)
       .maybeSingle();
-    
+
     clearTimeout(timeoutId);
 
     if (profileError) {
-      console.error('Profile fetch error:', profileError);
-      throw profileError;
+      console.error("Profile fetch error:", profileError);
+      return null;
     }
 
+    console.log("Profile fetched successfully:", profile);
     return profile;
   } catch (error) {
     clearTimeout(timeoutId);
-    if ((error as Error).name === 'AbortError') {
-      throw new Error('Profile fetch timed out');
-    }
-    throw error;
+    console.error("Profile fetch failed:", error);
+    return null;
   }
 };
 
@@ -119,6 +122,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           variant: "destructive"
         });
       } finally {
+        console.log("Finalizing auth setup: setting isLoading to false");
         setIsLoading(false);
       }
     };
