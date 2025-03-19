@@ -25,61 +25,46 @@ interface RPCResponse<T> {
   error: Error | null;
 }
 
-// Function to sync a private profile with its public version
+// Function to manually sync a private profile with its public version
+// This is now mostly a backup mechanism since automatic syncing is handled by the database trigger
 export const syncProfileToPublic = async (profileId: string) => {
+  // With the trigger in place, this function can be simplified to just
+  // check if the public profile exists and force a refresh if needed
   const { supabase } = await import('@/integrations/supabase/client');
   
-  // Fetch the private profile data first
-  const { data: privateProfile, error: fetchError } = await supabase
-    .from('profiles')
-    .select('id, name, bio, avatar_url, social_links, created_at')
-    .eq('id', profileId)
-    .single();
+  try {
+    // Using type assertion to bypass strict type checking for RPC parameters
+    const { data: existingPublic, error: checkError } = await (supabase.rpc as any)(
+      'get_public_profile_by_id', 
+      { profile_id: profileId }
+    ) as RPCResponse<PublicProfile[]>;
+      
+    if (checkError) {
+      console.error('Error checking existing public profile:', checkError);
+      return { success: false, error: checkError };
+    }
     
-  if (fetchError) {
-    console.error('Error fetching private profile for sync:', fetchError);
-    return { success: false, error: fetchError };
-  }
-  
-  // Check if public profile already exists
-  // Using type assertion to bypass strict type checking for RPC parameters
-  const { data: existingPublic, error: checkError } = await (supabase.rpc as any)(
-    'get_public_profile_by_id', 
-    { profile_id: profileId }
-  ) as RPCResponse<PublicProfile[]>;
+    // If public profile already exists, we're done (the trigger handles updates)
+    if (existingPublic && Array.isArray(existingPublic) && existingPublic.length > 0) {
+      return { success: true };
+    }
     
-  if (checkError) {
-    console.error('Error checking existing public profile:', checkError);
-    return { success: false, error: checkError };
-  }
-  
-  // Prepare public profile data
-  const publicProfileData = {
-    id: privateProfile.id,
-    name: privateProfile.name,
-    bio: privateProfile.bio,
-    avatar_url: privateProfile.avatar_url,
-    social_links: privateProfile.social_links
-  };
-  
-  let result;
-  
-  // Insert or update as appropriate
-  if (existingPublic && Array.isArray(existingPublic) && existingPublic.length > 0) {
-    // Update existing record using type assertion to bypass strict type checking
-    result = await (supabase.rpc as any)(
-      'update_public_profile',
-      {
-        profile_id: profileId,
-        profile_name: privateProfile.name,
-        profile_bio: privateProfile.bio,
-        profile_avatar_url: privateProfile.avatar_url,
-        profile_social_links: privateProfile.social_links
-      }
-    ) as RPCResponse<any>;
-  } else {
-    // Insert new record using type assertion to bypass strict type checking
-    result = await (supabase.rpc as any)(
+    // If no public profile exists yet, fetch the private profile and create one
+    const { data: privateProfile, error: fetchError } = await supabase
+      .from('profiles')
+      .select('id, name, bio, avatar_url, social_links')
+      .eq('id', profileId)
+      .single();
+      
+    if (fetchError) {
+      console.error('Error fetching private profile for sync:', fetchError);
+      return { success: false, error: fetchError };
+    }
+    
+    // The trigger should handle this automatically, but just in case, we'll explicitly
+    // insert a new public profile record
+    // Using type assertion to bypass strict type checking for RPC parameters
+    const result = await (supabase.rpc as any)(
       'insert_public_profile',
       {
         profile_id: profileId,
@@ -89,12 +74,15 @@ export const syncProfileToPublic = async (profileId: string) => {
         profile_social_links: privateProfile.social_links
       }
     ) as RPCResponse<any>;
+    
+    if (result.error) {
+      console.error('Error creating public profile:', result.error);
+      return { success: false, error: result.error };
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Unexpected error in syncProfileToPublic:', error);
+    return { success: false, error };
   }
-  
-  if (result.error) {
-    console.error('Error syncing public profile:', result.error);
-    return { success: false, error: result.error };
-  }
-  
-  return { success: true };
 };
