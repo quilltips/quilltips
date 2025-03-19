@@ -42,11 +42,10 @@ export const syncProfileToPublic = async (profileId: string) => {
   }
   
   // Check if public profile already exists
-  // Use type assertion at the function call level to bypass parameter type checking
-  const checkProfileFn = supabase.rpc;
-  const { data: existingPublic, error: checkError } = await (checkProfileFn as any)('get_public_profile_by_id', { 
-    profile_id: profileId 
-  }) as RPCResponse<PublicProfile[]>;
+  const { data: existingPublic, error: checkError } = await supabase.rpc(
+    'get_public_profile_by_id', 
+    { profile_id: profileId }
+  ) as unknown as RPCResponse<PublicProfile[]>;
     
   if (checkError) {
     console.error('Error checking existing public profile:', checkError);
@@ -66,25 +65,29 @@ export const syncProfileToPublic = async (profileId: string) => {
   
   // Insert or update as appropriate
   if (existingPublic && Array.isArray(existingPublic) && existingPublic.length > 0) {
-    // Update existing record using function reference to bypass type checking
-    const updateFn = supabase.rpc;
-    result = await (updateFn as any)('update_public_profile', {
-      profile_id: profileId,
-      profile_name: privateProfile.name,
-      profile_bio: privateProfile.bio,
-      profile_avatar_url: privateProfile.avatar_url,
-      profile_social_links: privateProfile.social_links
-    }) as RPCResponse<any>;
+    // Update existing record
+    result = await supabase.rpc(
+      'update_public_profile',
+      {
+        profile_id: profileId,
+        profile_name: privateProfile.name,
+        profile_bio: privateProfile.bio,
+        profile_avatar_url: privateProfile.avatar_url,
+        profile_social_links: privateProfile.social_links
+      }
+    ) as unknown as RPCResponse<any>;
   } else {
-    // Insert new record using function reference to bypass type checking
-    const insertFn = supabase.rpc;
-    result = await (insertFn as any)('insert_public_profile', {
-      profile_id: profileId,
-      profile_name: privateProfile.name,
-      profile_bio: privateProfile.bio,
-      profile_avatar_url: privateProfile.avatar_url,
-      profile_social_links: privateProfile.social_links
-    }) as RPCResponse<any>;
+    // Insert new record
+    result = await supabase.rpc(
+      'insert_public_profile',
+      {
+        profile_id: profileId,
+        profile_name: privateProfile.name,
+        profile_bio: privateProfile.bio,
+        profile_avatar_url: privateProfile.avatar_url,
+        profile_social_links: privateProfile.social_links
+      }
+    ) as unknown as RPCResponse<any>;
   }
   
   if (result.error) {

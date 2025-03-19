@@ -1,5 +1,5 @@
 
--- Create public_profiles table
+-- Create public_profiles table if it doesn't exist
 CREATE TABLE IF NOT EXISTS public_profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id),
   name TEXT,
@@ -84,3 +84,9 @@ CREATE POLICY "Users can insert their own public profile"
   ON public_profiles
   FOR INSERT
   WITH CHECK (auth.uid() = id);
+
+-- Create policy to allow users to delete their own public profile
+CREATE POLICY "Users can delete their own public profile" 
+  ON public_profiles
+  FOR DELETE
+  USING (auth.uid() = id);

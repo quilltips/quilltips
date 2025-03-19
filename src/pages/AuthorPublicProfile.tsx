@@ -1,4 +1,3 @@
-
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,11 +41,10 @@ const AuthorPublicProfile = () => {
       try {
         // First try UUID lookup in public profiles using RPC function
         if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
-          // Use type assertion at the function call level to bypass parameter type checking
-          const rpcFn = supabase.rpc;
-          const { data, error: uuidError } = await (rpcFn as any)('get_public_profile_by_id', { 
-            profile_id: id 
-          }) as RPCResponse<PublicProfileData[]>;
+          const { data, error: uuidError } = await supabase.rpc(
+            'get_public_profile_by_id', 
+            { profile_id: id }
+          ) as unknown as RPCResponse<PublicProfileData[]>;
 
           if (!uuidError && data && Array.isArray(data) && data.length > 0) {
             const profileData = data[0] as PublicProfileData;
@@ -69,11 +67,10 @@ const AuthorPublicProfile = () => {
         }
 
         // Then try name lookup using RPC function
-        // Use type assertion at the function call level to bypass parameter type checking
-        const rpcNameFn = supabase.rpc;
-        const { data, error: nameError } = await (rpcNameFn as any)('get_public_profile_by_name', { 
-          profile_name: id.replace(/-/g, ' ') 
-        }) as RPCResponse<PublicProfileData[]>;
+        const { data, error: nameError } = await supabase.rpc(
+          'get_public_profile_by_name', 
+          { profile_name: id.replace(/-/g, ' ') }
+        ) as unknown as RPCResponse<PublicProfileData[]>;
 
         if (nameError) throw nameError;
         if (!data || !Array.isArray(data) || data.length === 0) throw new Error('Author not found');
