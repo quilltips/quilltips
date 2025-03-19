@@ -19,6 +19,12 @@ export interface PublicProfileResponse {
   created_at: string;
 }
 
+// Define types for RPC functions
+type RPCFunctionReturnType = {
+  data: PublicProfile[] | null;
+  error: Error | null;
+};
+
 // Function to sync a private profile with its public version
 export const syncProfileToPublic = async (profileId: string) => {
   const { supabase } = await import('@/integrations/supabase/client');
@@ -35,9 +41,10 @@ export const syncProfileToPublic = async (profileId: string) => {
     return { success: false, error: fetchError };
   }
   
-  // Check if public profile already exists - using any to bypass type check
-  const { data: existingPublic, error: checkError } = await (supabase
-    .rpc('get_public_profile_by_id', { profile_id: profileId }) as unknown as Promise<{ data: any[], error: any }>);
+  // Check if public profile already exists - using proper type casting
+  const { data: existingPublic, error: checkError } = await supabase
+    .rpc('get_public_profile_by_id', { profile_id: profileId })
+    .then(res => res as unknown as RPCFunctionReturnType);
     
   if (checkError) {
     console.error('Error checking existing public profile:', checkError);
@@ -57,23 +64,27 @@ export const syncProfileToPublic = async (profileId: string) => {
   
   // Insert or update as appropriate
   if (existingPublic && Array.isArray(existingPublic) && existingPublic.length > 0) {
-    // Update existing record - using any to bypass type check
-    result = await (supabase.rpc('update_public_profile', {
-      profile_id: profileId,
-      profile_name: privateProfile.name,
-      profile_bio: privateProfile.bio,
-      profile_avatar_url: privateProfile.avatar_url,
-      profile_social_links: privateProfile.social_links
-    }) as unknown as Promise<{ data: any, error: any }>);
+    // Update existing record - using proper type casting
+    result = await supabase
+      .rpc('update_public_profile', {
+        profile_id: profileId,
+        profile_name: privateProfile.name,
+        profile_bio: privateProfile.bio,
+        profile_avatar_url: privateProfile.avatar_url,
+        profile_social_links: privateProfile.social_links
+      })
+      .then(res => res as unknown as { data: any, error: any });
   } else {
-    // Insert new record - using any to bypass type check
-    result = await (supabase.rpc('insert_public_profile', {
-      profile_id: profileId,
-      profile_name: privateProfile.name,
-      profile_bio: privateProfile.bio,
-      profile_avatar_url: privateProfile.avatar_url,
-      profile_social_links: privateProfile.social_links
-    }) as unknown as Promise<{ data: any, error: any }>);
+    // Insert new record - using proper type casting
+    result = await supabase
+      .rpc('insert_public_profile', {
+        profile_id: profileId,
+        profile_name: privateProfile.name,
+        profile_bio: privateProfile.bio,
+        profile_avatar_url: privateProfile.avatar_url,
+        profile_social_links: privateProfile.social_links
+      })
+      .then(res => res as unknown as { data: any, error: any });
   }
   
   if (result.error) {

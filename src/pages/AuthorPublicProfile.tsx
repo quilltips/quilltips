@@ -21,6 +21,12 @@ interface PublicProfileData {
   created_at?: string;
 }
 
+// Define types for RPC functions
+type RPCFunctionReturnType = {
+  data: PublicProfileData[] | null;
+  error: Error | null;
+};
+
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
@@ -36,9 +42,10 @@ const AuthorPublicProfile = () => {
       try {
         // First try UUID lookup in public profiles using RPC function
         if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
-          // Using unknown as intermediate step to avoid type errors
-          const { data, error: uuidError } = await (supabase
-            .rpc('get_public_profile_by_id', { profile_id: id }) as unknown as Promise<{ data: any[], error: any }>);
+          // Using proper type casting
+          const { data, error: uuidError } = await supabase
+            .rpc('get_public_profile_by_id', { profile_id: id })
+            .then(res => res as unknown as RPCFunctionReturnType);
 
           if (!uuidError && data && Array.isArray(data) && data.length > 0) {
             const profileData = data[0] as PublicProfileData;
@@ -61,8 +68,9 @@ const AuthorPublicProfile = () => {
         }
 
         // Then try name lookup using RPC function
-        const { data, error: nameError } = await (supabase
-          .rpc('get_public_profile_by_name', { profile_name: id.replace(/-/g, ' ') }) as unknown as Promise<{ data: any[], error: any }>);
+        const { data, error: nameError } = await supabase
+          .rpc('get_public_profile_by_name', { profile_name: id.replace(/-/g, ' ') })
+          .then(res => res as unknown as RPCFunctionReturnType);
 
         if (nameError) throw nameError;
         if (!data || !Array.isArray(data) || data.length === 0) throw new Error('Author not found');
