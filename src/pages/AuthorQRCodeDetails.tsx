@@ -3,14 +3,13 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/Layout";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Download, Book } from "lucide-react";
-import { QRCodeCanvas } from "qrcode.react";
-import { format } from "date-fns";
+import { ArrowLeft } from "lucide-react";
 import { TipHistory } from "@/components/TipHistory";
 import { TipDownloadButton } from "@/components/tips/TipDownloadButton";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { QRCodeInfoCard } from "@/components/qr/QRCodeInfoCard";
+import { QRCodeStatsCard } from "@/components/qr/QRCodeStatsCard";
 
 // Define explicit database types
 type QRCode = {
@@ -25,30 +24,6 @@ type QRCode = {
   total_amount: number | null;
   average_tip: number | null;
   last_tip_date: string | null;
-};
-
-type Tip = {
-  id: string;
-  amount: number;
-  message: string | null;
-  created_at: string;
-  author_id: string;
-  qr_code_id: string | null;
-};
-
-type TipLike = {
-  id: string;
-  tip_id: string;
-  author_id: string;
-  created_at: string;
-};
-
-type TipComment = {
-  id: string;
-  tip_id: string;
-  author_id: string;
-  content: string;
-  created_at: string;
 };
 
 const AuthorQRCodeDetails = () => {
@@ -148,78 +123,8 @@ const AuthorQRCodeDetails = () => {
           </Link>
 
           <div className="grid md:grid-cols-2 gap-8">
-            <Card className="p-6 space-y-6">
-              <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
-              
-              <div className="aspect-square relative bg-muted rounded-lg overflow-hidden">
-                {qrCode.cover_image ? (
-                  <img
-                    src={qrCode.cover_image}
-                    alt={qrCode.book_title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Book className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2 text-sm">
-                <p><span className="font-medium">Publisher:</span> {qrCode.publisher || 'Not specified'}</p>
-                <p><span className="font-medium">Release Date:</span> {qrCode.release_date ? format(new Date(qrCode.release_date), 'PP') : 'Not specified'}</p>
-                <p><span className="font-medium">ISBN:</span> {qrCode.isbn || 'Not specified'}</p>
-              </div>
-            </Card>
-
-            <Card className="p-6 space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-lg font-semibold">QR Code</h2>
-                <div className="bg-white p-6 rounded-lg shadow-sm flex justify-center">
-                  <QRCodeCanvas
-                    id="qr-canvas"
-                    value={`${window.location.origin}/qr/${qrCode.id}`}
-                    size={200}
-                    level="H"
-                    includeMargin
-                    bgColor="#ffffff"
-                    fgColor="#000000"
-                  />
-                </div>
-                <Button 
-                  onClick={handleDownloadQR}
-                  className="w-full"
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Download QR Code
-                </Button>
-              </div>
-
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm text-muted-foreground">Total Tips</p>
-                    <p className="text-2xl font-bold">{qrCode.total_tips || 0}</p>
-                  </div>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm text-muted-foreground">Total Amount</p>
-                    <p className="text-2xl font-bold">${qrCode.total_amount?.toFixed(2) || '0.00'}</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm text-muted-foreground">Average Tip</p>
-                    <p className="text-2xl font-bold">${qrCode.average_tip?.toFixed(2) || '0.00'}</p>
-                  </div>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm text-muted-foreground">Last Tip</p>
-                    <p className="text-2xl font-bold">
-                      {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), 'MMM d') : '-'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Card>
+            <QRCodeInfoCard qrCode={qrCode} />
+            <QRCodeStatsCard qrCode={qrCode} onDownload={handleDownloadQR} />
           </div>
 
           <Card className="p-6">
