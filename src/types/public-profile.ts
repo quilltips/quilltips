@@ -37,7 +37,7 @@ export const syncProfileToPublic = async (profileId: string) => {
   
   // Check if public profile already exists
   const { data: existingPublic, error: checkError } = await supabase
-    .rpc('get_public_profile_by_id', { profile_id: profileId });
+    .rpc('get_public_profile_by_id', { profile_id: profileId }) as { data: any[], error: any };
     
   if (checkError) {
     console.error('Error checking existing public profile:', checkError);
@@ -64,7 +64,7 @@ export const syncProfileToPublic = async (profileId: string) => {
       profile_bio: privateProfile.bio,
       profile_avatar_url: privateProfile.avatar_url,
       profile_social_links: privateProfile.social_links
-    });
+    }) as { data: any, error: any };
   } else {
     // Insert new record
     result = await supabase.rpc('insert_public_profile', {
@@ -73,7 +73,7 @@ export const syncProfileToPublic = async (profileId: string) => {
       profile_bio: privateProfile.bio,
       profile_avatar_url: privateProfile.avatar_url,
       profile_social_links: privateProfile.social_links
-    });
+    }) as { data: any, error: any };
   }
   
   if (result.error) {

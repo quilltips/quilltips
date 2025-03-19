@@ -37,7 +37,7 @@ const AuthorPublicProfile = () => {
         // First try UUID lookup in public profiles using RPC function
         if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
           const { data, error: uuidError } = await supabase
-            .rpc('get_public_profile_by_id', { profile_id: id });
+            .rpc('get_public_profile_by_id', { profile_id: id }) as { data: any[], error: any };
 
           if (!uuidError && data && Array.isArray(data) && data.length > 0) {
             const profileData = data[0] as PublicProfileData;
@@ -61,7 +61,7 @@ const AuthorPublicProfile = () => {
 
         // Then try name lookup using RPC function
         const { data, error: nameError } = await supabase
-          .rpc('get_public_profile_by_name', { profile_name: id.replace(/-/g, ' ') });
+          .rpc('get_public_profile_by_name', { profile_name: id.replace(/-/g, ' ') }) as { data: any[], error: any };
 
         if (nameError) throw nameError;
         if (!data || !Array.isArray(data) || data.length === 0) throw new Error('Author not found');
