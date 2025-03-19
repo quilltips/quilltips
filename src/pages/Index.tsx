@@ -9,7 +9,7 @@ const Index = () => {
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-enter">
           <div className="space-y-4">
-            <img src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" alt="Quilltips" className="h-12 mx-auto" />
+            <img src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" alt="Quilltips" className="h-36 mx-auto" />
             <h1 className="font-playfair font-medium text-6xl">Quilltips</h1>
             <h2 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
               Helping authors get paid
@@ -25,24 +25,25 @@ const Index = () => {
 
         {/* Connecting Authors Section */}
         <div className="max-w-4xl mx-auto mt-24 text-center space-y-6">
-          <h2 className="text-4xl font-playfair font-medium">A virtual tip jar to connect authors with readers</h2>
+          <h2 className="text-4xl font-playfair font-medium">What is Quilltips?</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltip Jar, where readers can leave a tip and message!
           </p>
+          <img src="/lovable-uploads/98a4ed1e-68c9-4e60-b65b-f6d2d3d15d53.png" alt="Quilltips mobile app preview showing tip feed and QR codes" className="w-full max-w-md" />
         </div>
 
         {/* How it works Section */}
         <div className="max-w-4xl mx-auto mt-24">
-          <h2 className="text-3xl font-semibold text-center mb-16">How it works</h2>
+          <h2 className="text-3xl font-semibold text-center mb-16">How does it work?</h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-rows-3 gap-8">
             <div className="text-center space-y-4">
               <div className="w-24 h-24 mx-auto rounded-full bg-[#FFD166]/10 flex items-center justify-center">
                 <QrCode className="h-10 w-10 text-[#FFD166]" />
               </div>
-              <h3 className="font-semibold text-lg">Create your Quilltip Jar</h3>
+              <h3 className="font-semibold text-lg">Step 1. Create your Quilltips Jar</h3>
               <p className="text-muted-foreground">
-                Generate a QR code for your book to include on the cover or inside the jacket.
+                Create a virtual tip jar, accessible through a QR code. Download the code to print on the cover or inside the jacket of your next book. 
               </p>
             </div>
 
@@ -50,9 +51,9 @@ const Index = () => {
               <div className="w-24 h-24 mx-auto rounded-full bg-[#FFD166]/10 flex items-center justify-center">
                 <MessageSquare className="h-10 w-10 text-[#FFD166]" />
               </div>
-              <h3 className="font-semibold text-lg">Meet your readers</h3>
+              <h3 className="font-semibold text-lg">Step 2.Meet your readers</h3>
               <p className="text-muted-foreground">
-                Get tips and messages directly from your audience.
+                Readers scan the QR code to open your virtual tip jar and leave tips and messages. From your profile, readers can find links to your website and social media accounts.
               </p>
             </div>
 
@@ -60,9 +61,9 @@ const Index = () => {
               <div className="w-24 h-24 mx-auto rounded-full bg-[#FFD166]/10 flex items-center justify-center">
                 <Share className="h-10 w-10 text-[#FFD166]" />
               </div>
-              <h3 className="font-semibold text-lg">Simple linking</h3>
+              <h3 className="font-semibold text-lg">Step 3. Build support</h3>
               <p className="text-muted-foreground">
-                Direct readers to your website and socials, all from one place.
+                Use information gathered from your readers to market your future books.
               </p>
             </div>
           </div>
@@ -71,21 +72,21 @@ const Index = () => {
         {/* Why Quilltips Section */}
         <div className="max-w-4xl mx-auto mt-24">
           <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Quilltips?</h2>
-          <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="grid md:grid-cols-1 gap-8 items-center">
             <div className="text-lg text-muted-foreground space-y-4 text-left">
-              <p>Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on primary sales are low and royalties on used books and reused library copies are nonexistent.</p>
+              <p>Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on used books and reused library copies are nonexistent.</p>
               <p>
-                With the growth of e-commerce platforms such as Amazon, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accessible way.
+                As the demand for used books grows, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accesible way. Most readers would be happy to directly support their favorite authors, if only there was a way to do it!
               </p>
               <p>
-                Most readers would be happy to directly support their favorite authors, if only there was a way to do this! This is the idea that hatched Quilltips, and why we are working hard to create a platform that supports fair author compensation and connecting authors directly with their audience.
+                This is the idea that hatched Quilltips, a platform that supports fair author compensation and connects authors directly with their audience.
               </p>
               <p>
                 Join us on our journey, and launch your first Quilltips Jar today!
               </p>
             </div>
             <div className="relative w-full h-full flex justify-center items-center">
-              <img src="/lovable-uploads/98a4ed1e-68c9-4e60-b65b-f6d2d3d15d53.png" alt="Quilltips mobile app preview showing tip feed and QR codes" className="w-full max-w-md" />
+             
             </div>
           </div>
         </div>
@@ -93,7 +94,7 @@ const Index = () => {
         {/* Get Started Section */}
         <div className="max-w-4xl mx-auto mt-24 text-center space-y-8 animate-enter py-[75px]">
           <div className="space-y-4">
-            <h2 className="text-4xl font-playfair font-medium">Get started</h2>
+            <h2 className="text-4xl font-playfair font-medium">Ready to get started?</h2>
             <h3 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
               Create an account to connect with readers and collect tips!
             </h3>
