@@ -42,10 +42,11 @@ export const syncProfileToPublic = async (profileId: string) => {
   }
   
   // Check if public profile already exists
-  const { data: existingPublic, error: checkError } = await supabase.rpc(
+  // Using type assertion to bypass strict type checking for RPC parameters
+  const { data: existingPublic, error: checkError } = await (supabase.rpc as any)(
     'get_public_profile_by_id', 
     { profile_id: profileId }
-  ) as unknown as RPCResponse<PublicProfile[]>;
+  ) as RPCResponse<PublicProfile[]>;
     
   if (checkError) {
     console.error('Error checking existing public profile:', checkError);
@@ -65,8 +66,8 @@ export const syncProfileToPublic = async (profileId: string) => {
   
   // Insert or update as appropriate
   if (existingPublic && Array.isArray(existingPublic) && existingPublic.length > 0) {
-    // Update existing record
-    result = await supabase.rpc(
+    // Update existing record using type assertion to bypass strict type checking
+    result = await (supabase.rpc as any)(
       'update_public_profile',
       {
         profile_id: profileId,
@@ -75,10 +76,10 @@ export const syncProfileToPublic = async (profileId: string) => {
         profile_avatar_url: privateProfile.avatar_url,
         profile_social_links: privateProfile.social_links
       }
-    ) as unknown as RPCResponse<any>;
+    ) as RPCResponse<any>;
   } else {
-    // Insert new record
-    result = await supabase.rpc(
+    // Insert new record using type assertion to bypass strict type checking
+    result = await (supabase.rpc as any)(
       'insert_public_profile',
       {
         profile_id: profileId,
@@ -87,7 +88,7 @@ export const syncProfileToPublic = async (profileId: string) => {
         profile_avatar_url: privateProfile.avatar_url,
         profile_social_links: privateProfile.social_links
       }
-    ) as unknown as RPCResponse<any>;
+    ) as RPCResponse<any>;
   }
   
   if (result.error) {
