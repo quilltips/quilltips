@@ -9,7 +9,8 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { AuthorProfileHeader } from "@/components/author/AuthorProfileHeader";
 import { AuthorProfileContent } from "@/components/author/AuthorProfileContent";
-import { transformSocialLinks, type DatabaseProfile, type AuthorProfile } from "@/types/author";
+import { transformSocialLinks, type AuthorProfile } from "@/types/author";
+import type { PublicProfileResponse } from "@/types/public-profile";
 
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,37 +20,55 @@ const AuthorPublicProfile = () => {
   const [selectedQRCode, setSelectedQRCode] = useState<{ id: string; bookTitle: string } | null>(null);
 
   const { data: author, isLoading, error } = useQuery({
-    queryKey: ['author-profile', id],
+    queryKey: ['author-public-profile', id],
     queryFn: async () => {
       if (!id) throw new Error('Author identifier is required');
 
       try {
-        // First try UUID lookup
+        // First try UUID lookup in public_profiles
         if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
           const { data: uuidData, error: uuidError } = await supabase
-            .from('profiles')
-            .select('id, name, bio, avatar_url, social_links, role')
+            .from('public_profiles')
+            .select('id, name, bio, avatar_url, social_links, created_at')
             .eq('id', id)
-            .eq('role', 'author')
             .maybeSingle();
 
           if (!uuidError && uuidData) {
-            return transformSocialLinks(uuidData as DatabaseProfile);
+            // Transform social links if needed and return
+            return {
+              ...uuidData,
+              social_links: Array.isArray(uuidData.social_links) 
+                ? uuidData.social_links.map((link: any) => ({
+                    url: String(link.url || ''),
+                    label: String(link.label || 'Link')
+                  }))
+                : null,
+              role: 'author' // Adding role to match existing interface
+            } as AuthorProfile;
           }
         }
 
         // Then try name lookup
         const { data: nameData, error: nameError } = await supabase
-          .from('profiles')
-          .select('id, name, bio, avatar_url, social_links, role')
-          .eq('role', 'author')
+          .from('public_profiles')
+          .select('id, name, bio, avatar_url, social_links, created_at')
           .ilike('name', id.replace(/-/g, ' '))
           .maybeSingle();
 
         if (nameError) throw nameError;
         if (!nameData) throw new Error('Author not found');
 
-        return transformSocialLinks(nameData as DatabaseProfile);
+        // Transform the data to match our expected format
+        return {
+          ...nameData,
+          social_links: Array.isArray(nameData.social_links) 
+            ? nameData.social_links.map((link: any) => ({
+                url: String(link.url || ''),
+                label: String(link.label || 'Link')
+              }))
+            : null,
+          role: 'author' // Adding role to match existing interface
+        } as AuthorProfile;
       } catch (error) {
         console.error('Error fetching author:', error);
         throw error;

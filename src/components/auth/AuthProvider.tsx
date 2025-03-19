@@ -31,6 +31,7 @@ const fetchProfileWithTimeout = async (userId: string, timeoutMs: number = 5000)
 
   try {
     console.log("Sending request to Supabase...");
+    // Remove use of setAbortSignal as it's not supported
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')

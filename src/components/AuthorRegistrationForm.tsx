@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { RegistrationStepInitial } from "./registration/RegistrationStepInitial";
 import { RegistrationStepDetails } from "./registration/RegistrationStepDetails";
 import { RegistrationStepStripe } from "./registration/RegistrationStepStripe";
+import { syncProfileToPublic } from "@/types/public-profile";
 
 type RegistrationStep = "initial" | "details" | "stripe-onboarding";
 
@@ -89,8 +90,14 @@ export const AuthorRegistrationForm = () => {
 
           if (updateError) {
             console.error("Profile update error:", updateError);
+          } else {
+            // Create a corresponding public profile after successful profile update
+            await syncProfileToPublic(data.user.id);
           }
         }
+      } else if (data.user) {
+        // Create public profile even without avatar
+        await syncProfileToPublic(data.user.id);
       }
 
       console.log("Registration successful:", data);

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -7,6 +8,7 @@ import { Loader2, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Json } from "@/integrations/supabase/types";
+import { syncProfileToPublic } from "@/types/public-profile";
 
 interface SocialLink {
   url: string;
@@ -67,6 +69,12 @@ export const ProfileForm = ({
         .eq('id', profileId);
 
       if (error) throw error;
+
+      // Sync profile changes to public profile
+      const syncResult = await syncProfileToPublic(profileId);
+      if (!syncResult.success) {
+        console.warn("Profile updated but public profile sync failed:", syncResult.error);
+      }
 
       toast({
         title: "Profile Updated",

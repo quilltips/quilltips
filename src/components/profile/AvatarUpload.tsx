@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -5,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Loader2, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { syncProfileToPublic } from "@/types/public-profile";
 
 interface AvatarUploadProps {
   profileId: string;
@@ -60,6 +62,12 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
         .eq('id', profileId);
 
       if (updateError) throw updateError;
+      
+      // Sync avatar changes to public profile
+      const syncResult = await syncProfileToPublic(profileId);
+      if (!syncResult.success) {
+        console.warn("Avatar updated but public profile sync failed:", syncResult.error);
+      }
 
       toast({
         title: "Avatar Updated",
