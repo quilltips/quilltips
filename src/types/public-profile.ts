@@ -42,11 +42,10 @@ export const syncProfileToPublic = async (profileId: string) => {
   }
   
   // Check if public profile already exists - using proper type casting
-  // Using a different approach with direct any casting to avoid parameter type issues
-  const rpcResult = await supabase
-    .rpc('get_public_profile_by_id', { profile_id: profileId } as any);
-  
-  const { data: existingPublic, error: checkError } = rpcResult as unknown as RPCFunctionReturnType;
+  const { data: existingPublic, error: checkError } = await supabase
+    .rpc('get_public_profile_by_id', { 
+      profile_id: profileId 
+    } as any) as unknown as RPCFunctionReturnType;
     
   if (checkError) {
     console.error('Error checking existing public profile:', checkError);
@@ -67,28 +66,24 @@ export const syncProfileToPublic = async (profileId: string) => {
   // Insert or update as appropriate
   if (existingPublic && Array.isArray(existingPublic) && existingPublic.length > 0) {
     // Update existing record - using proper type casting
-    const updateResult = await supabase
+    result = await supabase
       .rpc('update_public_profile', {
         profile_id: profileId,
         profile_name: privateProfile.name,
         profile_bio: privateProfile.bio,
         profile_avatar_url: privateProfile.avatar_url,
         profile_social_links: privateProfile.social_links
-      } as any);
-    
-    result = updateResult as unknown as { data: any, error: any };
+      } as any) as unknown as { data: any, error: any };
   } else {
     // Insert new record - using proper type casting
-    const insertResult = await supabase
+    result = await supabase
       .rpc('insert_public_profile', {
         profile_id: profileId,
         profile_name: privateProfile.name,
         profile_bio: privateProfile.bio,
         profile_avatar_url: privateProfile.avatar_url,
         profile_social_links: privateProfile.social_links
-      } as any);
-    
-    result = insertResult as unknown as { data: any, error: any };
+      } as any) as unknown as { data: any, error: any };
   }
   
   if (result.error) {
