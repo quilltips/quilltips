@@ -25,20 +25,21 @@ const AuthorPublicProfile = () => {
       if (!id) throw new Error('Author identifier is required');
 
       try {
-        // First try UUID lookup in public_profiles
+        // First try UUID lookup in public profiles using RPC function
         if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
           const { data: uuidData, error: uuidError } = await supabase
-            .from('public_profiles')
-            .select('id, name, bio, avatar_url, social_links, created_at')
-            .eq('id', id)
-            .maybeSingle();
+            .rpc('get_public_profile_by_id', { profile_id: id });
 
-          if (!uuidError && uuidData) {
+          if (!uuidError && uuidData && uuidData.length > 0) {
+            const profileData = uuidData[0];
             // Transform social links if needed and return
             return {
-              ...uuidData,
-              social_links: Array.isArray(uuidData.social_links) 
-                ? uuidData.social_links.map((link: any) => ({
+              id: profileData.id,
+              name: profileData.name || 'Anonymous Author',
+              bio: profileData.bio,
+              avatar_url: profileData.avatar_url,
+              social_links: Array.isArray(profileData.social_links) 
+                ? profileData.social_links.map((link: any) => ({
                     url: String(link.url || ''),
                     label: String(link.label || 'Link')
                   }))
@@ -48,21 +49,23 @@ const AuthorPublicProfile = () => {
           }
         }
 
-        // Then try name lookup
+        // Then try name lookup using RPC function
         const { data: nameData, error: nameError } = await supabase
-          .from('public_profiles')
-          .select('id, name, bio, avatar_url, social_links, created_at')
-          .ilike('name', id.replace(/-/g, ' '))
-          .maybeSingle();
+          .rpc('get_public_profile_by_name', { profile_name: id.replace(/-/g, ' ') });
 
         if (nameError) throw nameError;
-        if (!nameData) throw new Error('Author not found');
+        if (!nameData || nameData.length === 0) throw new Error('Author not found');
 
+        const profileData = nameData[0];
+        
         // Transform the data to match our expected format
         return {
-          ...nameData,
-          social_links: Array.isArray(nameData.social_links) 
-            ? nameData.social_links.map((link: any) => ({
+          id: profileData.id,
+          name: profileData.name || 'Anonymous Author',
+          bio: profileData.bio,
+          avatar_url: profileData.avatar_url,
+          social_links: Array.isArray(profileData.social_links) 
+            ? profileData.social_links.map((link: any) => ({
                 url: String(link.url || ''),
                 label: String(link.label || 'Link')
               }))

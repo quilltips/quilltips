@@ -35,12 +35,9 @@ export const syncProfileToPublic = async (profileId: string) => {
     return { success: false, error: fetchError };
   }
   
-  // Check if public profile already exists
+  // Check if public profile already exists using raw SQL query to work around type issues
   const { data: existingPublic, error: checkError } = await supabase
-    .from('public_profiles')
-    .select('id')
-    .eq('id', profileId)
-    .maybeSingle();
+    .rpc('get_public_profile_by_id', { profile_id: profileId });
     
   if (checkError) {
     console.error('Error checking existing public profile:', checkError);
@@ -58,18 +55,25 @@ export const syncProfileToPublic = async (profileId: string) => {
   
   let result;
   
-  // Insert or update as appropriate
-  if (existingPublic) {
+  // Insert or update as appropriate using raw SQL to work around type issues
+  if (existingPublic && existingPublic.length > 0) {
     // Update existing record
-    result = await supabase
-      .from('public_profiles')
-      .update(publicProfileData)
-      .eq('id', profileId);
+    result = await supabase.rpc('update_public_profile', {
+      profile_id: profileId,
+      profile_name: privateProfile.name,
+      profile_bio: privateProfile.bio,
+      profile_avatar_url: privateProfile.avatar_url,
+      profile_social_links: privateProfile.social_links
+    });
   } else {
     // Insert new record
-    result = await supabase
-      .from('public_profiles')
-      .insert(publicProfileData);
+    result = await supabase.rpc('insert_public_profile', {
+      profile_id: profileId,
+      profile_name: privateProfile.name,
+      profile_bio: privateProfile.bio,
+      profile_avatar_url: privateProfile.avatar_url,
+      profile_social_links: privateProfile.social_links
+    });
   }
   
   if (result.error) {
