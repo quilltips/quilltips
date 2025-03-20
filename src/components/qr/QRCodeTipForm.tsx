@@ -14,7 +14,7 @@ interface QRCodeTipFormProps {
   onMessageChange: (value: string) => void; 
   onAmountChange: (value: string) => void;
   onCustomAmountChange: (value: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent) => Promise<void> | void;
 }
 
 export const QRCodeTipForm = ({

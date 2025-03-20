@@ -6,7 +6,7 @@ interface PaymentFormProps {
   isLoading: boolean;
   amount: string;
   customAmount: string;
-  onSubmit: (e: React.FormEvent) => Promise<void>;
+  onSubmit: (e: React.FormEvent) => Promise<void> | void;
 }
 
 export const PaymentForm = ({
