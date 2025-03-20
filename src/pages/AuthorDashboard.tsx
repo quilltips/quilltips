@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -128,7 +127,6 @@ const AuthorDashboard = () => {
                 name={profile.name || "Anonymous Author"}
                 bio={profile.bio || "No bio available"}
                 imageUrl={profile.avatar_url || "/placeholder.svg"}
-                publicProfileLink={`/author/profile/${profile.id}`}
                 socialLinks={socialLinks}
               />
               

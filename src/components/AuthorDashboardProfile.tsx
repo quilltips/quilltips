@@ -1,5 +1,6 @@
+
 import { Button } from "./ui/button";
-import { ExternalLink, User, Globe, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { ExternalLink, Globe, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 interface SocialLink {
   url: string;
@@ -48,13 +49,6 @@ export const AuthorDashboardProfile = ({
         </div>
         
         <div className="flex flex-wrap justify-center gap-2 w-full">
-          {publicProfileLink && <a href={publicProfileLink} className="inline-block">
-              <Button variant="outline" size="sm" className="hover-lift bg-white border-[#FEC6A1] hover:bg-[#FEC6A1]/10 text-[#2D3748] text-xs">
-                <User className="h-3 w-3 mr-1.5" />
-                Public Profile
-              </Button>
-            </a>}
-          
           {socialLinks.map((link, index) => {
           const IconComponent = getSocialIcon(link.label);
           return <a key={index} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-block">
