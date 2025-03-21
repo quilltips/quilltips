@@ -1,11 +1,10 @@
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { TipTable } from "./TipTable";
 import { TipDetailsDialog } from "../TipDetailsDialog";
 import { Card } from "../ui/card";
-import { TipDownloadButton } from "./TipDownloadButton";
+import { useTipHistory } from "@/hooks/use-tip-history";
+import { TipHistoryHeader } from "./TipHistoryHeader";
 
 interface TipHistoryContainerProps {
   authorId: string;
@@ -27,63 +26,7 @@ export const TipHistoryContainer = ({
   const [selectedTip, setSelectedTip] = useState<any | null>(null);
   const [showAll, setShowAll] = useState(false);
   
-  const {
-    data: tips,
-    isLoading
-  } = useQuery({
-    queryKey: ['tips', authorId, qrCodeId, limit],
-    queryFn: async () => {
-      let query = supabase.from('tips').select('*, profiles!tips_author_id_fkey(name, avatar_url)').eq('author_id', authorId).order('created_at', {
-        ascending: false
-      });
-      if (qrCodeId) {
-        query = query.eq('qr_code_id', qrCodeId);
-      }
-      if (limit) {
-        query = query.limit(limit);
-      }
-      const {
-        data,
-        error
-      } = await query;
-      if (error) throw error;
-
-      // Map the nested profile data to the tip object
-      return data.map(tip => ({
-        ...tip,
-        reader_name: tip.profiles?.name || "Anonymous Reader",
-        reader_avatar_url: tip.profiles?.avatar_url
-      }));
-    }
-  });
-  
-  const {
-    data: likes
-  } = useQuery({
-    queryKey: ['tip_likes', authorId],
-    queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from('tip_likes').select('*').eq('author_id', authorId);
-      if (error) throw error;
-      return data || [];
-    }
-  });
-  
-  const {
-    data: comments
-  } = useQuery({
-    queryKey: ['tip_comments', authorId],
-    queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from('tip_comments').select('*').eq('author_id', authorId);
-      if (error) throw error;
-      return data || [];
-    }
-  });
+  const { tips, likes, comments, isLoading } = useTipHistory(authorId, qrCodeId, limit);
   
   if (isLoading) {
     return <div>Loading...</div>;
@@ -97,27 +40,21 @@ export const TipHistoryContainer = ({
   
   return (
     <Card className="p-6 px-[25px] rounded-sm">
-      {showHeader && !limit && (
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold">{title}</h2>
-            {isDashboard && (
-              <TipDownloadButton 
-                tips={tips || []} 
-                likes={likes || []} 
-                comments={comments || []} 
-                qrCodeId={qrCodeId} 
-              />
-            )}
-          </div>
-        </div>
-      )}
+      <TipHistoryHeader
+        title={title}
+        isDashboard={isDashboard}
+        tips={tips}
+        likes={likes}
+        comments={comments}
+        qrCodeId={qrCodeId}
+        showHeader={showHeader && !limit}
+      />
 
       <TipTable 
-        tips={tips || []} 
+        tips={tips} 
         authorId={authorId} 
-        likes={likes || []} 
-        comments={comments || []} 
+        likes={likes} 
+        comments={comments} 
         showAll={showAll} 
         setShowAll={setShowAll} 
         onSelectTip={setSelectedTip} 

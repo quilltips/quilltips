@@ -1,8 +1,8 @@
 
-import { TipLikeButton } from "../TipLikeButton";
-import { TipCommentButton } from "../TipCommentButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistanceToNow } from "date-fns";
+import { TipMessagePreview } from "./TipMessagePreview";
+import { TipInteractionButtons } from "./TipInteractionButtons";
 
 interface TipTableRowProps {
   tip: {
@@ -31,6 +31,9 @@ export const TipTableRow = ({
   const isLiked = (tipId: string) => {
     return likes?.some(like => like.tip_id === tipId);
   };
+  
+  const likeCount = likes?.filter(like => like.tip_id === tip.id).length || 0;
+  const commentCount = comments?.filter(comment => comment.tip_id === tip.id).length || 0;
 
   return (
     <div 
@@ -53,30 +56,20 @@ export const TipTableRow = ({
               <span className="font-medium">${tip.amount}</span>
             </p>
             
-            {tip.message && (
-              <p className="text-muted-foreground">
-                "{tip.message}"
-              </p>
-            )}
+            <TipMessagePreview message={tip.message} />
             
             <p className="text-sm text-muted-foreground">
               {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
             </p>
           </div>
 
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <TipLikeButton
-              tipId={tip.id}
-              authorId={authorId}
-              isLiked={isLiked(tip.id)}
-              likeCount={likes?.filter(like => like.tip_id === tip.id).length || 0}
-            />
-            <TipCommentButton
-              tipId={tip.id}
-              authorId={authorId}
-              commentCount={comments?.filter(comment => comment.tip_id === tip.id).length || 0}
-            />
-          </div>
+          <TipInteractionButtons
+            tipId={tip.id}
+            authorId={authorId}
+            isLiked={isLiked(tip.id)}
+            likeCount={likeCount}
+            commentCount={commentCount}
+          />
         </div>
       </div>
     </div>
