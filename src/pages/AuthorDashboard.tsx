@@ -1,14 +1,14 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
-import { useToast } from "@/hooks/use-toast";
-import { AuthorQRCodesList } from "@/components/AuthorQRCodesList";
-import { TipHistory } from "@/components/TipHistory";
+
 import { Layout } from "@/components/Layout";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useQuery } from "@tanstack/react-query";
+import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
 import { AuthorStats } from "@/components/dashboard/AuthorStats";
+import { AuthorDashboardContent } from "@/components/dashboard/AuthorDashboardContent";
+import { useAuthorSession } from "@/hooks/use-author-session";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 // Define the type for social links
 interface SocialLink {
@@ -19,49 +19,9 @@ interface SocialLink {
 const AuthorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  // Handle session check
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (!session) {
-          navigate("/author/login");
-          return;
-        }
-
-        // Verify the user is an author
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profileError || profile?.role !== 'author') {
-          navigate("/author/login");
-        }
-      } catch (error) {
-        console.error('Session check error:', error);
-        navigate("/author/login");
-      }
-    };
-
-    checkSession();
-
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        navigate("/author/login");
-      } else if (event === 'TOKEN_REFRESHED') {
-        console.log('Token refreshed successfully');
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
+  
+  // Check if user is authenticated as an author
+  useAuthorSession();
 
   // Fetch author profile
   const { data: profile, isLoading, error } = useQuery({
@@ -98,11 +58,13 @@ const AuthorDashboard = () => {
   });
 
   if (isLoading) {
-    return <Layout>
-      <div className="container mx-auto px-4 pt-24">
-        <LoadingSpinner />
-      </div>
-    </Layout>;
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 pt-24">
+          <LoadingSpinner />
+        </div>
+      </Layout>
+    );
   }
 
   if (error || !profile) return null;
@@ -133,15 +95,7 @@ const AuthorDashboard = () => {
               <AuthorStats authorId={profile.id} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div className="space-y-6">
-                <AuthorQRCodesList authorId={profile.id} />
-              </div>
-              <div className="space-y-6">
-                <h2 className="text-2xl font-semibold text-[#2D3748]">Tip Feed</h2>
-                <TipHistory authorId={profile.id} limit={5} isDashboard={true} />
-              </div>
-            </div>
+            <AuthorDashboardContent authorId={profile.id} />
           </div>
         </div>
       </div>
