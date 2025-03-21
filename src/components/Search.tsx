@@ -73,7 +73,7 @@ export const Search = () => {
               onChange={handleSearchChange}
               placeholder="Search books or authors..."
               className="pl-10 py-6 text-lg"
-              
+              autofocus
             />
           </div>
         </Card>
