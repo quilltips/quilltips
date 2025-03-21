@@ -17,6 +17,7 @@ const AuthorPublicProfile = () => {
   const { toast } = useToast();
   const [selectedQRCode, setSelectedQRCode] = useState<{ id: string; bookTitle: string } | null>(null);
 
+  // Using the updated hook that doesn't require authentication
   const { data: author, isLoading, error } = usePublicProfile(id);
 
   useEffect(() => {

@@ -25,16 +25,17 @@ export const usePublicProfile = (id: string | undefined) => {
       if (!id) throw new Error('Author identifier is required');
 
       try {
-        // First try UUID lookup in public profiles using RPC function
+        // First try fetching from public_profiles table without using RPC
         if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
-          // Using type assertion to bypass strict type checking for RPC parameters
-          const { data, error: uuidError } = await (supabase.rpc as any)(
-            'get_public_profile_by_id', 
-            { profile_id: id }
-          ) as RPCResponse<PublicProfileData[]>;
+          // Using direct table query which doesn't require authentication
+          const { data, error } = await supabase
+            .from('public_profiles')
+            .select('*')
+            .eq('id', id)
+            .single();
 
-          if (!uuidError && data && Array.isArray(data) && data.length > 0) {
-            const profileData = data[0] as PublicProfileData;
+          if (!error && data) {
+            const profileData = data as PublicProfileData;
             
             // Transform social links if needed and return
             return {
@@ -53,14 +54,14 @@ export const usePublicProfile = (id: string | undefined) => {
           }
         }
 
-        // Then try name lookup using RPC function
-        // Using type assertion to bypass strict type checking for RPC parameters
-        const { data, error: nameError } = await (supabase.rpc as any)(
-          'get_public_profile_by_name', 
-          { profile_name: id.replace(/-/g, ' ') }
-        ) as RPCResponse<PublicProfileData[]>;
+        // Then try name lookup by selecting from public_profiles
+        const { data, error } = await supabase
+          .from('public_profiles')
+          .select('*')
+          .ilike('name', id.replace(/-/g, ' '))
+          .limit(1);
 
-        if (nameError) throw nameError;
+        if (error) throw error;
         if (!data || !Array.isArray(data) || data.length === 0) throw new Error('Author not found');
 
         const profileData = data[0] as PublicProfileData;

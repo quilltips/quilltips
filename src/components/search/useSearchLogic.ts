@@ -31,11 +31,11 @@ export const useSearchLogic = () => {
       
       try {
         const [authorsResponse, booksResponse] = await Promise.all([
+          // Use public_profiles table for author search
           supabase
-            .from('profiles')
-            .select('id, name, bio, avatar_url, role')
+            .from('public_profiles')
+            .select('id, name, bio, avatar_url')
             .ilike('name', `%${debouncedQuery}%`)
-            .eq('role', 'author')
             .order('name'),
         
           supabase
@@ -64,7 +64,7 @@ export const useSearchLogic = () => {
           name: author.name || '',
           bio: author.bio || undefined,
           avatar_url: author.avatar_url || undefined,
-          role: author.role || 'author'
+          role: 'author' // Default role for all public profiles
         }));
 
         const books: BookResult[] = booksResponse.data.map(book => ({
