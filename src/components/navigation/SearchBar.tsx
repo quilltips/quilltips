@@ -70,10 +70,13 @@ export const SearchBar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const queryRef = useRef("");
+  const [queryDisplay, setQueryDisplay] = useState(""); // Separate state for display
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
-    setIsSearchOpen(!!value);
+    queryRef.current = e.target.value;
+    setQueryDisplay(e.target.value); // Only used to update the UI
+    setIsSearchOpen(!!e.target.value);
   };
 
   const handleSearchFocus = () => {
@@ -87,14 +90,18 @@ export const SearchBar = () => {
     setIsSearchOpen(false);
   };
 
+  console.log("🔥 SearchBar is rendering! Query:", query);
+
+
+
   return (
     <div className="relative w-64 search-container" ref={searchInputRef}>
-      <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+      <Popover open={Boolean(true)} >
         <PopoverTrigger asChild>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
             <Input
-              value={query}
+              value={queryDisplay}
               onChange={handleSearchChange}
               onFocus={handleSearchFocus}
               placeholder="Search authors or books..."

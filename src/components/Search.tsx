@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "./ui/badge";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useEffect } from "react";
 
 interface SearchResult {
   id: string;
@@ -23,6 +24,10 @@ interface SearchResult {
 export const Search = () => {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
+
+  useEffect(() => {
+    console.log(" Search component mounted");
+  }, []);
 
   const { data: searchResults, isLoading } = useQuery({
     queryKey: ['search', debouncedQuery],
@@ -62,6 +67,9 @@ export const Search = () => {
     setQuery(e.target.value);
   };
 
+  console.log("! Search component is rendering!");
+
+
   return (
     <div className="container mx-auto px-4 pt-24 pb-12">
       <div className="space-y-6 max-w-2xl mx-auto animate-fadeIn">
@@ -73,7 +81,7 @@ export const Search = () => {
               onChange={handleSearchChange}
               placeholder="Search books or authors..."
               className="pl-10 py-6 text-lg"
-              autofocus
+              autoFocus
             />
           </div>
         </Card>
