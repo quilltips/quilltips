@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useDebounce } from "@/hooks/use-debounce";
-import { SearchResults } from "./types";
+import { SearchResults, AuthorResult, BookResult } from "./types";
 
 export const useSearchLogic = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,7 +33,7 @@ export const useSearchLogic = () => {
         const [authorsResponse, booksResponse] = await Promise.all([
           supabase
             .from('profiles')
-            .select('*')
+            .select('id, name, bio, avatar_url, role')
             .ilike('name', `%${debouncedQuery}%`)
             .eq('role', 'author')
             .order('name'),
@@ -58,9 +58,30 @@ export const useSearchLogic = () => {
         if (authorsResponse.error) throw authorsResponse.error;
         if (booksResponse.error) throw booksResponse.error;
 
+        // Map the response to our expected types
+        const authors: AuthorResult[] = authorsResponse.data.map(author => ({
+          id: author.id,
+          name: author.name || '',
+          bio: author.bio || undefined,
+          avatar_url: author.avatar_url || undefined,
+          role: author.role || 'author'
+        }));
+
+        const books: BookResult[] = booksResponse.data.map(book => ({
+          id: book.id,
+          book_title: book.book_title,
+          publisher: book.publisher || undefined,
+          cover_image: book.cover_image || undefined,
+          author: {
+            id: book.author?.id || '',
+            name: book.author?.name || '',
+            avatar_url: book.author?.avatar_url
+          }
+        }));
+
         return {
-          authors: authorsResponse.data || [],
-          books: booksResponse.data || []
+          authors,
+          books
         };
       } catch (error) {
         console.error('Search error:', error);
@@ -90,11 +111,11 @@ export const useSearchLogic = () => {
   const totalResults = (searchResults.authors?.length || 0) + (searchResults.books?.length || 0);
   const totalPages = Math.ceil(totalResults / resultsPerPage);
   
-  // Get paginated results
+  // Get paginated results with proper typing
   const getPaginatedResults = () => {
     const allResults = [
-      ...(searchResults.authors || []).map(author => ({ type: 'author', data: author })),
-      ...(searchResults.books || []).map(book => ({ type: 'book', data: book }))
+      ...(searchResults.authors || []).map(author => ({ type: 'author' as const, data: author })),
+      ...(searchResults.books || []).map(book => ({ type: 'book' as const, data: book }))
     ];
     
     const startIndex = (currentPage - 1) * resultsPerPage;

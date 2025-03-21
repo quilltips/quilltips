@@ -23,3 +23,7 @@ export type SearchResults = {
   authors: AuthorResult[];
   books: BookResult[];
 };
+
+export type SearchResultItem = 
+  | { type: 'author'; data: AuthorResult }
+  | { type: 'book'; data: BookResult };

@@ -5,6 +5,7 @@ import { AuthorCard, BookCard } from "./search/SearchResultCards";
 import { PaginationControls } from "./search/PaginationControls";
 import { EmptyResults } from "./search/EmptyResults";
 import { useSearchLogic } from "./search/useSearchLogic";
+import { SearchResultItem } from "./search/types";
 
 export const Search = () => {
   const {
@@ -35,7 +36,7 @@ export const Search = () => {
         {/* Combined paginated results */}
         {paginatedResults.length > 0 && (
           <div className="space-y-4 animate-slideUp">
-            {paginatedResults.map((result, index) => (
+            {paginatedResults.map((result: SearchResultItem, index) => (
               result.type === 'author' ? (
                 <AuthorCard 
                   key={`author-${result.data.id}`} 
