@@ -1,3 +1,4 @@
+console.log("🔥 SearchBar is rendering!");
 
 import { Search, Book, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -12,33 +13,85 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDebounce } from "@/hooks/use-debounce";
 
 export const SearchBar = () => {
-  const [query, setQuery] = useState("");
+  const queryRef = useRef(""); // ✅ Store query without re-rendering
+  const [queryDisplay, setQueryDisplay] = useState(""); // ✅ UI state for input display
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchTrigger, setSearchTrigger] = useState(0); // ✅ Triggers `useQuery` updates
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const debouncedQuery = useDebounce(query, 300);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchInputRef.current && !searchInputRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (queryRef.current.length > 0) {
+      const timer = setTimeout(() => {
+        setIsSearchOpen(true);
+      }, 50); // a small delay
+      return () => clearTimeout(timer);
+    }
+  }, [searchTrigger]);
+  
+
+const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  queryRef.current = e.target.value;
+  setQueryDisplay(e.target.value);
+
+  if (e.target.value.trim()) {
+    setTimeout(() => setIsSearchOpen(true), 10); // ✅ Small delay to stabilize popover
+  } else {
+    setIsSearchOpen(false);
+  }
+
+  setSearchTrigger(prev => prev + 1);
+};
+
+  
+
+  const handleSearchFocus = () => {
+    console.log("🔍 Input focused"); // Debugging log
+    setIsSearchOpen(true); // ✅ Always force the popover to stay open on focus
+  };
+  
+
+  const handleResultClick = () => {
+    setQueryDisplay(""); // ✅ Clears UI input
+    queryRef.current = "";
+    setIsSearchOpen(false);
+  };
 
   const { data: searchResults, isLoading } = useQuery({
-    queryKey: ['search', debouncedQuery],
+    queryKey: ['search', searchTrigger], // ✅ Trigger search on state change
     queryFn: async () => {
-      if (!debouncedQuery.trim()) return { authors: [], books: [] };
-      
+      const currentQuery = queryRef.current.trim();
+      if (!currentQuery) return { authors: [], books: [] };
+
+      console.log("🔍 Fetching search results for:", currentQuery);
+
       try {
         const [authorsResponse, booksResponse] = await Promise.all([
           supabase
             .from('profiles')
             .select('*')
-            .ilike('name', `%${debouncedQuery}%`)
+            .ilike('name', `%${currentQuery}%`)
             .eq('role', 'author')
             .order('name')
             .limit(5),
-          
+        
           supabase
             .from('qr_codes')
             .select(`
               *,
               author:profiles(*)
             `)
-            .ilike('book_title', `%${debouncedQuery}%`)
+            .ilike('book_title', `%${currentQuery}%`)
             .order('book_title')
             .limit(5)
         ]);
@@ -55,53 +108,18 @@ export const SearchBar = () => {
         return { authors: [], books: [] };
       }
     },
-    enabled: debouncedQuery.length > 0,
+    enabled: searchTrigger > 0, // ✅ Ensures search only runs when needed
     retry: false
   });
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchInputRef.current && !searchInputRef.current.contains(event.target as Node)) {
-        setIsSearchOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const queryRef = useRef("");
-  const [queryDisplay, setQueryDisplay] = useState(""); // Separate state for display
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    queryRef.current = e.target.value;
-    setQueryDisplay(e.target.value); // Only used to update the UI
-    setIsSearchOpen(!!e.target.value);
-  };
-
-  const handleSearchFocus = () => {
-    if (query.trim()) {
-      setIsSearchOpen(true);
-    }
-  };
-
-  const handleResultClick = () => {
-    setQuery("");
-    setIsSearchOpen(false);
-  };
-
-  console.log("🔥 SearchBar is rendering! Query:", query);
-
-
-
   return (
     <div className="relative w-64 search-container" ref={searchInputRef}>
-      <Popover open={Boolean(true)} >
+      <Popover open={isSearchOpen}>
         <PopoverTrigger asChild>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
             <Input
-              value={queryDisplay}
+              value={queryDisplay} // ✅ Shows the latest input
               onChange={handleSearchChange}
               onFocus={handleSearchFocus}
               placeholder="Search authors or books..."
@@ -112,7 +130,7 @@ export const SearchBar = () => {
             />
           </div>
         </PopoverTrigger>
-        {query && (
+        {queryRef.current && (
           <PopoverContent 
             className="w-[400px] p-0" 
             align="start"
@@ -166,7 +184,7 @@ export const SearchBar = () => {
                   ))}
                   {(!searchResults?.authors?.length && !searchResults?.books?.length) && (
                     <div className="p-4 text-center text-muted-foreground">
-                      No results found for "{query}"
+                      No results found for "{queryRef.current}"
                     </div>
                   )}
                 </>
