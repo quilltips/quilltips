@@ -25,13 +25,14 @@ export const usePublicProfile = (id: string | undefined) => {
       if (!id) throw new Error('Author identifier is required');
 
       try {
-        // First try fetching from public_profiles table without using RPC
+        // First try fetching from profiles table without requiring auth for this specific query
         if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
-          // Using direct table query which doesn't require authentication
+          // Using direct table query - we'll rely on RLS to filter what's accessible
           const { data, error } = await supabase
-            .from('public_profiles')
+            .from('profiles')
             .select('*')
             .eq('id', id)
+            .eq('role', 'author')
             .single();
 
           if (!error && data) {
@@ -54,11 +55,12 @@ export const usePublicProfile = (id: string | undefined) => {
           }
         }
 
-        // Then try name lookup by selecting from public_profiles
+        // Then try name lookup by selecting from profiles
         const { data, error } = await supabase
-          .from('public_profiles')
+          .from('profiles')
           .select('*')
           .ilike('name', id.replace(/-/g, ' '))
+          .eq('role', 'author')
           .limit(1);
 
         if (error) throw error;

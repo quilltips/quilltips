@@ -31,11 +31,12 @@ export const useSearchLogic = () => {
       
       try {
         const [authorsResponse, booksResponse] = await Promise.all([
-          // Use public_profiles table for author search
+          // Use profiles table for author search but ensure it's properly filtered
           supabase
-            .from('public_profiles')
+            .from('profiles')
             .select('id, name, bio, avatar_url')
             .ilike('name', `%${debouncedQuery}%`)
+            .eq('role', 'author')
             .order('name'),
         
           supabase
