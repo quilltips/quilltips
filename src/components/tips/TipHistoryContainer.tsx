@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { TipTable } from "./TipTable";
 import { TipDetailsDialog } from "../TipDetailsDialog";
-import { Card } from "../ui/card";
 import { useTipHistory } from "@/hooks/use-tip-history";
 import { TipHistoryHeader } from "./TipHistoryHeader";
+import { LoadingSpinner } from "../ui/loading-spinner";
 
 interface TipHistoryContainerProps {
   authorId: string;
@@ -13,6 +13,7 @@ interface TipHistoryContainerProps {
   isDashboard?: boolean;
   authorName?: string;
   showHeader?: boolean;
+  customTitle?: string;
 }
 
 export const TipHistoryContainer = ({
@@ -21,7 +22,8 @@ export const TipHistoryContainer = ({
   limit,
   isDashboard,
   authorName,
-  showHeader = true
+  showHeader = true,
+  customTitle
 }: TipHistoryContainerProps) => {
   const [selectedTip, setSelectedTip] = useState<any | null>(null);
   const [showAll, setShowAll] = useState(false);
@@ -29,17 +31,21 @@ export const TipHistoryContainer = ({
   const { tips, likes, comments, isLoading } = useTipHistory(authorId, qrCodeId, limit);
   
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center py-8">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
-  const title = isDashboard 
+  const title = customTitle || (isDashboard 
     ? qrCodeId 
       ? "QR Code Tips" 
       : "Recent Tips" 
-    : `${authorName}'s Activity`;
+    : `${authorName}'s Activity`);
   
   return (
-    <Card className="p-6 px-[25px] rounded-sm">
+    <div>
       <TipHistoryHeader
         title={title}
         isDashboard={isDashboard}
@@ -47,25 +53,31 @@ export const TipHistoryContainer = ({
         likes={likes}
         comments={comments}
         qrCodeId={qrCodeId}
-        showHeader={showHeader && !limit}
+        showHeader={showHeader}
       />
 
-      <TipTable 
-        tips={tips} 
-        authorId={authorId} 
-        likes={likes} 
-        comments={comments} 
-        showAll={showAll} 
-        setShowAll={setShowAll} 
-        onSelectTip={setSelectedTip} 
-        limit={limit} 
-      />
+      {tips && tips.length > 0 ? (
+        <TipTable 
+          tips={tips} 
+          authorId={authorId} 
+          likes={likes} 
+          comments={comments} 
+          showAll={showAll} 
+          setShowAll={setShowAll} 
+          onSelectTip={setSelectedTip} 
+          limit={limit} 
+        />
+      ) : (
+        <div className="text-center py-8 text-[#718096]">
+          No tips yet. Share your QR codes to start receiving tips!
+        </div>
+      )}
 
       <TipDetailsDialog 
         isOpen={!!selectedTip} 
         onClose={() => setSelectedTip(null)} 
         tip={selectedTip} 
       />
-    </Card>
+    </div>
   );
 };

@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
@@ -9,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { GetStartedBanner } from "@/components/dashboard/GetStartedBanner";
 
 // Define the type for social links
 interface SocialLink {
@@ -19,6 +21,7 @@ interface SocialLink {
 const AuthorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [showGetStarted, setShowGetStarted] = useState(true);
   
   // Check if user is authenticated as an author
   useAuthorSession();
@@ -81,10 +84,22 @@ const AuthorDashboard = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-b from-[#FEF7CD]/30 to-white">
-        <div className="container mx-auto px-4 pt-24 pb-12">
-          <div className="max-w-5xl mx-auto space-y-12">
-            <div className="space-y-12">
+      <div className="min-h-screen bg-[#F8F7F2]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+          <div className="max-w-6xl mx-auto space-y-8">
+            <div className="space-y-2">
+              <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">Welcome to Quilltips</h1>
+              <p className="text-[#4A5568] text-lg">Helping authors get paid</p>
+            </div>
+
+            {showGetStarted && (
+              <GetStartedBanner 
+                onClose={() => setShowGetStarted(false)} 
+                hasStripeAccount={!!profile.stripe_account_id}
+              />
+            )}
+
+            <div className="space-y-6">
               <AuthorDashboardProfile 
                 name={profile.name || "Anonymous Author"}
                 bio={profile.bio || "No bio available"}

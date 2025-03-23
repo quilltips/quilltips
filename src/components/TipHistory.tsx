@@ -7,6 +7,7 @@ interface TipHistoryProps {
   limit?: number;
   isDashboard?: boolean;
   authorName?: string;
+  customTitle?: string;
 }
 
 export const TipHistory = ({
@@ -14,7 +15,8 @@ export const TipHistory = ({
   qrCodeId,
   limit,
   isDashboard,
-  authorName
+  authorName,
+  customTitle
 }: TipHistoryProps) => {
   return (
     <TipHistoryContainer
@@ -23,6 +25,7 @@ export const TipHistory = ({
       limit={limit}
       isDashboard={isDashboard}
       authorName={authorName}
+      customTitle={customTitle}
     />
   );
 };

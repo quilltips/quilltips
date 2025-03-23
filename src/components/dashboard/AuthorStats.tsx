@@ -29,14 +29,14 @@ export const AuthorStats = ({ authorId }: AuthorStatsProps) => {
   if (error) return <div className="text-red-500">Failed to load stats</div>;
 
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
-        <div className="text-sm font-medium text-muted-foreground mb-2">Total Tips</div>
-        <div className="text-2xl font-bold">{stats?.totalTips || 0}</div>
+    <div className="grid grid-cols-2 gap-6">
+      <div className="bg-white border border-[#E2E8F0] rounded-xl p-6">
+        <div className="text-sm font-medium text-[#718096] mb-2">Total Tips</div>
+        <div className="text-3xl font-bold text-[#2D3748]">{stats?.totalTips || 0}</div>
       </div>
-      <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
-        <div className="text-sm font-medium text-muted-foreground mb-2">Total Value</div>
-        <div className="text-2xl font-bold">${stats?.totalAmount.toFixed(2) || '0.00'}</div>
+      <div className="bg-white border border-[#E2E8F0] rounded-xl p-6">
+        <div className="text-sm font-medium text-[#718096] mb-2">Total Value</div>
+        <div className="text-3xl font-bold text-[#2D3748]">${stats?.totalAmount.toFixed(2) || '0.00'}</div>
       </div>
     </div>
   );

@@ -1,14 +1,17 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
-import { Card, CardContent } from "./ui/card";
-import { ChevronDown, Loader2, Plus } from "lucide-react";
+import { ChevronDown, Loader2, Plus, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { QRCodeCard } from "./qr/QRCodeCard";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+
 interface AuthorQRCodesListProps {
   authorId: string;
 }
+
 export const AuthorQRCodesList = ({
   authorId
 }: AuthorQRCodesListProps) => {
@@ -30,34 +33,73 @@ export const AuthorQRCodesList = ({
       return data;
     }
   });
+
   if (isLoading) {
-    return <div className="flex justify-center items-center p-8">
+    return <div className="flex justify-center items-center py-8">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>;
   }
+
   const displayedQRCodes = showAll ? qrCodes : qrCodes?.slice(0, 5);
-  return <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-[#2D3748]">Quilltip Jars</h2>
-        <Button onClick={() => navigate('/author/create-qr')} className="flex items-center gap-2 bg-[ffd] text-slate-950 bg-[#ffd166]">
-          <Plus className="h-4 w-4" />
-          Create New Quilltip Jar
-        </Button>
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-medium text-[#2D3748]">Quilltip Jars</h2>
       </div>
 
-      {!qrCodes || qrCodes.length === 0 ? <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              You haven't created any QR codes yet. Click the button above to create your first one!
-            </p>
-          </CardContent>
-        </Card> : <div className="space-y-4">
-          {displayedQRCodes?.map(qr => <QRCodeCard key={qr.id} qrCode={qr} onNavigate={id => navigate(`/qr/${id}`)} />)}
+      {!qrCodes || qrCodes.length === 0 ? (
+        <div className="space-y-8">
+          <div className="text-center py-4 text-[#718096]">
+            You haven't created any Quilltip jars yet.
+          </div>
           
-          {qrCodes.length > 5 && <Button variant="ghost" className="w-full mt-6 text-muted-foreground hover:text-foreground" onClick={() => setShowAll(!showAll)}>
-              <ChevronDown className={`h-4 w-4 mr-2 transition-transform duration-200 ${showAll ? 'rotate-180' : ''}`} />
-              {showAll ? 'Show Less' : `Show ${qrCodes.length - 5} More`}
-            </Button>}
-        </div>}
-    </div>;
+          <Button 
+            onClick={() => navigate('/author/create-qr')} 
+            className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] p-4 h-auto font-medium text-base"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New QR code
+          </Button>
+          
+          <div className="flex justify-center">
+            <Link 
+              to="/about#how-it-works" 
+              className="text-sm text-[#718096] hover:text-[#2D3748] flex items-center gap-1"
+            >
+              <HelpCircle size={14} />
+              How does it work?
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="space-y-4">
+            {displayedQRCodes?.map(qr => (
+              <QRCodeCard key={qr.id} qrCode={qr} onNavigate={id => navigate(`/qr/${id}`)} />
+            ))}
+            
+            {qrCodes.length > 5 && (
+              <Button 
+                variant="ghost" 
+                className="w-full mt-4 text-[#718096] hover:text-[#2D3748] hover:bg-gray-100" 
+                onClick={() => setShowAll(!showAll)}
+              >
+                <ChevronDown className={`h-4 w-4 mr-2 transition-transform duration-200 ${showAll ? 'rotate-180' : ''}`} />
+                {showAll ? 'Show Less' : `Show ${qrCodes.length - 5} More`}
+              </Button>
+            )}
+          </div>
+          
+          <Button 
+            onClick={() => navigate('/author/create-qr')} 
+            className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] p-4 h-auto font-medium text-base"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New QR code
+          </Button>
+        </div>
+      )}
+    </div>
+  );
 };

@@ -20,21 +20,19 @@ export const TipHistoryHeader = ({
   qrCodeId,
   showHeader = true
 }: TipHistoryHeaderProps) => {
-  if (!showHeader || !isDashboard) return null;
+  if (!showHeader) return null;
   
   return (
-    <div className="flex justify-between items-center mb-4">
-      <div className="flex items-center gap-2">
-        <h2 className="text-xl font-semibold">{title}</h2>
-        {isDashboard && (
-          <TipDownloadButton 
-            tips={tips} 
-            likes={likes} 
-            comments={comments} 
-            qrCodeId={qrCodeId} 
-          />
-        )}
-      </div>
+    <div className="flex justify-between items-center mb-6">
+      <h2 className="text-xl font-medium text-[#2D3748]">{title}</h2>
+      {isDashboard && tips.length > 0 && (
+        <TipDownloadButton 
+          tips={tips} 
+          likes={likes} 
+          comments={comments} 
+          qrCodeId={qrCodeId} 
+        />
+      )}
     </div>
   );
 };
