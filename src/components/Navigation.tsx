@@ -1,15 +1,20 @@
 
 import { Link, useNavigate } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, User, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from '@supabase/auth-helpers-react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { UserMenu } from "./navigation/UserMenu";
 import { GuestMenu } from "./navigation/GuestMenu";
 import { SearchBar } from "./navigation/SearchBar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Navigation = () => {
   const [isAuthor, setIsAuthor] = useState(false);
@@ -100,16 +105,43 @@ export const Navigation = () => {
     }
   };
 
+  const UserDropdownMenu = () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="flex items-center gap-1 text-sm font-medium">
+          <User className="h-4 w-4" />
+          <span className="hidden md:block">Account</span>
+          <ChevronDown className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48 bg-white">
+        <DropdownMenuItem onClick={() => navigate('/author/dashboard')}>
+          Tip feed
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/author/dashboard')}>
+          Dashboard
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/author/qr-codes')}>
+          Book QR codes
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/author/settings')}>
+          Settings
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate(`/author/profile/${userId}`)}>
+          Public profile
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout} disabled={isLoading}>
+          {isLoading ? "Logging out..." : "Log out"}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   const NavLinks = () => (
     <div className="flex items-center gap-4">
       <SearchBar />
       {session ? (
-        <UserMenu 
-          isAuthor={isAuthor}
-          userId={userId}
-          onLogout={handleLogout}
-          isLoading={isLoading}
-        />
+        <UserDropdownMenu />
       ) : (
         <GuestMenu />
       )}

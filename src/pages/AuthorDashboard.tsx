@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { AuthorDashboardProfile } from "@/components/AuthorDashboardProfile";
-import { AuthorStats } from "@/components/dashboard/AuthorStats";
 import { AuthorDashboardContent } from "@/components/dashboard/AuthorDashboardContent";
 import { useAuthorSession } from "@/hooks/use-author-session";
 import { useToast } from "@/hooks/use-toast";
@@ -72,16 +70,6 @@ const AuthorDashboard = () => {
 
   if (error || !profile) return null;
 
-  // Parse social links with type safety
-  const socialLinks: SocialLink[] = Array.isArray(profile.social_links) 
-    ? profile.social_links.map(link => {
-        if (typeof link === 'object' && link !== null && 'url' in link && 'label' in link) {
-          return { url: String(link.url), label: String(link.label) };
-        }
-        return { url: '', label: '' };
-      })
-    : [];
-
   return (
     <Layout>
       <div className="min-h-screen bg-[#F8F7F2]">
@@ -98,17 +86,6 @@ const AuthorDashboard = () => {
                 hasStripeAccount={!!profile.stripe_account_id}
               />
             )}
-
-            <div className="space-y-6">
-              <AuthorDashboardProfile 
-                name={profile.name || "Anonymous Author"}
-                bio={profile.bio || "No bio available"}
-                imageUrl={profile.avatar_url || "/placeholder.svg"}
-                socialLinks={socialLinks}
-              />
-              
-              <AuthorStats authorId={profile.id} />
-            </div>
 
             <AuthorDashboardContent authorId={profile.id} />
           </div>

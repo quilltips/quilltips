@@ -10,6 +10,7 @@ interface UserMenuProps {
   isLoading: boolean;
 }
 
+// This component is no longer being used as it's been replaced by the dropdown menu in Navigation.tsx
 export const UserMenu = ({ isAuthor, userId, onLogout, isLoading }: UserMenuProps) => {
   return (
     <div className="flex items-center gap-2">
