@@ -7,7 +7,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { QRCode, Plus } from "lucide-react";
+import { QrCode, Plus } from "lucide-react";
 import { QRCodesList } from "@/components/qr/QRCodesList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -98,7 +98,7 @@ const BookQRCodesPage = () => {
               </TabsContent>
               <TabsContent value="new" className="mt-6">
                 <div className="text-center py-8">
-                  <QRCode className="h-12 w-12 mx-auto mb-4 text-[#2D3748]" />
+                  <QrCode className="h-12 w-12 mx-auto mb-4 text-[#2D3748]" />
                   <h3 className="text-xl font-medium mb-2">Create a new QR code</h3>
                   <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                     Generate a QR code for your book to help readers support you directly.
