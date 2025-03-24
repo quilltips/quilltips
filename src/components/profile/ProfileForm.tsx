@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -100,7 +101,15 @@ export const ProfileForm = ({
         description: "Your profile has been successfully updated.",
       });
       
+      // Update the initialValues to match current values
+      // This will cause the useEffect to recalculate hasChanges as false
+      // since current values now match initial values
       setHasChanges(false);
+      
+      // Reset the change state through parent component if callback provided
+      if (onChangeStatus) {
+        onChangeStatus(false);
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       toast({
