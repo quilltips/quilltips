@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { QRCodeCard } from "./qr/QRCodeCard";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthorQRCodesListProps {
   authorId: string;
@@ -16,21 +17,40 @@ export const AuthorQRCodesList = ({
   authorId
 }: AuthorQRCodesListProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [showAll, setShowAll] = useState(false);
+  
   const {
     data: qrCodes,
-    isLoading
+    isLoading,
+    error
   } = useQuery({
     queryKey: ['qr-codes', authorId],
     queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from('qr_codes').select('*').eq('author_id', authorId).order('book_title', {
-        ascending: true
-      });
-      if (error) throw error;
-      return data;
+      try {
+        const {
+          data,
+          error
+        } = await supabase.from('qr_codes').select('*').eq('author_id', authorId).order('book_title', {
+          ascending: true
+        });
+        
+        if (error) throw error;
+        return data;
+      } catch (err: any) {
+        console.error("Error fetching QR codes:", err);
+        throw new Error(err.message || "Failed to fetch QR codes");
+      }
+    },
+    retry: 1,
+    meta: {
+      onError: (error: Error) => {
+        toast({
+          title: "Error fetching QR codes",
+          description: error.message,
+          variant: "destructive"
+        });
+      }
     }
   });
 
@@ -38,6 +58,12 @@ export const AuthorQRCodesList = ({
     return <div className="flex justify-center items-center py-8">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>;
+  }
+  
+  if (error) {
+    return <div className="text-center py-8 text-[#718096]">
+      Unable to load QR codes. Please try refreshing the page.
+    </div>;
   }
 
   const displayedQRCodes = showAll ? qrCodes : qrCodes?.slice(0, 5);

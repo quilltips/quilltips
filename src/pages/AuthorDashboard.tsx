@@ -3,33 +3,23 @@ import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AuthorDashboardContent } from "@/components/dashboard/AuthorDashboardContent";
-import { useAuthorSession } from "@/hooks/use-author-session";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { GetStartedBanner } from "@/components/dashboard/GetStartedBanner";
 
-// Define the type for social links
-interface SocialLink {
-  url: string;
-  label: string;
-}
-
 const AuthorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showGetStarted, setShowGetStarted] = useState(true);
+  const { user } = useAuth();
   
-  // Check if user is authenticated as an author
-  useAuthorSession();
-
   // Fetch author profile
   const { data: profile, isLoading, error } = useQuery({
-    queryKey: ['author-profile'],
+    queryKey: ['author-profile', user?.id],
     queryFn: async () => {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError) throw authError;
       if (!user) throw new Error('Not authenticated');
 
       const { data: profileData, error: profileError } = await supabase
@@ -44,6 +34,7 @@ const AuthorDashboard = () => {
 
       return profileData;
     },
+    enabled: !!user, // Only run query if user is logged in
     retry: false,
     meta: {
       errorHandler: (error: Error) => {

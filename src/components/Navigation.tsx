@@ -2,13 +2,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, User, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useSession } from '@supabase/auth-helpers-react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { GuestMenu } from "./navigation/GuestMenu";
 import { SearchBar } from "./navigation/SearchBar";
+import { useAuth } from "./auth/AuthProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,69 +17,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const Navigation = () => {
-  const [isAuthor, setIsAuthor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-  const session = useSession();
+  const { user, isAuthor } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  useEffect(() => {
-    // Set up auth state listener
-    const checkAuthStatus = async () => {
-      try {
-        console.log('Checking Navigation auth status...');
-        // Get current session
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        
-        if (currentSession?.user) {
-          console.log('User is authenticated:', currentSession.user.id);
-          setUserId(currentSession.user.id);
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', currentSession.user.id)
-            .maybeSingle();
-          
-          if (error) throw error;
-          setIsAuthor(profile?.role === 'author');
-          console.log('User role set:', profile?.role);
-        } else {
-          console.log('No active session');
-          setUserId(null);
-          setIsAuthor(false);
-        }
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-        // Handle session error by redirecting to login
-        navigate('/author/login');
-      }
-    };
-
-    // Initial check
-    checkAuthStatus();
-
-    // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed in Navigation:', event, session?.user?.id);
-      
-      if (event === 'SIGNED_IN') {
-        await checkAuthStatus();
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully logged in.",
-        });
-      } else if (event === 'SIGNED_OUT') {
-        setUserId(null);
-        setIsAuthor(false);
-        navigate('/');
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
 
   const handleLogout = async () => {
     setIsLoading(true);
@@ -127,7 +68,7 @@ export const Navigation = () => {
         <DropdownMenuItem onClick={() => navigate('/author/settings')}>
           Settings
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate(`/author/profile/${userId}`)}>
+        <DropdownMenuItem onClick={() => navigate(`/author/profile/${user?.id}`)}>
           Public profile
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout} disabled={isLoading}>
@@ -140,7 +81,7 @@ export const Navigation = () => {
   const NavLinks = () => (
     <div className="flex items-center gap-4">
       <SearchBar />
-      {session ? (
+      {user ? (
         <UserDropdownMenu />
       ) : (
         <GuestMenu />

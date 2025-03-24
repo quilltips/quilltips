@@ -20,25 +20,17 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-// Helper function to fetch profile with timeout
-const fetchProfileWithTimeout = async (userId: string, timeoutMs: number = 5000) => {
+// Improved profile fetch function without the timeout that was causing issues
+const fetchProfile = async (userId: string) => {
   console.log(`Fetching profile for user: ${userId}`);
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => {
-    console.error("Profile fetch timed out!");
-    controller.abort();
-  }, timeoutMs);
-
+  
   try {
     console.log("Sending request to Supabase...");
-    // Remove use of setAbortSignal as it's not supported
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', userId)
       .maybeSingle();
-
-    clearTimeout(timeoutId);
 
     if (profileError) {
       console.error("Profile fetch error:", profileError);
@@ -48,7 +40,6 @@ const fetchProfileWithTimeout = async (userId: string, timeoutMs: number = 5000)
     console.log("Profile fetched successfully:", profile);
     return profile;
   } catch (error) {
-    clearTimeout(timeoutId);
     console.error("Profile fetch failed:", error);
     return null;
   }
@@ -73,7 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(session.user);
           
           try {
-            const profile = await fetchProfileWithTimeout(session.user.id);
+            const profile = await fetchProfile(session.user.id);
             const userIsAuthor = profile?.role === 'author';
             setIsAuthor(userIsAuthor);
 
@@ -109,19 +100,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               location.pathname !== '/author/register') {
             console.log('Unauthenticated access attempt, redirecting to login...');
             navigate('/author/login');
-            toast({
-              title: "Authentication Required",
-              description: "Please log in to access this page.",
-            });
           }
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
-        toast({
-          title: "Authentication Error",
-          description: "There was a problem checking your session. Please try logging in again.",
-          variant: "destructive"
-        });
       } finally {
         console.log("Finalizing auth setup: setting isLoading to false");
         setIsLoading(false);
@@ -139,7 +121,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session.user);
         
         try {
-          const profile = await fetchProfileWithTimeout(session.user.id);
+          const profile = await fetchProfile(session.user.id);
           setIsAuthor(profile?.role === 'author');
           
           // Redirect authors to dashboard after login
