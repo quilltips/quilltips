@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -72,6 +73,10 @@
 
   .feature-card {
     @apply bg-white/90 backdrop-blur-sm border border-[#FFD166]/20 rounded-3xl p-8 shadow-sm hover:-translate-y-1 transition-all duration-200;
+  }
+  
+  .prominent-border-card {
+    @apply border-2 border-black rounded-xl p-6 bg-white;
   }
 }
 
