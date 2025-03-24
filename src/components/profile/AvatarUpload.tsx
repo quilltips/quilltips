@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Loader2, Upload, AlertCircle, InfoIcon } from "lucide-react";
+import { Loader2, AlertCircle, Edit } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { syncProfileToPublic } from "@/types/public-profile";
@@ -103,57 +103,49 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Avatar className="w-24 h-24">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="relative">
+        <Avatar className="w-24 h-24 border-2 border-gray-200">
           <AvatarImage src={avatarUrl || undefined} alt={name} />
           <AvatarFallback>{name?.charAt(0)?.toUpperCase()}</AvatarFallback>
         </Avatar>
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Input
-              type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
-              onChange={handleAvatarUpload}
-              className="hidden"
-              id="avatar-upload"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => document.getElementById('avatar-upload')?.click()}
-              disabled={isUploading}
-              className={`${isUploading ? 'bg-amber-50 border-amber-200' : ''}`}
-            >
-              {isUploading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Upload className="mr-2 h-4 w-4" />
-              )}
-              {avatarUrl ? "Change picture" : "Upload picture"}
-            </Button>
-            
-            <TooltipProvider>
-              <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-amber-200 hover:bg-amber-300">
-                    <InfoIcon className="h-4 w-4 text-amber-700" />
-                    <span className="sr-only">File information</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right" align="start" className="max-w-xs bg-white p-2 text-sm">
-                  <p>Supported formats: JPG, PNG, GIF, WebP, SVG. Maximum size: 5MB.</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          
-          {error && (
-            <p className="text-xs text-destructive mt-1">
-              {error}
-            </p>
-          )}
+        
+        <div className="absolute -bottom-1 -right-1">
+          <Input
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+            onChange={handleAvatarUpload}
+            className="hidden"
+            id="avatar-upload"
+          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon"
+                  onClick={() => document.getElementById('avatar-upload')?.click()}
+                  disabled={isUploading}
+                  className="rounded-full h-8 w-8"
+                >
+                  {isUploading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Edit className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Change profile picture</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
+      </div>
+      
+      <div className="text-center text-lg font-medium">
+        {name}
       </div>
       
       {error && (

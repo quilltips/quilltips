@@ -1,7 +1,6 @@
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import { Plus, Trash2 } from "lucide-react";
 import { SocialLink } from "@/hooks/use-profile-form";
 
@@ -21,21 +20,14 @@ export const ProfileSocialLinks = ({
   updateSocialLink
 }: ProfileSocialLinksProps) => {
   return (
-    <div className="space-y-2">
-      <Label>Social Links</Label>
+    <div className="space-y-4">
       {socialLinks.map((link, index) => (
-        <div key={index} className="flex gap-2 items-start">
-          <div className="flex-1 space-y-2">
+        <div key={index} className="flex gap-2 items-center">
+          <div className="flex-1">
             <Input
-              placeholder="Label (e.g., Website, Twitter)"
+              placeholder="Website, Twitter, Instagram..."
               value={link.label}
               onChange={(e) => updateSocialLink(index, "label", e.target.value)}
-              className={hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}
-            />
-            <Input
-              placeholder="URL (e.g., https://your-website.com)"
-              value={link.url}
-              onChange={(e) => updateSocialLink(index, "url", e.target.value)}
               className={hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}
             />
           </div>
@@ -44,6 +36,7 @@ export const ProfileSocialLinks = ({
             variant="ghost"
             size="icon"
             onClick={() => removeSocialLink(index)}
+            className="h-8 w-8"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -52,12 +45,11 @@ export const ProfileSocialLinks = ({
       
       <Button
         type="button"
-        variant="outline"
+        variant="link"
         onClick={addSocialLink}
-        className="w-full"
+        className="px-0 text-primary underline underline-offset-4 hover:text-primary/80 font-normal h-auto"
       >
-        <Plus className="h-4 w-4 mr-2" />
-        Add Social Link
+        Add another link
       </Button>
     </div>
   );

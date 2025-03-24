@@ -110,9 +110,9 @@ const AuthorSettings = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-b from-[#FEF7CD]/30 to-white">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4 pt-24 pb-12">
-          <h1 className="text-3xl font-semibold text-[#2D3748] mb-8">Account Settings</h1>
+          <h1 className="text-3xl font-playfair text-center mb-12">Edit profile</h1>
           <div className="max-w-2xl mx-auto">
             <ProfileSettings 
               profile={profile}
