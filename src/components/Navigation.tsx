@@ -62,7 +62,7 @@ export const Navigation = () => {
         <DropdownMenuItem onClick={() => navigate('/author/dashboard')}>
           Dashboard
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate('/author/qr-codes')}>
+        <DropdownMenuItem onClick={() => navigate('/author/book-qr-codes')}>
           Book QR codes
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/author/settings')}>
