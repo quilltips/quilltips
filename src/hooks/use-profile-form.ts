@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -32,18 +31,15 @@ export function useProfileForm({
   const [hasChanges, setHasChanges] = useState(false);
   const { toast } = useToast();
 
-  // Check for changes whenever form values change
   useEffect(() => {
     const nameChanged = name !== initialName;
     const bioChanged = bio !== initialBio;
     
-    // Compare social links (more complex comparison since it's an array of objects)
     const socialLinksChanged = JSON.stringify(socialLinks) !== JSON.stringify(initialSocialLinks);
     
     const newHasChanges = nameChanged || bioChanged || socialLinksChanged;
     setHasChanges(newHasChanges);
     
-    // Notify parent component about change status if callback provided
     if (onChangeStatus) {
       onChangeStatus(newHasChanges);
     }
@@ -68,7 +64,6 @@ export function useProfileForm({
     setIsLoading(true);
 
     try {
-      // Convert socialLinks to a format that matches the Json type
       const socialLinksJson: Json = socialLinks.map(link => ({
         url: link.url,
         label: link.label
@@ -85,7 +80,6 @@ export function useProfileForm({
 
       if (error) throw error;
 
-      // Sync profile changes to public profile
       const syncResult = await syncProfileToPublic(profileId);
       if (!syncResult.success) {
         console.warn("Profile updated but public profile sync failed:", syncResult.error);
@@ -96,12 +90,8 @@ export function useProfileForm({
         description: "Your profile has been successfully updated.",
       });
       
-      // Update the initialValues to match current values
-      // This will cause the useEffect to recalculate hasChanges as false
-      // since current values now match initial values
       setHasChanges(false);
       
-      // Reset the change state through parent component if callback provided
       if (onChangeStatus) {
         onChangeStatus(false);
       }
@@ -123,6 +113,7 @@ export function useProfileForm({
     bio,
     setBio,
     socialLinks,
+    setSocialLinks,
     isLoading,
     hasChanges,
     addSocialLink,

@@ -28,6 +28,7 @@ export const ProfileForm = ({
     bio,
     setBio,
     socialLinks,
+    setSocialLinks,
     isLoading,
     hasChanges,
     addSocialLink,
@@ -41,6 +42,20 @@ export const ProfileForm = ({
     initialSocialLinks,
     onChangeStatus
   });
+
+  // Handler for the Cancel button to reset form values
+  const handleCancel = () => {
+    // Reset form values to initial values
+    setName(initialName);
+    setBio(initialBio);
+    
+    // Reset social links to initial state
+    // We need to create a deep copy to avoid reference issues
+    const initialLinksCopy = JSON.parse(JSON.stringify(initialSocialLinks));
+    setSocialLinks(initialLinksCopy);
+    
+    // This will trigger the useEffect in useProfileForm to set hasChanges to false
+  };
 
   return (
     <form onSubmit={handleSubmit} className={`space-y-6 ${hasChanges ? 'relative' : ''}`}>
@@ -83,6 +98,7 @@ export const ProfileForm = ({
           type="button" 
           variant="outline"
           className="px-8 py-2 h-auto rounded-full"
+          onClick={handleCancel}
         >
           Cancel
         </Button>
