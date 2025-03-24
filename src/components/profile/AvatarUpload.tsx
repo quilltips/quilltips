@@ -3,7 +3,8 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { Loader2, Upload } from "lucide-react";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Loader2, Upload, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { syncProfileToPublic } from "@/types/public-profile";
@@ -16,22 +17,34 @@ interface AvatarUploadProps {
 
 export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Define supported image formats
+  const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    // Reset previous error
+    setError(null);
+
+    // Check file type
+    if (!SUPPORTED_FORMATS.includes(file.type)) {
+      setError(`Unsupported file type: ${file.type}. Please upload a JPG, PNG, GIF, WebP or SVG image.`);
       toast({
         title: "Invalid file type",
-        description: "Please upload an image file",
+        description: "Please upload a JPG, PNG, GIF, WebP or SVG image",
         variant: "destructive",
       });
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      setError(`File size too large: ${(file.size / (1024 * 1024)).toFixed(2)}MB. Maximum size is 5MB.`);
       toast({
         title: "File too large",
         description: "Please upload an image smaller than 5MB",
@@ -75,11 +88,12 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
       });
 
       window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading avatar:", error);
+      setError(error.message || "Failed to upload profile picture");
       toast({
         title: "Upload Error",
-        description: "Failed to upload profile picture",
+        description: error.message || "Failed to upload profile picture",
         variant: "destructive",
       });
     } finally {
@@ -88,33 +102,51 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
   };
 
   return (
-    <div className="flex items-center gap-4">
-      <Avatar className="w-24 h-24">
-        <AvatarImage src={avatarUrl || undefined} alt={name} />
-        <AvatarFallback>{name?.charAt(0)?.toUpperCase()}</AvatarFallback>
-      </Avatar>
-      <div>
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={handleAvatarUpload}
-          className="hidden"
-          id="avatar-upload"
-        />
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => document.getElementById('avatar-upload')?.click()}
-          disabled={isUploading}
-        >
-          {isUploading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Upload className="mr-2 h-4 w-4" />
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Avatar className="w-24 h-24">
+          <AvatarImage src={avatarUrl || undefined} alt={name} />
+          <AvatarFallback>{name?.charAt(0)?.toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div>
+          <Input
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+            onChange={handleAvatarUpload}
+            className="hidden"
+            id="avatar-upload"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => document.getElementById('avatar-upload')?.click()}
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="mr-2 h-4 w-4" />
+            )}
+            {avatarUrl ? "Change picture" : "Upload picture"}
+          </Button>
+          {error && (
+            <p className="text-xs text-destructive mt-1">
+              {error}
+            </p>
           )}
-          {avatarUrl ? "Change picture" : "Upload picture"}
-        </Button>
+        </div>
       </div>
+      
+      {error && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      
+      <p className="text-xs text-muted-foreground">
+        Supported formats: JPG, PNG, GIF, WebP, SVG. Maximum size: 5MB.
+      </p>
     </div>
   );
 };
