@@ -8,15 +8,17 @@ interface TipHistoryProps {
   isDashboard?: boolean;
   authorName?: string;
   customTitle?: string;
+  showHeader?: boolean;
 }
 
 export const TipHistory = ({
   authorId,
   qrCodeId,
   limit,
-  isDashboard,
+  isDashboard = true,
   authorName,
-  customTitle
+  customTitle,
+  showHeader = true
 }: TipHistoryProps) => {
   return (
     <TipHistoryContainer
@@ -26,6 +28,7 @@ export const TipHistory = ({
       isDashboard={isDashboard}
       authorName={authorName}
       customTitle={customTitle}
+      showHeader={showHeader}
     />
   );
 };

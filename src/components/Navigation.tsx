@@ -56,7 +56,7 @@ export const Navigation = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48 bg-white">
-        <DropdownMenuItem onClick={() => navigate('/author/dashboard')}>
+        <DropdownMenuItem onClick={() => navigate('/author/tip-feed')}>
           Tip feed
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/author/dashboard')}>

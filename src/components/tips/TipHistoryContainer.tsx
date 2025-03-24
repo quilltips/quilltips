@@ -20,15 +20,15 @@ export const TipHistoryContainer = ({
   authorId,
   qrCodeId,
   limit,
-  isDashboard,
+  isDashboard = true,
   authorName,
   showHeader = true,
   customTitle
 }: TipHistoryContainerProps) => {
   const [selectedTip, setSelectedTip] = useState<any | null>(null);
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(!isDashboard);
   
-  const { tips, likes, comments, isLoading } = useTipHistory(authorId, qrCodeId, limit);
+  const { tips, likes, comments, isLoading } = useTipHistory(authorId, qrCodeId, isDashboard ? limit : undefined);
   
   if (isLoading) {
     return (
