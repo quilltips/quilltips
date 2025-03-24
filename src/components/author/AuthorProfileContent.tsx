@@ -12,7 +12,7 @@ export const AuthorProfileContent = ({ authorId, authorName }: AuthorProfileCont
   return (
     <div className="space-y-8">
       {/* Tip Feed Section */}
-      <Card className="border border-[#f1f1f1] shadow-sm rounded-lg overflow-hidden">
+      <Card className="border border-black shadow-sm rounded-lg overflow-hidden" prominent>
         <CardHeader>
           <CardTitle className="text-xl text-[#2D3748]">Tip feed</CardTitle>
         </CardHeader>
@@ -27,7 +27,7 @@ export const AuthorProfileContent = ({ authorId, authorName }: AuthorProfileCont
       </Card>
       
       {/* Quilltip Jars Section */}
-      <Card className="border border-[#f1f1f1] shadow-sm rounded-lg overflow-hidden">
+      <Card className="border border-black shadow-sm rounded-lg overflow-hidden" prominent>
         <CardHeader>
           <CardTitle className="text-xl text-[#2D3748]">Quilltip Jars</CardTitle>
         </CardHeader>
