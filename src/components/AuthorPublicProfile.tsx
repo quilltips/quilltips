@@ -86,7 +86,7 @@ export const AuthorPublicProfileView = ({
       </div>
 
       {/* About Author Section */}
-      <Card className="mb-8 border border-[#f1f1f1] shadow-sm rounded-lg overflow-hidden">
+      <Card className="mb-8 border border-black shadow-sm rounded-lg overflow-hidden" prominent>
         <CardHeader>
           <CardTitle className="text-xl text-[#2D3748]">About {firstName}</CardTitle>
         </CardHeader>
