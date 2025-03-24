@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -20,13 +19,15 @@ interface ProfileFormProps {
   initialName: string;
   initialBio: string;
   initialSocialLinks?: SocialLink[];
+  onChangeStatus?: (hasChanges: boolean) => void;
 }
 
 export const ProfileForm = ({ 
   profileId, 
   initialName, 
   initialBio,
-  initialSocialLinks = []
+  initialSocialLinks = [],
+  onChangeStatus
 }: ProfileFormProps) => {
   const [name, setName] = useState(initialName);
   const [bio, setBio] = useState(initialBio);
@@ -43,8 +44,14 @@ export const ProfileForm = ({
     // Compare social links (more complex comparison since it's an array of objects)
     const socialLinksChanged = JSON.stringify(socialLinks) !== JSON.stringify(initialSocialLinks);
     
-    setHasChanges(nameChanged || bioChanged || socialLinksChanged);
-  }, [name, bio, socialLinks, initialName, initialBio, initialSocialLinks]);
+    const newHasChanges = nameChanged || bioChanged || socialLinksChanged;
+    setHasChanges(newHasChanges);
+    
+    // Notify parent component about change status if callback provided
+    if (onChangeStatus) {
+      onChangeStatus(newHasChanges);
+    }
+  }, [name, bio, socialLinks, initialName, initialBio, initialSocialLinks, onChangeStatus]);
 
   const addSocialLink = () => {
     setSocialLinks([...socialLinks, { url: "", label: "" }]);
