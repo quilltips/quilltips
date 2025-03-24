@@ -133,14 +133,14 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
             </Button>
             
             <TooltipProvider>
-              <Tooltip>
+              <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-amber-200 hover:bg-amber-300">
+                    <InfoIcon className="h-4 w-4 text-amber-700" />
                     <span className="sr-only">File information</span>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
+                <TooltipContent side="right" align="start" className="max-w-xs bg-white p-2 text-sm">
                   <p>Supported formats: JPG, PNG, GIF, WebP, SVG. Maximum size: 5MB.</p>
                 </TooltipContent>
               </Tooltip>
