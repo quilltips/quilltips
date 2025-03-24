@@ -84,7 +84,7 @@ const QRCodeSummary = () => {
               <div className="grid md:grid-cols-2 gap-12">
                 <div className="space-y-6">
                   <h1 className="text-3xl font-bold text-[#403E43]">
-                    Your Quilltip Jar is ready
+                    Your Quilltips Jar is ready
                   </h1>
                   <div className="flex items-center gap-8">
                     <img 

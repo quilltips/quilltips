@@ -29,7 +29,7 @@ const Index = () => {
         <div className="max-w-4xl mx-auto mt-24 text-center space-y-6">
           <h2 className="text-4xl font-playfair font-medium">What is Quilltips?</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltip Jar, where readers can leave a tip and message!
+            With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltips Jar, where readers can leave a tip and message!
           </p>
           <div className="flex justify-center mt-8">
             <img 

@@ -45,13 +45,13 @@ export const AuthorQRCodesList = ({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-medium text-[#2D3748]">Quilltip Jars</h2>
+        <h2 className="text-xl font-medium text-[#2D3748]">Quilltips Jars</h2>
       </div>
 
       {!qrCodes || qrCodes.length === 0 ? (
         <div className="space-y-8">
           <div className="text-center py-4 text-[#718096]">
-            You haven't created any Quilltip jars yet.
+            You haven't created any Quilltips jars yet.
           </div>
           
           <Button 
