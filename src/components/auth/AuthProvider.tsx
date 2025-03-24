@@ -1,4 +1,3 @@
-
 import { useEffect, createContext, useContext, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import type { User } from '@supabase/supabase-js';
 
+// Auth context type
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
@@ -20,27 +20,24 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-// Improved profile fetch function without the timeout that was causing issues
+// Profile fetch helper
 const fetchProfile = async (userId: string) => {
-  console.log(`Fetching profile for user: ${userId}`);
-  
   try {
-    console.log("Sending request to Supabase...");
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
+    console.log(`Fetching profile for user: ${userId}`);
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
       .maybeSingle();
 
-    if (profileError) {
-      console.error("Profile fetch error:", profileError);
+    if (error) {
+      console.error("Profile fetch error:", error);
       return null;
     }
 
-    console.log("Profile fetched successfully:", profile);
     return profile;
-  } catch (error) {
-    console.error("Profile fetch failed:", error);
+  } catch (err) {
+    console.error("Profile fetch failed:", err);
     return null;
   }
 };
@@ -54,98 +51,55 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        console.log('Initializing auth...');
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session?.user) {
-          console.log('Session found:', session.user.id);
-          setUser(session.user);
-          
-          try {
-            const profile = await fetchProfile(session.user.id);
-            const userIsAuthor = profile?.role === 'author';
-            setIsAuthor(userIsAuthor);
+    let initialized = false;
 
-            // Handle protected route access
-            const isProtectedRoute = location.pathname.startsWith('/author');
-            const isAuthRoute = location.pathname === '/author/login' || location.pathname === '/author/register';
+    const handleSession = async (user: User | null) => {
+      setUser(user);
 
-            if (isProtectedRoute && !isAuthRoute && !userIsAuthor) {
-              console.log('Unauthorized access attempt, redirecting to login...');
-              navigate('/author/login');
-              toast({
-                title: "Unauthorized Access",
-                description: "You must be an author to access this page.",
-                variant: "destructive"
-              });
-            }
-          } catch (profileError) {
-            console.error('Profile fetch error:', profileError);
-            toast({
-              title: "Profile Error",
-              description: "Could not load user profile. Please try again.",
-              variant: "destructive"
-            });
-          }
-        } else {
-          console.log('No session found');
-          setUser(null);
-          setIsAuthor(false);
+      if (user) {
+        const profile = await fetchProfile(user.id);
+        const userIsAuthor = profile?.role === 'author';
+        setIsAuthor(userIsAuthor);
 
-          // Redirect from protected routes when not authenticated
-          if (location.pathname.startsWith('/author') && 
-              location.pathname !== '/author/login' && 
-              location.pathname !== '/author/register') {
-            console.log('Unauthenticated access attempt, redirecting to login...');
-            navigate('/author/login');
-          }
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-      } finally {
-        console.log("Finalizing auth setup: setting isLoading to false");
-        setIsLoading(false);
-      }
-    };
+        const isProtectedRoute = location.pathname.startsWith('/author');
+        const isAuthRoute = ['/author/login', '/author/register'].includes(location.pathname);
 
-    // Initialize auth state
-    initializeAuth();
-
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id);
-      
-      if (event === 'SIGNED_IN' && session?.user) {
-        setUser(session.user);
-        
-        try {
-          const profile = await fetchProfile(session.user.id);
-          setIsAuthor(profile?.role === 'author');
-          
-          // Redirect authors to dashboard after login
-          if (profile?.role === 'author' && location.pathname === '/') {
-            navigate('/author/dashboard');
-          }
-        } catch (error) {
-          console.error('Profile fetch error on auth state change:', error);
+        if (isProtectedRoute && !isAuthRoute && !userIsAuthor) {
+          navigate('/author/login');
           toast({
-            title: "Profile Error",
-            description: "Could not load user profile. Please try again.",
-            variant: "destructive"
+            title: "Unauthorized",
+            description: "You must be an author to access this page.",
+            variant: "destructive",
           });
         }
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
+      } else {
         setIsAuthor(false);
-        navigate('/');
+        const isProtected = location.pathname.startsWith('/author') &&
+          !['/author/login', '/author/register'].includes(location.pathname);
+
+        if (isProtected) {
+          navigate('/author/login');
+        }
+      }
+
+      setIsLoading(false);
+    };
+
+    // Initial check
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (!initialized) {
+        handleSession(data.user ?? null);
+        initialized = true;
       }
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    // Listen to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("🔄 Auth event:", event, session?.user?.id);
+      handleSession(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate, location.pathname, toast]);
 
   if (isLoading) {
