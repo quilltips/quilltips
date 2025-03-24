@@ -1,10 +1,10 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2, PenSquare, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Json } from "@/integrations/supabase/types";
@@ -32,7 +32,19 @@ export const ProfileForm = ({
   const [bio, setBio] = useState(initialBio);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>(initialSocialLinks);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
   const { toast } = useToast();
+
+  // Check for changes whenever form values change
+  useEffect(() => {
+    const nameChanged = name !== initialName;
+    const bioChanged = bio !== initialBio;
+    
+    // Compare social links (more complex comparison since it's an array of objects)
+    const socialLinksChanged = JSON.stringify(socialLinks) !== JSON.stringify(initialSocialLinks);
+    
+    setHasChanges(nameChanged || bioChanged || socialLinksChanged);
+  }, [name, bio, socialLinks, initialName, initialBio, initialSocialLinks]);
 
   const addSocialLink = () => {
     setSocialLinks([...socialLinks, { url: "", label: "" }]);
@@ -80,6 +92,8 @@ export const ProfileForm = ({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
       });
+      
+      setHasChanges(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast({
@@ -93,13 +107,21 @@ export const ProfileForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={`space-y-4 ${hasChanges ? 'relative' : ''}`}>
+      {hasChanges && (
+        <div className="absolute -top-4 right-0 bg-amber-50 text-amber-800 px-3 py-1.5 rounded-md border border-amber-200 flex items-center gap-2 animate-pulse-slow">
+          <PenSquare className="h-4 w-4" />
+          <span className="text-sm font-medium">Unsaved changes</span>
+        </div>
+      )}
+      
       <div className="space-y-2">
         <Label>Name</Label>
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Your name"
+          className={hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}
         />
       </div>
 
@@ -110,6 +132,7 @@ export const ProfileForm = ({
           onChange={(e) => setBio(e.target.value)}
           placeholder="Tell readers about yourself"
           rows={4}
+          className={hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}
         />
       </div>
 
@@ -122,11 +145,13 @@ export const ProfileForm = ({
                 placeholder="Label (e.g., Website, Twitter)"
                 value={link.label}
                 onChange={(e) => updateSocialLink(index, "label", e.target.value)}
+                className={hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}
               />
               <Input
                 placeholder="URL (e.g., https://your-website.com)"
                 value={link.url}
                 onChange={(e) => updateSocialLink(index, "url", e.target.value)}
+                className={hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}
               />
             </div>
             <Button
@@ -151,9 +176,17 @@ export const ProfileForm = ({
         </Button>
       </div>
 
-      <Button type="submit" disabled={isLoading}>
-        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Save Changes
+      <Button 
+        type="submit" 
+        disabled={isLoading || !hasChanges}
+        className={`${hasChanges ? 'bg-amber-500 hover:bg-amber-600 text-white' : ''}`}
+      >
+        {isLoading ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : hasChanges ? (
+          <Save className="mr-2 h-4 w-4" />
+        ) : null}
+        {hasChanges ? 'Save Changes' : 'Save Changes'}
       </Button>
     </form>
   );

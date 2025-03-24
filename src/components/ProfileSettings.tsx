@@ -1,3 +1,5 @@
+
+import { useState } from "react";
 import { Card } from "./ui/card";
 import { AvatarUpload } from "./profile/AvatarUpload";
 import { ProfileForm } from "./profile/ProfileForm";
@@ -20,8 +22,10 @@ interface ProfileSettingsProps {
 }
 
 export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
+  const [hasFormChanges, setHasFormChanges] = useState(false);
+
   return (
-    <Card className="p-6">
+    <Card className={`p-6 transition-all duration-300 ${hasFormChanges ? 'bg-amber-50/50 border-amber-200' : ''}`}>
       <div className="space-y-6">
         <AvatarUpload
           profileId={profile.id}
@@ -34,6 +38,7 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
           initialName={profile.name}
           initialBio={profile.bio}
           initialSocialLinks={profile.social_links}
+          onChangeStatus={(hasChanges) => setHasFormChanges(hasChanges)}
         />
 
         <div className="flex flex-col sm:flex-row gap-4">

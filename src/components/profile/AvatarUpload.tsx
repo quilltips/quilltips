@@ -123,6 +123,7 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
               variant="outline"
               onClick={() => document.getElementById('avatar-upload')?.click()}
               disabled={isUploading}
+              className={`${isUploading ? 'bg-amber-50 border-amber-200' : ''}`}
             >
               {isUploading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
