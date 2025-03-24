@@ -4,10 +4,11 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Loader2, Upload, AlertCircle } from "lucide-react";
+import { Loader2, Upload, AlertCircle, InfoIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { syncProfileToPublic } from "@/types/public-profile";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
 interface AvatarUploadProps {
   profileId: string;
@@ -109,26 +110,43 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
           <AvatarFallback>{name?.charAt(0)?.toUpperCase()}</AvatarFallback>
         </Avatar>
         <div>
-          <Input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
-            onChange={handleAvatarUpload}
-            className="hidden"
-            id="avatar-upload"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => document.getElementById('avatar-upload')?.click()}
-            disabled={isUploading}
-          >
-            {isUploading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Upload className="mr-2 h-4 w-4" />
-            )}
-            {avatarUrl ? "Change picture" : "Upload picture"}
-          </Button>
+          <div className="flex items-center gap-2 mb-2">
+            <Input
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+              onChange={handleAvatarUpload}
+              className="hidden"
+              id="avatar-upload"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => document.getElementById('avatar-upload')?.click()}
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="mr-2 h-4 w-4" />
+              )}
+              {avatarUrl ? "Change picture" : "Upload picture"}
+            </Button>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                    <span className="sr-only">File information</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p>Supported formats: JPG, PNG, GIF, WebP, SVG. Maximum size: 5MB.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          
           {error && (
             <p className="text-xs text-destructive mt-1">
               {error}
@@ -143,10 +161,6 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      
-      <p className="text-xs text-muted-foreground">
-        Supported formats: JPG, PNG, GIF, WebP, SVG. Maximum size: 5MB.
-      </p>
     </div>
   );
 };
