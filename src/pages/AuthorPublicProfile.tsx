@@ -1,6 +1,5 @@
 
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
-import { Navigation } from "@/components/Navigation";
 import { useEffect, useState } from "react";
 import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -9,6 +8,7 @@ import { AuthorProfileHeader } from "@/components/author/AuthorProfileHeader";
 import { AuthorProfileContent } from "@/components/author/AuthorProfileContent";
 import { supabase } from "@/integrations/supabase/client";
 import { usePublicProfile } from "@/hooks/use-public-profile";
+import { Layout } from "@/components/Layout";
 
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -65,32 +65,29 @@ const AuthorPublicProfile = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <div className="container mx-auto px-4 pt-24 flex items-center justify-center">
+      <Layout>
+        <div className="container mx-auto px-4 pt-8 flex items-center justify-center min-h-[50vh]">
           <LoadingSpinner />
         </div>
-      </div>
+      </Layout>
     );
   }
 
   if (error || !author) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <div className="container mx-auto px-4 pt-24 text-center">
+      <Layout>
+        <div className="container mx-auto px-4 pt-8 text-center">
           <h1 className="text-2xl font-semibold text-red-500">
             {error instanceof Error ? error.message : 'Author not found'}
           </h1>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      <main className="container mx-auto px-4 pt-24 space-y-8">
+    <Layout>
+      <main className="container mx-auto px-4 py-8 max-w-3xl">
         <AuthorProfileHeader author={author} />
         <AuthorProfileContent 
           authorId={author.id} 
@@ -106,7 +103,7 @@ const AuthorPublicProfile = () => {
           />
         )}
       </main>
-    </div>
+    </Layout>
   );
 };
 

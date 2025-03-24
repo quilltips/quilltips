@@ -1,4 +1,5 @@
 
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { TipHistory } from "@/components/TipHistory";
 
@@ -9,23 +10,34 @@ interface AuthorProfileContentProps {
 
 export const AuthorProfileContent = ({ authorId, authorName }: AuthorProfileContentProps) => {
   return (
-    <>
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-4">Books</h2>
-        <AuthorQRCodes 
-          authorId={authorId} 
-          authorName={authorName} 
-        />
-      </div>
+    <div className="space-y-8">
+      {/* Tip Feed Section */}
+      <Card className="border border-[#f1f1f1] shadow-sm rounded-lg overflow-hidden">
+        <CardHeader>
+          <CardTitle className="text-xl text-[#2D3748]">Tip feed</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TipHistory 
+            authorId={authorId}
+            authorName={authorName}
+            isDashboard={false}
+            showHeader={false}
+          />
+        </CardContent>
+      </Card>
       
-      <div className="max-w-2xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-4">Tip History</h2>
-        <TipHistory 
-          authorId={authorId}
-          authorName={authorName}
-          isDashboard={false}
-        />
-      </div>
-    </>
+      {/* Quilltip Jars Section */}
+      <Card className="border border-[#f1f1f1] shadow-sm rounded-lg overflow-hidden">
+        <CardHeader>
+          <CardTitle className="text-xl text-[#2D3748]">Quilltip Jars</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AuthorQRCodes 
+            authorId={authorId} 
+            authorName={authorName} 
+          />
+        </CardContent>
+      </Card>
+    </div>
   );
 };

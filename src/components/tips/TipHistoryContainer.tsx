@@ -5,6 +5,7 @@ import { TipDetailsDialog } from "../TipDetailsDialog";
 import { useTipHistory } from "@/hooks/use-tip-history";
 import { TipHistoryHeader } from "./TipHistoryHeader";
 import { LoadingSpinner } from "../ui/loading-spinner";
+import { Separator } from "../ui/separator";
 
 interface TipHistoryContainerProps {
   authorId: string;
