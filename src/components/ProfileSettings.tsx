@@ -19,10 +19,19 @@ interface ProfileSettingsProps {
     stripe_account_id?: string | null;
     social_links?: SocialLink[];
   };
+  onChangeStatus?: (hasChanges: boolean) => void;
 }
 
-export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
+export const ProfileSettings = ({ profile, onChangeStatus }: ProfileSettingsProps) => {
   const [hasFormChanges, setHasFormChanges] = useState(false);
+
+  const handleFormChangesStatus = (hasChanges: boolean) => {
+    setHasFormChanges(hasChanges);
+    // Propagate the change status up to the parent component
+    if (onChangeStatus) {
+      onChangeStatus(hasChanges);
+    }
+  };
 
   return (
     <Card className={`p-6 transition-all duration-300 ${hasFormChanges ? 'bg-amber-50/50 border-amber-200' : ''}`}>
@@ -38,7 +47,7 @@ export const ProfileSettings = ({ profile }: ProfileSettingsProps) => {
           initialName={profile.name}
           initialBio={profile.bio}
           initialSocialLinks={profile.social_links}
-          onChangeStatus={(hasChanges) => setHasFormChanges(hasChanges)}
+          onChangeStatus={handleFormChangesStatus}
         />
 
         <div className="flex flex-col sm:flex-row gap-4">
