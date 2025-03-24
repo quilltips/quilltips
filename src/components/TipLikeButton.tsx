@@ -1,7 +1,9 @@
+
 import { Button } from "./ui/button";
 import { Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface TipLikeButtonProps {
   tipId: string;
@@ -12,23 +14,13 @@ interface TipLikeButtonProps {
 
 export const TipLikeButton = ({ tipId, authorId, isLiked, likeCount }: TipLikeButtonProps) => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  const handleLike = async () => {
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
     try {
-      // First, check if the user has already liked this tip
-      const { data: existingLike, error: checkError } = await supabase
-        .from('tip_likes')
-        .select('*')
-        .eq('tip_id', tipId)
-        .eq('author_id', authorId)
-        .maybeSingle();
-
-      if (checkError) {
-        console.error("Error checking like:", checkError);
-        return;
-      }
-
-      if (existingLike) {
+      if (isLiked) {
         // Unlike: Remove the existing like
         const { error: deleteError } = await supabase
           .from('tip_likes')
@@ -37,8 +29,7 @@ export const TipLikeButton = ({ tipId, authorId, isLiked, likeCount }: TipLikeBu
           .eq('author_id', authorId);
 
         if (deleteError) {
-          console.error("Error unliking tip:", deleteError);
-          return;
+          throw deleteError;
         }
       } else {
         // Like: Add new like
@@ -47,15 +38,20 @@ export const TipLikeButton = ({ tipId, authorId, isLiked, likeCount }: TipLikeBu
           .insert({ tip_id: tipId, author_id: authorId });
 
         if (insertError) {
-          console.error("Error liking tip:", insertError);
-          return;
+          throw insertError;
         }
       }
 
-      // Invalidate and refetch the likes query to update the UI
+      // Invalidate and refetch the likes queries to update the UI
       queryClient.invalidateQueries({ queryKey: ['tip_likes', authorId] });
+      queryClient.invalidateQueries({ queryKey: ['tip_likes', tipId] });
     } catch (error) {
       console.error("Error handling like:", error);
+      toast({
+        title: "Action failed",
+        description: "There was an error processing your like",
+        variant: "destructive",
+      });
     }
   };
 
@@ -64,9 +60,9 @@ export const TipLikeButton = ({ tipId, authorId, isLiked, likeCount }: TipLikeBu
       variant={isLiked ? "default" : "ghost"}
       size="sm"
       onClick={handleLike}
-      className="flex items-center gap-1"
+      className={`flex items-center gap-1 ${isLiked ? "bg-pink-500 hover:bg-pink-600" : ""}`}
     >
-      <Heart className="h-4 w-4" />
+      <Heart className={`h-4 w-4 ${isLiked ? "fill-white" : ""}`} />
       <span>{likeCount}</span>
     </Button>
   );

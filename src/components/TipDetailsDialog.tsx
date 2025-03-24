@@ -1,3 +1,4 @@
+
 import {
   Dialog,
   DialogContent,
@@ -7,8 +8,13 @@ import {
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Card } from "./ui/card";
+import { TipCommentForm } from "./tips/TipCommentForm";
+import { formatDistanceToNow } from "date-fns";
+import { Separator } from "./ui/separator";
+import { TipInteractionButtons } from "./tips/TipInteractionButtons";
+import { useAuth } from "./auth/AuthProvider";
 
 interface TipDetailsDialogProps {
   isOpen: boolean;
@@ -20,69 +26,143 @@ interface TipDetailsDialogProps {
     created_at: string;
     book_title: string | null;
     author_id: string;
+    reader_name?: string;
+    reader_avatar_url?: string;
   } | null;
 }
 
 export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps) => {
-  const { data: tipper } = useQuery({
-    queryKey: ['profile', tip?.author_id],
+  const { user } = useAuth();
+  
+  // Fetch tip comments
+  const { data: comments = [], refetch: refetchComments } = useQuery({
+    queryKey: ['tip_comments', tip?.id],
     queryFn: async () => {
-      if (!tip?.author_id) return null;
+      if (!tip?.id) return [];
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', tip.author_id)
-        .single();
+        .from('tip_comments')
+        .select('*, profiles(name, avatar_url)')
+        .eq('tip_id', tip.id)
+        .order('created_at', { ascending: true });
 
       if (error) throw error;
-      return data;
+      return data || [];
     },
-    enabled: !!tip?.author_id,
+    enabled: !!tip?.id,
   });
+
+  // Fetch likes for this tip
+  const { data: likes = [] } = useQuery({
+    queryKey: ['tip_likes', tip?.id],
+    queryFn: async () => {
+      if (!tip?.id) return [];
+      const { data, error } = await supabase
+        .from('tip_likes')
+        .select('*')
+        .eq('tip_id', tip.id);
+        
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!tip?.id,
+  });
+
+  // Check if the current user has liked this tip
+  const isLiked = user ? likes.some(like => like.author_id === user.id) : false;
+  const likeCount = likes.length;
+  const commentCount = comments.length;
 
   if (!tip) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Tip Details</DialogTitle>
         </DialogHeader>
+        
         <div className="space-y-6 py-4">
           <div className="flex items-center space-x-4">
-            <Avatar>
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={tip.reader_avatar_url || "/placeholder.svg"} />
               <AvatarFallback>
-                {tipper?.name?.charAt(0) || '?'}
+                {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">{tipper?.name || 'Anonymous'}</p>
-              <p className="text-sm text-muted-foreground">{tipper?.bio || 'No bio available'}</p>
+              <p className="font-medium">{tip.reader_name || 'Anonymous Reader'}</p>
+              <p className="text-sm text-muted-foreground">
+                {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
+              </p>
             </div>
           </div>
 
-          <Card className="p-4 space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="font-medium">Amount</span>
-              <span className="text-green-600">${tip.amount}</span>
+          <Card className="p-4 space-y-4">
+            <div className="text-lg font-semibold">
+              {tip.reader_name || 'Anonymous Reader'} sent ${tip.amount}
             </div>
-            <div className="flex justify-between items-center">
-              <span className="font-medium">Date</span>
-              <span>{format(new Date(tip.created_at), 'PPP')}</span>
-            </div>
+            
+            {tip.message && (
+              <p className="text-muted-foreground">"{tip.message}"</p>
+            )}
+            
             {tip.book_title && (
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Book</span>
-                <span>{tip.book_title}</span>
+              <div className="text-sm">
+                <span className="font-medium">Book: </span>{tip.book_title}
               </div>
             )}
-            {tip.message && (
-              <div className="mt-4">
-                <p className="font-medium mb-2">Message</p>
-                <p className="text-muted-foreground">{tip.message}</p>
+            
+            {user && (
+              <div className="pt-2">
+                <TipInteractionButtons
+                  tipId={tip.id}
+                  authorId={user.id}
+                  isLiked={isLiked}
+                  likeCount={likeCount}
+                  commentCount={commentCount}
+                />
               </div>
             )}
           </Card>
+          
+          {comments.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Comments ({comments.length})</h3>
+              
+              <div className="space-y-4">
+                {comments.map(comment => (
+                  <div key={comment.id} className="flex space-x-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={(comment.profiles as any)?.avatar_url || "/placeholder.svg"} />
+                      <AvatarFallback>
+                        {((comment.profiles as any)?.name || "A").charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="bg-muted p-3 rounded-lg">
+                        <div className="font-medium">{(comment.profiles as any)?.name || "Anonymous"}</div>
+                        <p>{comment.content}</p>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {user && (
+            <>
+              <Separator />
+              <TipCommentForm 
+                tipId={tip.id} 
+                authorId={user.id} 
+                onCommentAdded={() => refetchComments()}
+              />
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>

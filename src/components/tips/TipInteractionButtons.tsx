@@ -8,6 +8,7 @@ interface TipInteractionButtonsProps {
   isLiked: boolean;
   likeCount: number;
   commentCount: number;
+  onCommentClick?: () => void;
 }
 
 export const TipInteractionButtons = ({
@@ -15,10 +16,11 @@ export const TipInteractionButtons = ({
   authorId,
   isLiked,
   likeCount,
-  commentCount
+  commentCount,
+  onCommentClick
 }: TipInteractionButtonsProps) => {
   return (
-    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+    <div className="flex items-center gap-2">
       <TipLikeButton
         tipId={tipId}
         authorId={authorId}
@@ -29,6 +31,7 @@ export const TipInteractionButtons = ({
         tipId={tipId}
         authorId={authorId}
         commentCount={commentCount}
+        onClick={onCommentClick}
       />
     </div>
   );

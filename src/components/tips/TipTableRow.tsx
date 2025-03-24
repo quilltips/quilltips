@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { TipMessagePreview } from "./TipMessagePreview";
 import { TipInteractionButtons } from "./TipInteractionButtons";
+import { useAuth } from "../auth/AuthProvider";
 
 interface TipTableRowProps {
   tip: {
@@ -28,9 +29,11 @@ export const TipTableRow = ({
   comments,
   onSelectTip 
 }: TipTableRowProps) => {
-  const isLiked = (tipId: string) => {
-    return likes?.some(like => like.tip_id === tipId);
-  };
+  const { user } = useAuth();
+  
+  const isLiked = user ? likes?.some(like => 
+    like.tip_id === tip.id && like.author_id === user.id
+  ) : false;
   
   const likeCount = likes?.filter(like => like.tip_id === tip.id).length || 0;
   const commentCount = comments?.filter(comment => comment.tip_id === tip.id).length || 0;
@@ -63,13 +66,18 @@ export const TipTableRow = ({
             </p>
           </div>
 
-          <TipInteractionButtons
-            tipId={tip.id}
-            authorId={authorId}
-            isLiked={isLiked(tip.id)}
-            likeCount={likeCount}
-            commentCount={commentCount}
-          />
+          {user && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <TipInteractionButtons
+                tipId={tip.id}
+                authorId={user.id}
+                isLiked={isLiked}
+                likeCount={likeCount}
+                commentCount={commentCount}
+                onCommentClick={() => onSelectTip(tip)}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
