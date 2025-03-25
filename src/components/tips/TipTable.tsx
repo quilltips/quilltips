@@ -1,6 +1,7 @@
 
 import { TipTableRow } from "./TipTableRow";
 import { Button } from "../ui/button";
+import { ChevronDown } from "lucide-react";
 
 interface TipTableProps {
   tips: any[];
@@ -21,9 +22,9 @@ export const TipTable = ({
   showAll,
   setShowAll,
   onSelectTip,
-  limit
+  limit = 5
 }: TipTableProps) => {
-  const displayTips = showAll ? tips : tips.slice(0, limit || tips.length);
+  const displayTips = showAll ? tips : tips.slice(0, limit);
 
   return (
     <div className="space-y-8">
@@ -40,15 +41,15 @@ export const TipTable = ({
         ))}
       </div>
 
-      {limit && tips.length > limit && !showAll && (
-        <div className="text-center pt-4">
-          <Button
-            variant="ghost"
-            onClick={() => setShowAll?.(true)}
-          >
-            Show all tips
-          </Button>
-        </div>
+      {tips.length > limit && (
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowAll?.(!showAll)}
+          className="w-full text-[#718096] hover:text-[#2D3748] hover:bg-gray-100"
+        >
+          <ChevronDown className={`mr-2 h-4 w-4 transition-transform ${showAll ? 'rotate-180' : ''}`} />
+          {showAll ? 'Show Less' : `Show ${tips.length - limit} More`}
+        </Button>
       )}
     </div>
   );

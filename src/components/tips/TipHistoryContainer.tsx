@@ -66,7 +66,7 @@ export const TipHistoryContainer = ({
           showAll={showAll} 
           setShowAll={setShowAll} 
           onSelectTip={setSelectedTip} 
-          limit={limit} 
+          limit={isDashboard ? limit : 5} 
         />
       ) : (
         <div className="text-center py-8 text-[#718096]">
