@@ -1,6 +1,7 @@
 
 import { useQRCodeFetch } from "./use-qr-code-fetch";
 import { useTipSubmission } from "./use-tip-submission";
+import { useState } from "react";
 
 export const useQRCodeDetails = () => {
   const {
@@ -24,6 +25,8 @@ export const useQRCodeDetails = () => {
     handleSubmit
   } = useTipSubmission(qrCode);
 
+  const [showTipForm, setShowTipForm] = useState(false);
+
   return {
     id,
     qrCode,
@@ -39,6 +42,8 @@ export const useQRCodeDetails = () => {
     name,
     setName,
     isLoading,
-    handleSubmit
+    handleSubmit,
+    showTipForm,
+    setShowTipForm
   };
 };

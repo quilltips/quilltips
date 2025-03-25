@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "../ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { MessageSquare, ThumbsUp } from "lucide-react";
 
 interface PublicTipHistoryProps {
   qrCodeId: string;
@@ -19,6 +20,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
           id,
           created_at,
           message,
+          amount,
           reader_name,
           reader_avatar_url
         `)
@@ -26,7 +28,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data.filter(tip => tip.message); // Only show tips with messages
+      return data;
     }
   });
 
@@ -40,33 +42,50 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
 
   if (!tips?.length) {
     return (
-      <Card className="p-6">
-        <p className="text-center text-muted-foreground">
-          No reader messages yet. Be the first to leave a message!
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">
+          No tips yet. Be the first to leave a tip!
         </p>
-      </Card>
+      </div>
     );
   }
 
   return (
     <div className="space-y-6">
       {tips.map((tip) => (
-        <div key={tip.id} className="flex gap-4">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={tip.reader_avatar_url || "/placeholder.svg"} />
-            <AvatarFallback>
-              {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <div className="flex items-baseline justify-between">
-              <p className="font-medium">{tip.reader_name || "Anonymous Reader"}</p>
-              <p className="text-sm text-muted-foreground">
-                {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
-              </p>
+        <div key={tip.id} className="space-y-4">
+          <div className="flex items-start gap-3">
+            <Avatar className="h-12 w-12">
+              <AvatarImage src={tip.reader_avatar_url || "/placeholder.svg"} />
+              <AvatarFallback>
+                {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <div className="space-y-1">
+                <div className="flex justify-between items-baseline">
+                  <p className="font-medium">
+                    {tip.reader_name || "Anonymous Reader"} sent ${tip.amount}
+                  </p>
+                </div>
+                {tip.message && (
+                  <p className="text-muted-foreground">"{tip.message}"</p>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
+                </p>
+              </div>
+              <div className="flex gap-4 mt-3">
+                <button className="flex items-center text-muted-foreground hover:text-foreground">
+                  <ThumbsUp className="h-5 w-5 mr-1" />
+                </button>
+                <button className="flex items-center text-muted-foreground hover:text-foreground">
+                  <MessageSquare className="h-5 w-5 mr-1" />
+                </button>
+              </div>
             </div>
-            <p className="text-muted-foreground mt-1">{tip.message}</p>
           </div>
+          <div className="border-t border-border mt-2 pt-2"></div>
         </div>
       ))}
     </div>

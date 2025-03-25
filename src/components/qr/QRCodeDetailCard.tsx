@@ -19,6 +19,7 @@ interface QRCodeDetailCardProps {
   };
 }
 
+// This component is being kept for backward compatibility but is no longer used in QRCodeDetails
 export const QRCodeDetailCard = ({ qrCode }: QRCodeDetailCardProps) => {
   const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
