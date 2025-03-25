@@ -1,9 +1,11 @@
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "./ui/card";
-import { Loader2, Book } from "lucide-react";
+import { Loader2, Book, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
 
 interface AuthorQRCodesProps {
   authorId: string;
@@ -11,6 +13,8 @@ interface AuthorQRCodesProps {
 }
 
 export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
+  const [showAll, setShowAll] = useState(false);
+  
   const { data: qrCodes, isLoading } = useQuery({
     queryKey: ['qrCodes', authorId],
     queryFn: async () => {
@@ -45,9 +49,12 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
     );
   }
 
+  // Only show the first 5 QR codes if showAll is false
+  const displayedQRCodes = showAll ? qrCodes : qrCodes.slice(0, 5);
+
   return (
     <div className="space-y-4">
-      {qrCodes.map((qrCode) => (
+      {displayedQRCodes.map((qrCode) => (
         <Link 
           key={qrCode.id}
           to={`/qr/${qrCode.id}`} 
@@ -79,6 +86,17 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
           </Card>
         </Link>
       ))}
+      
+      {qrCodes.length > 5 && (
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowAll(!showAll)} 
+          className="w-full text-[#718096] hover:text-[#2D3748] hover:bg-gray-100"
+        >
+          <ChevronDown className={`mr-2 h-4 w-4 transition-transform ${showAll ? 'rotate-180' : ''}`} />
+          {showAll ? 'Show Less' : `Show ${qrCodes.length - 5} More`}
+        </Button>
+      )}
     </div>
   );
 };
