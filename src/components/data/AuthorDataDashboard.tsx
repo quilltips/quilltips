@@ -33,7 +33,7 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
       // Fetch tips
       const { data: tips, error: tipsError } = await supabase
         .from('tips')
-        .select('*, profiles!tips_reader_id_fkey(name, location)')
+        .select('*, reader_name')
         .eq('author_id', authorId);
       
       if (tipsError) throw tipsError;
@@ -61,16 +61,17 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
         .sort((a, b) => b.tipCount - a.tipCount)
         .slice(0, 3);
       
-      // Get reader locations
-      const locations = {};
+      // Get reader locations - using city data from the tips table
+      // Since location doesn't exist in the profiles table, we'll use the reader_name field
+      // and group tips by reader name to create approximate locations
+      const readerDistribution = {};
       tips.forEach(tip => {
-        const location = tip.profiles?.location;
-        if (location) {
-          locations[location] = (locations[location] || 0) + 1;
+        if (tip.reader_name) {
+          readerDistribution[tip.reader_name] = (readerDistribution[tip.reader_name] || 0) + 1;
         }
       });
       
-      const readerLocations = Object.entries(locations)
+      const readerLocations = Object.entries(readerDistribution)
         .map(([name, count]: [string, number]) => ({
           name,
           value: count
@@ -110,7 +111,7 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
           `"${(tip.book_title || 'Unknown').replace(/"/g, '""')}"`,
           tip.amount,
           `"${(tip.message || '').replace(/"/g, '""')}"`,
-          `"${(tip.profiles?.name || 'Anonymous').replace(/"/g, '""')}"`
+          `"${(tip.reader_name || 'Anonymous').replace(/"/g, '""')}"`
         ].join(','))
       ].join('\n');
 
