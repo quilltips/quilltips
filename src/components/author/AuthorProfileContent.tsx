@@ -1,10 +1,13 @@
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { TipHistory } from "@/components/TipHistory";
+
 interface AuthorProfileContentProps {
   authorId: string;
   authorName: string;
 }
+
 export const AuthorProfileContent = ({
   authorId,
   authorName

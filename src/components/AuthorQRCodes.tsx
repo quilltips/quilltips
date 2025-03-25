@@ -2,8 +2,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "./ui/card";
-import { Loader2 } from "lucide-react";
-import { BookCard } from "./BookCard";
+import { Loader2, Book } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface AuthorQRCodesProps {
   authorId: string;
@@ -46,19 +46,38 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="space-y-4">
       {qrCodes.map((qrCode) => (
-        <BookCard
+        <Link 
           key={qrCode.id}
-          id={qrCode.id}
-          title={qrCode.book_title}
-          authorId={authorId}
-          authorName={authorName}
-          coverImage={qrCode.cover_image}
-          publisher={qrCode.publisher}
-          isbn={qrCode.isbn}
-          releaseDate={qrCode.release_date}
-        />
+          to={`/qr/${qrCode.id}`} 
+          className="block"
+        >
+          <Card className="overflow-hidden hover:bg-slate-50 transition-colors">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-24 flex-shrink-0 bg-muted rounded-md overflow-hidden">
+                  {qrCode.cover_image ? (
+                    <img
+                      src={qrCode.cover_image}
+                      alt={qrCode.book_title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                      <Book className="h-6 w-6 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="font-medium text-[#2D3748] text-lg">{qrCode.book_title}</h3>
+                  <p className="text-sm text-[#718096]">by {authorName}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       ))}
     </div>
   );
