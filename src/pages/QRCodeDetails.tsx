@@ -1,6 +1,5 @@
 
 import { Layout } from "@/components/Layout";
-import { QRCodeDetailCard } from "@/components/qr/QRCodeDetailCard";
 import { QRCodePublisherInvite } from "@/components/qr/QRCodePublisherInvite";
 import { PublicTipHistory } from "@/components/tips/PublicTipHistory";
 import { QRCodeLoading } from "@/components/qr/QRCodeLoading";
@@ -50,29 +49,29 @@ const QRCodeDetails = () => {
     <Layout>
       <main className="container mx-auto px-4 pt-8 pb-12 space-y-8">
         <div className="max-w-md mx-auto space-y-8">
-          {/* Book details card with centered layout */}
-          <div className="flex flex-col items-center text-center space-y-4">
-            <div className="w-32 aspect-[2/3] relative">
+          {/* Book details card with horizontal layout */}
+          <div className="flex items-start space-x-6">
+            <div className="w-32 aspect-[2/3] relative shrink-0">
               <img
                 src={qrCode.cover_image || "/placeholder.svg"}
                 alt={qrCode.book_title}
                 className="w-full h-full object-cover rounded-md"
               />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 pt-2">
               <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
               <p className="text-muted-foreground">by {qrCode.author?.name || 'Unknown Author'}</p>
             </div>
-            
-            {/* Leave a tip button */}
-            <Button 
-              onClick={() => setShowTipForm(true)} 
-              className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full py-6"
-            >
-              <DollarSign className="mr-2 h-5 w-5" />
-              Leave a tip!
-            </Button>
           </div>
+            
+          {/* Leave a tip button */}
+          <Button 
+            onClick={() => setShowTipForm(true)} 
+            className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full py-6"
+          >
+            <DollarSign className="mr-2 h-5 w-5" />
+            Leave a tip!
+          </Button>
 
           {/* Tip form (conditionally rendered) */}
           {showTipForm && (
