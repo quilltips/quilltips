@@ -6,7 +6,6 @@ import { QRCodeLoading } from "@/components/qr/QRCodeLoading";
 import { QRCodeNotFound } from "@/components/qr/QRCodeNotFound";
 import { useQRCodeDetails } from "@/hooks/use-qr-code-details";
 import { Button } from "@/components/ui/button";
-import { DollarSign } from "lucide-react";
 
 const QRCodeDetails = () => {
   const {
@@ -69,7 +68,6 @@ const QRCodeDetails = () => {
             onClick={() => setShowTipForm(true)} 
             className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full py-6"
           >
-            <DollarSign className="mr-2 h-5 w-5" />
             Leave a tip!
           </Button>
 
