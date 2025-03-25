@@ -1,5 +1,5 @@
 
-import { Navigation } from "@/components/Navigation";
+import { Layout } from "@/components/Layout";
 import { QRCodeDetailCard } from "@/components/qr/QRCodeDetailCard";
 import { QRCodeTipForm } from "@/components/qr/QRCodeTipForm";
 import { QRCodePublisherInvite } from "@/components/qr/QRCodePublisherInvite";
@@ -28,17 +28,24 @@ const QRCodeDetails = () => {
   } = useQRCodeDetails();
 
   if (qrCodeLoading) {
-    return <QRCodeLoading />;
+    return (
+      <Layout>
+        <QRCodeLoading />
+      </Layout>
+    );
   }
 
   if (!qrCode) {
-    return <QRCodeNotFound />;
+    return (
+      <Layout>
+        <QRCodeNotFound />
+      </Layout>
+    );
   }
 
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      <main className="container mx-auto px-4 pt-24 pb-12 space-y-8">
+    <Layout>
+      <main className="container mx-auto px-4 pt-8 pb-12 space-y-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <QRCodeDetailCard qrCode={qrCode} />
 
@@ -67,7 +74,7 @@ const QRCodeDetails = () => {
           bookTitle={qrCode.book_title}
         />
       </main>
-    </div>
+    </Layout>
   );
 };
 
