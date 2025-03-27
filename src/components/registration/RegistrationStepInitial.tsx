@@ -22,14 +22,14 @@ export const RegistrationStepInitial = ({
     
     try {
       // First, check if the user already exists in the profiles table
-      const { data: existingProfiles, error: profileError } = await supabase
+      const { data, error: profileError } = await supabase
         .from('profiles')
         .select('id')
         .eq('email', email)
         .limit(1);
       
       // If we found any profiles with this email, it's already taken
-      if (existingProfiles && existingProfiles.length > 0) {
+      if (data && data.length > 0) {
         setError("An account with this email already exists. Would you like to log in instead?");
         setCheckingEmail(false);
         return;
