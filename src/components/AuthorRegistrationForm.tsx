@@ -55,6 +55,11 @@ export const AuthorRegistrationForm = () => {
 
       if (signUpError) {
         console.error("Signup error:", signUpError);
+        
+        if (signUpError.message === "User already registered") {
+          throw new Error("This email is already registered. Please try logging in instead.");
+        }
+        
         throw signUpError;
       }
 
@@ -108,7 +113,9 @@ export const AuthorRegistrationForm = () => {
       
       toast({
         title: "Registration Failed",
-        description: err.message || "An error occurred during registration",
+        description: err.message === "User already registered" 
+          ? "This email is already registered. Please try logging in instead."
+          : err.message || "An error occurred during registration",
         variant: "destructive",
       });
     } finally {
