@@ -22,12 +22,15 @@ export const RegistrationStepInitial = ({
     
     try {
       // First, check if the user already exists in the profiles table
-      // Use type assertion to avoid complex type inference
-      const { data } = await supabase
+      // Using unknown type with explicit destructuring to avoid deep type inference
+      const result: unknown = await supabase
         .from('profiles')
         .select('id')
         .eq('email', email)
-        .limit(1) as { data: any[] | null };
+        .limit(1);
+      
+      // Safely access data property
+      const data = (result as { data: any[] | null }).data;
       
       // If we found any profiles with this email, it's already taken
       if (data && data.length > 0) {
