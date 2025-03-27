@@ -19,8 +19,8 @@ const QRCodeDesign = () => {
     qrCodeId: qrCodeData?.id,
     bookTitle: qrCodeData?.book_title,
     onSuccess: (qrCodeId) => {
-      // Instead of redirecting to QRCodeSummary, we'll navigate to dashboard with query params
-      navigate(`/author/dashboard?qr_code=${qrCodeId}&success=true`);
+      // Navigate to the QRCodeSummary page instead of the dashboard
+      navigate(`/qr-summary?qr_code=${qrCodeId}`);
     }
   });
 
