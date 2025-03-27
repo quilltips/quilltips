@@ -21,31 +21,11 @@ export const RegistrationStepInitial = ({
     setCheckingEmail(true);
     
     try {
-      // Using a different approach to check if the email exists
-      // First, attempt to sign in with a dummy password to see if the account exists
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password: "dummy-password-for-check" // We don't care if this fails due to wrong password
-      });
-
-      // If we get a specific error message about invalid credentials, the email exists
-      if (signInError && signInError.message.includes("Invalid login credentials")) {
-        setError("An account with this email already exists. Would you like to log in instead?");
-        setCheckingEmail(false);
-        return;
-      }
+      // A more reliable way to check if an email exists is to use the admin APIs
+      // Since we don't have access to those in the client, we'll just proceed with the registration
+      // The actual signup in the next step will properly handle duplicate emails
       
-      // If we don't get an error about invalid credentials, check if it's some other error
-      // like "Email not confirmed" which would also indicate the email exists
-      if (signInError && !signInError.message.includes("Invalid login credentials")) {
-        if (signInError.message.includes("Email not confirmed")) {
-          setError("An account with this email already exists but hasn't been confirmed. Please check your email.");
-          setCheckingEmail(false);
-          return;
-        }
-      }
-      
-      // If we reach here, the email is likely available for registration
+      // Clear any previous errors and proceed to the next step
       onNext(email, password);
       
     } catch (err: any) {
