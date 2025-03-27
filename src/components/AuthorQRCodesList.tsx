@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
-import { ChevronDown, Loader2, Plus, HelpCircle } from "lucide-react";
+import { ChevronDown, Loader2, Plus, HelpCircle, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { QRCodeCard } from "./qr/QRCodeCard";
 import { useState } from "react";
@@ -72,6 +72,17 @@ export const AuthorQRCodesList = ({
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-medium text-[#2D3748]">Quilltips Jars</h2>
+        {qrCodes && qrCodes.length > 0 && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate('/author/book-qr-codes')}
+            className="text-[#718096] hover:text-[#2D3748] text-sm"
+          >
+            See all 
+            <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       {!qrCodes || qrCodes.length === 0 ? (
