@@ -28,7 +28,8 @@ export const QRCodeSuccessModal = ({
 }: QRCodeSuccessModalProps) => {
   if (!qrCode) return null;
 
-  const qrValue = `${window.location.origin}/author/profile/${qrCode.author_id}?qr=${qrCode.id}`;
+  // Updated to point to the public QR code details page
+  const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
   const handleDownload = () => {
     const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;

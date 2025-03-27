@@ -65,7 +65,8 @@ const QRCodeSummary = () => {
     );
   }
 
-  const qrValue = `${window.location.origin}/author/profile/${qrCode.author_id}?qr=${qrCode.id}`;
+  // Updated to point to the public QR code details page
+  const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
   return (
     <Layout>
