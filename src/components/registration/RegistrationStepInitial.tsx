@@ -22,15 +22,15 @@ export const RegistrationStepInitial = ({
     
     try {
       // First, check if the user already exists in the profiles table
-      // Using a completely different approach to avoid type depth issues
-      const profilesQuery = await supabase
+      // Using manual type casting to avoid type depth issues
+      const { data } = await supabase
         .from('profiles')
         .select('id')
         .eq('email', email)
-        .limit(1);
+        .limit(1) as { data: any[] | null };
       
       // If we found any profiles with this email, it's already taken
-      if (profilesQuery.data && profilesQuery.data.length > 0) {
+      if (data && data.length > 0) {
         setError("An account with this email already exists. Would you like to log in instead?");
         setCheckingEmail(false);
         return;
