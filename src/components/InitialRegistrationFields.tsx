@@ -61,7 +61,7 @@ export const InitialRegistrationFields = ({
         disabled={isLoading} 
         className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
       >
-        Next
+        {isLoading ? "Checking..." : "Next"}
       </Button>
 
       <div className="space-y-4 text-center">

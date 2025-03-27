@@ -1,5 +1,8 @@
 
+import { useState } from "react";
 import { InitialRegistrationFields } from "../InitialRegistrationFields";
+import { Alert, AlertDescription } from "../ui/alert";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RegistrationStepInitialProps {
   isLoading: boolean;
@@ -10,5 +13,54 @@ export const RegistrationStepInitial = ({
   isLoading,
   onNext,
 }: RegistrationStepInitialProps) => {
-  return <InitialRegistrationFields isLoading={isLoading} onNext={onNext} />;
+  const [error, setError] = useState<string | null>(null);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+
+  const handleNext = async (email: string, password: string) => {
+    setError(null);
+    setCheckingEmail(true);
+    
+    try {
+      // Check if the email is already registered
+      const { data, error: checkError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false,
+        }
+      });
+      
+      // If we can send an OTP, the email exists
+      if (data.session || data.user) {
+        setError("This email is already registered. Please try logging in instead.");
+        setCheckingEmail(false);
+        return;
+      }
+      
+      // If error is "User not found", then email is available
+      if (checkError && checkError.message.includes("User not found")) {
+        onNext(email, password);
+      } else {
+        // Any other error means we should be cautious
+        setError("Unable to verify email availability. Please try again later.");
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred. Please try again.");
+    } finally {
+      setCheckingEmail(false);
+    }
+  };
+
+  return (
+    <>
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      <InitialRegistrationFields 
+        isLoading={isLoading || checkingEmail} 
+        onNext={handleNext} 
+      />
+    </>
+  );
 };
