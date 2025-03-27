@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Download, Share2, ArrowLeft } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { Layout } from "@/components/Layout";
+import QRCodePrintCard from "@/components/QRCodePrintCard";
+
 
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
@@ -111,15 +113,7 @@ const QRCodeSummary = () => {
                   </div>
 
                   <div className="bg-white p-6 rounded-lg shadow-sm">
-                    <QRCodeCanvas
-                      id="qr-canvas"
-                      value={qrValue}
-                      size={200}
-                      level="H"
-                      includeMargin
-                      bgColor="#ffffff"
-                      fgColor="#000000"
-                    />
+                    <QRCodePrintCard qrCode={qrCode} />
                   </div>
 
                   <div className="space-y-3">

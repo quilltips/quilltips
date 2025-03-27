@@ -9,6 +9,8 @@ import {
   DialogTitle,
   DialogClose
 } from "@/components/ui/dialog";
+import QRCodePrintCard from "@/components/QRCodePrintCard";
+
 
 interface QRCodeSuccessModalProps {
   isOpen: boolean;
@@ -99,17 +101,8 @@ export const QRCodeSuccessModal = ({
                 </p>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow-sm flex justify-center">
-                <QRCodeCanvas
-                  id="qr-canvas"
-                  value={qrValue}
-                  size={200}
-                  level="H"
-                  includeMargin
-                  bgColor="#ffffff"
-                  fgColor="#000000"
-                />
-              </div>
+              <QRCodePrintCard qrCode={qrCode} />
+
 
               <div className="space-y-3">
                 <Button 
