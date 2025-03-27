@@ -21,30 +21,26 @@ export const RegistrationStepInitial = ({
     setCheckingEmail(true);
     
     try {
-      // First, let's check if the user already exists using a more direct method
-      const { data: userExists, error: checkError } = await supabase
+      // First, check if the user already exists in the profiles table
+      const { data: existingProfiles, error: profileError } = await supabase
         .from('profiles')
         .select('id')
         .eq('email', email)
-        .maybeSingle();
+        .limit(1);
       
-      // If we got a user back, the email is already registered
-      if (userExists) {
+      // If we found any profiles with this email, it's already taken
+      if (existingProfiles && existingProfiles.length > 0) {
         setError("An account with this email already exists. Would you like to log in instead?");
         setCheckingEmail(false);
         return;
       }
 
-      // Alternative check using auth API
+      // Double-check with auth API (some users might exist in auth but not have profiles yet)
       const { error: signUpCheckError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin,
-          // Just check, don't complete signup
-          data: {
-            email_check_only: true
-          }
+          emailRedirectTo: window.location.origin
         }
       });
 
