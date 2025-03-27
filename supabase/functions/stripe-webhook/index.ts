@@ -8,6 +8,7 @@ export const config = {
   auth: false,
 };
 
+console.log("🧪 latest version deployed")
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import Stripe from "npm:stripe@12.0.0";
