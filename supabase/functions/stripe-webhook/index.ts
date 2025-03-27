@@ -1,7 +1,7 @@
 // supabase/functions/stripe-webhook/index.ts
 
-// @ts-nocheck
-// @allowUnauthenticated
+//@ts-nocheck
+@allowUnauthenticated
 
 // ✅ Tell Supabase to allow unauthenticated access
 export const config = {
