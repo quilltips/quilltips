@@ -3,16 +3,14 @@
 // @ts-nocheck
 // @allowUnauthenticated
 
-
-
-
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import Stripe from "npm:stripe@12.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-
-console.log("✅ Stripe event received:", event.type);
-
+// ✅ Tell Supabase to allow unauthenticated access
+export const config = {
+  auth: false,
+};
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2022-11-15",
@@ -35,9 +33,11 @@ serve(async (req) => {
       Deno.env.get("STRIPE_WEBHOOK_SECRET")!
     );
   } catch (err) {
-    console.error("Webhook signature verification failed.", err);
+    console.error("❌ Webhook signature verification failed:", err);
     return new Response("Invalid signature", { status: 400 });
   }
+
+  console.log("✅ Stripe event received:", event.type);
 
   try {
     switch (event.type) {
@@ -77,12 +77,12 @@ serve(async (req) => {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        console.log(`⚠️ Unhandled event type: ${event.type}`);
     }
 
     return new Response("Webhook received", { status: 200 });
   } catch (err) {
-    console.error("Error handling webhook event:", err);
+    console.error("❌ Error handling webhook event:", err);
     return new Response("Webhook error", { status: 500 });
   }
 });
