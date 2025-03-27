@@ -3,14 +3,16 @@
 // @ts-nocheck
 // @allowUnauthenticated
 
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import Stripe from "npm:stripe@12.0.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 // ✅ Tell Supabase to allow unauthenticated access
 export const config = {
   auth: false,
 };
+
+
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import Stripe from "npm:stripe@12.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2022-11-15",
