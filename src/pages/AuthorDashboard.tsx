@@ -7,13 +7,18 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { GetStartedBanner } from "@/components/dashboard/GetStartedBanner";
+import { QRCodeSuccessModal } from "@/components/qr/QRCodeSuccessModal";
+import { useEffect } from "react";
 
 const AuthorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [showGetStarted, setShowGetStarted] = useState(true);
+  const [showQrSuccessModal, setShowQrSuccessModal] = useState(false);
+  const [successQrCode, setSuccessQrCode] = useState<any>(null);
   const { user } = useAuth();
   
   // Fetch author profile
@@ -49,6 +54,38 @@ const AuthorDashboard = () => {
     }
   });
 
+  // Check for QR code success in URL parameters
+  useEffect(() => {
+    const qrCodeId = searchParams.get('qr_code');
+    const success = searchParams.get('success');
+    
+    if (qrCodeId && success === 'true') {
+      const fetchQrCode = async () => {
+        const { data, error } = await supabase
+          .from('qr_codes')
+          .select('*')
+          .eq('id', qrCodeId)
+          .single();
+        
+        if (error) {
+          console.error("Error fetching QR code:", error);
+          return;
+        }
+        
+        if (data) {
+          setSuccessQrCode(data);
+          setShowQrSuccessModal(true);
+          
+          // Clean URL without triggering a refresh
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, newUrl);
+        }
+      };
+      
+      fetchQrCode();
+    }
+  }, [searchParams]);
+
   if (isLoading) {
     return (
       <Layout>
@@ -60,6 +97,10 @@ const AuthorDashboard = () => {
   }
 
   if (error || !profile) return null;
+
+  const handleCloseQrModal = () => {
+    setShowQrSuccessModal(false);
+  };
 
   return (
     <Layout>
@@ -79,6 +120,12 @@ const AuthorDashboard = () => {
             )}
 
             <AuthorDashboardContent authorId={profile.id} />
+            
+            <QRCodeSuccessModal 
+              isOpen={showQrSuccessModal}
+              onClose={handleCloseQrModal}
+              qrCode={successQrCode}
+            />
           </div>
         </div>
       </div>
