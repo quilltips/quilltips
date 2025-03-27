@@ -29,9 +29,9 @@ export const RegistrationStepInitial = ({
         }
       });
       
-      // If we can send an OTP, the email exists
+      // If we can send an OTP or user exists, the email is already registered
       if (data.session || data.user) {
-        setError("This email is already registered. Please try logging in instead.");
+        setError("An account with this email already exists. Would you like to log in instead?");
         setCheckingEmail(false);
         return;
       }
@@ -44,7 +44,7 @@ export const RegistrationStepInitial = ({
         setError("Unable to verify email availability. Please try again later.");
       }
     } catch (err: any) {
-      setError(err.message || "An error occurred. Please try again.");
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setCheckingEmail(false);
     }
