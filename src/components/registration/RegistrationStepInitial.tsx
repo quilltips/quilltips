@@ -21,41 +21,31 @@ export const RegistrationStepInitial = ({
     setCheckingEmail(true);
     
     try {
-      // First, check if the user already exists in the profiles table
-      // Using unknown type with explicit destructuring to avoid deep type inference
-      const result: unknown = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .limit(1);
-      
-      // Safely access data property
-      const data = (result as { data: any[] | null }).data;
-      
-      // If we found any profiles with this email, it's already taken
-      if (data && data.length > 0) {
-        setError("An account with this email already exists. Would you like to log in instead?");
-        setCheckingEmail(false);
-        return;
-      }
-
-      // Double-check with auth API (some users might exist in auth but not have profiles yet)
-      const { error: signUpCheckError } = await supabase.auth.signUp({
+      // Using a different approach to check if the email exists
+      // First, attempt to sign in with a dummy password to see if the account exists
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin
-        }
+        password: "dummy-password-for-check" // We don't care if this fails due to wrong password
       });
 
-      // If the error contains "already registered", the email exists
-      if (signUpCheckError && signUpCheckError.message.includes("already registered")) {
+      // If we get a specific error message about invalid credentials, the email exists
+      if (signInError && signInError.message.includes("Invalid login credentials")) {
         setError("An account with this email already exists. Would you like to log in instead?");
         setCheckingEmail(false);
         return;
       }
       
-      // If we got this far, email should be available
+      // If we don't get an error about invalid credentials, check if it's some other error
+      // like "Email not confirmed" which would also indicate the email exists
+      if (signInError && !signInError.message.includes("Invalid login credentials")) {
+        if (signInError.message.includes("Email not confirmed")) {
+          setError("An account with this email already exists but hasn't been confirmed. Please check your email.");
+          setCheckingEmail(false);
+          return;
+        }
+      }
+      
+      // If we reach here, the email is likely available for registration
       onNext(email, password);
       
     } catch (err: any) {
