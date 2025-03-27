@@ -21,29 +21,45 @@ export const RegistrationStepInitial = ({
     setCheckingEmail(true);
     
     try {
-      // Check if the email is already registered
-      const { data, error: checkError } = await supabase.auth.signInWithOtp({
+      // First, let's check if the user already exists using a more direct method
+      const { data: userExists, error: checkError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+      
+      // If we got a user back, the email is already registered
+      if (userExists) {
+        setError("An account with this email already exists. Would you like to log in instead?");
+        setCheckingEmail(false);
+        return;
+      }
+
+      // Alternative check using auth API
+      const { error: signUpCheckError } = await supabase.auth.signUp({
         email,
+        password,
         options: {
-          shouldCreateUser: false,
+          emailRedirectTo: window.location.origin,
+          // Just check, don't complete signup
+          data: {
+            email_check_only: true
+          }
         }
       });
-      
-      // If we can send an OTP or user exists, the email is already registered
-      if (data.session || data.user) {
+
+      // If the error contains "already registered", the email exists
+      if (signUpCheckError && signUpCheckError.message.includes("already registered")) {
         setError("An account with this email already exists. Would you like to log in instead?");
         setCheckingEmail(false);
         return;
       }
       
-      // If error is "User not found", then email is available
-      if (checkError && checkError.message.includes("User not found")) {
-        onNext(email, password);
-      } else {
-        // Any other error means we should be cautious
-        setError("Unable to verify email availability. Please try again later.");
-      }
+      // If we got this far, email should be available
+      onNext(email, password);
+      
     } catch (err: any) {
+      console.error("Email check error:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setCheckingEmail(false);
