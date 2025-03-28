@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -164,14 +163,14 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             disabled={isLoading}
             className="flex-1"
           />
-          <Button
+          <button
             type="button"
             onClick={addSocialLink}
             disabled={isLoading || !newUrl.trim()}
-            className="shrink-0 bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+            className="shrink-0 bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] rounded-md px-3 py-2 flex items-center justify-center"
           >
             <Plus className="h-4 w-4" />
-          </Button>
+          </button>
         </div>
 
         <div className="space-y-2 mt-4">
@@ -179,16 +178,14 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-md animate-fadeIn">
               {getSocialIcon(link.label)}
               <span className="flex-1 text-sm truncate">{link.url}</span>
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="sm"
                 onClick={() => removeSocialLink(index)}
                 disabled={isLoading}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 flex items-center justify-center hover:bg-gray-100 rounded-md"
               >
                 <Trash2 className="h-4 w-4" />
-              </Button>
+              </button>
             </div>
           ))}
         </div>
