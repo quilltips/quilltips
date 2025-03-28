@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
@@ -33,9 +32,9 @@ const Index = () => {
           </p>
           <div className="flex justify-center mt-8">
             <img 
-              src="/lovable-uploads/07b2360e-2730-4c9b-9d8e-f07e45c93759.png" 
+              src="/lovable-uploads/0b6b9cb2-dc5c-46e3-be9f-1f761dd356cf.png" 
               alt="Quilltips app showing tip feed on mobile phones" 
-              className="w-full max-w-2xl rounded-lg shadow-md"
+              className="w-full max-w-2xl rounded-lg"
             />
           </div>
         </div>

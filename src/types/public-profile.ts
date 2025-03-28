@@ -1,88 +1,83 @@
 
-import { SocialLink } from "./author";
+import { supabase } from "@/integrations/supabase/client";
 
-export interface PublicProfile {
-  id: string;
-  name: string;
-  bio: string | null;
-  avatar_url: string | null;
-  social_links: SocialLink[] | null;
-  created_at: string;
-}
+export type SyncProfileResult = {
+  success: boolean;
+  error?: string;
+};
 
-export interface PublicProfileResponse {
-  id: string;
-  name: string;
-  bio: string | null;
-  avatar_url: string | null;
-  social_links: SocialLink[] | null;
-  created_at: string;
-}
-
-// Define types for RPC function responses
-interface RPCResponse<T> {
-  data: T | null;
-  error: Error | null;
-}
-
-// Function to manually sync a private profile with its public version
-// This is now mostly a backup mechanism since automatic syncing is handled by the database trigger
-export const syncProfileToPublic = async (profileId: string) => {
-  // With the trigger in place, this function can be simplified to just
-  // check if the public profile exists and force a refresh if needed
-  const { supabase } = await import('@/integrations/supabase/client');
-  
+export async function syncProfileToPublic(userId: string): Promise<SyncProfileResult> {
   try {
-    // Using type assertion to bypass strict type checking for RPC parameters
-    const { data: existingPublic, error: checkError } = await (supabase.rpc as any)(
-      'get_public_profile_by_id', 
-      { profile_id: profileId }
-    ) as RPCResponse<PublicProfile[]>;
-      
-    if (checkError) {
-      console.error('Error checking existing public profile:', checkError);
-      return { success: false, error: checkError };
-    }
-    
-    // If public profile already exists, we're done (the trigger handles updates)
-    if (existingPublic && Array.isArray(existingPublic) && existingPublic.length > 0) {
-      return { success: true };
-    }
-    
-    // If no public profile exists yet, fetch the private profile and create one
-    const { data: privateProfile, error: fetchError } = await supabase
+    // Get the current profile data
+    const { data: profile, error: fetchError } = await supabase
       .from('profiles')
-      .select('id, name, bio, avatar_url, social_links')
-      .eq('id', profileId)
-      .single();
-      
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+
     if (fetchError) {
-      console.error('Error fetching private profile for sync:', fetchError);
-      return { success: false, error: fetchError };
+      console.error("Error fetching profile:", fetchError);
+      return { success: false, error: fetchError.message };
+    }
+
+    if (!profile) {
+      console.error("Profile not found");
+      return { success: false, error: "Profile not found" };
+    }
+
+    // Use Supabase RPC to call our SQL functions instead of direct table operations
+    // First check if the profile exists using a custom RPC call
+    const { data: existingProfile, error: checkError } = await supabase
+      .rpc('get_public_profile_by_id', { profile_id: userId });
+
+    if (checkError) {
+      console.error("Error checking public profile:", checkError);
+      return { success: false, error: checkError.message };
+    }
+
+    // Ensure social_links is a valid JSON object
+    let socialLinks = profile.social_links;
+    if (!socialLinks) {
+      socialLinks = [];
     }
     
-    // The trigger should handle this automatically, but just in case, we'll explicitly
-    // insert a new public profile record
-    // Using type assertion to bypass strict type checking for RPC parameters
-    const result = await (supabase.rpc as any)(
-      'insert_public_profile',
-      {
-        profile_id: profileId,
-        profile_name: privateProfile.name,
-        profile_bio: privateProfile.bio,
-        profile_avatar_url: privateProfile.avatar_url,
-        profile_social_links: privateProfile.social_links
+    // If public profile exists, update it, otherwise insert a new one
+    if (existingProfile && Array.isArray(existingProfile) && existingProfile.length > 0) {
+      const { error: updateError } = await supabase
+        .rpc('update_public_profile', {
+          profile_id: userId,
+          profile_name: profile.name || '',
+          profile_bio: profile.bio || '',
+          profile_avatar_url: profile.avatar_url || '',
+          profile_social_links: socialLinks
+        });
+
+      if (updateError) {
+        console.error("Error updating public profile:", updateError);
+        return { success: false, error: updateError.message };
       }
-    ) as RPCResponse<any>;
-    
-    if (result.error) {
-      console.error('Error creating public profile:', result.error);
-      return { success: false, error: result.error };
+    } else {
+      const { error: insertError } = await supabase
+        .rpc('insert_public_profile', {
+          profile_id: userId,
+          profile_name: profile.name || '',
+          profile_bio: profile.bio || '',
+          profile_avatar_url: profile.avatar_url || '',
+          profile_social_links: socialLinks
+        });
+
+      if (insertError) {
+        console.error("Error inserting public profile:", insertError);
+        return { success: false, error: insertError.message };
+      }
     }
-    
+
     return { success: true };
   } catch (error) {
-    console.error('Unexpected error in syncProfileToPublic:', error);
-    return { success: false, error };
+    console.error("Unexpected error syncing profile:", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    };
   }
-};
+}

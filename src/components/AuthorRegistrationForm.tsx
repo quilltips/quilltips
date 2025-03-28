@@ -36,7 +36,22 @@ export const AuthorRegistrationForm = () => {
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const bio = formData.get("bio") as string;
-    const socialLinks = JSON.parse(formData.get("socialLinks") as string || "[]");
+    
+    // Parse the social links, ensure it's a valid JSON array or default to empty array
+    let socialLinks = [];
+    try {
+      const socialLinksString = formData.get("socialLinks") as string;
+      if (socialLinksString && socialLinksString.trim()) {
+        const parsed = JSON.parse(socialLinksString);
+        if (Array.isArray(parsed)) {
+          socialLinks = parsed;
+        } else {
+          console.warn("Social links is not an array, defaulting to empty array");
+        }
+      }
+    } catch (err) {
+      console.error("Error parsing social links:", err);
+    }
 
     try {
       console.log("Starting registration process...");
@@ -92,12 +107,18 @@ export const AuthorRegistrationForm = () => {
             console.error("Profile update error:", updateError);
           } else {
             // Create a corresponding public profile after successful profile update
-            await syncProfileToPublic(data.user.id);
+            const syncResult = await syncProfileToPublic(data.user.id);
+            if (!syncResult.success) {
+              console.error("Error syncing profile to public:", syncResult.error);
+            }
           }
         }
       } else if (data.user) {
         // Create public profile even without avatar
-        await syncProfileToPublic(data.user.id);
+        const syncResult = await syncProfileToPublic(data.user.id);
+        if (!syncResult.success) {
+          console.error("Error syncing profile to public:", syncResult.error);
+        }
       }
 
       console.log("Registration successful:", data);

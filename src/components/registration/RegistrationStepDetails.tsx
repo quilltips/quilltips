@@ -19,10 +19,7 @@ export const RegistrationStepDetails = ({
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-semibold text-[#2D3748]">Complete your profile</h2>
-        <p className="text-muted-foreground">
-          Tell readers about yourself
-        </p>
+        <h2 className="text-2xl font-semibold text-center text-[#2D3748]">Make your profile</h2>
       </div>
 
       {error && (

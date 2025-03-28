@@ -79,8 +79,8 @@ export const QRCodesList = ({ authorId }: QRCodesListProps) => {
         
         <div className="flex justify-center">
           <Link 
-            to="/about#how-it-works" 
-            className="text-sm text-[#718096] hover:text-[#2D3748] flex items-center gap-1"
+            to="/how-it-works" 
+            className="text-sm text-[#718096] hover:text-[#2D3748] flex items-center gap-1 underline"
           >
             <HelpCircle size={14} />
             How does it work?

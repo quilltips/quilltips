@@ -6,6 +6,7 @@ import { QRCodeLoading } from "@/components/qr/QRCodeLoading";
 import { QRCodeNotFound } from "@/components/qr/QRCodeNotFound";
 import { useQRCodeDetails } from "@/hooks/use-qr-code-details";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 const QRCodeDetails = () => {
   const {
@@ -60,6 +61,16 @@ const QRCodeDetails = () => {
             <div className="space-y-1 pt-2">
               <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
               <p className="text-muted-foreground">by {qrCode.author?.name || 'Unknown Author'}</p>
+              
+              {/* Added publisher and release date info */}
+              <div className="mt-2 text-sm text-muted-foreground">
+                {qrCode.publisher && (
+                  <p>Publisher: {qrCode.publisher}</p>
+                )}
+                {qrCode.release_date && (
+                  <p>Released: {format(new Date(qrCode.release_date), 'MMMM yyyy')}</p>
+                )}
+              </div>
             </div>
           </div>
             

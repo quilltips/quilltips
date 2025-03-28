@@ -3,10 +3,11 @@ import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
-import { Button } from "./ui/button";
-import { Plus, Trash2, Camera, Globe, Twitter, Facebook, Share2 } from "lucide-react";
+import { Plus, Trash2, Camera, Globe, Twitter, Facebook, Share2, HelpCircle } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Button } from "./ui/button";
 
 interface SocialLink {
   url: string;
@@ -92,15 +93,14 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             id="avatar-upload"
             disabled={isLoading}
           />
-          <Button
+          <button
             type="button"
-            variant="outline"
             onClick={() => document.getElementById('avatar-upload')?.click()}
             disabled={isLoading}
-            className="hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
+            className="text-sm text-[#2D3748] hover:underline"
           >
-            {selectedFileName ? 'Change photo' : 'Add a photo'}
-          </Button>
+            Add a photo
+          </button>
           {selectedFileName && (
             <p className="text-sm text-muted-foreground mt-1">
               Selected: {selectedFileName}
@@ -110,7 +110,23 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="name">Full Name</Label>
+        <div className="flex items-center gap-1.5">
+          <Label htmlFor="name">Enter your full name</Label>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button type="button" className="inline-flex">
+                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">
+                  We need your full name for verification purposes. Not published yet? You can still create an account.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <Input
           id="name"
           name="name"
@@ -122,19 +138,18 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bio">Short Bio</Label>
+        <Label htmlFor="bio">Enter your bio (optional)</Label>
         <Textarea
           id="bio"
           name="bio"
           placeholder="Tell readers a bit about yourself"
-          required
           className="hover-lift text-left min-h-[120px] resize-none"
           disabled={isLoading}
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Social Links</Label>
+        <Label>Enter your website or social media links (optional)</Label>
         <input 
           type="hidden" 
           name="socialLinks" 
@@ -154,7 +169,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             type="button"
             onClick={addSocialLink}
             disabled={isLoading || !newUrl.trim()}
-            className="shrink-0 bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+            className="shrink-0 bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] px-3 py-2 flex items-center justify-center"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -167,11 +182,11 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
               <span className="flex-1 text-sm truncate">{link.url}</span>
               <Button
                 type="button"
-                variant="ghost"
-                size="sm"
                 onClick={() => removeSocialLink(index)}
                 disabled={isLoading}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 flex items-center justify-center hover:bg-gray-100 rounded-md"
+                variant="ghost"
+                size="icon"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

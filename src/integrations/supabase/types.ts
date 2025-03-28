@@ -48,6 +48,33 @@ export type Database = {
         }
         Relationships: []
       }
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          id: string
+          name: string | null
+          social_links: Json | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          id: string
+          name?: string | null
+          social_links?: Json | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          social_links?: Json | null
+        }
+        Relationships: []
+      }
       qr_codes: {
         Row: {
           author_id: string
@@ -259,7 +286,52 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_public_profile_by_id: {
+        Args: {
+          profile_id: string
+        }
+        Returns: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          id: string
+          name: string | null
+          social_links: Json | null
+        }[]
+      }
+      get_public_profile_by_name: {
+        Args: {
+          profile_name: string
+        }
+        Returns: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          id: string
+          name: string | null
+          social_links: Json | null
+        }[]
+      }
+      insert_public_profile: {
+        Args: {
+          profile_id: string
+          profile_name: string
+          profile_bio: string
+          profile_avatar_url: string
+          profile_social_links: Json
+        }
+        Returns: undefined
+      }
+      update_public_profile: {
+        Args: {
+          profile_id: string
+          profile_name: string
+          profile_bio: string
+          profile_avatar_url: string
+          profile_social_links: Json
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

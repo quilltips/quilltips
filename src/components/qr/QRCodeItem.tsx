@@ -1,7 +1,7 @@
 
 import { Card } from "../ui/card";
 import { useNavigate } from "react-router-dom";
-import { Book, QrCode } from "lucide-react";
+import { QrCode } from "lucide-react";
 
 interface QRCodeItemProps {
   qrCode: {
@@ -18,6 +18,7 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
+    // Fix: Use the ID directly without adding path prefix
     navigate(`/author/qr/${qrCode.id}`);
   };
 

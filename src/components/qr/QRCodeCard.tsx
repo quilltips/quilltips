@@ -18,7 +18,7 @@ interface QRCodeCardProps {
     average_tip?: number;
     last_tip_date?: string | null;
   };
-  onNavigate: (id: string) => void;
+  onNavigate: () => void;
 }
 
 export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
@@ -29,7 +29,7 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
       <div className="p-4 flex items-start gap-4">
         <div 
           className="w-16 h-24 flex-shrink-0 bg-muted rounded-lg overflow-hidden cursor-pointer"
-          onClick={() => onNavigate(`/author/qr/${qrCode.id}`)}
+          onClick={onNavigate}
         >
           {qrCode.cover_image ? (
             <img
@@ -47,7 +47,7 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
         <div className="flex-1 min-w-0">
           <h3 
             className="text-lg font-semibold leading-tight mb-1 hover:text-[#9b87f5] cursor-pointer"
-            onClick={() => onNavigate(`/author/qr/${qrCode.id}`)}
+            onClick={onNavigate}
           >
             {qrCode.book_title}
           </h3>
