@@ -19,6 +19,7 @@ import AuthorQRCodeDetails from "@/pages/AuthorQRCodeDetails";
 import BookQRCodesPage from "@/pages/BookQRCodesPage";
 import TipFeedPage from "@/pages/TipFeedPage";
 import AuthorDataPage from "@/pages/AuthorDataPage";
+import HowItWorks from "@/pages/HowItWorks";
 
 export const routes = [
   { path: "/", element: <Index /> },
@@ -39,6 +40,7 @@ export const routes = [
   { path: "/author/book-qr-codes", element: <BookQRCodesPage /> },
   { path: "/author/tip-feed", element: <TipFeedPage /> },
   { path: "/author/data", element: <AuthorDataPage /> },
+  { path: "/how-it-works", element: <HowItWorks /> },
   { path: "/qr-summary", element: <QRCodeSummary /> },
   { path: "/qr/:id", element: <QRCodeDetails /> },
 ];
