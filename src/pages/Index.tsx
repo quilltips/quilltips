@@ -34,7 +34,7 @@ const Index = () => {
             <img 
               src="/lovable-uploads/0b6b9cb2-dc5c-46e3-be9f-1f761dd356cf.png" 
               alt="Quilltips app showing tip feed on mobile phones" 
-              className="w-full max-w-2xl rounded-lg shadow-md"
+              className="w-full max-w-xl rounded-lg shadow-md object-contain"
             />
           </div>
         </div>
