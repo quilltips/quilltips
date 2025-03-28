@@ -113,7 +113,11 @@ export const AuthorQRCodesList = ({
         <div className="space-y-6">
           <div className="space-y-4">
             {displayedQRCodes?.map(qr => (
-              <QRCodeCard key={qr.id} qrCode={qr} onNavigate={id => navigate(`/qr/${id}`)} />
+              <QRCodeCard 
+                key={qr.id} 
+                qrCode={qr} 
+                onNavigate={id => navigate(`/author/qr/${id}`)} 
+              />
             ))}
             
             {qrCodes.length > 5 && (

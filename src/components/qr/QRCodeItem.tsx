@@ -1,7 +1,7 @@
 
 import { Card } from "../ui/card";
 import { useNavigate } from "react-router-dom";
-import { Book, QrCode } from "lucide-react";
+import { QrCode } from "lucide-react";
 
 interface QRCodeItemProps {
   qrCode: {
