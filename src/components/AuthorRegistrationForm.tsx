@@ -36,7 +36,18 @@ export const AuthorRegistrationForm = () => {
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const bio = formData.get("bio") as string;
-    const socialLinks = JSON.parse(formData.get("socialLinks") as string || "[]");
+    
+    // Parse the social links, ensure it's a valid JSON array or default to empty array
+    let socialLinks = [];
+    try {
+      const socialLinksString = formData.get("socialLinks") as string;
+      if (socialLinksString && socialLinksString.trim()) {
+        socialLinks = JSON.parse(socialLinksString);
+      }
+    } catch (err) {
+      console.error("Error parsing social links:", err);
+      socialLinks = [];
+    }
 
     try {
       console.log("Starting registration process...");
