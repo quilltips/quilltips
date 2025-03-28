@@ -25,29 +25,32 @@ export async function syncProfileToPublic(userId: string): Promise<SyncProfileRe
       return { success: false, error: "Profile not found" };
     }
 
-    // Check if public profile exists
-    const { data: existingPublicProfile, error: checkError } = await supabase
-      .from('public_profiles')
-      .select('id')
-      .eq('id', userId)
-      .maybeSingle();
+    // Use Supabase RPC to call our SQL functions instead of direct table operations
+    // First check if the profile exists using a custom RPC call
+    const { data: existingProfile, error: checkError } = await supabase
+      .rpc('get_public_profile_by_id', { profile_id: userId });
 
     if (checkError) {
       console.error("Error checking public profile:", checkError);
       return { success: false, error: checkError.message };
     }
 
+    // Ensure social_links is a valid JSON object
+    let socialLinks = profile.social_links;
+    if (!socialLinks) {
+      socialLinks = [];
+    }
+    
     // If public profile exists, update it, otherwise insert a new one
-    if (existingPublicProfile) {
+    if (existingProfile && existingProfile.length > 0) {
       const { error: updateError } = await supabase
-        .from('public_profiles')
-        .update({
-          name: profile.name,
-          bio: profile.bio,
-          avatar_url: profile.avatar_url,
-          social_links: profile.social_links
-        })
-        .eq('id', userId);
+        .rpc('update_public_profile', {
+          profile_id: userId,
+          profile_name: profile.name || '',
+          profile_bio: profile.bio || '',
+          profile_avatar_url: profile.avatar_url || '',
+          profile_social_links: socialLinks
+        });
 
       if (updateError) {
         console.error("Error updating public profile:", updateError);
@@ -55,13 +58,12 @@ export async function syncProfileToPublic(userId: string): Promise<SyncProfileRe
       }
     } else {
       const { error: insertError } = await supabase
-        .from('public_profiles')
-        .insert({
-          id: userId,
-          name: profile.name,
-          bio: profile.bio,
-          avatar_url: profile.avatar_url,
-          social_links: profile.social_links
+        .rpc('insert_public_profile', {
+          profile_id: userId,
+          profile_name: profile.name || '',
+          profile_bio: profile.bio || '',
+          profile_avatar_url: profile.avatar_url || '',
+          profile_social_links: socialLinks
         });
 
       if (insertError) {
