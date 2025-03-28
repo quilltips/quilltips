@@ -89,15 +89,15 @@ const QRCodeSummary = () => {
                   </h1>
                   <div className="flex items-center gap-8">
                     <img 
-                      src="/lovable-uploads/09f11ba7-5f45-4df5-b538-80a8d4c09be2.png" 
+                      src="/lovable-uploads/bb95ca0a-0622-49f6-ac40-bed5144463f3.png" 
                       alt="Quill Icon" 
                       className="h-16 w-16"
                     />
                     <div className="text-2xl text-[#403E43]">+</div>
                     <img 
-                      src={qrCode.cover_image || "/placeholder.svg"} 
-                      alt={qrCode.book_title} 
-                      className="h-16 w-16 object-cover rounded-lg shadow-sm"
+                      src="/lovable-uploads/08d1f9f5-c49c-4965-a70a-d57f59cec0f0.png" 
+                      alt="Book Icon" 
+                      className="h-16 w-16 object-contain"
                     />
                   </div>
                 </div>
