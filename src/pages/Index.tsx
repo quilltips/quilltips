@@ -1,5 +1,3 @@
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
@@ -34,7 +32,7 @@ const Index = () => {
             <img 
               src="/lovable-uploads/0b6b9cb2-dc5c-46e3-be9f-1f761dd356cf.png" 
               alt="Quilltips app showing tip feed on mobile phones" 
-              className="w-full max-w-xl rounded-lg shadow-md object-contain"
+              className="w-full max-w-2xl rounded-lg"
             />
           </div>
         </div>
