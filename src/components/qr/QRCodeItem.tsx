@@ -18,6 +18,7 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
+    // Fix: Use the ID directly without adding path prefix
     navigate(`/author/qr/${qrCode.id}`);
   };
 
