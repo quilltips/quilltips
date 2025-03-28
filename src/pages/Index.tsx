@@ -33,7 +33,7 @@ const Index = () => {
           </p>
           <div className="flex justify-center mt-8">
             <img 
-              src="/lovable-uploads/07b2360e-2730-4c9b-9d8e-f07e45c93759.png" 
+              src="/lovable-uploads/4a437f0d-3394-4363-91b3-19d9c56ec4f0.png" 
               alt="Quilltips app showing tip feed on mobile phones" 
               className="w-full max-w-2xl rounded-lg shadow-md"
             />
@@ -117,3 +117,4 @@ const Index = () => {
     </Layout>;
 };
 export default Index;
+
