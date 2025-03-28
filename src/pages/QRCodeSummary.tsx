@@ -89,13 +89,13 @@ const QRCodeSummary = () => {
                   </h1>
                   <div className="flex items-center gap-8">
                     <img 
-                      src="/lovable-uploads/08b0ecf8-9c64-4916-8f42-0182064f90b1.png" 
+                      src="/lovable-uploads/quill_icon.png" 
                       alt="Quill Icon" 
                       className="h-16 w-16"
                     />
                     <div className="text-2xl text-[#403E43]">+</div>
                     <img 
-                      src="/lovable-uploads/book-icon.png" 
+                      src="/lovable-uploads/book_icon.png" 
                       alt="Book Icon" 
                       className="h-16 w-16 object-contain"
                     />
