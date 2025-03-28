@@ -42,7 +42,7 @@ export async function syncProfileToPublic(userId: string): Promise<SyncProfileRe
     }
     
     // If public profile exists, update it, otherwise insert a new one
-    if (existingProfile && existingProfile.length > 0) {
+    if (existingProfile && Array.isArray(existingProfile) && existingProfile.length > 0) {
       const { error: updateError } = await supabase
         .rpc('update_public_profile', {
           profile_id: userId,
