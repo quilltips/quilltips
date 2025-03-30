@@ -1,3 +1,4 @@
+
 import { Search, Book, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -6,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSearch } from "@/hooks/use-search";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export const SearchBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
