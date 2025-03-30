@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSearch } from "@/hooks/use-search";
 
 export const SearchBar = () => {
@@ -84,59 +85,61 @@ export const SearchBar = () => {
           side="bottom"
           sideOffset={5}
         >
-          <Card className="divide-y">
+          <Card className="divide-y max-h-[60vh]">
             {isLoading ? (
               <div className="p-4 text-center text-muted-foreground">Searching...</div>
             ) : (
               <>
-                {results?.authors?.filter(author => author && author.id).map((author) => (
-                  <Link
-                    key={author.id}
-                    to={`/author/profile/${author.id}`}
-                    className="block p-4 hover:bg-accent"
-                    onClick={handleClosePopover}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <User className="h-4 w-4" />
-                      <Badge variant="secondary">Author</Badge>
+                <ScrollArea className="max-h-[50vh]">
+                  {results?.authors?.filter(author => author && author.id).map((author) => (
+                    <Link
+                      key={author.id}
+                      to={`/author/profile/${author.id}`}
+                      className="block p-4 hover:bg-accent"
+                      onClick={handleClosePopover}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <User className="h-4 w-4" />
+                        <Badge variant="secondary">Author</Badge>
+                      </div>
+                      <AuthorPublicProfileView
+                        name={author.name || "Anonymous Author"}
+                        bio={author.bio || "No bio available"}
+                        imageUrl="/placeholder.svg"
+                        authorId={author.id}
+                      />
+                    </Link>
+                  ))}
+                  {results?.books?.filter(book => book && book.id && book.author).map((book) => (
+                    <Link
+                      key={book.id}
+                      to={`/qr/${book.id}`}
+                      className="block p-4 hover:bg-accent"
+                      onClick={handleClosePopover}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <Book className="h-4 w-4" />
+                        <Badge variant="secondary">Book</Badge>
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="font-semibold">{book.book_title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          By {book.author?.name || "Anonymous Author"}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                  {query.trim() && !isLoading && !results?.authors?.length && !results?.books?.length && (
+                    <div className="p-4 text-center text-muted-foreground">
+                      No results found for "{query}"
                     </div>
-                    <AuthorPublicProfileView
-                      name={author.name || "Anonymous Author"}
-                      bio={author.bio || "No bio available"}
-                      imageUrl="/placeholder.svg"
-                      authorId={author.id}
-                    />
-                  </Link>
-                ))}
-                {results?.books?.filter(book => book && book.id && book.author).map((book) => (
-                  <Link
-                    key={book.id}
-                    to={`/qr/${book.id}`}
-                    className="block p-4 hover:bg-accent"
-                    onClick={handleClosePopover}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <Book className="h-4 w-4" />
-                      <Badge variant="secondary">Book</Badge>
+                  )}
+                  {!query.trim() && (
+                    <div className="p-4 text-center text-muted-foreground">
+                      Type to search...
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="font-semibold">{book.book_title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        By {book.author?.name || "Anonymous Author"}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-                {query.trim() && !isLoading && !results?.authors?.length && !results?.books?.length && (
-                  <div className="p-4 text-center text-muted-foreground">
-                    No results found for "{query}"
-                  </div>
-                )}
-                {!query.trim() && (
-                  <div className="p-4 text-center text-muted-foreground">
-                    Type to search...
-                  </div>
-                )}
+                  )}
+                </ScrollArea>
                 {query.trim() && (
                   <div className="p-3 border-t">
                     <button
