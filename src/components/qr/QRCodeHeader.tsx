@@ -18,7 +18,11 @@ export const QRCodeHeader = ({ coverImage, bookTitle }: QRCodeHeaderProps) => {
           />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">
-            <Book className="h-8 w-8 text-muted-foreground" />
+            <img 
+              src="/lovable-uploads/quill_icon.png"
+              alt="Quilltips Logo"
+              className="w-8 h-8 object-contain"
+            />
           </div>
         )}
       </div>

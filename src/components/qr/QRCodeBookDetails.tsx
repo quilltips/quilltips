@@ -20,7 +20,7 @@ export const QRCodeBookDetails = ({ book }: QRCodeBookDetailsProps) => {
     <div className="flex flex-col md:flex-row gap-8">
       <div className="w-full md:w-1/6 aspect-[2/3] relative rounded-lg overflow-hidden">
         <img
-          src={book.cover_image || "/placeholder.svg"}
+          src={book.cover_image || "/lovable-uploads/quill_icon.png"}
           alt={book.title}
           className="w-full h-full object-cover"
         />

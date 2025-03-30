@@ -27,7 +27,11 @@ export const QRCodeInfoCard = ({ qrCode }: QRCodeInfoCardProps) => {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Book className="h-12 w-12 text-muted-foreground" />
+            <img 
+              src="/lovable-uploads/quill_icon.png"
+              alt="Quilltips Logo"
+              className="w-10 h-10 object-contain"
+            />
           </div>
         )}
       </div>

@@ -36,7 +36,11 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
               className="w-full h-full object-cover rounded-md"
             />
           ) : (
-            <QrCode className="h-8 w-8 text-[#2D3748]" />
+            <img
+              src="/lovable-uploads/quill_icon.png" 
+              alt="Quilltips Logo"
+              className="h-6 w-6 object-contain"
+            />
           )}
         </div>
         
