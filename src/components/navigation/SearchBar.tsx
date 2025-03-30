@@ -1,5 +1,6 @@
+
 import { Search, Book, User } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -48,11 +49,20 @@ export const SearchBar = () => {
     retry: false,
   });
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && query.trim()) {
       navigate(`/search?q=${encodeURIComponent(query)}`);
+      setIsSearchOpen(false);
     }
-  };
+  }, [navigate, query]);
+
+  const handleQueryChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+  }, []);
+
+  const handleClosePopover = useCallback(() => {
+    setIsSearchOpen(false);
+  }, []);
 
   return (
     <div className="relative w-64">
@@ -63,7 +73,7 @@ export const SearchBar = () => {
           <Input
             ref={searchInputRef}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={handleQueryChange}
             onFocus={() => setIsSearchOpen(true)}
             onKeyDown={handleKeyDown}
             placeholder="Search authors or books..."
@@ -90,7 +100,7 @@ export const SearchBar = () => {
                     key={author.id}
                     to={`/author/profile/${author.id}`}
                     className="block p-4 hover:bg-accent"
-                    onClick={() => setIsSearchOpen(false)}
+                    onClick={handleClosePopover}
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <User className="h-4 w-4" />
@@ -109,7 +119,7 @@ export const SearchBar = () => {
                     key={book.id}
                     to={`/author/profile/${book.author.id}`}
                     className="block p-4 hover:bg-accent"
-                    onClick={() => setIsSearchOpen(false)}
+                    onClick={handleClosePopover}
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <Book className="h-4 w-4" />
