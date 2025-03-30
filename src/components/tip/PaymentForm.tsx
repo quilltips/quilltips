@@ -7,6 +7,7 @@ interface PaymentFormProps {
   amount: string;
   customAmount: string;
   onSubmit: (e: React.FormEvent) => Promise<void> | void;
+  onCancel?: () => void;
 }
 
 export const PaymentForm = ({
@@ -14,12 +15,13 @@ export const PaymentForm = ({
   amount,
   customAmount,
   onSubmit,
+  onCancel,
 }: PaymentFormProps) => {
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <div className="flex flex-row-reverse justify-between items-center gap-4 mt-6">
       <Button 
         type="submit" 
-        className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg transition-colors"
+        className="bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg transition-colors"
         disabled={isLoading || (amount === 'custom' && !customAmount)}
       >
         {isLoading ? (
@@ -28,9 +30,20 @@ export const PaymentForm = ({
             Processing...
           </>
         ) : (
-          'Next'
+          'Send Tip'
         )}
       </Button>
-    </form>
+      
+      {onCancel && (
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel}
+          className="border-gray-300 text-gray-700"
+        >
+          Cancel
+        </Button>
+      )}
+    </div>
   );
 };

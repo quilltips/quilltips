@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { TipForm } from "../TipForm";
 
@@ -9,9 +10,10 @@ interface QRCodeDialogProps {
     bookTitle: string;
   } | null;
   authorId: string;
+  authorName?: string;
 }
 
-export const QRCodeDialog = ({ isOpen, onClose, selectedQRCode, authorId }: QRCodeDialogProps) => {
+export const QRCodeDialog = ({ isOpen, onClose, selectedQRCode, authorId, authorName }: QRCodeDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -23,6 +25,7 @@ export const QRCodeDialog = ({ isOpen, onClose, selectedQRCode, authorId }: QRCo
         {selectedQRCode && (
           <TipForm 
             authorId={authorId}
+            authorName={authorName}
             bookTitle={selectedQRCode.bookTitle}
             qrCodeId={selectedQRCode.id}
             onSuccess={onClose}
