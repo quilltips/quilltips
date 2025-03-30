@@ -1,8 +1,9 @@
+
 console.log("🔥 SearchBar is rendering!");
 
 import { Search, Book, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ export const SearchBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchTrigger, setSearchTrigger] = useState(0); // ✅ Triggers `useQuery` updates
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -30,7 +32,6 @@ export const SearchBar = () => {
       }
     };
   
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -44,7 +45,6 @@ export const SearchBar = () => {
     }
   }, [searchTrigger]);
   
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     queryRef.current = e.target.value;
     setQueryDisplay(e.target.value);
@@ -62,7 +62,6 @@ export const SearchBar = () => {
   
     setSearchTrigger(prev => prev + 1);
   };
-
   
   const handleSearchFocus = () => {
     console.log("🔍 Input focused");
@@ -78,6 +77,14 @@ export const SearchBar = () => {
     setQueryDisplay(""); // ✅ Clears UI input
     queryRef.current = "";
     setIsSearchOpen(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && queryRef.current.trim()) {
+      e.preventDefault();
+      navigate(`/search?q=${encodeURIComponent(queryRef.current.trim())}`);
+      setIsSearchOpen(false);
+    }
   };
 
   const { data: searchResults, isLoading } = useQuery({
@@ -135,6 +142,7 @@ export const SearchBar = () => {
                 value={queryDisplay} // ✅ Shows the latest input
                 onChange={handleSearchChange}
                 onFocus={handleSearchFocus}
+                onKeyDown={handleKeyDown}
                 placeholder="Search authors or books..."
                 className="pl-10 hover-lift rounded-full"
                 aria-label="Search authors or books"

@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+
+import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
-import { Search as SearchIcon, Loader2, Book } from "lucide-react";
+import { Search as SearchIcon, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "./ui/badge";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useEffect } from "react";
 
 interface SearchResult {
   id: string;
@@ -22,12 +22,20 @@ interface SearchResult {
 }
 
 export const Search = () => {
-  const [query, setQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialQuery = searchParams.get("q") || "";
+  const [query, setQuery] = useState(initialQuery);
   const debouncedQuery = useDebounce(query, 300);
 
+  // Update the query when the URL parameter changes
   useEffect(() => {
-    console.log(" Search component mounted");
-  }, []);
+    const urlQuery = searchParams.get("q") || "";
+    setQuery(urlQuery);
+  }, [searchParams]);
+
+  useEffect(() => {
+    console.log("Search component mounted with query:", initialQuery);
+  }, [initialQuery]);
 
   const { data: searchResults, isLoading } = useQuery({
     queryKey: ['search', debouncedQuery],
@@ -67,24 +75,30 @@ export const Search = () => {
     setQuery(e.target.value);
   };
 
-  console.log("! Search component is rendering!");
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchParams({ q: query });
+  };
 
+  console.log("! Search component is rendering!");
 
   return (
     <div className="container mx-auto px-4 pt-24 pb-12">
       <div className="space-y-6 max-w-2xl mx-auto animate-fadeIn">
-        <Card className="p-6 shadow-lg bg-white/80 backdrop-blur-sm">
-          <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              value={query}
-              onChange={handleSearchChange}
-              placeholder="Search books or authors..."
-              className="pl-10 py-6 text-lg"
-              autoFocus
-            />
-          </div>
-        </Card>
+        <form onSubmit={handleSearchSubmit}>
+          <Card className="p-6 shadow-lg bg-white/80 backdrop-blur-sm">
+            <div className="relative">
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={handleSearchChange}
+                placeholder="Search books or authors..."
+                className="pl-10 py-6 text-lg"
+                autoFocus
+              />
+            </div>
+          </Card>
+        </form>
 
         {isLoading && (
           <div className="flex justify-center p-8">
@@ -94,6 +108,9 @@ export const Search = () => {
 
         {searchResults && searchResults.length > 0 && (
           <div className="space-y-4 animate-slideUp">
+            <h2 className="text-lg font-medium text-muted-foreground">
+              Search results for "{debouncedQuery}"
+            </h2>
             {searchResults.map((result: SearchResult) => (
               <Link 
                 key={result.id} 
@@ -144,9 +161,9 @@ export const Search = () => {
           </div>
         )}
 
-        {query && (!searchResults?.length) && !isLoading && (
+        {debouncedQuery && (!searchResults?.length) && !isLoading && (
           <Card className="p-6 text-center text-muted-foreground animate-fadeIn bg-white/80 backdrop-blur-sm">
-            No results found for "{query}"
+            No results found for "{debouncedQuery}"
           </Card>
         )}
       </div>
