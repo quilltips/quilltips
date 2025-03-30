@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, QrCode, Plus, HelpCircle } from "lucide-react";
+import { Loader2, QrCode, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
@@ -68,14 +68,6 @@ export const QRCodesList = ({ authorId }: QRCodesListProps) => {
         <div className="text-center py-4 text-[#718096]">
           You haven't created any QR codes yet.
         </div>
-        
-        <Button 
-          onClick={() => navigate('/author/create-qr')} 
-          className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] p-4 h-auto font-medium text-base"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          New QR code
-        </Button>
         
         <div className="flex justify-center">
           <Link 

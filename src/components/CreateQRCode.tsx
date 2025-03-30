@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -75,6 +76,11 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         throw qrError;
       }
 
+      toast({
+        title: "Success",
+        description: "Book information saved. Proceeding to QR code design.",
+      });
+
       // Navigate to the QR code design page with the created record
       navigate('/author/qr-design', {
         state: {
@@ -94,10 +100,10 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   };
 
   return (
-    <Card className="p-6">
-      <form onSubmit={handleSubmit} className="space-y-4 text-left">
+    <Card className="p-6 shadow-md bg-white">
+      <form onSubmit={handleSubmit} className="space-y-5 text-left">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Book Title</label>
+          <label className="text-sm font-medium">Book Title*</label>
           <Input
             value={bookTitle}
             onChange={(e) => setBookTitle(e.target.value)}
@@ -108,7 +114,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Publisher</label>
+          <label className="text-sm font-medium">Publisher*</label>
           <Input
             value={publisher}
             onChange={(e) => setPublisher(e.target.value)}
@@ -119,7 +125,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">ISBN</label>
+          <label className="text-sm font-medium">ISBN*</label>
           <Input
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
@@ -163,12 +169,13 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             onChange={(e) => setCoverImage(e.target.files?.[0] || null)}
             className="text-left"
           />
+          <p className="text-xs text-muted-foreground">Recommended size: 600x900 pixels</p>
         </div>
         
         <Button 
           type="submit" 
           disabled={isLoading} 
-          className="w-full text-center bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+          className="w-full text-center bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] py-5 h-auto font-medium"
         >
           {isLoading ? "Processing..." : "Configure QR Code"}
         </Button>

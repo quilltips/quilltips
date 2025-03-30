@@ -11,6 +11,7 @@ import { QrCode, Plus } from "lucide-react";
 import { QRCodesList } from "@/components/qr/QRCodesList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CreateQRCode } from "@/components/CreateQRCode";
 
 const BookQRCodesPage = () => {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ const BookQRCodesPage = () => {
               <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Book QR Codes</h1>
               <Button 
                 onClick={() => navigate('/author/create-qr')} 
-                className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium"
+                className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium md:hidden"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 New QR Code
@@ -97,19 +98,16 @@ const BookQRCodesPage = () => {
                 <QRCodesList authorId={profile.id} />
               </TabsContent>
               <TabsContent value="new" className="mt-6">
-                <div className="text-center py-8">
-                  <QrCode className="h-12 w-12 mx-auto mb-4 text-[#2D3748]" />
-                  <h3 className="text-xl font-medium mb-2">Create a new QR code</h3>
-                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                    Generate a QR code for your book to help readers support you directly.
-                  </p>
-                  <Button 
-                    onClick={() => navigate('/author/create-qr')} 
-                    className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    New QR Code
-                  </Button>
+                <div className="max-w-2xl mx-auto">
+                  <div className="text-center mb-8">
+                    <QrCode className="h-12 w-12 mx-auto mb-4 text-[#2D3748]" />
+                    <h3 className="text-2xl font-medium mb-2">Create a new QR code</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Generate a QR code for your book to help readers support you directly.
+                    </p>
+                  </div>
+                  
+                  <CreateQRCode authorId={profile.id} />
                 </div>
               </TabsContent>
             </Tabs>
