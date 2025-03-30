@@ -95,37 +95,51 @@ export const SearchBar = () => {
                     <Link
                       key={author.id}
                       to={`/author/profile/${author.id}`}
-                      className="block p-4 hover:bg-accent"
+                      className="block p-2 hover:bg-accent"
                       onClick={handleClosePopover}
                     >
-                      <div className="flex items-center gap-2 mb-2">
-                        <User className="h-4 w-4" />
-                        <Badge variant="secondary">Author</Badge>
+                      <div className="flex items-center gap-2 mb-1">
+                        <User className="h-3 w-3" />
+                        <Badge variant="secondary" className="text-xs py-0 px-1.5">Author</Badge>
                       </div>
-                      <AuthorPublicProfileView
-                        name={author.name || "Anonymous Author"}
-                        bio={author.bio || "No bio available"}
-                        imageUrl="/placeholder.svg"
-                        authorId={author.id}
-                      />
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs">
+                          {author.name ? author.name.charAt(0).toUpperCase() : 'A'}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm truncate">{author.name || "Anonymous Author"}</p>
+                          <p className="text-xs text-muted-foreground truncate max-w-[300px]">
+                            {author.bio ? (author.bio.length > 60 ? author.bio.substring(0, 60) + '...' : author.bio) : "No bio available"}
+                          </p>
+                        </div>
+                      </div>
                     </Link>
                   ))}
                   {results?.books?.filter(book => book && book.id && book.author).map((book) => (
                     <Link
                       key={book.id}
                       to={`/qr/${book.id}`}
-                      className="block p-4 hover:bg-accent"
+                      className="block p-2 hover:bg-accent"
                       onClick={handleClosePopover}
                     >
-                      <div className="flex items-center gap-2 mb-2">
-                        <Book className="h-4 w-4" />
-                        <Badge variant="secondary">Book</Badge>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Book className="h-3 w-3" />
+                        <Badge variant="secondary" className="text-xs py-0 px-1.5">Book</Badge>
                       </div>
-                      <div className="space-y-2">
-                        <h3 className="font-semibold">{book.book_title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          By {book.author?.name || "Anonymous Author"}
-                        </p>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-10 bg-muted rounded flex items-center justify-center flex-shrink-0">
+                          <img 
+                            src="/lovable-uploads/quill_icon.png" 
+                            alt="Book cover" 
+                            className="h-4 w-4 object-contain"
+                          />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm truncate">{book.book_title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            By {book.author?.name || "Anonymous Author"}
+                          </p>
+                        </div>
                       </div>
                     </Link>
                   ))}
@@ -141,15 +155,15 @@ export const SearchBar = () => {
                   )}
                 </ScrollArea>
                 {query.trim() && (
-                  <div className="p-3 border-t">
+                  <div className="p-2 border-t">
                     <button
                       onClick={() => {
                         navigateToSearchPage();
                         handleClosePopover();
                       }}
-                      className="w-full py-2 px-3 bg-secondary/50 hover:bg-secondary rounded-md flex items-center justify-center gap-2 text-sm font-medium transition-colors"
+                      className="w-full py-1.5 px-3 bg-secondary/50 hover:bg-secondary rounded-md flex items-center justify-center gap-2 text-xs font-medium transition-colors"
                     >
-                      <Search className="h-4 w-4" />
+                      <Search className="h-3 w-3" />
                       View all results for "{query}"
                     </button>
                   </div>
