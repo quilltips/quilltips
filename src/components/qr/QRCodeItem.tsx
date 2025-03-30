@@ -39,7 +39,7 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
             <img
               src="/lovable-uploads/quill_icon.png" 
               alt="Quilltips Logo"
-              className="h-10 w-10 object-contain"
+              className="h-6 w-6 object-contain"
             />
           )}
         </div>

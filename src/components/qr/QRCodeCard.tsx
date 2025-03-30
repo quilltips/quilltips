@@ -42,7 +42,7 @@ export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
               <img
                 src="/lovable-uploads/quill_icon.png"
                 alt="Quilltips Logo"
-                className="h-12 w-12 object-contain"
+                className="h-8 w-8 object-contain"
               />
             </div>
           )}

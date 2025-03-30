@@ -81,13 +81,13 @@ export const QRCodeSuccessModal = ({
                 <img 
                   src="/lovable-uploads/quill_icon.png" 
                   alt="Quill Icon" 
-                  className="h-16 w-16"
+                  className="h-10 w-10"
                 />
                 <div className="text-2xl text-[#403E43]">+</div>
                 <img 
                   src="/lovable-uploads/book_icon.png" 
                   alt="Book Icon" 
-                  className="h-16 w-16 object-contain"
+                  className="h-10 w-10 object-contain"
                 />
               </div>
             </div>

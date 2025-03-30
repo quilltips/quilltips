@@ -55,12 +55,22 @@ const QRCodeDetails = () => {
         <div className="max-w-md mx-auto space-y-8">
           {/* Book details card with horizontal layout */}
           <div className="flex items-start space-x-6">
-            <div className="w-32 aspect-[2/3] relative shrink-0">
-              <img
-                src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
-                alt={qrCode.book_title}
-                className="w-full h-full object-cover rounded-md"
-              />
+            <div className="w-32 aspect-[2/3] relative shrink-0 rounded-md overflow-hidden">
+              {qrCode.cover_image ? (
+                <img
+                  src={qrCode.cover_image}
+                  alt={qrCode.book_title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/quill_icon.png"
+                    alt="Quilltips Logo"
+                    className="w-8 h-8 object-contain"
+                  />
+                </div>
+              )}
             </div>
             <div className="space-y-1 pt-2">
               <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
