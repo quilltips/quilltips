@@ -16,7 +16,7 @@ export const TipAmountSelector = ({
   onAmountChange,
   onCustomAmountChange,
 }: TipAmountSelectorProps) => {
-  const predefinedAmounts = ["5", "10", "15", "25"];
+  const predefinedAmounts = ["3", "5", "10"];
 
   return (
     <div className="space-y-4">
