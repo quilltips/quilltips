@@ -1,171 +1,32 @@
 
-import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { Card } from "./ui/card";
-import { Input } from "./ui/input";
-import { Search as SearchIcon, Loader2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "./ui/badge";
-import { useDebounce } from "@/hooks/use-debounce";
-
-interface SearchResult {
-  id: string;
-  book_title: string;
-  publisher?: string;
-  cover_image?: string;
-  author: {
-    id: string;
-    name: string;
-    avatar_url?: string;
-  };
-}
+import { SearchForm } from "./search/SearchForm";
+import { SearchResultsList } from "./search/SearchResultsList";
+import { useSearchPage } from "@/hooks/use-search-page";
 
 export const Search = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialQuery = searchParams.get("q") || "";
-  const [query, setQuery] = useState(initialQuery);
-  const debouncedQuery = useDebounce(query, 300);
-
-  // Update the query when the URL parameter changes
-  useEffect(() => {
-    const urlQuery = searchParams.get("q") || "";
-    setQuery(urlQuery);
-  }, [searchParams]);
-
-  useEffect(() => {
-    console.log("Search component mounted with query:", initialQuery);
-  }, [initialQuery]);
-
-  const { data: searchResults, isLoading } = useQuery({
-    queryKey: ['search', debouncedQuery],
-    queryFn: async () => {
-      if (!debouncedQuery.trim()) return [];
-      
-      const { data: books, error } = await supabase
-        .from('qr_codes')
-        .select(`
-          id,
-          book_title,
-          publisher,
-          cover_image,
-          author:profiles (
-            id,
-            name,
-            avatar_url
-          )
-        `)
-        .or(`book_title.ilike.%${debouncedQuery}%,author.name.ilike.%${debouncedQuery}%`)
-        .order('book_title');
-
-      if (error) {
-        console.error('Search error:', error);
-        throw error;
-      }
-      
-      console.log('Search results:', books);
-      return books || [];
-    },
-    enabled: debouncedQuery.length > 0,
-    staleTime: 1000,
-    refetchOnWindowFocus: false
-  });
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSearchParams({ q: query });
-  };
-
-  console.log("! Search component is rendering!");
+  const {
+    query,
+    searchResults,
+    isLoading,
+    debouncedQuery,
+    handleSearchChange,
+    handleSearchSubmit
+  } = useSearchPage();
 
   return (
     <div className="container mx-auto px-4 pt-24 pb-12">
       <div className="space-y-6 max-w-2xl mx-auto animate-fadeIn">
-        <form onSubmit={handleSearchSubmit}>
-          <Card className="p-6 shadow-lg bg-white/80 backdrop-blur-sm">
-            <div className="relative">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={handleSearchChange}
-                placeholder="Search books or authors..."
-                className="pl-10 py-6 text-lg"
-                autoFocus
-              />
-            </div>
-          </Card>
-        </form>
+        <SearchForm 
+          query={query} 
+          onQueryChange={handleSearchChange} 
+          onSubmit={handleSearchSubmit} 
+        />
 
-        {isLoading && (
-          <div className="flex justify-center p-8">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        )}
-
-        {searchResults && searchResults.length > 0 && (
-          <div className="space-y-4 animate-slideUp">
-            <h2 className="text-lg font-medium text-muted-foreground">
-              Search results for "{debouncedQuery}"
-            </h2>
-            {searchResults.map((result: SearchResult) => (
-              <Link 
-                key={result.id} 
-                to={`/qr/${result.id}`}
-                className="block transition-transform hover:scale-102"
-              >
-                <Card className="p-6 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-sm">
-                  <div className="flex items-start gap-4">
-                    {result.cover_image ? (
-                      <div className="w-24 h-32 flex-shrink-0 overflow-hidden rounded-md">
-                        <img 
-                          src={result.cover_image} 
-                          alt={result.book_title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-24 h-32 rounded-md flex items-center justify-center flex-shrink-0 bg-muted">
-                        <img 
-                          src="/lovable-uploads/quill_icon.png" 
-                          alt="Quilltips Logo"
-                          className="h-12 w-12 object-contain"
-                        />
-                      </div>
-                    )}
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className="text-sm">Book</Badge>
-                      </div>
-                      <h3 className="text-lg font-semibold">{result.book_title}</h3>
-                      <Link 
-                        to={`/author/profile/${result.author.id}`}
-                        className="text-sm text-muted-foreground hover:text-primary"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        by {result.author.name || 'Anonymous Author'}
-                      </Link>
-                      {result.publisher && (
-                        <p className="text-sm text-muted-foreground">
-                          Published by {result.publisher}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {debouncedQuery && (!searchResults?.length) && !isLoading && (
-          <Card className="p-6 text-center text-muted-foreground animate-fadeIn bg-white/80 backdrop-blur-sm">
-            No results found for "{debouncedQuery}"
-          </Card>
-        )}
+        <SearchResultsList 
+          results={searchResults || []} 
+          isLoading={isLoading} 
+          query={debouncedQuery} 
+        />
       </div>
     </div>
   );
