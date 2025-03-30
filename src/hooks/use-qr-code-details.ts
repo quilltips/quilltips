@@ -21,8 +21,11 @@ export const useQRCodeDetails = () => {
     setMessage,
     name,
     setName,
+    email,
+    setEmail,
     isLoading,
-    handleSubmit
+    handleSubmit,
+    authorFirstName
   } = useTipSubmission(qrCode);
 
   const [showTipForm, setShowTipForm] = useState(false);
@@ -41,9 +44,12 @@ export const useQRCodeDetails = () => {
     setMessage,
     name,
     setName,
+    email,
+    setEmail,
     isLoading,
     handleSubmit,
     showTipForm,
-    setShowTipForm
+    setShowTipForm,
+    authorFirstName
   };
 };

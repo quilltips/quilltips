@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "./use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,18 +5,23 @@ import { useNavigate } from "react-router-dom";
 
 interface UseTipFormProps {
   authorId: string;
+  authorName?: string;
   bookTitle?: string;
   qrCodeId?: string;
 }
 
-export const useTipForm = ({ authorId, bookTitle, qrCodeId }: UseTipFormProps) => {
+export const useTipForm = ({ authorId, authorName, bookTitle, qrCodeId }: UseTipFormProps) => {
   const [amount, setAmount] = useState("5");
   const [customAmount, setCustomAmount] = useState("");
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Extract author's first name
+  const authorFirstName = authorName?.split(' ')[0] || 'the author';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +29,17 @@ export const useTipForm = ({ authorId, bookTitle, qrCodeId }: UseTipFormProps) =
     const finalAmount = amount === 'custom' ? customAmount : amount;
 
     try {
-      console.log('Creating checkout session with params:', { amount: finalAmount, authorId, message, name, bookTitle, qrCodeId });
+      if (!email) throw new Error('Email is required');
+      
+      console.log('Creating checkout session with params:', { 
+        amount: finalAmount, 
+        authorId, 
+        message, 
+        name, 
+        email,
+        bookTitle, 
+        qrCodeId 
+      });
       
       const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
         body: {
@@ -33,6 +47,7 @@ export const useTipForm = ({ authorId, bookTitle, qrCodeId }: UseTipFormProps) =
           authorId,
           message,
           name,
+          email,
           bookTitle,
           qrCodeId,
         },
@@ -82,7 +97,10 @@ export const useTipForm = ({ authorId, bookTitle, qrCodeId }: UseTipFormProps) =
     setMessage,
     name,
     setName,
+    email,
+    setEmail,
     isLoading,
-    handleSubmit
+    handleSubmit,
+    authorFirstName
   };
 };

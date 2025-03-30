@@ -10,9 +10,10 @@ interface TipFormProps {
   onSuccess?: () => void;
   bookTitle?: string;
   qrCodeId?: string;
+  authorName?: string;
 }
 
-export const TipForm = ({ authorId, bookTitle, qrCodeId }: TipFormProps) => {
+export const TipForm = ({ authorId, authorName, bookTitle, qrCodeId }: TipFormProps) => {
   const {
     amount,
     setAmount,
@@ -22,25 +23,34 @@ export const TipForm = ({ authorId, bookTitle, qrCodeId }: TipFormProps) => {
     setMessage,
     name,
     setName,
+    email,
+    setEmail,
     isLoading,
-    handleSubmit
-  } = useTipForm({ authorId, bookTitle, qrCodeId });
+    handleSubmit,
+    authorFirstName
+  } = useTipForm({ authorId, authorName, bookTitle, qrCodeId });
 
   return (
     <Card className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="p-6 space-y-6">
+        <h2 className="text-2xl font-bold text-center">
+          Send {authorFirstName} a tip!
+        </h2>
+        
+        <TipMessageForm
+          name={name}
+          message={message}
+          email={email}
+          onNameChange={setName}
+          onMessageChange={setMessage}
+          onEmailChange={setEmail}
+        />
+
         <TipAmountSelector
           amount={amount}
           customAmount={customAmount}
           onAmountChange={setAmount}
           onCustomAmountChange={setCustomAmount}
-        />
-
-        <TipMessageForm
-          name={name}
-          message={message}
-          onNameChange={setName}
-          onMessageChange={setMessage}
         />
 
         <PaymentForm

@@ -1,3 +1,4 @@
+
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -18,15 +19,15 @@ export const TipAmountSelector = ({
   const predefinedAmounts = ["3", "5", "10"];
 
   return (
-    <div className="space-y-2">
-      <Label className="text-2xl font-semibold text-[#1A2B3B]">Choose Amount</Label>
+    <div className="space-y-4">
+      <Label className="text-lg font-medium text-[#1A2B3B]">Amount</Label>
       <RadioGroup 
         value={amount}
         onValueChange={onAmountChange}
-        className="flex gap-3"
+        className="grid grid-cols-5 gap-3"
       >
         {predefinedAmounts.map((value) => (
-          <div key={value} className="flex items-center space-x-2">
+          <div key={value} className="flex items-center">
             <RadioGroupItem
               value={value}
               id={`amount-${value}`}
@@ -34,13 +35,13 @@ export const TipAmountSelector = ({
             />
             <Label
               htmlFor={`amount-${value}`}
-              className="flex h-16 w-16 items-center justify-center rounded-full border-2 peer-data-[state=checked]:bg-primary peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-white hover:border-primary cursor-pointer transition-colors"
+              className="flex h-12 w-full items-center justify-center rounded-lg border-2 peer-data-[state=checked]:bg-[#FFD166] peer-data-[state=checked]:border-[#FFD166] peer-data-[state=checked]:text-[#2D3748] hover:border-[#FFD166] cursor-pointer transition-colors"
             >
               ${value}
             </Label>
           </div>
         ))}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center">
           <RadioGroupItem
             value="custom"
             id="amount-custom"
@@ -48,22 +49,31 @@ export const TipAmountSelector = ({
           />
           <Label
             htmlFor="amount-custom"
-            className="flex h-16 w-16 items-center justify-center rounded-full border-2 peer-data-[state=checked]:border-primary hover:border-primary cursor-pointer transition-colors"
+            className="flex h-12 w-full items-center justify-center rounded-lg border-2 peer-data-[state=checked]:border-[#FFD166] hover:border-[#FFD166] cursor-pointer transition-colors"
           >
-            Other
+            Custom
           </Label>
         </div>
       </RadioGroup>
       {amount === 'custom' && (
-        <Input
-          type="number"
-          min="1"
-          step="1"
-          value={customAmount}
-          onChange={(e) => onCustomAmountChange(e.target.value)}
-          placeholder="Enter amount"
-          className="mt-2 w-32"
-        />
+        <div className="mt-3">
+          <Label htmlFor="customAmount" className="sr-only">Custom Amount</Label>
+          <div className="relative rounded-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span className="text-gray-500">$</span>
+            </div>
+            <Input
+              type="number"
+              min="1"
+              step="1"
+              id="customAmount"
+              value={customAmount}
+              onChange={(e) => onCustomAmountChange(e.target.value)}
+              placeholder="Enter amount"
+              className="pl-7 w-full"
+            />
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -8,8 +7,12 @@ export const useTipSubmission = (qrCode: any) => {
   const [customAmount, setCustomAmount] = useState("");
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  // Extract author's first name
+  const authorFirstName = qrCode?.author?.name?.split(' ')[0] || 'the author';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +21,7 @@ export const useTipSubmission = (qrCode: any) => {
 
     try {
       if (!qrCode) throw new Error('QR code not found');
+      if (!email) throw new Error('Email is required');
       
       const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
         body: {
@@ -25,6 +29,7 @@ export const useTipSubmission = (qrCode: any) => {
           authorId: qrCode.author_id,
           message,
           name,
+          email,
           bookTitle: qrCode.book_title,
           qrCodeId: qrCode.id,
         },
@@ -71,7 +76,10 @@ export const useTipSubmission = (qrCode: any) => {
     setMessage,
     name,
     setName,
+    email,
+    setEmail,
     isLoading,
-    handleSubmit
+    handleSubmit,
+    authorFirstName
   };
 };
