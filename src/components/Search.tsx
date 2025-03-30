@@ -111,8 +111,12 @@ export const Search = () => {
                         />
                       </div>
                     ) : (
-                      <div className="w-24 h-32 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
-                        <Book className="h-8 w-8 text-muted-foreground" />
+                      <div className="w-24 h-32 rounded-md flex items-center justify-center flex-shrink-0 bg-muted">
+                        <img 
+                          src="/lovable-uploads/quill_icon.png" 
+                          alt="Quilltips Logo"
+                          className="h-12 w-12 object-contain"
+                        />
                       </div>
                     )}
                     <div className="flex-1 space-y-2">

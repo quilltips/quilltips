@@ -57,7 +57,7 @@ const QRCodeDetails = () => {
           <div className="flex items-start space-x-6">
             <div className="w-32 aspect-[2/3] relative shrink-0">
               <img
-                src={qrCode.cover_image || "/placeholder.svg"}
+                src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
                 alt={qrCode.book_title}
                 className="w-full h-full object-cover rounded-md"
               />
