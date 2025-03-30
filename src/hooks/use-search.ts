@@ -44,74 +44,98 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
 
       // For quick search (in navbar), fetch limited results
       if (type === 'quick') {
-        const [authorsResponse, booksResponse] = await Promise.all([
-          supabase
-            .from('profiles')
-            .select('*')
-            .ilike('name', `%${debouncedQuery}%`)
-            .eq('role', 'author')
-            .order('name')
-            .limit(5),
+        try {
+          const [authorsResponse, booksResponse] = await Promise.all([
+            supabase
+              .from('profiles')
+              .select('*')
+              .ilike('name', `%${debouncedQuery}%`)
+              .eq('role', 'author')
+              .order('name')
+              .limit(5),
 
-          supabase
-            .from('qr_codes')
-            .select('*, author:profiles(*)')
-            .ilike('book_title', `%${debouncedQuery}%`)
-            .order('book_title')
-            .limit(5),
-        ]);
+            supabase
+              .from('qr_codes')
+              .select('*, author:profiles(*)')
+              .ilike('book_title', `%${debouncedQuery}%`)
+              .order('book_title')
+              .limit(5),
+          ]);
+          
+          // Add error logging
+          if (authorsResponse.error) console.error('Authors search error:', authorsResponse.error);
+          if (booksResponse.error) console.error('Books search error:', booksResponse.error);
 
-        return {
-          authors: authorsResponse.data || [],
-          books: booksResponse.data || [],
-        };
+          return {
+            authors: authorsResponse.data || [],
+            books: (booksResponse.data || []).filter(book => book && book.author),
+          };
+        } catch (error) {
+          console.error('Quick search error:', error);
+          return { authors: [], books: [] };
+        }
       } 
       
       // For full search (search page), fetch more comprehensive results
       else {
-        // Fix the search query syntax - separate the queries instead of using OR with complex conditions
-        const bookTitleQuery = await supabase
-          .from('qr_codes')
-          .select(`
-            id,
-            book_title,
-            publisher,
-            cover_image,
-            author:profiles (
+        try {
+          // Fix the search query syntax - separate the queries instead of using OR with complex conditions
+          const bookTitleQuery = await supabase
+            .from('qr_codes')
+            .select(`
               id,
-              name,
-              avatar_url
-            )
-          `)
-          .ilike('book_title', `%${debouncedQuery}%`)
-          .order('book_title');
+              book_title,
+              publisher,
+              cover_image,
+              author:profiles (
+                id,
+                name,
+                avatar_url
+              )
+            `)
+            .ilike('book_title', `%${debouncedQuery}%`)
+            .order('book_title');
 
-        const authorNameQuery = await supabase
-          .from('qr_codes')
-          .select(`
-            id,
-            book_title,
-            publisher,
-            cover_image,
-            author:profiles (
+          const authorNameQuery = await supabase
+            .from('qr_codes')
+            .select(`
               id,
-              name,
-              avatar_url
-            )
-          `)
-          .ilike('author.name', `%${debouncedQuery}%`)
-          .order('book_title');
+              book_title,
+              publisher,
+              cover_image,
+              author:profiles (
+                id,
+                name,
+                avatar_url
+              )
+            `)
+            .ilike('profiles.name', `%${debouncedQuery}%`)
+            .order('book_title');
 
-        // Combine results, removing duplicates
-        const allBooks = [...(bookTitleQuery.data || []), ...(authorNameQuery.data || [])];
-        const uniqueBooks = Array.from(new Map(allBooks.map(book => [book.id, book])).values());
+          // Add error logging
+          if (bookTitleQuery.error) console.error('Book title search error:', bookTitleQuery.error);
+          if (authorNameQuery.error) console.error('Author name search error:', authorNameQuery.error);
 
-        if (bookTitleQuery.error || authorNameQuery.error) {
-          console.error('Search error:', bookTitleQuery.error || authorNameQuery.error);
-          throw bookTitleQuery.error || authorNameQuery.error;
+          // Combine results, removing duplicates and filtering out null values
+          const bookResults = bookTitleQuery.data || [];
+          const authorResults = authorNameQuery.data || [];
+          
+          const allBooks = [...bookResults, ...authorResults]
+            .filter(book => book && book.id && book.author); // Filter out null/invalid books
+            
+          // Remove duplicates
+          const uniqueBooks = Array.from(
+            new Map(allBooks.map(book => [book.id, book])).values()
+          );
+
+          return { 
+            books: uniqueBooks || [], 
+            authors: [] 
+          };
+        } catch (error) {
+          console.error('Full search error:', error);
+          return { books: [], authors: [] };
         }
-
-        return { books: uniqueBooks || [], authors: [] };
       }
     },
     enabled: debouncedQuery.length > 0,

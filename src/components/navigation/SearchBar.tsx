@@ -89,7 +89,7 @@ export const SearchBar = () => {
               <div className="p-4 text-center text-muted-foreground">Searching...</div>
             ) : (
               <>
-                {results?.authors?.map((author) => (
+                {results?.authors?.filter(author => author && author.id).map((author) => (
                   <Link
                     key={author.id}
                     to={`/author/profile/${author.id}`}
@@ -108,7 +108,7 @@ export const SearchBar = () => {
                     />
                   </Link>
                 ))}
-                {results?.books?.map((book) => (
+                {results?.books?.filter(book => book && book.id && book.author).map((book) => (
                   <Link
                     key={book.id}
                     to={`/qr/${book.id}`}
@@ -122,7 +122,7 @@ export const SearchBar = () => {
                     <div className="space-y-2">
                       <h3 className="font-semibold">{book.book_title}</h3>
                       <p className="text-sm text-muted-foreground">
-                        By {book.author.name || "Anonymous Author"}
+                        By {book.author?.name || "Anonymous Author"}
                       </p>
                     </div>
                   </Link>
