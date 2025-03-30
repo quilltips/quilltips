@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
@@ -39,40 +40,62 @@ const Index = () => {
           </div>
         </div>
 
-        {/* How it works Section */}
-        <div className="max-w-4xl mx-auto mt-24">
-          <h2 className="text-3xl font-semibold text-center mb-16">How does it work?</h2>
+        {/* How it works Section - Redesigned with staggered layout */}
+        <div className="max-w-5xl mx-auto mt-24">
+          <h2 className="text-4xl font-playfair font-medium text-center mb-20">How Does It Work?</h2>
 
-          <div className="grid md:grid-rows-3 gap-8">
-            <div className="text-center space-y-4">
-              <div className="w-24 h-24 mx-auto rounded-full bg-[#FFD166]/10 flex items-center justify-center">
-                <QrCode className="h-10 w-10 text-[#FFD166]" />
+          {/* Step 1 - Right aligned */}
+          <div className="grid md:grid-cols-2 gap-10 items-center mb-24">
+            <div className="order-last md:order-first flex justify-center">
+              <div className="w-48 h-48 bg-[#FFF8E7] rounded-full flex items-center justify-center">
+                <img src="/lovable-uploads/4b6effb9-aa80-4dd5-b728-7af0326d2cef.png" alt="QR Code Icon" className="w-20 h-20" />
               </div>
-              <h3 className="font-semibold text-lg">Step 1. Create your Quilltips Jar</h3>
+            </div>
+            <div>
+              <h3 className="font-semibold text-2xl mb-4">Step 1. Create your Quilltips Jar</h3>
               <p className="text-muted-foreground">
-                Create a virtual tip jar, accessible through a QR code. Download the code to print on the cover or inside the jacket of your next book. 
+                Create a virtual tip jar, accessible through a QR code. Download the code to print on the cover or inside the jacket of your next book.
               </p>
             </div>
+          </div>
 
-            <div className="text-center space-y-4">
-              <div className="w-24 h-24 mx-auto rounded-full bg-[#FFD166]/10 flex items-center justify-center">
-                <MessageSquare className="h-10 w-10 text-[#FFD166]" />
-              </div>
-              <h3 className="font-semibold text-lg">Step 2.Meet your readers</h3>
+          {/* Step 2 - Left aligned */}
+          <div className="grid md:grid-cols-2 gap-10 items-center mb-24">
+            <div>
+              <h3 className="font-semibold text-2xl mb-4">Step 2. Meet your readers</h3>
               <p className="text-muted-foreground">
                 Readers scan the QR code to open your virtual tip jar and leave tips and messages. From your profile, readers can find links to your website and social media accounts.
               </p>
             </div>
-
-            <div className="text-center space-y-4">
-              <div className="w-24 h-24 mx-auto rounded-full bg-[#FFD166]/10 flex items-center justify-center">
-                <Share className="h-10 w-10 text-[#FFD166]" />
+            <div className="flex justify-center">
+              <div className="w-48 h-48 bg-[#FFF8E7] rounded-full flex items-center justify-center">
+                <img src="/lovable-uploads/9e90f592-f57f-4a5d-885b-5ff4be99a800.png" alt="Book Icon" className="w-20 h-20" />
               </div>
-              <h3 className="font-semibold text-lg">Step 3. Build support</h3>
+            </div>
+          </div>
+
+          {/* Step 3 - Right aligned */}
+          <div className="grid md:grid-cols-2 gap-10 items-center mb-12">
+            <div className="order-last md:order-first flex justify-center">
+              <div className="w-48 h-48 bg-[#FFF8E7] rounded-full flex items-center justify-center">
+                <Share className="w-20 h-20 text-[#FFD166]" />
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-2xl mb-4">Step 3. Build support</h3>
               <p className="text-muted-foreground">
                 Use information gathered from your readers to market your future books.
               </p>
             </div>
+          </div>
+
+          {/* Learn More Button */}
+          <div className="flex justify-center mt-12">
+            <Link to="/how-it-works">
+              <Button variant="outline" className="rounded-full px-10">
+                Learn more
+              </Button>
+            </Link>
           </div>
         </div>
 
