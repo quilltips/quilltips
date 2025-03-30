@@ -1,6 +1,6 @@
 
 import { Search, Book, User } from "lucide-react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -12,48 +12,71 @@ import { useSearch } from "@/hooks/use-search";
 export const SearchBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
   
   const {
     query,
+    setQuery,
     results,
     isLoading,
     handleSearch,
     handleKeyDown,
+    navigateToSearchPage,
   } = useSearch('', 'quick');
 
-  const handleQueryChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    handleSearch(e);
-  }, [handleSearch]);
+  // Focus input when popover opens
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      // Small delay to ensure the popover is fully open
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 10);
+    }
+  }, [isSearchOpen]);
 
-  const handleInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (handleKeyDown(e)) {
       setIsSearchOpen(false);
     }
-  }, [handleKeyDown]);
+  };
 
-  const handleClosePopover = useCallback(() => {
+  const handleClosePopover = () => {
     setIsSearchOpen(false);
-  }, []);
+  };
+
+  const handleSearchIconClick = () => {
+    setIsSearchOpen(true);
+    // Focus the input after opening
+    setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 10);
+  };
 
   return (
     <div className="relative w-64">
       <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
-
-        <PopoverTrigger asChild>
-          <Input
-            ref={searchInputRef}
-            value={query}
-            onChange={handleQueryChange}
-            onFocus={() => setIsSearchOpen(true)}
-            onKeyDown={handleInputKeyDown}
-            placeholder="Search authors or books..."
-            className="pl-10 hover-lift rounded-full"
-            aria-label="Search authors or books"
-            role="searchbox"
-            autoComplete="off"
+        <div className="relative">
+          <Search 
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10 cursor-pointer" 
+            onClick={handleSearchIconClick}
           />
-        </PopoverTrigger>
+
+          <PopoverTrigger asChild>
+            <div ref={triggerRef}>
+              <Input
+                ref={searchInputRef}
+                value={query}
+                onChange={handleSearch}
+                onKeyDown={handleInputKeyDown}
+                placeholder="Search authors or books..."
+                className="pl-10 hover-lift rounded-full"
+                aria-label="Search authors or books"
+                role="searchbox"
+                autoComplete="off"
+              />
+            </div>
+          </PopoverTrigger>
+        </div>
 
         <PopoverContent
           className="w-[400px] p-0 popover-content"
@@ -104,7 +127,7 @@ export const SearchBar = () => {
                     </div>
                   </Link>
                 ))}
-                {!results?.authors?.length && !results?.books?.length && query.trim() && (
+                {query.trim() && !isLoading && !results?.authors?.length && !results?.books?.length && (
                   <div className="p-4 text-center text-muted-foreground">
                     No results found for "{query}"
                   </div>
@@ -112,6 +135,20 @@ export const SearchBar = () => {
                 {!query.trim() && (
                   <div className="p-4 text-center text-muted-foreground">
                     Type to search...
+                  </div>
+                )}
+                {query.trim() && (
+                  <div className="p-3 border-t">
+                    <button
+                      onClick={() => {
+                        navigateToSearchPage();
+                        handleClosePopover();
+                      }}
+                      className="w-full py-2 px-3 bg-secondary/50 hover:bg-secondary rounded-md flex items-center justify-center gap-2 text-sm font-medium transition-colors"
+                    >
+                      <Search className="h-4 w-4" />
+                      View all results for "{query}"
+                    </button>
                   </div>
                 )}
               </>
