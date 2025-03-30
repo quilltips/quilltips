@@ -1,8 +1,6 @@
-console.log("🔥 SearchBar is rendering!");
-
 import { Search, Book, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,196 +11,126 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDebounce } from "@/hooks/use-debounce";
 
 export const SearchBar = () => {
-  const queryRef = useRef(""); // ✅ Store query without re-rendering
-  const [queryDisplay, setQueryDisplay] = useState(""); // ✅ UI state for input display
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchTrigger, setSearchTrigger] = useState(0); // ✅ Triggers `useQuery` updates
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchInputRef.current &&
-        !searchInputRef.current.contains(event.target as Node) &&
-        !document.querySelector(".popover-content")?.contains(event.target as Node)
-      ) {
-        setIsSearchOpen(false);
-      }
-    };
-  
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    if (queryRef.current.length > 0) {
-      const timer = setTimeout(() => {
-        setIsSearchOpen(true);
-      }, 50); // a small delay
-      return () => clearTimeout(timer);
-    }
-  }, [searchTrigger]);
-  
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    queryRef.current = e.target.value;
-    setQueryDisplay(e.target.value);
-  
-    if (e.target.value.trim()) {
-      setTimeout(() => {
-        setIsSearchOpen(true);
-  
-        // ✅ Ensure input keeps focus when typing
-        searchInputRef.current?.focus();
-      }, 0);
-    } else {
-      setIsSearchOpen(false);
-    }
-  
-    setSearchTrigger(prev => prev + 1);
-  };
-
-  
-  const handleSearchFocus = () => {
-    console.log("🔍 Input focused");
-    setIsSearchOpen(true);
-  
-    // ✅ Ensure input regains focus after React state update
-    setTimeout(() => {
-      searchInputRef.current?.focus();
-    }, 0);
-  };
-
-  const handleResultClick = () => {
-    setQueryDisplay(""); // ✅ Clears UI input
-    queryRef.current = "";
-    setIsSearchOpen(false);
-  };
+  const navigate = useNavigate();
 
   const { data: searchResults, isLoading } = useQuery({
-    queryKey: ['search', searchTrigger], // ✅ Trigger search on state change
+    queryKey: ["search", debouncedQuery],
     queryFn: async () => {
-      const currentQuery = queryRef.current.trim();
-      if (!currentQuery) return { authors: [], books: [] };
+      if (!debouncedQuery.trim()) return { authors: [], books: [] };
 
-      console.log("🔍 Fetching search results for:", currentQuery);
+      const [authorsResponse, booksResponse] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("*")
+          .ilike("name", `%${debouncedQuery}%`)
+          .eq("role", "author")
+          .order("name")
+          .limit(5),
 
-      try {
-        const [authorsResponse, booksResponse] = await Promise.all([
-          supabase
-            .from('profiles')
-            .select('*')
-            .ilike('name', `%${currentQuery}%`)
-            .eq('role', 'author')
-            .order('name')
-            .limit(5),
-        
-          supabase
-            .from('qr_codes')
-            .select(`
-              *,
-              author:profiles(*)
-            `)
-            .ilike('book_title', `%${currentQuery}%`)
-            .order('book_title')
-            .limit(5)
-        ]);
+        supabase
+          .from("qr_codes")
+          .select("*, author:profiles(*)")
+          .ilike("book_title", `%${debouncedQuery}%`)
+          .order("book_title")
+          .limit(5),
+      ]);
 
-        if (authorsResponse.error) throw authorsResponse.error;
-        if (booksResponse.error) throw booksResponse.error;
-
-        return {
-          authors: authorsResponse.data || [],
-          books: booksResponse.data || []
-        };
-      } catch (error) {
-        console.error('Search error:', error);
-        return { authors: [], books: [] };
-      }
+      return {
+        authors: authorsResponse.data || [],
+        books: booksResponse.data || [],
+      };
     },
-    enabled: searchTrigger > 0, // ✅ Ensures search only runs when needed
-    retry: false
+    enabled: debouncedQuery.length > 0,
+    retry: false,
   });
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+    }
+  };
+
   return (
-    <div className="relative w-64 search-container" ref={searchInputRef}>
-      <Popover open={isSearchOpen}>
+    <div className="relative w-64">
+      <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+        <PopoverTrigger asChild>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
-              <Input
-                ref={searchInputRef} // ✅ Ensure ref is attached
-                value={queryDisplay} // ✅ Shows the latest input
-                onChange={handleSearchChange}
-                onFocus={handleSearchFocus}
-                placeholder="Search authors or books..."
-                className="pl-10 hover-lift rounded-full"
-                aria-label="Search authors or books"
-                role="searchbox"
-                autoComplete="off"
-              />
+            <Input
+              ref={searchInputRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setIsSearchOpen(true)}
+              onKeyDown={handleKeyDown}
+              placeholder="Search authors or books..."
+              className="pl-10 hover-lift rounded-full"
+              autoComplete="off"
+            />
           </div>
-        <PopoverContent 
-              className={`w-[400px] p-0 ${isSearchOpen ? "" : "hidden"} popover-content`} 
-              align="start"
-              side="bottom"
-              sideOffset={5}
-            >
+        </PopoverTrigger>
 
-            <Card className="divide-y">
-              {isLoading ? (
-                <div className="p-4 text-center text-muted-foreground">
-                  Searching...
-                </div>
-              ) : (
-                <>
-                  {searchResults?.authors?.map((author) => (
-                    <Link 
-                      key={author.id} 
-                      to={`/author/profile/${author.id}`} 
-                      className="block p-4 hover:bg-accent"
-                      onClick={handleResultClick}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <User className="h-4 w-4" />
-                        <Badge variant="secondary">Author</Badge>
-                      </div>
-                      <AuthorPublicProfileView
-                        name={author.name || 'Anonymous Author'}
-                        bio={author.bio || 'No bio available'}
-                        imageUrl="/placeholder.svg"
-                        authorId={author.id}
-                      />
-                    </Link>
-                  ))}
-                  {searchResults?.books?.map((book) => (
-                    <Link 
-                      key={book.id} 
-                      to={`/author/profile/${book.author.id}`} 
-                      className="block p-4 hover:bg-accent"
-                      onClick={handleResultClick}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <Book className="h-4 w-4" />
-                        <Badge variant="secondary">Book</Badge>
-                      </div>
-                      <div className="space-y-2">
-                        <h3 className="font-semibold">{book.book_title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          By {book.author.name || 'Anonymous Author'}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                  {(!searchResults?.authors?.length && !searchResults?.books?.length) && (
-                    <div className="p-4 text-center text-muted-foreground">
-                      No results found for "{queryRef.current}"
+        <PopoverContent
+          className="w-[400px] p-0 popover-content"
+          align="start"
+          side="bottom"
+          sideOffset={5}
+        >
+          <Card className="divide-y">
+            {isLoading ? (
+              <div className="p-4 text-center text-muted-foreground">Searching...</div>
+            ) : (
+              <>
+                {searchResults?.authors?.map((author) => (
+                  <Link
+                    key={author.id}
+                    to={`/author/profile/${author.id}`}
+                    className="block p-4 hover:bg-accent"
+                    onClick={() => setIsSearchOpen(false)}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <User className="h-4 w-4" />
+                      <Badge variant="secondary">Author</Badge>
                     </div>
-                  )}
-                </>
-              )}
-            </Card>
-          </PopoverContent>
+                    <AuthorPublicProfileView
+                      name={author.name || "Anonymous Author"}
+                      bio={author.bio || "No bio available"}
+                      imageUrl="/placeholder.svg"
+                      authorId={author.id}
+                    />
+                  </Link>
+                ))}
+                {searchResults?.books?.map((book) => (
+                  <Link
+                    key={book.id}
+                    to={`/author/profile/${book.author.id}`}
+                    className="block p-4 hover:bg-accent"
+                    onClick={() => setIsSearchOpen(false)}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Book className="h-4 w-4" />
+                      <Badge variant="secondary">Book</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-semibold">{book.book_title}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        By {book.author.name || "Anonymous Author"}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+                {!searchResults?.authors?.length && !searchResults?.books?.length && (
+                  <div className="p-4 text-center text-muted-foreground">
+                    No results found for "{query}"
+                  </div>
+                )}
+              </>
+            )}
+          </Card>
+        </PopoverContent>
       </Popover>
     </div>
   );
