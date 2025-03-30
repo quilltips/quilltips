@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
@@ -41,7 +40,7 @@ const Index = () => {
         </div>
 
         {/* How it works Section - Redesigned with staggered layout */}
-        <div className="max-w-5xl mx-auto mt-24">
+        <div className="max-w-3xl mx-auto mt-24">
           <h2 className="text-4xl font-playfair font-medium text-center mb-20">How Does It Work?</h2>
 
           {/* Step 1 - Right aligned */}
