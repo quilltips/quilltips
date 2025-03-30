@@ -1,64 +1,35 @@
 
 import { Search, Book, User } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useDebounce } from "@/hooks/use-debounce";
+import { useSearch } from "@/hooks/use-search";
 
 export const SearchBar = () => {
-  const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query, 300);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
-
-  const { data: searchResults, isLoading } = useQuery({
-    queryKey: ["search", debouncedQuery],
-    queryFn: async () => {
-      if (!debouncedQuery.trim()) return { authors: [], books: [] };
-
-      const [authorsResponse, booksResponse] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("*")
-          .ilike("name", `%${debouncedQuery}%`)
-          .eq("role", "author")
-          .order("name")
-          .limit(5),
-
-        supabase
-          .from("qr_codes")
-          .select("*, author:profiles(*)")
-          .ilike("book_title", `%${debouncedQuery}%`)
-          .order("book_title")
-          .limit(5),
-      ]);
-
-      return {
-        authors: authorsResponse.data || [],
-        books: booksResponse.data || [],
-      };
-    },
-    enabled: debouncedQuery.length > 0,
-    retry: false,
-  });
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query)}`);
-      setIsSearchOpen(false);
-    }
-  }, [navigate, query]);
+  
+  const {
+    query,
+    results,
+    isLoading,
+    handleSearch,
+    handleKeyDown,
+  } = useSearch('', 'quick');
 
   const handleQueryChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-  }, []);
+    handleSearch(e);
+  }, [handleSearch]);
+
+  const handleInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (handleKeyDown(e)) {
+      setIsSearchOpen(false);
+    }
+  }, [handleKeyDown]);
 
   const handleClosePopover = useCallback(() => {
     setIsSearchOpen(false);
@@ -75,7 +46,7 @@ export const SearchBar = () => {
             value={query}
             onChange={handleQueryChange}
             onFocus={() => setIsSearchOpen(true)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleInputKeyDown}
             placeholder="Search authors or books..."
             className="pl-10 hover-lift rounded-full"
             aria-label="Search authors or books"
@@ -95,7 +66,7 @@ export const SearchBar = () => {
               <div className="p-4 text-center text-muted-foreground">Searching...</div>
             ) : (
               <>
-                {searchResults?.authors?.map((author) => (
+                {results?.authors?.map((author) => (
                   <Link
                     key={author.id}
                     to={`/author/profile/${author.id}`}
@@ -114,10 +85,10 @@ export const SearchBar = () => {
                     />
                   </Link>
                 ))}
-                {searchResults?.books?.map((book) => (
+                {results?.books?.map((book) => (
                   <Link
                     key={book.id}
-                    to={`/author/profile/${book.author.id}`}
+                    to={`/qr/${book.id}`}
                     className="block p-4 hover:bg-accent"
                     onClick={handleClosePopover}
                   >
@@ -133,9 +104,14 @@ export const SearchBar = () => {
                     </div>
                   </Link>
                 ))}
-                {!searchResults?.authors?.length && !searchResults?.books?.length && (
+                {!results?.authors?.length && !results?.books?.length && query.trim() && (
                   <div className="p-4 text-center text-muted-foreground">
                     No results found for "{query}"
+                  </div>
+                )}
+                {!query.trim() && (
+                  <div className="p-4 text-center text-muted-foreground">
+                    Type to search...
                   </div>
                 )}
               </>

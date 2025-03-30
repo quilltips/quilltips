@@ -1,15 +1,11 @@
 
-import { useState, memo } from "react";
-import { Link } from "react-router-dom";
+import { memo, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Search as SearchIcon, Loader2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "./ui/badge";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useSearch } from "@/hooks/use-search";
 
 interface SearchResult {
   id: string;
@@ -76,50 +72,22 @@ SearchResultItem.displayName = 'SearchResultItem';
 export const Search = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
-  const [query, setQuery] = useState(initialQuery);
-  const debouncedQuery = useDebounce(query, 300);
-
-  const { data: searchResults, isLoading } = useQuery({
-    queryKey: ['search', debouncedQuery],
-    queryFn: async () => {
-      if (!debouncedQuery.trim()) return [];
-      
-      const { data: books, error } = await supabase
-        .from('qr_codes')
-        .select(`
-          id,
-          book_title,
-          publisher,
-          cover_image,
-          author:profiles (
-            id,
-            name,
-            avatar_url
-          )
-        `)
-        .or(`book_title.ilike.%${debouncedQuery}%,author.name.ilike.%${debouncedQuery}%`)
-        .order('book_title');
-
-      if (error) {
-        console.error('Search error:', error);
-        throw error;
-      }
-      
-      return books || [];
-    },
-    enabled: debouncedQuery.length > 0,
-    staleTime: 1000,
-    refetchOnWindowFocus: false
-  });
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-  };
+  
+  const {
+    query,
+    results,
+    isLoading,
+    handleSearch,
+    handleKeyDown
+  } = useSearch(initialQuery, 'full');
 
   useEffect(() => {
-    // Update the query when the URL search param changes
-    setQuery(initialQuery);
-  }, [initialQuery]);
+    // Focus search input on mount
+    const searchInput = document.querySelector('input[type="search"]');
+    if (searchInput) {
+      (searchInput as HTMLInputElement).focus();
+    }
+  }, []);
 
   return (
     <div className="container mx-auto px-4 pt-24 pb-12">
@@ -128,8 +96,10 @@ export const Search = () => {
           <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
+              type="search"
               value={query}
-              onChange={handleSearchChange}
+              onChange={handleSearch}
+              onKeyDown={handleKeyDown}
               placeholder="Search books or authors..."
               className="pl-10 py-6 text-lg"
               autoFocus
@@ -143,15 +113,15 @@ export const Search = () => {
           </div>
         )}
 
-        {searchResults && searchResults.length > 0 && (
+        {results?.books && results.books.length > 0 && (
           <div className="space-y-4 animate-slideUp">
-            {searchResults.map((result: SearchResult) => (
+            {results.books.map((result) => (
               <SearchResultItem key={result.id} result={result} />
             ))}
           </div>
         )}
 
-        {query && (!searchResults?.length) && !isLoading && (
+        {query && (!results?.books?.length) && !isLoading && (
           <Card className="p-6 text-center text-muted-foreground animate-fadeIn bg-white/80 backdrop-blur-sm">
             No results found for "{query}"
           </Card>
