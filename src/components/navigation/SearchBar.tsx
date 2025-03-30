@@ -1,12 +1,9 @@
-
 import { Search, Book, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AuthorPublicProfileView } from "@/components/AuthorPublicProfile";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSearch } from "@/hooks/use-search";
 
@@ -25,10 +22,8 @@ export const SearchBar = () => {
     navigateToSearchPage,
   } = useSearch('', 'quick');
 
-  // Focus input when popover opens
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
-      // Small delay to ensure the popover is fully open
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 10);
@@ -47,7 +42,6 @@ export const SearchBar = () => {
 
   const handleSearchIconClick = () => {
     setIsSearchOpen(true);
-    // Focus the input after opening
     setTimeout(() => {
       searchInputRef.current?.focus();
     }, 10);
@@ -124,7 +118,7 @@ export const SearchBar = () => {
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <Book className="h-3 w-3" />
-                        <Badge variant="secondary" className="text-xs py-0 px-1.5">Book</Badge>
+                        <Badge variant="default" className="text-xs py-0 px-1.5 bg-[#19363C] text-white">Book</Badge>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-10 bg-muted rounded flex items-center justify-center flex-shrink-0">

@@ -1,4 +1,3 @@
-
 import { memo, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Card } from "./ui/card";
@@ -20,7 +19,6 @@ interface SearchResult {
 }
 
 const SearchResultItem = memo(({ result }: { result: SearchResult }) => {
-  // Ensure result and result.author exist before accessing properties
   if (!result || !result.author) {
     return null;
   }
@@ -52,7 +50,7 @@ const SearchResultItem = memo(({ result }: { result: SearchResult }) => {
           )}
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-sm">Book</Badge>
+              <Badge variant="default" className="text-sm bg-[#19363C] text-white">Book</Badge>
             </div>
             <h3 className="text-lg font-semibold">{result.book_title}</h3>
             <Link 
@@ -89,7 +87,6 @@ export const Search = () => {
   } = useSearch(initialQuery, 'full');
 
   useEffect(() => {
-    // Focus search input on mount
     const searchInput = document.querySelector('input[type="search"]');
     if (searchInput) {
       (searchInput as HTMLInputElement).focus();
