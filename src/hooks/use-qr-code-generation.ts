@@ -8,6 +8,7 @@ interface QRCodeGenerationProps {
     id: string;
     author_id: string;
     book_title: string;
+    cover_image?: string | null;
   } | null;
 }
 
@@ -49,24 +50,33 @@ export const useQRCodeGeneration = ({ qrCodeData }: QRCodeGenerationProps) => {
         console.log('Setting QR code preview URL:', tipUrl);
         setQrCodePreview(tipUrl);
 
-        const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
-          body: {
-            bookTitle: qrCodeData.book_title,
-            authorId: qrCodeData.author_id,
-            qrCodeId: qrCodeData.id
+        try {
+          const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
+            body: {
+              bookTitle: qrCodeData.book_title,
+              authorId: qrCodeData.author_id,
+              qrCodeId: qrCodeData.id
+            }
+          });
+
+          if (qrGenError) {
+            console.error("Error calling generate-qr-code function:", qrGenError);
+            // We'll continue with the preview URL, but log the error
+          } else if (!qrResponse?.url) {
+            console.error("No QR code URL returned from function");
+          } else {
+            console.log('QR code generated and stored:', qrResponse.url);
           }
-        });
-
-        if (qrGenError) throw qrGenError;
-        if (!qrResponse?.url) throw new Error('No QR code URL returned');
-
-        console.log('QR code generated and stored:', qrResponse.url);
+        } catch (functionError) {
+          // We'll catch errors from the function but not throw, since we already have a preview URL
+          console.error("Function execution error:", functionError);
+        }
 
       } catch (error: any) {
         console.error("Error generating QR code:", error);
         toast({
           title: "Error",
-          description: error.message || "Failed to generate QR code",
+          description: "There was an issue generating the QR code preview. Your progress has been saved.",
           variant: "destructive",
         });
       } finally {

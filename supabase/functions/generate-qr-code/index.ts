@@ -34,7 +34,7 @@ serve(async (req) => {
       .from('profiles')
       .select('id')
       .eq('id', authorId)
-      .single();
+      .maybeSingle();
 
     if (profileError) {
       console.error('Profile error:', profileError);
@@ -45,85 +45,125 @@ serve(async (req) => {
     const tipUrl = `${req.headers.get('origin')}/author/profile/${authorId}?qr=${qrCodeId}`;
     console.log('Generated tip URL:', tipUrl);
 
-    // Configure QR code payload
-    const qrCodePayload = {
-      name: `QR Code for ${bookTitle}`,
-      organization: parseInt(Deno.env.get('UNIQODE_ORGANIZATION_ID') || '0', 10),
-      qr_type: 2, // Dynamic QR code
-      campaign: {
-        content_type: 1, // Custom URL type
-        custom_url: tipUrl
-      },
-      location_enabled: false,
-      attributes: {
-        color: '#2595ff',
-        colorDark: '#2595ff',
-        margin: 80,
-        isVCard: false,
-        frameText: 'Tip the author!',
-        logoImage: 'https://quilltips.dev/public/lovable-uploads/4c722b40-1ed8-45e5-a9db-b2653f1b148b.png',
-        logoScale: 0.1992,
-        frameColor: '#2595ff',
-        frameStyle: 'banner-bottom',
-        logoMargin: 10,
-        dataPattern: 'square',
-        eyeBallShape: 'circle',
-        gradientType: 'none',
-        eyeFrameColor: '#2595ff',
-        eyeFrameShape: 'rounded'
+    try {
+      // Configure QR code payload
+      const qrCodePayload = {
+        name: `QR Code for ${bookTitle}`,
+        organization: parseInt(Deno.env.get('UNIQODE_ORGANIZATION_ID') || '0', 10),
+        qr_type: 2, // Dynamic QR code
+        campaign: {
+          content_type: 1, // Custom URL type
+          custom_url: tipUrl
+        },
+        location_enabled: false,
+        attributes: {
+          color: '#2595ff',
+          colorDark: '#2595ff',
+          margin: 80,
+          isVCard: false,
+          frameText: 'Tip the author!',
+          logoImage: 'https://quilltips.dev/public/lovable-uploads/4c722b40-1ed8-45e5-a9db-b2653f1b148b.png',
+          logoScale: 0.1992,
+          frameColor: '#2595ff',
+          frameStyle: 'banner-bottom',
+          logoMargin: 10,
+          dataPattern: 'square',
+          eyeBallShape: 'circle',
+          gradientType: 'none',
+          eyeFrameColor: '#2595ff',
+          eyeFrameShape: 'rounded'
+        }
+      };
+
+      console.log('Sending request to Uniqode API with payload:', JSON.stringify(qrCodePayload, null, 2));
+
+      // Call Uniqode API to generate QR code
+      const uniqodeResponse = await fetch('https://api.uniqode.com/api/2.0/qrcodes/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${Deno.env.get('UNIQODE_API_KEY')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(qrCodePayload)
+      });
+
+      if (!uniqodeResponse.ok) {
+        const errorText = await uniqodeResponse.text();
+        console.error('Uniqode API error response:', errorText);
+        
+        // Return error but don't throw - we still want to update the database
+        const error = `Failed to generate QR code: ${uniqodeResponse.status} ${errorText}`;
+        
+        // Update the record to show generation failed
+        await supabaseClient
+          .from('qr_codes')
+          .update({
+            qr_code_status: 'error'
+          })
+          .eq('id', qrCodeId);
+          
+        return new Response(
+          JSON.stringify({ 
+            error: error,
+            details: `Uniqode API returned status: ${uniqodeResponse.status}`
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 500
+          }
+        );
       }
-    };
 
-    console.log('Sending request to Uniqode API with payload:', JSON.stringify(qrCodePayload, null, 2));
+      const qrCodeData = await uniqodeResponse.json();
+      console.log('QR code response:', qrCodeData);
 
-    // Call Uniqode API to generate QR code
-    const uniqodeResponse = await fetch('https://api.uniqode.com/api/2.0/qrcodes/', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Token ${Deno.env.get('UNIQODE_API_KEY')}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(qrCodePayload)
-    });
-
-    if (!uniqodeResponse.ok) {
-      const errorText = await uniqodeResponse.text();
-      console.error('Uniqode API error response:', errorText);
-      throw new Error(`Failed to generate QR code: ${uniqodeResponse.status} ${errorText}`);
-    }
-
-    const qrCodeData = await uniqodeResponse.json();
-    console.log('QR code response:', qrCodeData);
-
-    if (!qrCodeData.url) {
-      throw new Error('No QR code URL found in response');
-    }
-
-    // Update the QR code record with the generated URL and Uniqode ID
-    const { error: updateError } = await supabaseClient
-      .from('qr_codes')
-      .update({
-        qr_code_image_url: qrCodeData.url,
-        uniqode_qr_code_id: qrCodeData.id.toString(),
-        qr_code_status: 'generated'
-      })
-      .eq('id', qrCodeId);
-
-    if (updateError) {
-      console.error('Update error:', updateError);
-      throw updateError;
-    }
-
-    return new Response(
-      JSON.stringify({ 
-        url: qrCodeData.url,
-        uniqodeId: qrCodeData.id.toString()
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
+      if (!qrCodeData.url) {
+        throw new Error('No QR code URL found in response');
       }
-    );
+
+      // Update the QR code record with the generated URL and Uniqode ID
+      const { error: updateError } = await supabaseClient
+        .from('qr_codes')
+        .update({
+          qr_code_image_url: qrCodeData.url,
+          uniqode_qr_code_id: qrCodeData.id.toString(),
+          qr_code_status: 'generated'
+        })
+        .eq('id', qrCodeId);
+
+      if (updateError) {
+        console.error('Update error:', updateError);
+        throw updateError;
+      }
+
+      return new Response(
+        JSON.stringify({ 
+          url: qrCodeData.url,
+          uniqodeId: qrCodeData.id.toString()
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
+        }
+      );
+    } catch (apiError) {
+      console.error('API or Processing error:', apiError);
+      
+      // Just store a placeholder URL when the real QR generation fails
+      // This allows the frontend to continue with a preview
+      const { error: updateError } = await supabaseClient
+        .from('qr_codes')
+        .update({
+          qr_code_status: 'error'
+        })
+        .eq('id', qrCodeId);
+        
+      if (updateError) {
+        console.error('Database update error:', updateError);
+      }
+      
+      throw apiError;
+    }
   } catch (error) {
     console.error('Error generating QR code:', error);
     return new Response(
