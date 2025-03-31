@@ -1,8 +1,8 @@
 
-import { Loader2, X, Lock } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { QRCodeCanvas } from "qrcode.react";
+import { StyledQRCode } from "./StyledQRCode";
 
 interface QRCodePreviewProps {
   isGenerating: boolean;
@@ -29,24 +29,15 @@ export const QRCodePreview = ({
           </div>
         ) : qrCodePreview ? (
           <div className="flex flex-col items-center gap-6">
-            <div className="relative max-w-[200px] w-full p-4 bg-white rounded-lg">
-              <QRCodeCanvas
+            {/* Reduced size by ~50% */}
+            <div className="w-full max-w-[150px] mx-auto">
+              <StyledQRCode
                 value={qrCodePreview}
-                size={200}
-                level="H"
-                includeMargin
-                bgColor="#ffffff"
-                fgColor="#000000"
-                style={{ width: '100%', height: 'auto' }}
+                size={130}
+                showBranding={true}
+                blurred={true}
+                title="QR Code Preview"
               />
-              
-              {/* Blurred overlay for the preview */}
-              <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center rounded-lg">
-                <Lock className="h-8 w-8 text-gray-600 mb-2" />
-                <p className="text-xs text-center text-gray-700 font-medium px-2">
-                  Purchase to unlock your QR code
-                </p>
-              </div>
             </div>
             <div className="flex w-full flex-col sm:flex-row gap-4">
               <Button 

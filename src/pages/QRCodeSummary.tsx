@@ -5,8 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download, Share2, ArrowLeft } from "lucide-react";
-import { QRCodeCanvas } from "qrcode.react";
 import { Layout } from "@/components/Layout";
+import { StyledQRCode } from "@/components/qr/StyledQRCode";
+import html2canvas from "html2canvas";
 
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
@@ -28,17 +29,26 @@ const QRCodeSummary = () => {
     }
   });
 
-  const handleDownload = () => {
-    const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
-    if (!canvas) return;
+  const handleDownload = async () => {
+    const qrElement = document.getElementById('styled-qr-summary');
+    if (!qrElement) return;
 
-    const url = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `qr-code-${qrCode?.book_title || 'download'}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      const canvas = await html2canvas(qrElement, {
+        backgroundColor: '#FFFFFF',
+        scale: 3, // Higher resolution
+      });
+      
+      const url = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating QR code image:', error);
+    }
   };
 
   const handleShare = async () => {
@@ -110,15 +120,12 @@ const QRCodeSummary = () => {
                     </p>
                   </div>
 
-                  <div className="bg-white p-6 rounded-lg shadow-sm">
-                    <QRCodeCanvas
-                      id="qr-canvas"
+                  <div id="styled-qr-summary">
+                    <StyledQRCode 
                       value={qrValue}
                       size={200}
-                      level="H"
-                      includeMargin
-                      bgColor="#ffffff"
-                      fgColor="#000000"
+                      showBranding={true}
+                      title={qrCode.book_title}
                     />
                   </div>
 

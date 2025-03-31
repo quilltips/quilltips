@@ -12,13 +12,6 @@ interface QRCodeGenerationProps {
   } | null;
 }
 
-interface QRCodeResponse {
-  url: string;
-  uniqodeId: string;
-  error?: string;
-  details?: string;
-}
-
 export const useQRCodeGeneration = ({ qrCodeData }: QRCodeGenerationProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [qrCodePreview, setQrCodePreview] = useState<string | null>(null);
@@ -46,30 +39,22 @@ export const useQRCodeGeneration = ({ qrCodeData }: QRCodeGenerationProps) => {
           return;
         }
 
-        const tipUrl = `${window.location.origin}/author/profile/${qrCodeData.author_id}?qr=${qrCodeData.id}&autoOpenTip=true`;
+        // Generate QR code URL
+        const tipUrl = `${window.location.origin}/qr/${qrCodeData.id}`;
         console.log('Setting QR code preview URL:', tipUrl);
         setQrCodePreview(tipUrl);
 
-        try {
-          const { data: qrResponse, error: qrGenError } = await supabase.functions.invoke<QRCodeResponse>('generate-qr-code', {
-            body: {
-              bookTitle: qrCodeData.book_title,
-              authorId: qrCodeData.author_id,
-              qrCodeId: qrCodeData.id
-            }
-          });
+        // Update the database with the QR code URL
+        const { error: updateError } = await supabase
+          .from('qr_codes')
+          .update({
+            qr_code_image_url: tipUrl,
+            qr_code_status: 'generated'
+          })
+          .eq('id', qrCodeData.id);
 
-          if (qrGenError) {
-            console.error("Error calling generate-qr-code function:", qrGenError);
-            // We'll continue with the preview URL, but log the error
-          } else if (!qrResponse?.url) {
-            console.error("No QR code URL returned from function");
-          } else {
-            console.log('QR code generated and stored:', qrResponse.url);
-          }
-        } catch (functionError) {
-          // We'll catch errors from the function but not throw, since we already have a preview URL
-          console.error("Function execution error:", functionError);
+        if (updateError) {
+          console.error("Error updating QR code in database:", updateError);
         }
 
       } catch (error: any) {
