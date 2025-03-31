@@ -69,7 +69,7 @@ export const StyledQRCode = ({
         {/* Branding text */}
         {showBranding && (
           <div className="text-center text-xs text-muted-foreground">
-            Tip the author with Quilltips
+            Like the book? Tip the author with Quilltips!
           </div>
         )}
       </div>
