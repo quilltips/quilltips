@@ -2,7 +2,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toPng } from "html-to-image";
+import { toPng, toSvg } from "html-to-image";
 import { useRef } from "react";
 
 // Define explicit database types
@@ -85,7 +85,29 @@ export const useQRCodeDetailsPage = () => {
     }
 
     try {
-      const dataUrl = await toPng(qrCodeRef.current, { 
+      // Try SVG first
+      try {
+        const svgDataUrl = await toSvg(qrCodeRef.current, { 
+          cacheBust: true,
+          backgroundColor: null, // Transparent background
+          style: {
+            borderRadius: '8px', // Ensure rounded corners in export
+          }
+        });
+        
+        const link = document.createElement('a');
+        link.href = svgDataUrl;
+        link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      } catch (svgError) {
+        console.warn('SVG generation failed, falling back to PNG:', svgError);
+      }
+
+      // Fallback to PNG if SVG fails
+      const pngDataUrl = await toPng(qrCodeRef.current, { 
         cacheBust: true,
         pixelRatio: 3,
         backgroundColor: null, // Transparent background
@@ -95,7 +117,7 @@ export const useQRCodeDetailsPage = () => {
       });
       
       const link = document.createElement('a');
-      link.href = dataUrl;
+      link.href = pngDataUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
       document.body.appendChild(link);
       link.click();

@@ -8,7 +8,7 @@ import { Download, Share2, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
 import { useRef } from "react";
-import { toPng } from "html-to-image";
+import { toPng, toSvg } from "html-to-image";
 
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
@@ -35,7 +35,29 @@ const QRCodeSummary = () => {
     if (!qrCodeRef.current) return;
 
     try {
-      const dataUrl = await toPng(qrCodeRef.current, { 
+      // Try SVG first
+      try {
+        const svgDataUrl = await toSvg(qrCodeRef.current, { 
+          cacheBust: true,
+          backgroundColor: null, // Transparent background
+          style: {
+            borderRadius: '8px', // Ensure rounded corners in export
+          }
+        });
+        
+        const link = document.createElement('a');
+        link.href = svgDataUrl;
+        link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      } catch (svgError) {
+        console.warn('SVG generation failed, falling back to PNG:', svgError);
+      }
+
+      // Fallback to PNG if SVG fails
+      const pngDataUrl = await toPng(qrCodeRef.current, { 
         cacheBust: true,
         pixelRatio: 3,
         backgroundColor: null, // Transparent background
@@ -45,7 +67,7 @@ const QRCodeSummary = () => {
       });
       
       const link = document.createElement('a');
-      link.href = dataUrl;
+      link.href = pngDataUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
       document.body.appendChild(link);
       link.click();
