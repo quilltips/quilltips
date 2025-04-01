@@ -46,7 +46,7 @@ const About = () => {
             <ol className="list-decimal pl-5 mb-4">
               <li>Create a Quilltips account.</li>
               <li>Purchase a Quilltips Jar, accessible by QR code.</li>
-              <li>Download and print the code on their next book.</li>
+              <li>Download and print the QR code on their next book.</li>
             </ol>
             <p>Readers scan the QR code to open the book's Quilltips Jar, where they can leave a tip and message.</p>
             
