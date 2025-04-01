@@ -8,8 +8,8 @@ interface AuthorDashboardContentProps {
 
 export const AuthorDashboardContent = ({ authorId }: AuthorDashboardContentProps) => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div className="border border-black rounded-xl p-6 bg-white">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="border border-black rounded-xl p-4 bg-white">
         <TipHistory 
           authorId={authorId} 
           limit={5} 
@@ -18,7 +18,7 @@ export const AuthorDashboardContent = ({ authorId }: AuthorDashboardContentProps
         />
       </div>
       
-      <div className="border border-black rounded-xl p-6 bg-white">
+      <div className="border border-black rounded-xl p-4 bg-white">
         <AuthorQRCodesList authorId={authorId} />
       </div>
     </div>

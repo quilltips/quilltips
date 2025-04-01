@@ -33,7 +33,7 @@ export const TipHistoryContainer = ({
   
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-8">
+      <div className="flex justify-center items-center py-4">
         <LoadingSpinner />
       </div>
     );
@@ -69,7 +69,7 @@ export const TipHistoryContainer = ({
           limit={isDashboard ? limit : 5} 
         />
       ) : (
-        <div className="text-center py-8 text-[#718096]">
+        <div className="text-center py-4 text-[#718096] text-sm">
           No tips yet. Share your QR codes to start receiving tips!
         </div>
       )}

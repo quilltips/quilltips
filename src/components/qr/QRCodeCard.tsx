@@ -1,84 +1,54 @@
 
+// This is a new file, so I'll implement a more compact version of the QRCodeCard
+import React from 'react';
+import { Book, ChevronRight } from "lucide-react";
 import { Card } from "../ui/card";
-import { Button } from "../ui/button";
-import { Book, ChevronDown } from "lucide-react";
-import { QRCodeCardDetails } from "./QRCodeCardDetails";
-import { useState } from "react";
 
 interface QRCodeCardProps {
   qrCode: {
     id: string;
     book_title: string;
-    cover_image?: string | null;
-    publisher?: string | null;
-    release_date?: string | null;
-    isbn?: string | null;
+    cover_image?: string;
     total_tips?: number;
     total_amount?: number;
-    average_tip?: number;
-    last_tip_date?: string | null;
   };
   onNavigate: () => void;
 }
 
-export const QRCodeCard = ({ qrCode, onNavigate }: QRCodeCardProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+export const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onNavigate }) => {
   return (
-    <Card className="overflow-hidden">
-      <div className="p-4 flex items-start gap-4">
-        <div 
-          className="w-16 h-24 flex-shrink-0 bg-muted rounded-lg overflow-hidden cursor-pointer"
-          onClick={onNavigate}
-        >
-          {qrCode.cover_image ? (
-            <img
-              src={qrCode.cover_image}
-              alt={qrCode.book_title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <img
-                src="/lovable-uploads/quill_icon.png"
-                alt="Quilltips Logo"
-                className="h-8 w-8 object-contain"
-              />
-            </div>
-          )}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <h3 
-            className="text-lg font-semibold leading-tight mb-1 hover:text-[#9b87f5] cursor-pointer"
-            onClick={onNavigate}
-          >
-            {qrCode.book_title}
-          </h3>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Total Tips</p>
-              <p className="font-semibold">{qrCode.total_tips || 0}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Value</p>
-              <p className="font-semibold">${qrCode.total_amount?.toFixed(2) || '0.00'}</p>
-            </div>
+    <Card 
+      prominent 
+      onClick={onNavigate} 
+      className="p-3 cursor-pointer hover:bg-slate-50 transition-colors flex items-center gap-3"
+    >
+      <div className="w-12 h-16 flex-shrink-0 bg-muted rounded-md overflow-hidden">
+        {qrCode.cover_image ? (
+          <img
+            src={qrCode.cover_image}
+            alt={qrCode.book_title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <Book className="h-5 w-5 text-gray-400" />
           </div>
-        </div>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="flex-shrink-0"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
-        </Button>
+        )}
       </div>
-
-      {isExpanded && <QRCodeCardDetails qrCode={qrCode} />}
+      
+      <div className="flex-1 text-left">
+        <h3 className="font-medium text-[#2D3748] text-sm line-clamp-1">{qrCode.book_title}</h3>
+        <div className="flex gap-4 mt-1">
+          <p className="text-xs text-[#718096]">
+            <span className="font-medium">{qrCode.total_tips || 0}</span> tips
+          </p>
+          <p className="text-xs text-[#718096]">
+            <span className="font-medium">${(qrCode.total_amount || 0).toFixed(2)}</span> total
+          </p>
+        </div>
+      </div>
+      
+      <ChevronRight className="h-4 w-4 text-[#718096]" />
     </Card>
   );
 };

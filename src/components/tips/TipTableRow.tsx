@@ -40,20 +40,20 @@ export const TipTableRow = ({
 
   return (
     <div 
-      className="group cursor-pointer hover:bg-muted/50 p-4 rounded-lg transition-colors"
+      className="group cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors"
       onClick={() => onSelectTip(tip)}
     >
-      <div className="flex gap-4">
-        <Avatar className="h-12 w-12">
+      <div className="flex gap-3">
+        <Avatar className="h-8 w-8">
           <AvatarImage src={tip.reader_avatar_url || "/placeholder.svg"} />
           <AvatarFallback>
             {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
 
-        <div className="flex-1 space-y-2">
-          <div className="space-y-1">
-            <p className="text-base">
+        <div className="flex-1 space-y-1">
+          <div className="space-y-0.5">
+            <p className="text-sm">
               <span className="font-medium">{tip.reader_name || "Anonymous Reader"}</span>
               {" sent "}
               <span className="font-medium">${tip.amount}</span>
@@ -61,13 +61,13 @@ export const TipTableRow = ({
             
             <TipMessagePreview message={tip.message} />
             
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
             </p>
           </div>
 
           {user && (
-            <div onClick={(e) => e.stopPropagation()}>
+            <div onClick={(e) => e.stopPropagation()} className="mt-1">
               <TipInteractionButtons
                 tipId={tip.id}
                 authorId={user.id}

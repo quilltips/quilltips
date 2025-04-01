@@ -27,8 +27,8 @@ export const TipTable = ({
   const displayTips = showAll ? tips : tips.slice(0, limit);
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-6">
+    <div className="space-y-4">
+      <div className="space-y-3">
         {displayTips.map((tip) => (
           <TipTableRow
             key={tip.id}
@@ -45,9 +45,9 @@ export const TipTable = ({
         <Button 
           variant="ghost" 
           onClick={() => setShowAll?.(!showAll)}
-          className="w-full text-[#718096] hover:text-[#2D3748] hover:bg-gray-100"
+          className="w-full text-[#718096] hover:text-[#2D3748] hover:bg-gray-100 py-1 h-auto text-xs"
         >
-          <ChevronDown className={`mr-2 h-4 w-4 transition-transform ${showAll ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`mr-1 h-3 w-3 transition-transform ${showAll ? 'rotate-180' : ''}`} />
           {showAll ? 'Show Less' : `Show ${tips.length - limit} More`}
         </Button>
       )}
