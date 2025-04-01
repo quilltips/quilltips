@@ -1,6 +1,7 @@
 
 import { QRCodeCanvas } from "qrcode.react";
 import { Card } from "@/components/ui/card";
+import { forwardRef } from "react";
 
 interface StyledQRCodeProps {
   value: string;
@@ -11,16 +12,16 @@ interface StyledQRCodeProps {
   blurred?: boolean;
 }
 
-export const StyledQRCode = ({
+export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   value,
   size = 180,
   title,
   showBranding = true,
   className = "",
   blurred = false,
-}: StyledQRCodeProps) => {
+}, ref) => {
   return (
-    <Card className={`bg-white p-4 rounded-lg ${className}`}>
+    <Card ref={ref} className={`bg-white p-4 rounded-lg ${className}`}>
       <div className="flex flex-col items-center space-y-3">
         <div className="relative">
           {/* QR Code */}
@@ -71,4 +72,6 @@ export const StyledQRCode = ({
       </div>
     </Card>
   );
-};
+});
+
+StyledQRCode.displayName = "StyledQRCode";

@@ -1,7 +1,9 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
+import { useRef } from "react";
 
 // Define explicit database types
 export type QRCode = {
@@ -26,6 +28,7 @@ export type TipData = {
 
 export const useQRCodeDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
+  const qrCodeRef = useRef<HTMLDivElement>(null);
 
   const { data: qrCode, isLoading: qrLoading } = useQuery({
     queryKey: ['qr-code', id],
@@ -76,18 +79,24 @@ export const useQRCodeDetailsPage = () => {
   });
 
   const handleDownloadQR = async () => {
-    const qrElement = document.getElementById('styled-qr-code-stats');
-    if (!qrElement) return;
+    const qrElement = document.querySelector('.StyledQRCode');
+    if (!qrElement || !qrCodeRef.current) {
+      console.error('QR code element not found');
+      return;
+    }
 
     try {
-      const canvas = await html2canvas(qrElement, {
-        backgroundColor: '#FFFFFF',
-        scale: 3, // Higher resolution
+      const dataUrl = await toPng(qrCodeRef.current, { 
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: null, // Transparent background
+        style: {
+          borderRadius: '8px', // Ensure rounded corners in export
+        }
       });
       
-      const url = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.href = url;
+      link.href = dataUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
       document.body.appendChild(link);
       link.click();
@@ -102,6 +111,7 @@ export const useQRCodeDetailsPage = () => {
     qrCode,
     qrLoading,
     tipData,
-    handleDownloadQR
+    handleDownloadQR,
+    qrCodeRef
   };
 };

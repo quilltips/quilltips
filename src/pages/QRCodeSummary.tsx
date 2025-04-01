@@ -7,11 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Download, Share2, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
-import html2canvas from "html2canvas";
+import { useRef } from "react";
+import { toPng } from "html-to-image";
 
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
   const qrCodeId = searchParams.get('qr_code');
+  const qrCodeRef = useRef<HTMLDivElement>(null);
 
   const { data: qrCode, isLoading } = useQuery({
     queryKey: ['qr-code', qrCodeId],
@@ -30,18 +32,20 @@ const QRCodeSummary = () => {
   });
 
   const handleDownload = async () => {
-    const qrElement = document.getElementById('styled-qr-summary');
-    if (!qrElement) return;
+    if (!qrCodeRef.current) return;
 
     try {
-      const canvas = await html2canvas(qrElement, {
-        backgroundColor: '#FFFFFF',
-        scale: 3, // Higher resolution
+      const dataUrl = await toPng(qrCodeRef.current, { 
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: null, // Transparent background
+        style: {
+          borderRadius: '8px', // Ensure rounded corners in export
+        }
       });
       
-      const url = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.href = url;
+      link.href = dataUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
       document.body.appendChild(link);
       link.click();
@@ -120,12 +124,12 @@ const QRCodeSummary = () => {
                     </p>
                   </div>
 
-                  <div id="styled-qr-summary">
+                  <div>
                     <StyledQRCode 
+                      ref={qrCodeRef}
                       value={qrValue}
                       size={200}
                       showBranding={true}
-                      title={qrCode.book_title}
                     />
                   </div>
 

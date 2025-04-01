@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Download, Share2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { StyledQRCode } from './StyledQRCode';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 
 interface QRCodeSuccessModalProps {
   isOpen: boolean;
@@ -28,24 +28,28 @@ export const QRCodeSuccessModal = ({
   onClose, 
   qrCode 
 }: QRCodeSuccessModalProps) => {
+  const qrCodeRef = useRef<HTMLDivElement>(null);
+  
   if (!qrCode) return null;
 
   // Updated to point to the public QR code details page
   const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
   const handleDownload = async () => {
-    const qrElement = document.getElementById('styled-qr-code');
-    if (!qrElement) return;
+    if (!qrCodeRef.current) return;
 
     try {
-      const canvas = await html2canvas(qrElement, {
-        backgroundColor: '#FFFFFF',
-        scale: 3, // Higher resolution
+      const dataUrl = await toPng(qrCodeRef.current, { 
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: null, // Transparent background
+        style: {
+          borderRadius: '8px', // Ensure rounded corners in export
+        }
       });
       
-      const url = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.href = url;
+      link.href = dataUrl;
       link.download = `quilltips-qr-${qrCode.book_title || 'download'}.png`;
       document.body.appendChild(link);
       link.click();
@@ -110,12 +114,12 @@ export const QRCodeSuccessModal = ({
                 </p>
               </div>
 
-              <div id="styled-qr-code">
+              <div>
                 <StyledQRCode
+                  ref={qrCodeRef}
                   value={qrValue}
                   size={200}
                   showBranding={true}
-                  title={qrCode.book_title}
                 />
               </div>
 

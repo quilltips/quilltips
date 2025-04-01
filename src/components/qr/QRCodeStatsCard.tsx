@@ -4,7 +4,7 @@ import { Card } from "../ui/card";
 import { Download } from "lucide-react";
 import { Button } from "../ui/button";
 import { StyledQRCode } from "./StyledQRCode";
-import html2canvas from "html2canvas";
+import { useRef } from "react";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -22,12 +22,15 @@ interface QRCodeStatsCardProps {
 }
 
 export const QRCodeStatsCard = ({ qrCode, onDownload }: QRCodeStatsCardProps) => {
+  const qrCodeRef = useRef<HTMLDivElement>(null);
+
   return (
     <Card className="p-6 space-y-6">
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">QR Code</h2>
-        <div id="styled-qr-code-stats" className="bg-white rounded-lg shadow-sm flex justify-center">
+        <div className="bg-white rounded-lg shadow-sm flex justify-center">
           <StyledQRCode
+            ref={qrCodeRef}
             value={`${window.location.origin}/qr/${qrCode.id}`}
             size={200}
             showBranding={true}
