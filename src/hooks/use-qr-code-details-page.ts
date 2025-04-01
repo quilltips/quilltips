@@ -79,8 +79,7 @@ export const useQRCodeDetailsPage = () => {
   });
 
   const handleDownloadQR = async () => {
-    const qrElement = document.querySelector('.StyledQRCode');
-    if (!qrElement || !qrCodeRef.current) {
+    if (!qrCodeRef.current) {
       console.error('QR code element not found');
       return;
     }

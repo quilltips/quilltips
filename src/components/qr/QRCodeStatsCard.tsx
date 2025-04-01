@@ -4,7 +4,7 @@ import { Card } from "../ui/card";
 import { Download } from "lucide-react";
 import { Button } from "../ui/button";
 import { StyledQRCode } from "./StyledQRCode";
-import { useRef } from "react";
+import { RefObject } from "react";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -19,11 +19,10 @@ interface QRCodeStatsCardProps {
     book_title: string;
   } & QRCodeStats;
   onDownload: () => void;
+  qrCodeRef?: RefObject<HTMLDivElement>;
 }
 
-export const QRCodeStatsCard = ({ qrCode, onDownload }: QRCodeStatsCardProps) => {
-  const qrCodeRef = useRef<HTMLDivElement>(null);
-
+export const QRCodeStatsCard = ({ qrCode, onDownload, qrCodeRef }: QRCodeStatsCardProps) => {
   return (
     <Card className="p-6 space-y-6">
       <div className="space-y-4">
