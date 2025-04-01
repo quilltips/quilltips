@@ -1,12 +1,9 @@
-
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
 const About = () => {
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Navigation />
       
       <main className="container mx-auto px-4 py-24 flex-grow">
@@ -48,10 +45,10 @@ const About = () => {
             <p className="font-medium">Authors:</p>
             <ol className="list-decimal pl-5 mb-4">
               <li>Create a Quilltips account.</li>
-              <li>Purchase a Quilltip jar, accessible by QR code.</li>
-              <li>Print the code on their next book.</li>
+              <li>Purchase a Quilltips Jar, accessible by QR code.</li>
+              <li>Download and print the code on their next book.</li>
             </ol>
-            <p>Readers scan the QR code to open the book's Quilltip jar, where they can leave a tip and message.</p>
+            <p>Readers scan the QR code to open the book's Quilltips Jar, where they can leave a tip and message.</p>
             
             <p className="mt-4">
               Publishers can also use Quilltips to get insights into the authors they work with and their readers. Check out the For 
@@ -83,8 +80,6 @@ const About = () => {
       </main>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default About;
