@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AvatarUpload } from "./profile/AvatarUpload";
 import { ProfileForm } from "./profile/ProfileForm";
 import { BankAccountConnect } from "./profile/BankAccountConnect";
+import { AccountCredentials } from "./profile/AccountCredentials";
 
 interface SocialLink {
   url: string;
@@ -47,6 +48,8 @@ export const ProfileSettings = ({ profile, onChangeStatus }: ProfileSettingsProp
         initialSocialLinks={profile.social_links}
         onChangeStatus={handleFormChangesStatus}
       />
+
+      <AccountCredentials />
 
       <div className="mt-8">
         <BankAccountConnect
