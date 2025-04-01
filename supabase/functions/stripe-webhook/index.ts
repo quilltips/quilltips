@@ -71,7 +71,7 @@ serve(async (req) => {
               qr_code_status: "active",
               is_paid: true 
             })
-            .eq("id", session.metadata.qr_code_id);
+            .eq("id", session.metadata.qrCodeId);
         }
 
         break;

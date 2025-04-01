@@ -37,6 +37,8 @@ serve(async (req) => {
       throw new Error('Failed to fetch author profile');
     }
 
+    console.log('Author profile:', authorProfile);
+
     if (!authorProfile?.stripe_account_id) {
       console.error('Author has not connected their Stripe account');
       return new Response(
@@ -51,11 +53,48 @@ serve(async (req) => {
       );
     }
 
+    // Verify if the account is valid and can receive payments
     // Initialize Stripe with the secret key
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
       httpClient: Stripe.createFetchHttpClient(),
     });
+
+    try {
+      // Check if the connected account exists and is active
+      const account = await stripe.accounts.retrieve(authorProfile.stripe_account_id);
+      console.log('Stripe account status:', {
+        details_submitted: account.details_submitted,
+        payouts_enabled: account.payouts_enabled,
+        charges_enabled: account.charges_enabled
+      });
+      
+      if (!account.details_submitted || !account.payouts_enabled) {
+        console.error('Stripe account is not fully set up');
+        return new Response(
+          JSON.stringify({ 
+            error: 'Author needs to complete their Stripe account setup',
+            code: 'ACCOUNT_SETUP_INCOMPLETE'
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400
+          }
+        );
+      }
+    } catch (stripeError) {
+      console.error('Error checking Stripe account:', stripeError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid author Stripe account',
+          code: 'INVALID_ACCOUNT'
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400
+        }
+      );
+    }
 
     // Calculate application fee (10%)
     const applicationFeeAmount = Math.round(amount * 100 * 0.1); // 10% of the amount in cents

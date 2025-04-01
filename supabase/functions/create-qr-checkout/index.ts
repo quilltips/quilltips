@@ -37,6 +37,8 @@ serve(async (req) => {
       );
     }
 
+    console.log(`Creating checkout session for QR code ${qrCodeId}, book: ${bookTitle || 'Unknown'}`);
+
     // Create the checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -54,13 +56,15 @@ serve(async (req) => {
         },
       ],
       mode: 'payment',
-      success_url: `${req.headers.get('origin')}/author/qr-codes/${qrCodeId}?checkout=success`,
+      success_url: `${req.headers.get('origin')}/qr-summary?qr_code=${qrCodeId}&checkout=success`,
       cancel_url: `${req.headers.get('origin')}/author/qr-codes/${qrCodeId}?checkout=canceled`,
       metadata: {
         qrCodeId,
         type: 'qr_code_purchase'
       },
     });
+
+    console.log(`Checkout session created: ${session.id}, redirecting to ${session.url}`);
 
     // Return the session URL
     return new Response(

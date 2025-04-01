@@ -67,9 +67,20 @@ serve(async (req) => {
         try {
           // Check if the account exists and get its status
           const account = await stripe.accounts.retrieve(accountId);
+          console.log('Account details:', {
+            details_submitted: account.details_submitted,
+            payouts_enabled: account.payouts_enabled,
+            capabilities: account.capabilities
+          });
           
-          if (!account.details_submitted || !account.payouts_enabled) {
-            console.log('Account exists but setup incomplete');
+          // Create dashboard link for a fully set up account
+          if (account.details_submitted && account.payouts_enabled) {
+            console.log('Account is fully setup, creating dashboard link');
+            const dashboardLink = await stripe.accounts.createLoginLink(accountId);
+            accountUrl = dashboardLink.url;
+          } else {
+            console.log('Account exists but setup incomplete, creating onboarding link');
+            // Create account link for completing setup
             const accountLink = await stripe.accountLinks.create({
               account: accountId,
               refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
@@ -77,11 +88,6 @@ serve(async (req) => {
               type: 'account_onboarding',
             });
             accountUrl = accountLink.url;
-          } else {
-            console.log('Account is fully setup, creating update link');
-            // Create dashboard link for a fully set up account
-            const dashboardLink = await stripe.accounts.createLoginLink(accountId);
-            accountUrl = dashboardLink.url;
           }
         } catch (error) {
           console.error('Error with existing account, will create new one:', error);
