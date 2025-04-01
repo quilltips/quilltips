@@ -3,11 +3,12 @@ import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
-import { Plus, Trash2, Camera, Globe, Twitter, Facebook, Share2, HelpCircle } from "lucide-react";
+import { Plus, Trash2, Camera, Globe, Twitter, Facebook, Share2, HelpCircle, X, Edit } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Button } from "./ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface SocialLink {
   url: string;
@@ -16,7 +17,7 @@ interface SocialLink {
 
 interface AuthorRegistrationFieldsProps {
   isLoading: boolean;
-  onAvatarSelected: (file: File) => void;
+  onAvatarSelected: (file: File | null) => void;
 }
 
 const identifySocialPlatform = (url: string): string => {
@@ -40,11 +41,28 @@ const getSocialIcon = (platform: string) => {
   }
 };
 
+const truncateFilename = (filename: string, maxLength: number = 25): string => {
+  if (!filename || filename.length <= maxLength) return filename;
+  
+  const extension = filename.split('.').pop() || '';
+  const nameWithoutExt = filename.substring(0, filename.length - extension.length - 1);
+  
+  const truncatedName = nameWithoutExt.substring(0, maxLength - 3 - extension.length);
+  return `${truncatedName}...${extension}`;
+};
+
 export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: AuthorRegistrationFieldsProps) => {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [newUrl, setNewUrl] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  // Define supported image formats and max file size
+  const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
   const addSocialLink = () => {
     if (!newUrl.trim()) return;
@@ -58,14 +76,63 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
     setSocialLinks(socialLinks.filter((_, i) => i !== index));
   };
 
+  const validateImageFile = (file: File): boolean => {
+    // Reset previous error
+    setError(null);
+
+    // Check file type
+    if (!SUPPORTED_FORMATS.includes(file.type)) {
+      setError(`Unsupported file type: ${file.type}. Please upload a JPG, PNG, GIF, WebP or SVG image.`);
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a JPG, PNG, GIF, WebP or SVG image",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      setError(`File size too large: ${(file.size / (1024 * 1024)).toFixed(2)}MB. Maximum size is 5MB.`);
+      toast({
+        title: "File too large",
+        description: "Please upload an image smaller than 5MB",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!validateImageFile(file)) {
+      e.target.value = '';
+      return;
+    }
+
     const previewUrl = URL.createObjectURL(file);
     setAvatarPreview(previewUrl);
     setSelectedFileName(file.name);
+    setSelectedFile(file);
     onAvatarSelected(file);
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarPreview(null);
+    setSelectedFileName(null);
+    setSelectedFile(null);
+    onAvatarSelected(null);
+    // Reset the file input
+    const fileInput = document.getElementById('avatar-upload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
+
+  const handleEditAvatar = () => {
+    document.getElementById('avatar-upload')?.click();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -78,12 +145,30 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
   return (
     <div className="space-y-6 text-left">
       <div className="flex flex-col items-center space-y-4">
-        <Avatar className="w-24 h-24">
-          <AvatarImage src={avatarPreview || undefined} />
-          <AvatarFallback>
-            <Camera className="w-8 h-8 text-muted-foreground" />
-          </AvatarFallback>
-        </Avatar>
+        <div className="relative">
+          <Avatar className="w-24 h-24 border-2 border-gray-200">
+            <AvatarImage src={avatarPreview || undefined} alt="Profile picture" className="object-cover" />
+            <AvatarFallback>
+              <Camera className="w-8 h-8 text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
+          
+          {avatarPreview && (
+            <div className="absolute -top-2 -right-2 flex gap-1">
+              <Button 
+                type="button" 
+                variant="destructive" 
+                size="icon" 
+                className="h-6 w-6 rounded-full" 
+                onClick={handleRemoveAvatar}
+                disabled={isLoading}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+        </div>
+        
         <div className="space-y-2 text-center">
           <Input
             type="file"
@@ -97,13 +182,24 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             type="button"
             onClick={() => document.getElementById('avatar-upload')?.click()}
             disabled={isLoading}
-            className="text-sm text-[#2D3748] hover:underline"
+            className="text-sm text-[#2D3748] hover:underline flex items-center justify-center gap-1"
           >
-            Add a photo
+            {avatarPreview ? (
+              <>
+                <Edit className="h-3.5 w-3.5" /> Change photo
+              </>
+            ) : (
+              <>Add a photo</>
+            )}
           </button>
           {selectedFileName && (
-            <p className="text-sm text-muted-foreground mt-1">
-              Selected: {selectedFileName}
+            <p className="text-xs text-muted-foreground mt-1">
+              Selected: {truncateFilename(selectedFileName)}
+            </p>
+          )}
+          {error && (
+            <p className="text-xs text-destructive mt-1">
+              {error}
             </p>
           )}
         </div>

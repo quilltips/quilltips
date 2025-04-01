@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Loader2, AlertCircle, Edit } from "lucide-react";
+import { Loader2, AlertCircle, Edit, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -18,11 +18,27 @@ interface AvatarUploadProps {
 export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(avatarUrl);
   const { toast } = useToast();
 
   // Define supported image formats
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+  const truncateFilename = (filename: string, maxLength: number = 25): string => {
+    if (!filename || filename.length <= maxLength) return filename;
+    
+    const parts = filename.split('/');
+    const actualFilename = parts[parts.length - 1];
+    
+    if (actualFilename.length <= maxLength) return actualFilename;
+    
+    const extension = actualFilename.split('.').pop() || '';
+    const nameWithoutExt = actualFilename.substring(0, actualFilename.length - extension.length - 1);
+    
+    const truncatedName = nameWithoutExt.substring(0, maxLength - 3 - extension.length);
+    return `${truncatedName}...${extension}`;
+  };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,6 +55,7 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
         description: "Please upload a JPG, PNG, GIF, WebP or SVG image",
         variant: "destructive",
       });
+      e.target.value = '';
       return;
     }
 
@@ -50,6 +67,7 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
         description: "Please upload an image smaller than 5MB",
         variant: "destructive",
       });
+      e.target.value = '';
       return;
     }
 
@@ -88,18 +106,63 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
         // Don't throw here - the main profile was updated successfully
       }
 
+      // Update the local state to show the new avatar immediately
+      setCurrentAvatarUrl(publicUrl);
+
       toast({
         title: "Avatar Updated",
         description: "Your profile picture has been updated successfully.",
       });
-
-      window.location.reload();
     } catch (error: any) {
       console.error("Error uploading avatar:", error);
       setError(error.message || "Failed to upload profile picture");
       toast({
         title: "Upload Error",
         description: error.message || "Failed to upload profile picture",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!currentAvatarUrl) return;
+    
+    setIsUploading(true);
+    
+    try {
+      // Update the user's profile to remove avatar_url
+      const { error: updateProfileError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: null })
+        .eq('id', profileId);
+
+      if (updateProfileError) throw updateProfileError;
+      
+      // Also update the public profile
+      const { error: updatePublicProfileError } = await supabase
+        .from('public_profiles')
+        .update({ avatar_url: null })
+        .eq('id', profileId);
+
+      if (updatePublicProfileError) {
+        console.warn("Failed to update public profile avatar:", updatePublicProfileError);
+      }
+
+      // Update the local state
+      setCurrentAvatarUrl(null);
+
+      toast({
+        title: "Avatar Removed",
+        description: "Your profile picture has been removed successfully.",
+      });
+    } catch (error: any) {
+      console.error("Error removing avatar:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to remove profile picture",
         variant: "destructive",
       });
     } finally {
@@ -111,7 +174,7 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
     <div className="flex flex-col items-center space-y-4">
       <div className="relative">
         <Avatar className="w-24 h-24 border-2 border-gray-200">
-          <AvatarImage src={avatarUrl || undefined} alt={name} />
+          <AvatarImage src={currentAvatarUrl || undefined} alt={name} className="object-cover" />
           <AvatarFallback>{name?.charAt(0)?.toUpperCase()}</AvatarFallback>
         </Avatar>
         
@@ -147,6 +210,30 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
             </Tooltip>
           </TooltipProvider>
         </div>
+        
+        {currentAvatarUrl && (
+          <div className="absolute -top-1 -right-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    onClick={handleRemoveAvatar}
+                    disabled={isUploading}
+                    className="rounded-full h-6 w-6"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Remove profile picture</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        )}
       </div>
       
       <div className="text-center text-lg font-medium">

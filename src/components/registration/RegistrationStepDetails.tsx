@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 interface RegistrationStepDetailsProps {
   isLoading: boolean;
   error: string | null;
-  onAvatarSelected: (file: File) => void;
+  onAvatarSelected: (file: File | null) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 

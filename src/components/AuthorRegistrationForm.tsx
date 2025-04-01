@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
@@ -31,7 +30,6 @@ export const AuthorRegistrationForm = () => {
     try {
       const { name, bio, avatar_url, social_links } = profileData;
       
-      // Insert directly into public_profiles
       const { error: insertError } = await supabase
         .from('public_profiles')
         .insert({
@@ -63,7 +61,6 @@ export const AuthorRegistrationForm = () => {
     const name = formData.get("name") as string;
     const bio = formData.get("bio") as string;
     
-    // Parse the social links, ensure it's a valid JSON array or default to empty array
     let socialLinks = [];
     try {
       const socialLinksString = formData.get("socialLinks") as string;
@@ -108,11 +105,8 @@ export const AuthorRegistrationForm = () => {
         throw new Error("Failed to create user account");
       }
 
-      // The 'profiles' table should be created automatically by the trigger
-      // Wait a moment to ensure the trigger has time to execute
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Now handle avatar upload if needed
       let avatarUrl = null;
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
@@ -136,7 +130,6 @@ export const AuthorRegistrationForm = () => {
             
           avatarUrl = publicUrl;
 
-          // Update the profile with the avatar URL
           const { error: updateError } = await supabase
             .from('profiles')
             .update({ avatar_url: publicUrl })
@@ -148,7 +141,6 @@ export const AuthorRegistrationForm = () => {
         }
       }
 
-      // Now create the public profile
       const profileData = {
         name,
         bio,
