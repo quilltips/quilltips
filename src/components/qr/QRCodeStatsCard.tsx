@@ -1,9 +1,10 @@
 
 import { format } from "date-fns";
 import { Card } from "../ui/card";
-import { QRCodeCanvas } from "qrcode.react";
 import { Download } from "lucide-react";
 import { Button } from "../ui/button";
+import { StyledQRCode } from "./StyledQRCode";
+import html2canvas from "html2canvas";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -25,15 +26,11 @@ export const QRCodeStatsCard = ({ qrCode, onDownload }: QRCodeStatsCardProps) =>
     <Card className="p-6 space-y-6">
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">QR Code</h2>
-        <div className="bg-white p-6 rounded-lg shadow-sm flex justify-center">
-          <QRCodeCanvas
-            id="qr-canvas"
+        <div id="styled-qr-code-stats" className="bg-white rounded-lg shadow-sm flex justify-center">
+          <StyledQRCode
             value={`${window.location.origin}/qr/${qrCode.id}`}
             size={200}
-            level="H"
-            includeMargin
-            bgColor="#ffffff"
-            fgColor="#000000"
+            showBranding={true}
           />
         </div>
         <Button 

@@ -1,7 +1,7 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import html2canvas from "html2canvas";
 
 // Define explicit database types
 export type QRCode = {
@@ -75,17 +75,26 @@ export const useQRCodeDetailsPage = () => {
     enabled: !!id
   });
 
-  const handleDownloadQR = () => {
-    const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
-    if (!canvas) return;
+  const handleDownloadQR = async () => {
+    const qrElement = document.getElementById('styled-qr-code-stats');
+    if (!qrElement) return;
 
-    const url = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `qr-code-${qrCode?.book_title || 'download'}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      const canvas = await html2canvas(qrElement, {
+        backgroundColor: '#FFFFFF',
+        scale: 3, // Higher resolution
+      });
+      
+      const url = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating QR code image:', error);
+    }
   };
 
   return {
