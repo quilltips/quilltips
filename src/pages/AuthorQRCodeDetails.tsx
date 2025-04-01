@@ -5,10 +5,9 @@ import { ArrowLeft } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
 import { AuthorQRCodeDetailsSection } from "@/components/qr/AuthorQRCodeDetailsSection";
-import { AuthorQRCodeTipHistorySection } from "@/components/qr/AuthorQRCodeTipHistorySection";
 
 const AuthorQRCodeDetails = () => {
-  const { qrCode, qrLoading, tipData, qrCodeRef } = useQRCodeDetailsPage();
+  const { qrCode, qrLoading, qrCodeRef } = useQRCodeDetailsPage();
 
   if (qrLoading) {
     return (
@@ -45,12 +44,6 @@ const AuthorQRCodeDetails = () => {
           <AuthorQRCodeDetailsSection 
             qrCode={qrCode} 
             qrCodeRef={qrCodeRef}
-          />
-
-          <AuthorQRCodeTipHistorySection 
-            tipData={tipData}
-            authorId={qrCode.author_id}
-            qrCodeId={qrCode.id}
           />
         </div>
       </div>

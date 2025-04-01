@@ -37,6 +37,9 @@ export const TipTableRow = ({
   
   const likeCount = likes?.filter(like => like.tip_id === tip.id).length || 0;
   const commentCount = comments?.filter(comment => comment.tip_id === tip.id).length || 0;
+  
+  // Extract first name from reader_name
+  const firstName = tip.reader_name ? tip.reader_name.split(' ')[0] : "Anonymous";
 
   return (
     <div 
@@ -54,9 +57,12 @@ export const TipTableRow = ({
         <div className="flex-1 space-y-1">
           <div className="space-y-0.5">
             <p className="text-sm">
-              <span className="font-medium">{tip.reader_name || "Anonymous Reader"}</span>
+              <span className="font-medium">{firstName}</span>
               {" sent "}
               <span className="font-medium">${tip.amount}</span>
+              {tip.book_title && (
+                <> for <span className="italic">{tip.book_title}</span></>
+              )}
             </p>
             
             <TipMessagePreview message={tip.message} />

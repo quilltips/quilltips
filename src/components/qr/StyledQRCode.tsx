@@ -14,7 +14,7 @@ interface StyledQRCodeProps {
 
 export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   value,
-  size = 180,
+  size = 120, // Reduced from 180 (approx 60% smaller)
   title,
   showBranding = true,
   className = "",
@@ -60,9 +60,9 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           )}
         </div>
 
-        {/* Branding text - split into two lines and increased size by 50% */}
+        {/* Branding text - with smaller font size */}
         {showBranding && (
-          <div className="text-center text-sm leading-tight text-muted-foreground">
+          <div className="text-center text-xs leading-tight text-muted-foreground">
             <div>Like the book?</div>
             <div>
               Tip the author with <span className="font-bold">Quilltips</span>!
