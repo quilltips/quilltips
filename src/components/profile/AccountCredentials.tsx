@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -10,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 export const AccountCredentials = () => {
   const [isEmailOpen, setIsEmailOpen] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [currentEmail, setCurrentEmail] = useState("");
   const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -17,6 +17,17 @@ export const AccountCredentials = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user) {
+        setCurrentEmail(data.user.email || "");
+      }
+    };
+    
+    fetchUserEmail();
+  }, []);
 
   const handleUpdateEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +72,6 @@ export const AccountCredentials = () => {
     }
 
     try {
-      // First verify the current password by attempting to sign in
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: (await supabase.auth.getUser()).data.user?.email || "",
         password: currentPassword,
@@ -73,7 +83,6 @@ export const AccountCredentials = () => {
         return;
       }
       
-      // Then update to the new password
       const { error } = await supabase.auth.updateUser({ 
         password: newPassword 
       });
@@ -85,7 +94,6 @@ export const AccountCredentials = () => {
         description: "Your password has been successfully updated.",
       });
       
-      // Reset form
       setIsPasswordOpen(false);
       setCurrentPassword("");
       setNewPassword("");
@@ -123,27 +131,49 @@ export const AccountCredentials = () => {
       )}
 
       {!isEmailOpen && !isPasswordOpen && (
-        <div className="flex flex-col md:flex-row gap-4">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsEmailOpen(true)}
-            className="px-8 py-2 h-auto rounded-full"
-          >
-            Change Email
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => setIsPasswordOpen(true)}
-            className="px-8 py-2 h-auto rounded-full"
-          >
-            Change Password
-          </Button>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Email</p>
+              <p className="text-sm text-gray-600">{currentEmail}</p>
+            </div>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsEmailOpen(true)}
+              className="px-8 py-2 h-auto rounded-full"
+            >
+              Change Email
+            </Button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Password</p>
+              <p className="text-sm text-gray-600">••••••••</p>
+            </div>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsPasswordOpen(true)}
+              className="px-8 py-2 h-auto rounded-full"
+            >
+              Change Password
+            </Button>
+          </div>
         </div>
       )}
 
       {isEmailOpen && (
         <form onSubmit={handleUpdateEmail} className="space-y-4">
-          <div className="space-y-2">
+          <div className="space-y-1">
+            <Label htmlFor="current-email">Current Email</Label>
+            <Input
+              id="current-email"
+              type="email"
+              value={currentEmail}
+              disabled
+              className="bg-gray-100"
+            />
+          </div>
+          <div className="space-y-1">
             <Label htmlFor="email">New Email</Label>
             <Input
               id="email"
