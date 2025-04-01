@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +23,15 @@ export const useTipSubmission = (qrCode: any) => {
     try {
       if (!qrCode) throw new Error('QR code not found');
       if (!email) throw new Error('Email is required');
+      if (!finalAmount || isNaN(Number(finalAmount)) || Number(finalAmount) <= 0) {
+        throw new Error('Please enter a valid amount');
+      }
+      
+      console.log('Creating tip checkout for:', { 
+        amount: finalAmount, 
+        authorId: qrCode.author_id,
+        qrCodeId: qrCode.id 
+      });
       
       const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
         body: {
@@ -50,6 +60,7 @@ export const useTipSubmission = (qrCode: any) => {
       }
 
       if (data.url) {
+        // Redirect to Stripe Checkout
         window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received from server');

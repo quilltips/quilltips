@@ -21,48 +21,22 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
     if (searchParams.get('setup') === 'complete') {
       toast({
         title: "Account Setup",
-        description: "Your Stripe account setup has been completed successfully.",
+        description: "Your Stripe account setup has been updated successfully.",
       });
     }
     // Handle refresh flow
     else if (searchParams.get('refresh') === 'true' && stripeAccountId) {
-      handleRefresh();
+      handleConnect();
     }
   }, [searchParams, stripeAccountId]);
 
-  const handleStripeError = (error: any) => {
-    console.error('Stripe error:', error);
-    let errorMessage = 'Failed to connect bank account. Please try again.';
-    let variant: 'default' | 'destructive' = 'destructive';
-
-    if (error.error === 'platform_setup_required') {
-      errorMessage = 'Platform setup is required. Please contact support for assistance.';
-    } else if (error.error === 'account_invalid') {
-      errorMessage = 'Your previous account setup was incomplete. Please try connecting again.';
-      variant = 'default';
-    } else if (error.type === 'stripe_error') {
-      errorMessage = error.message || 'There was an issue with the Stripe connection.';
-    }
-
-    toast({
-      title: "Connection Status",
-      description: errorMessage,
-      variant: variant,
-    });
-
-    // If account was invalid and needs retry, clear the stored account ID
-    if (error.error === 'account_invalid' && error.shouldRetry) {
-      handleRefresh();
-    }
-  };
-
-  const handleRefresh = async () => {
+  const handleConnect = async () => {
     setIsConnecting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('No session found');
 
-      console.log('Refreshing Stripe Connect account setup');
+      console.log('Connecting to Stripe Connect account');
       const { data, error } = await supabase.functions.invoke('create-connect-account', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -72,7 +46,12 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       if (error) throw error;
 
       if (data.error) {
-        handleStripeError(data);
+        console.error('Stripe error:', data.error);
+        toast({
+          title: "Connection Error",
+          description: data.error,
+          variant: "destructive",
+        });
         return;
       }
 
@@ -80,43 +59,15 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         throw new Error('Failed to get Stripe onboarding URL');
       }
 
+      // Redirect to Stripe for onboarding or dashboard
       window.location.href = data.url;
     } catch (error: any) {
-      console.error("Error refreshing onboarding:", error);
-      handleStripeError(error);
-    } finally {
-      setIsConnecting(false);
-    }
-  };
-
-  const connectBankAccount = async () => {
-    setIsConnecting(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No session found');
-
-      console.log('Initiating Stripe Connect account setup');
-      const { data, error } = await supabase.functions.invoke('create-connect-account', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
+      console.error("Error connecting to Stripe:", error);
+      toast({
+        title: "Connection Error",
+        description: error.message || "Failed to connect bank account",
+        variant: "destructive",
       });
-
-      if (error) throw error;
-
-      if (data.error) {
-        handleStripeError(data);
-        return;
-      }
-
-      if (!data?.url) {
-        throw new Error('Failed to get Stripe onboarding URL');
-      }
-
-      window.location.href = data.url;
-    } catch (error: any) {
-      console.error("Error connecting bank account:", error);
-      handleStripeError(error);
     } finally {
       setIsConnecting(false);
     }
@@ -126,7 +77,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
     <Button
       type="button"
       variant="outline"
-      onClick={stripeAccountId ? handleRefresh : connectBankAccount}
+      onClick={handleConnect}
       disabled={isConnecting}
       className="w-full sm:w-auto"
     >
@@ -135,7 +86,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       ) : (
         <Wallet className="mr-2 h-4 w-4" />
       )}
-      {stripeAccountId ? "Continue Account Setup" : "Connect Bank Account"}
+      {stripeAccountId ? "Manage Payment Settings" : "Connect Bank Account"}
     </Button>
   );
 };

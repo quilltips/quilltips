@@ -1,7 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
-import Stripe from "https://esm.sh/stripe@12.18.0?dts";
+import Stripe from "https://esm.sh/stripe@14.21.0?dts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,9 +15,9 @@ serve(async (req) => {
   }
 
   try {
-    const { amount, authorId, message, name, bookTitle, qrCodeId } = await req.json();
+    const { amount, authorId, message, name, email, bookTitle, qrCodeId } = await req.json();
 
-    console.log('Creating checkout session with params:', { amount, authorId, message, name, bookTitle, qrCodeId });
+    console.log('Creating checkout session with params:', { amount, authorId, message, name, email, bookTitle, qrCodeId });
 
     // Create Supabase admin client
     const supabaseAdmin = createClient(
@@ -28,7 +28,7 @@ serve(async (req) => {
     // Get author's Stripe account ID
     const { data: authorProfile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('stripe_account_id')
+      .select('stripe_account_id, stripe_setup_complete')
       .eq('id', authorId)
       .single();
 
@@ -51,8 +51,8 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Stripe with test mode key
-    const stripe = new Stripe(Deno.env.get('STRIPE_TEST_SECRET_KEY') || '', {
+    // Initialize Stripe with the secret key
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
       httpClient: Stripe.createFetchHttpClient(),
     });
@@ -83,13 +83,20 @@ serve(async (req) => {
         metadata: {
           authorId,
           tipper_name: name,
+          tipper_email: email,
           message,
           bookTitle,
           qrCodeId,
         },
       },
+      customer_email: email,
       success_url: `${req.headers.get('origin')}/author/${authorId}?success=true`,
       cancel_url: `${req.headers.get('origin')}/author/${authorId}?canceled=true`,
+      metadata: {
+        type: 'tip',
+        author_id: authorId,
+        qr_code_id: qrCodeId,
+      },
     });
 
     console.log('Checkout session created:', session.id);
@@ -118,7 +125,7 @@ serve(async (req) => {
       JSON.stringify({ url: session.url }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
+        status: 200
       }
     );
   } catch (error) {
@@ -130,7 +137,7 @@ serve(async (req) => {
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
+        status: 400
       }
     );
   }

@@ -25,28 +25,35 @@ export const useQRCheckout = ({ qrCodeId, bookTitle, onSuccess }: QRCheckoutProp
 
     try {
       setIsCheckingOut(true);
-
-      // This is a placeholder for the actual checkout with Stripe
-      // For now, we'll just simulate a successful checkout
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session found');
+      
       console.log(`Processing checkout for QR code ${qrCodeId}`);
       
-      // Update the QR code status to "active"
-      const { error: updateError } = await supabase
-        .from('qr_codes')
-        .update({ qr_code_status: 'active' })
-        .eq('id', qrCodeId);
-
-      if (updateError) throw updateError;
-
-      toast({
-        title: "Success!",
-        description: `Your QR code for "${bookTitle}" is ready.`,
+      const { data, error } = await supabase.functions.invoke('create-qr-checkout', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: {
+          qrCodeId,
+          bookTitle
+        }
       });
 
-      // If onSuccess callback is provided, call it with the qrCodeId
-      if (onSuccess) {
-        onSuccess(qrCodeId);
+      if (error) throw error;
+      
+      if (data.error) {
+        throw new Error(data.error);
       }
+      
+      if (!data.url) {
+        throw new Error('No checkout URL received');
+      }
+      
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+      
     } catch (error: any) {
       console.error("Checkout error:", error);
       toast({
@@ -54,7 +61,6 @@ export const useQRCheckout = ({ qrCodeId, bookTitle, onSuccess }: QRCheckoutProp
         description: error.message || "Unable to complete the checkout process.",
         variant: "destructive",
       });
-    } finally {
       setIsCheckingOut(false);
     }
   };

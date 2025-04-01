@@ -33,9 +33,9 @@ serve(async (req) => {
     console.log('User authenticated:', user.id);
 
     // Initialize Stripe
-    const stripeSecretKey = Deno.env.get('STRIPE_TEST_SECRET_KEY');
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
     if (!stripeSecretKey) {
-      console.error('Missing STRIPE_TEST_SECRET_KEY');
+      console.error('Missing STRIPE_SECRET_KEY');
       throw new Error('Stripe configuration error');
     }
 
@@ -64,20 +64,47 @@ serve(async (req) => {
 
       if (accountId) {
         console.log('Existing Stripe account found:', accountId);
-        // Check if the account exists and get its status
-        const account = await stripe.accounts.retrieve(accountId);
-        
-        if (!account.details_submitted || !account.payouts_enabled) {
-          console.log('Account exists but setup incomplete');
-          const accountLink = await stripe.accountLinks.create({
-            account: accountId,
-            refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
-            return_url: `${req.headers.get('origin')}/author/settings?setup=complete`,
-            type: 'account_onboarding',
-          });
-          accountUrl = accountLink.url;
+        try {
+          // Check if the account exists and get its status
+          const account = await stripe.accounts.retrieve(accountId);
+          
+          if (!account.details_submitted || !account.payouts_enabled) {
+            console.log('Account exists but setup incomplete');
+            const accountLink = await stripe.accountLinks.create({
+              account: accountId,
+              refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
+              return_url: `${req.headers.get('origin')}/author/settings?setup=complete`,
+              type: 'account_onboarding',
+            });
+            accountUrl = accountLink.url;
+          } else {
+            console.log('Account is fully setup, creating update link');
+            // Create dashboard link for a fully set up account
+            const dashboardLink = await stripe.accounts.createLoginLink(accountId);
+            accountUrl = dashboardLink.url;
+          }
+        } catch (error) {
+          console.error('Error with existing account, will create new one:', error);
+          
+          // Reset the account ID if it's invalid
+          const { error: updateError } = await supabaseClient
+            .from('profiles')
+            .update({ 
+              stripe_account_id: null,
+              stripe_setup_complete: false
+            })
+            .eq('id', user.id);
+            
+          if (updateError) {
+            console.error('Error resetting account ID:', updateError);
+          }
+          
+          // Force new account creation
+          accountId = null;
         }
-      } else {
+      }
+
+      if (!accountId) {
         console.log('Creating new Stripe Connect account');
         // Create a new Connect account
         const account = await stripe.accounts.create({
@@ -128,20 +155,16 @@ serve(async (req) => {
     } catch (stripeError: any) {
       console.error('Stripe error:', stripeError);
       
-      if (stripeError.message?.includes('platform profile')) {
-        return new Response(
-          JSON.stringify({
-            error: 'Platform profile setup required',
-            details: stripeError.message
-          }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 400
-          }
-        );
-      }
-
-      throw stripeError;
+      return new Response(
+        JSON.stringify({
+          error: stripeError.message,
+          type: 'stripe_error'
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400
+        }
+      );
     }
   } catch (error: any) {
     console.error('Error in create-connect-account:', error);

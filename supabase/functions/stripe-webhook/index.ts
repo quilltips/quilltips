@@ -1,3 +1,4 @@
+
 // supabase/functions/stripe-webhook/index.ts
 
 //@ts-nocheck
@@ -8,15 +9,15 @@ export const config = {
   auth: false,
 };
 
-console.log("🧪 latest version deployed")
+console.log("🔄 Updated Stripe webhook handler deployed")
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import Stripe from "npm:stripe@12.0.0";
+import Stripe from "npm:stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-  apiVersion: "2022-11-15",
+  apiVersion: "2023-10-16",
 });
 
 const supabase = createClient(
@@ -45,19 +46,31 @@ serve(async (req) => {
   try {
     switch (event.type) {
       case "checkout.session.completed": {
-        const session = event.data.object as Stripe.Checkout.Session;
-
+        const session = event.data.object;
+        console.log("Checkout session completed:", session.id);
+        
+        // Handle tip completion
         if (session.metadata?.type === "tip") {
+          console.log("Processing completed tip:", session.metadata);
+          
           await supabase
             .from("tips")
             .update({ status: "complete" })
-            .eq("id", session.metadata.tip_id);
+            .eq("stripe_session_id", session.id);
+            
+          // Update QR code stats trigger will handle the rest
         }
 
+        // Handle QR code purchase completion
         if (session.metadata?.type === "qr_code_purchase") {
+          console.log("Processing completed QR code purchase:", session.metadata);
+          
           await supabase
             .from("qr_codes")
-            .update({ stripe_payment_complete: true })
+            .update({ 
+              qr_code_status: "active",
+              is_paid: true 
+            })
             .eq("id", session.metadata.qr_code_id);
         }
 
@@ -65,15 +78,27 @@ serve(async (req) => {
       }
 
       case "account.updated": {
-        const account = event.data.object as Stripe.Account;
+        const account = event.data.object;
+        console.log("Stripe Connect account updated:", account.id);
+        
         const payoutsEnabled = account.payouts_enabled;
         const detailsSubmitted = account.details_submitted;
 
         if (payoutsEnabled && detailsSubmitted) {
-          await supabase
+          console.log("Account setup completed, updating profile");
+          
+          // Find the user with this Connect account
+          const { data: profiles } = await supabase
             .from("profiles")
-            .update({ stripe_setup_complete: true })
+            .select("id")
             .eq("stripe_account_id", account.id);
+            
+          if (profiles && profiles.length > 0) {
+            await supabase
+              .from("profiles")
+              .update({ stripe_setup_complete: true })
+              .eq("stripe_account_id", account.id);
+          }
         }
 
         break;
@@ -83,7 +108,7 @@ serve(async (req) => {
         console.log(`⚠️ Unhandled event type: ${event.type}`);
     }
 
-    return new Response("Webhook received", { status: 200 });
+    return new Response("Webhook processed successfully", { status: 200 });
   } catch (err) {
     console.error("❌ Error handling webhook event:", err);
     return new Response("Webhook error", { status: 500 });
