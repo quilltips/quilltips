@@ -6,19 +6,20 @@ import { RefObject } from "react";
 
 interface AuthorQRCodeDetailsSectionProps {
   qrCode: QRCode;
-  onDownload: () => void;
+  onDownload?: () => void;
+  handleDownloadSVG?: () => void;
+  handleDownloadPNG?: () => void;
   qrCodeRef?: RefObject<HTMLDivElement>;
 }
 
 export const AuthorQRCodeDetailsSection = ({ 
   qrCode, 
-  onDownload,
   qrCodeRef
 }: AuthorQRCodeDetailsSectionProps) => {
   return (
     <div className="grid md:grid-cols-2 gap-8">
       <QRCodeInfoCard qrCode={qrCode} />
-      <QRCodeStatsCard qrCode={qrCode} onDownload={onDownload} qrCodeRef={qrCodeRef} />
+      <QRCodeStatsCard qrCode={qrCode} qrCodeRef={qrCodeRef} />
     </div>
   );
 };

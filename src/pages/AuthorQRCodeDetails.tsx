@@ -8,7 +8,7 @@ import { AuthorQRCodeDetailsSection } from "@/components/qr/AuthorQRCodeDetailsS
 import { AuthorQRCodeTipHistorySection } from "@/components/qr/AuthorQRCodeTipHistorySection";
 
 const AuthorQRCodeDetails = () => {
-  const { qrCode, qrLoading, tipData, handleDownloadQR, qrCodeRef } = useQRCodeDetailsPage();
+  const { qrCode, qrLoading, tipData, qrCodeRef } = useQRCodeDetailsPage();
 
   if (qrLoading) {
     return (
@@ -44,7 +44,6 @@ const AuthorQRCodeDetails = () => {
 
           <AuthorQRCodeDetailsSection 
             qrCode={qrCode} 
-            onDownload={handleDownloadQR}
             qrCodeRef={qrCodeRef}
           />
 

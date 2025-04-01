@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,41 +77,45 @@ export const useQRCodeDetailsPage = () => {
     enabled: !!id
   });
 
-  const handleDownloadQR = async () => {
+  const handleDownloadSVG = async () => {
     if (!qrCodeRef.current) {
       console.error('QR code element not found');
       return;
     }
 
     try {
-      // Try SVG first
-      try {
-        const svgDataUrl = await toSvg(qrCodeRef.current, { 
-          cacheBust: true,
-          backgroundColor: null, // Transparent background
-          style: {
-            borderRadius: '8px', // Ensure rounded corners in export
-          }
-        });
-        
-        const link = document.createElement('a');
-        link.href = svgDataUrl;
-        link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return;
-      } catch (svgError) {
-        console.warn('SVG generation failed, falling back to PNG:', svgError);
-      }
+      const svgDataUrl = await toSvg(qrCodeRef.current, { 
+        cacheBust: true,
+        backgroundColor: null,
+        style: {
+          borderRadius: '8px',
+        }
+      });
+      
+      const link = document.createElement('a');
+      link.href = svgDataUrl;
+      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating SVG QR code image:', error);
+    }
+  };
 
-      // Fallback to PNG if SVG fails
+  const handleDownloadPNG = async () => {
+    if (!qrCodeRef.current) {
+      console.error('QR code element not found');
+      return;
+    }
+
+    try {
       const pngDataUrl = await toPng(qrCodeRef.current, { 
         cacheBust: true,
         pixelRatio: 3,
-        backgroundColor: null, // Transparent background
+        backgroundColor: null,
         style: {
-          borderRadius: '8px', // Ensure rounded corners in export
+          borderRadius: '8px',
         }
       });
       
@@ -123,7 +126,7 @@ export const useQRCodeDetailsPage = () => {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error generating QR code image:', error);
+      console.error('Error generating PNG QR code image:', error);
     }
   };
 
@@ -132,7 +135,8 @@ export const useQRCodeDetailsPage = () => {
     qrCode,
     qrLoading,
     tipData,
-    handleDownloadQR,
+    handleDownloadSVG,
+    handleDownloadPNG,
     qrCodeRef
   };
 };

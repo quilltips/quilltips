@@ -1,16 +1,10 @@
 
 import { format } from "date-fns";
 import { Card } from "../ui/card";
-import { Download, Info } from "lucide-react";
-import { Button } from "../ui/button";
-import { StyledQRCode } from "./StyledQRCode";
 import { RefObject } from "react";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
+import { StyledQRCode } from "./StyledQRCode";
+import { QRCodeDownloadOptions } from "./QRCodeDownloadOptions";
+import { toPng, toSvg } from "html-to-image";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -24,11 +18,57 @@ interface QRCodeStatsCardProps {
     id: string;
     book_title: string;
   } & QRCodeStats;
-  onDownload: () => void;
   qrCodeRef?: RefObject<HTMLDivElement>;
 }
 
-export const QRCodeStatsCard = ({ qrCode, onDownload, qrCodeRef }: QRCodeStatsCardProps) => {
+export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => {
+  const handleDownloadSVG = async () => {
+    if (!qrCodeRef?.current) return;
+
+    try {
+      const svgDataUrl = await toSvg(qrCodeRef.current, { 
+        cacheBust: true,
+        backgroundColor: null,
+        style: {
+          borderRadius: '8px',
+        }
+      });
+      
+      const link = document.createElement('a');
+      link.href = svgDataUrl;
+      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating SVG QR code image:', error);
+    }
+  };
+
+  const handleDownloadPNG = async () => {
+    if (!qrCodeRef?.current) return;
+
+    try {
+      const pngDataUrl = await toPng(qrCodeRef.current, { 
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: null,
+        style: {
+          borderRadius: '8px',
+        }
+      });
+      
+      const link = document.createElement('a');
+      link.href = pngDataUrl;
+      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating PNG QR code image:', error);
+    }
+  };
+
   return (
     <Card className="p-6 space-y-6">
       <div className="space-y-4">
@@ -41,27 +81,10 @@ export const QRCodeStatsCard = ({ qrCode, onDownload, qrCodeRef }: QRCodeStatsCa
             showBranding={true}
           />
         </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            onClick={onDownload}
-            className="flex-grow"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Download QR Code
-          </Button>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <Info className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p>SVG is best for print. This file format keeps your QR code crisp at any size, with transparent corners and smooth edges. Perfect for adding to your book cover or promotional materials.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+        <QRCodeDownloadOptions 
+          onDownloadSVG={handleDownloadSVG}
+          onDownloadPNG={handleDownloadPNG}
+        />
       </div>
 
       <div className="space-y-2">

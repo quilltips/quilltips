@@ -1,19 +1,15 @@
+
 import { useSearchParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, Share2, ArrowLeft, Info } from "lucide-react";
+import { Share2, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
 import { useRef } from "react";
 import { toPng, toSvg } from "html-to-image";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
+import { QRCodeDownloadOptions } from "@/components/qr/QRCodeDownloadOptions";
 
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
@@ -36,38 +32,39 @@ const QRCodeSummary = () => {
     }
   });
 
-  const handleDownload = async () => {
+  const handleDownloadSVG = async () => {
     if (!qrCodeRef.current) return;
 
     try {
-      // Try SVG first
-      try {
-        const svgDataUrl = await toSvg(qrCodeRef.current, { 
-          cacheBust: true,
-          backgroundColor: null, // Transparent background
-          style: {
-            borderRadius: '8px', // Ensure rounded corners in export
-          }
-        });
-        
-        const link = document.createElement('a');
-        link.href = svgDataUrl;
-        link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return;
-      } catch (svgError) {
-        console.warn('SVG generation failed, falling back to PNG:', svgError);
-      }
+      const svgDataUrl = await toSvg(qrCodeRef.current, { 
+        cacheBust: true,
+        backgroundColor: null,
+        style: {
+          borderRadius: '8px',
+        }
+      });
+      
+      const link = document.createElement('a');
+      link.href = svgDataUrl;
+      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating SVG QR code image:', error);
+    }
+  };
 
-      // Fallback to PNG if SVG fails
+  const handleDownloadPNG = async () => {
+    if (!qrCodeRef.current) return;
+
+    try {
       const pngDataUrl = await toPng(qrCodeRef.current, { 
         cacheBust: true,
         pixelRatio: 3,
-        backgroundColor: null, // Transparent background
+        backgroundColor: null,
         style: {
-          borderRadius: '8px', // Ensure rounded corners in export
+          borderRadius: '8px',
         }
       });
       
@@ -78,7 +75,7 @@ const QRCodeSummary = () => {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error generating QR code image:', error);
+      console.error('Error generating PNG QR code image:', error);
     }
   };
 
@@ -160,27 +157,10 @@ const QRCodeSummary = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Button 
-                        className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
-                        onClick={handleDownload}
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        Download QR Code
-                      </Button>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div>
-                              <Info className="h-5 w-5 text-muted-foreground" />
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
-                            <p>SVG is best for print. This file format keeps your QR code crisp at any size, with transparent corners and smooth edges. Perfect for adding to your book cover or promotional materials.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
+                    <QRCodeDownloadOptions 
+                      onDownloadSVG={handleDownloadSVG}
+                      onDownloadPNG={handleDownloadPNG}
+                    />
                     <Button 
                       variant="outline" 
                       className="w-full"
