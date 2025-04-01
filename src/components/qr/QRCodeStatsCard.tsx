@@ -1,10 +1,16 @@
 
 import { format } from "date-fns";
 import { Card } from "../ui/card";
-import { Download } from "lucide-react";
+import { Download, Info } from "lucide-react";
 import { Button } from "../ui/button";
 import { StyledQRCode } from "./StyledQRCode";
 import { RefObject } from "react";
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -35,13 +41,27 @@ export const QRCodeStatsCard = ({ qrCode, onDownload, qrCodeRef }: QRCodeStatsCa
             showBranding={true}
           />
         </div>
-        <Button 
-          onClick={onDownload}
-          className="w-full"
-        >
-          <Download className="mr-2 h-4 w-4" />
-          Download QR Code
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            onClick={onDownload}
+            className="flex-grow"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Download QR Code
+          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Info className="h-5 w-5 text-muted-foreground" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p>SVG is best for print. This file format keeps your QR code crisp at any size, with transparent corners and smooth edges. Perfect for adding to your book cover or promotional materials.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
 
       <div className="space-y-2">
