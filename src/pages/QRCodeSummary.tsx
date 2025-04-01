@@ -1,14 +1,19 @@
-
 import { useSearchParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, Share2, ArrowLeft } from "lucide-react";
+import { Download, Share2, ArrowLeft, Info } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
 import { useRef } from "react";
 import { toPng, toSvg } from "html-to-image";
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
@@ -101,7 +106,6 @@ const QRCodeSummary = () => {
     );
   }
 
-  // Updated to point to the public QR code details page
   const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
   return (
@@ -156,13 +160,27 @@ const QRCodeSummary = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <Button 
-                      className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
-                      onClick={handleDownload}
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      Download QR Code
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+                        onClick={handleDownload}
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        Download QR Code
+                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div>
+                              <Info className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p>SVG is best for print. This file format keeps your QR code crisp at any size, with transparent corners and smooth edges. Perfect for adding to your book cover or promotional materials.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <Button 
                       variant="outline" 
                       className="w-full"

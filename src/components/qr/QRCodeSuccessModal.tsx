@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Download, Share2, X } from "lucide-react";
+import { Download, Share2, X, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,6 +10,12 @@ import {
 } from "@/components/ui/dialog";
 import { StyledQRCode } from './StyledQRCode';
 import { toPng, toSvg } from 'html-to-image';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 interface QRCodeSuccessModalProps {
   isOpen: boolean;
@@ -31,20 +37,18 @@ export const QRCodeSuccessModal = ({
   
   if (!qrCode) return null;
 
-  // Updated to point to the public QR code details page
   const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
   const handleDownload = async () => {
     if (!qrCodeRef.current) return;
 
     try {
-      // Try SVG first
       try {
         const svgDataUrl = await toSvg(qrCodeRef.current, { 
           cacheBust: true,
-          backgroundColor: null, // Transparent background
+          backgroundColor: null,
           style: {
-            borderRadius: '8px', // Ensure rounded corners in export
+            borderRadius: '8px',
           }
         });
         
@@ -59,13 +63,12 @@ export const QRCodeSuccessModal = ({
         console.warn('SVG generation failed, falling back to PNG:', svgError);
       }
 
-      // Fallback to PNG if SVG fails
       const pngDataUrl = await toPng(qrCodeRef.current, { 
         cacheBust: true,
         pixelRatio: 3,
-        backgroundColor: null, // Transparent background
+        backgroundColor: null,
         style: {
-          borderRadius: '8px', // Ensure rounded corners in export
+          borderRadius: '8px',
         }
       });
       
@@ -145,13 +148,27 @@ export const QRCodeSuccessModal = ({
               </div>
 
               <div className="space-y-3">
-                <Button 
-                  className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
-                  onClick={handleDownload}
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Download QR Code
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+                    onClick={handleDownload}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download QR Code
+                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div>
+                          <Info className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>SVG is best for print. This file format keeps your QR code crisp at any size, with transparent corners and smooth edges. Perfect for adding to your book cover or promotional materials.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <Button 
                   variant="outline" 
                   className="w-full"
