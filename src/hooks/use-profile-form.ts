@@ -1,8 +1,8 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Json } from "@/integrations/supabase/types";
-import { syncProfileToPublic } from "@/types/public-profile";
 
 export interface SocialLink {
   url: string;
@@ -69,7 +69,8 @@ export function useProfileForm({
         label: link.label
       }));
 
-      const { error } = await supabase
+      // Update the main profile
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({ 
           name, 
@@ -78,11 +79,21 @@ export function useProfileForm({
         })
         .eq('id', profileId);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
 
-      const syncResult = await syncProfileToPublic(profileId);
-      if (!syncResult.success) {
-        console.warn("Profile updated but public profile sync failed:", syncResult.error);
+      // Update the public profile directly
+      const { error: publicProfileError } = await supabase
+        .from('public_profiles')
+        .update({ 
+          name, 
+          bio, 
+          social_links: socialLinksJson 
+        })
+        .eq('id', profileId);
+
+      if (publicProfileError) {
+        console.warn("Failed to update public profile:", publicProfileError);
+        // Don't throw here as the main profile was updated successfully
       }
 
       toast({

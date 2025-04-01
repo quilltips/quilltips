@@ -7,7 +7,6 @@ import { Alert, AlertDescription } from "../ui/alert";
 import { Loader2, AlertCircle, Edit } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { syncProfileToPublic } from "@/types/public-profile";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
 interface AvatarUploadProps {
@@ -70,17 +69,23 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
         .from('avatars')
         .getPublicUrl(filePath);
 
-      const { error: updateError } = await supabase
+      // Update the user's profile
+      const { error: updateProfileError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
         .eq('id', profileId);
 
-      if (updateError) throw updateError;
+      if (updateProfileError) throw updateProfileError;
       
-      // Sync avatar changes to public profile
-      const syncResult = await syncProfileToPublic(profileId);
-      if (!syncResult.success) {
-        console.warn("Avatar updated but public profile sync failed:", syncResult.error);
+      // Also update the public profile
+      const { error: updatePublicProfileError } = await supabase
+        .from('public_profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', profileId);
+
+      if (updatePublicProfileError) {
+        console.warn("Failed to update public profile avatar:", updatePublicProfileError);
+        // Don't throw here - the main profile was updated successfully
       }
 
       toast({

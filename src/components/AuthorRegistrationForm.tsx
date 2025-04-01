@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { RegistrationStepInitial } from "./registration/RegistrationStepInitial";
 import { RegistrationStepDetails } from "./registration/RegistrationStepDetails";
 import { RegistrationStepStripe } from "./registration/RegistrationStepStripe";
-import { syncProfileToPublic } from "@/types/public-profile";
 
 type RegistrationStep = "initial" | "details" | "stripe-onboarding";
 
@@ -26,6 +25,33 @@ export const AuthorRegistrationForm = () => {
   const handleInitialSubmit = async (email: string, password: string) => {
     setRegistrationData({ email, password });
     setCurrentStep("details");
+  };
+
+  const createPublicProfile = async (userId: string, profileData: any) => {
+    try {
+      const { name, bio, avatar_url, social_links } = profileData;
+      
+      // Insert directly into public_profiles
+      const { error: insertError } = await supabase
+        .from('public_profiles')
+        .insert({
+          id: userId,
+          name: name || '',
+          bio: bio || '',
+          avatar_url: avatar_url || '',
+          social_links: social_links || []
+        });
+        
+      if (insertError) {
+        console.error("Error creating public profile:", insertError);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Unexpected error creating public profile:", error);
+      return false;
+    }
   };
 
   const handleDetailsSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -78,11 +104,21 @@ export const AuthorRegistrationForm = () => {
         throw signUpError;
       }
 
-      if (avatarFile && data.user) {
+      if (!data.user) {
+        throw new Error("Failed to create user account");
+      }
+
+      // The 'profiles' table should be created automatically by the trigger
+      // Wait a moment to ensure the trigger has time to execute
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Now handle avatar upload if needed
+      let avatarUrl = null;
+      if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
         const filePath = `${data.user.id}-${Date.now()}.${fileExt}`;
 
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError, data: uploadData } = await supabase.storage
           .from('avatars')
           .upload(filePath, avatarFile);
 
@@ -97,7 +133,10 @@ export const AuthorRegistrationForm = () => {
           const { data: { publicUrl } } = supabase.storage
             .from('avatars')
             .getPublicUrl(filePath);
+            
+          avatarUrl = publicUrl;
 
+          // Update the profile with the avatar URL
           const { error: updateError } = await supabase
             .from('profiles')
             .update({ avatar_url: publicUrl })
@@ -105,20 +144,27 @@ export const AuthorRegistrationForm = () => {
 
           if (updateError) {
             console.error("Profile update error:", updateError);
-          } else {
-            // Create a corresponding public profile after successful profile update
-            const syncResult = await syncProfileToPublic(data.user.id);
-            if (!syncResult.success) {
-              console.error("Error syncing profile to public:", syncResult.error);
-            }
           }
         }
-      } else if (data.user) {
-        // Create public profile even without avatar
-        const syncResult = await syncProfileToPublic(data.user.id);
-        if (!syncResult.success) {
-          console.error("Error syncing profile to public:", syncResult.error);
-        }
+      }
+
+      // Now create the public profile
+      const profileData = {
+        name,
+        bio,
+        avatar_url: avatarUrl,
+        social_links: socialLinks
+      };
+      
+      const publicProfileSuccess = await createPublicProfile(data.user.id, profileData);
+      
+      if (!publicProfileSuccess) {
+        console.warn("Public profile creation failed, but user was created successfully");
+        toast({
+          title: "Registration Partially Complete",
+          description: "Your account was created but there was an issue setting up your public profile. Some features may be limited.",
+          variant: "default",
+        });
       }
 
       console.log("Registration successful:", data);
