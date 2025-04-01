@@ -31,7 +31,7 @@ export const StyledQRCode = ({
             includeMargin
             bgColor="#ffffff"
             fgColor="#000000"
-            className="mx-auto"
+            className="mx-auto rounded"
           />
           
           {/* Logo overlay */}
@@ -59,17 +59,13 @@ export const StyledQRCode = ({
           )}
         </div>
 
-        {/* Title or helper text */}
-        {title && (
-          <div className="text-center text-sm text-gray-700">
-            {title}
-          </div>
-        )}
-
-        {/* Branding text */}
+        {/* Branding text - split into two lines and increased size by 50% */}
         {showBranding && (
-          <div className="text-center text-xs text-muted-foreground">
-            Like the book? Tip the author with Quilltips!
+          <div className="text-center text-sm leading-tight text-muted-foreground">
+            <div>Like the book?</div>
+            <div>
+              Tip the author with <span className="font-bold">Quilltips</span>!
+            </div>
           </div>
         )}
       </div>
