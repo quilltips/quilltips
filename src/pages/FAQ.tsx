@@ -6,31 +6,25 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const FAQ = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 md:py-16 flex-grow">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center font-playfair">Frequently Asked Questions</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center font-playfair">Frequently Asked Questions</h1>
           
-          <Tabs defaultValue="general" className="w-full mt-8">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="authors">For Authors</TabsTrigger>
-              <TabsTrigger value="readers">For Readers</TabsTrigger>
-            </TabsList>
-            
+          <div className="space-y-12">
             {/* General FAQs */}
-            <TabsContent value="general" className="space-y-4">
+            <div className="space-y-6">
+              <h2 className="text-2xl font-playfair font-medium">General</h2>
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="what-is-quilltips">
                   <AccordionTrigger>What is Quilltips?</AccordionTrigger>
                   <AccordionContent>
-                    Quilltips is a platform that enables readers to directly support and connect with authors through QR codes 
-                    placed in books. It provides a way for readers to show appreciation for authors' work, especially when 
-                    purchasing used books where authors don't receive royalties.
+                    Quilltips is a platform that lets readers directly support and connect with authors through QR 
+                    codes printed on books. The platform gives readers a chance to show appreciation for authors' work, 
+                    especially when purchasing used books where authors don't receive royalties.
                   </AccordionContent>
                 </AccordionItem>
 
@@ -63,11 +57,56 @@ const FAQ = () => {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-            </TabsContent>
+            </div>
             
             {/* Author FAQs */}
-            <TabsContent value="authors" className="space-y-4">
+            <div className="space-y-6">
+              <h2 className="text-2xl font-playfair font-medium">For Authors</h2>
               <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="how-use-as-author">
+                  <AccordionTrigger>How can I use Quilltips as an author?</AccordionTrigger>
+                  <AccordionContent>
+                    Authors can create a Quilltips account where they can set up Quilltips jars and download QR codes to 
+                    print on their books. Readers can leave tips and messages in an author's Quilltips jar. Quilltips jars 
+                    can also leverage an author's bio, website, or other social media.
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="qr-code-cost">
+                  <AccordionTrigger>How much does a Quilltips jar cost?</AccordionTrigger>
+                  <AccordionContent>
+                    Creating a Quilltips jar costs $35. A Quilltips jar includes:
+                    <ul className="list-disc pl-6 mt-2 space-y-1">
+                      <li>A unique QR code that you can print on the cover of your next book for readers to scan.</li>
+                      <li>A book-specific profile page on Quilltips where readers can leave you a tip and message.</li>
+                      <li>A link between your Quilltips jar and your chosen payment option, secured by Stripe.</li>
+                      <li>Data and insights directly from your readers to help you deepen engagement.</li>
+                    </ul>
+                    <p className="mt-2">In addition to the QR code cost, Quilltips charges a 5% fee on transactions. Our payment provider, Stripe, also charges a processing fee that readers have the option to cover.</p>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="add-qr-to-book">
+                  <AccordionTrigger>I've created my QR code - how should I add it to my book?</AccordionTrigger>
+                  <AccordionContent>
+                    Great job! We recommend adding the QR code to your book jacket (front or back cover) or to your About the Author page. To ensure scan-ability, the QR code should be no less than 2cm by 2cm in size. After you've added it to your book, the rest is up to us and your readers!
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="collect-payments">
+                  <AccordionTrigger>How do I collect payments?</AccordionTrigger>
+                  <AccordionContent>
+                    During the account creation process, you'll be asked to set up a Stripe Connect account so you can link your preferred payment method. After this is done, you can receive tips directly from readers.
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="communicate-with-readers">
+                  <AccordionTrigger>Can I communicate with my readers through the platform?</AccordionTrigger>
+                  <AccordionContent>
+                    Absolutely! When readers send a tip, they have the option to add a message. Authors can reply directly to their readers by commenting on their messages.
+                  </AccordionContent>
+                </AccordionItem>
+                
                 <AccordionItem value="author-registration">
                   <AccordionTrigger>How can I register as an author?</AccordionTrigger>
                   <AccordionContent>
@@ -77,37 +116,12 @@ const FAQ = () => {
                   </AccordionContent>
                 </AccordionItem>
                 
-                <AccordionItem value="qr-code-cost">
-                  <AccordionTrigger>How much does it cost to create a QR code?</AccordionTrigger>
-                  <AccordionContent>
-                    Each QR code costs $19.99. This is a one-time fee for the creation of the QR code. There are no recurring
-                    subscription fees. After purchase, you can download the QR code to use in your books and marketing materials.
-                  </AccordionContent>
-                </AccordionItem>
-                
                 <AccordionItem value="qr-implementation">
                   <AccordionTrigger>How do I implement the QR code in my book?</AccordionTrigger>
                   <AccordionContent>
                     After purchasing a QR code, you can download it in various formats suitable for print. We recommend working 
                     with your publisher to include the QR code on the book cover or within the first few pages. For self-published 
                     authors, you can add the QR code to your book design before printing or use stickers for existing inventory.
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="receive-payments">
-                  <AccordionTrigger>How do I receive my tip payments?</AccordionTrigger>
-                  <AccordionContent>
-                    Tips are processed through Stripe, our secure payment processor. You'll need to connect your Stripe account
-                    during registration. Payments are deposited directly to your bank account based on your Stripe payout schedule,
-                    typically every 2-7 business days depending on your country.
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="respond-to-readers">
-                  <AccordionTrigger>Can I respond to reader messages?</AccordionTrigger>
-                  <AccordionContent>
-                    Yes! Interacting with readers is a key feature of Quilltips. You can respond to reader messages through your 
-                    dashboard. Building this connection can help you grow your readership and receive valuable feedback on your work.
                   </AccordionContent>
                 </AccordionItem>
                 
@@ -129,11 +143,35 @@ const FAQ = () => {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-            </TabsContent>
+            </div>
             
             {/* Reader FAQs */}
-            <TabsContent value="readers" className="space-y-4">
+            <div className="space-y-6">
+              <h2 className="text-2xl font-playfair font-medium">For Readers</h2>
               <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="how-use-as-reader">
+                  <AccordionTrigger>How can I use Quilltips as a reader?</AccordionTrigger>
+                  <AccordionContent>
+                    Readers can scan Quilltips QR codes on their books to show appreciation and message their authors directly, or can search for authors and books on Quilltips website.
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="reader-tip-amount">
+                  <AccordionTrigger>As a reader, how much should I tip?</AccordionTrigger>
+                  <AccordionContent>
+                    This is totally up to you. We don't have any minimum tip, so you should tip whatever feels comfortable.
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="reader-info-shared">
+                  <AccordionTrigger>I'm a reader - what information is shared with the author and with other readers?</AccordionTrigger>
+                  <AccordionContent>
+                    In addition to your tip and optional message, by agreeing to the Quilltips terms of service, your email is shared with the author. That said, your tip and message to private if you want to keep these communications to the author.
+                    <br /><br />
+                    We might also share generalized location data with the author so they know where their readers are. Check our terms of service for more information.
+                  </AccordionContent>
+                </AccordionItem>
+                
                 <AccordionItem value="scan-qr-code">
                   <AccordionTrigger>How do I use a Quilltips QR code?</AccordionTrigger>
                   <AccordionContent>
@@ -143,30 +181,12 @@ const FAQ = () => {
                   </AccordionContent>
                 </AccordionItem>
                 
-                <AccordionItem value="tip-amount">
-                  <AccordionTrigger>How much should I tip?</AccordionTrigger>
-                  <AccordionContent>
-                    The tip amount is entirely up to you. You can tip any amount you feel comfortable with based on how much 
-                    you enjoyed the book or want to support the author. There's no minimum or maximum amount. Even small tips 
-                    are greatly appreciated by authors.
-                  </AccordionContent>
-                </AccordionItem>
-                
                 <AccordionItem value="reader-account">
                   <AccordionTrigger>Do I need to create an account to tip an author?</AccordionTrigger>
                   <AccordionContent>
                     No, you don't need to create an account to tip an author. You can leave a tip as a guest by entering your 
                     payment information securely. However, creating an account allows you to track your tipping history and build 
                     a relationship with your favorite authors.
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="personal-info">
-                  <AccordionTrigger>What information do authors see when I tip?</AccordionTrigger>
-                  <AccordionContent>
-                    Authors can see your name (if provided), the tip amount, and your message. They'll also see generalized 
-                    location data (city/country) for their analytics. If you create an account, authors may also see your profile 
-                    picture if you've added one. We never share your payment details or personal contact information.
                   </AccordionContent>
                 </AccordionItem>
                 
@@ -188,8 +208,8 @@ const FAQ = () => {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>
