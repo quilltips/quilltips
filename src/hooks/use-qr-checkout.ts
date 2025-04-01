@@ -54,6 +54,10 @@ export const useQRCheckout = ({ qrCodeId, bookTitle, onSuccess }: QRCheckoutProp
       // Redirect to Stripe Checkout
       window.location.href = data.url;
       
+      if (onSuccess) {
+        onSuccess(qrCodeId);
+      }
+      
     } catch (error: any) {
       console.error("Checkout error:", error);
       toast({
