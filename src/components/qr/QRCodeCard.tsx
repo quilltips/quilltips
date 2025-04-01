@@ -1,5 +1,4 @@
 
-// This is a new file, so I'll implement a more compact version of the QRCodeCard
 import React from 'react';
 import { Book, ChevronRight } from "lucide-react";
 import { Card } from "../ui/card";
@@ -18,9 +17,8 @@ interface QRCodeCardProps {
 export const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onNavigate }) => {
   return (
     <Card 
-      prominent 
       onClick={onNavigate} 
-      className="p-3 cursor-pointer hover:bg-slate-50 transition-colors flex items-center gap-3"
+      className="p-3 cursor-pointer hover:bg-slate-50 transition-colors flex items-center gap-3 shadow-sm border-gray-200"
     >
       <div className="w-12 h-16 flex-shrink-0 bg-muted rounded-md overflow-hidden">
         {qrCode.cover_image ? (

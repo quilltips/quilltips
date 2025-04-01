@@ -18,7 +18,7 @@ export const AuthorDashboardContent = ({ authorId }: AuthorDashboardContentProps
         />
       </div>
       
-      <div className="border border-black rounded-xl p-4 bg-white">
+      <div className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
         <AuthorQRCodesList authorId={authorId} />
       </div>
     </div>
