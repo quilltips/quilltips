@@ -51,12 +51,11 @@ export const useQRCheckout = ({ qrCodeId, bookTitle, onSuccess }: QRCheckoutProp
         throw new Error('No checkout URL received');
       }
       
-      // Redirect to Stripe Checkout
+      // Redirect to Stripe Checkout without calling onSuccess
       window.location.href = data.url;
       
-      if (onSuccess) {
-        onSuccess(qrCodeId);
-      }
+      // We've removed the onSuccess call here to prevent premature redirection
+      // The redirect to the success page will happen via the success_url in the Stripe session
       
     } catch (error: any) {
       console.error("Checkout error:", error);

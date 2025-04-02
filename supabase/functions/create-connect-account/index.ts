@@ -73,6 +73,14 @@ serve(async (req) => {
             capabilities: account.capabilities
           });
           
+          // Update metadata if it doesn't exist
+          if (!account.metadata?.supabaseUserId) {
+            console.log('Adding supabaseUserId to metadata');
+            await stripe.accounts.update(accountId, {
+              metadata: { supabaseUserId: user.id }
+            });
+          }
+          
           // Create dashboard link for a fully set up account
           if (account.details_submitted && account.payouts_enabled) {
             console.log('Account is fully setup, creating dashboard link');
@@ -112,7 +120,7 @@ serve(async (req) => {
 
       if (!accountId) {
         console.log('Creating new Stripe Connect account');
-        // Create a new Connect account
+        // Create a new Connect account with metadata
         const account = await stripe.accounts.create({
           type: 'express',
           email: user.email,

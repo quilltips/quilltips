@@ -81,23 +81,60 @@ serve(async (req) => {
         const account = event.data.object;
         console.log("Stripe Connect account updated:", account.id);
         
-        const payoutsEnabled = account.payouts_enabled;
-        const detailsSubmitted = account.details_submitted;
-
-        if (payoutsEnabled && detailsSubmitted) {
-          console.log("Account setup completed, updating profile");
+        // Detailed logging to debug the issue
+        console.log("Account details:", {
+          id: account.id,
+          payouts_enabled: account.payouts_enabled,
+          details_submitted: account.details_submitted,
+          charges_enabled: account.charges_enabled,
+          metadata: account.metadata
+        });
+        
+        // Find the user with this Connect account using metadata
+        if (account.metadata?.supabaseUserId) {
+          console.log("Found supabaseUserId in metadata:", account.metadata.supabaseUserId);
           
-          // Find the user with this Connect account
-          const { data: profiles } = await supabase
+          const { data, error } = await supabase
+            .from("profiles")
+            .update({ 
+              stripe_account_id: account.id,
+              stripe_setup_complete: account.payouts_enabled && account.details_submitted 
+            })
+            .eq("id", account.metadata.supabaseUserId);
+            
+          if (error) {
+            console.error("Error updating profile with metadata ID:", error);
+          } else {
+            console.log("Successfully updated profile with metadata ID");
+          }
+        } else {
+          // As a fallback, find the user by Connect account ID
+          console.log("No metadata, searching by account ID");
+          
+          const { data: profiles, error: findError } = await supabase
             .from("profiles")
             .select("id")
             .eq("stripe_account_id", account.id);
             
-          if (profiles && profiles.length > 0) {
-            await supabase
+          if (findError) {
+            console.error("Error finding profile by account ID:", findError);
+          } else if (profiles && profiles.length > 0) {
+            console.log("Found profiles with account ID:", profiles.length);
+            
+            const { error: updateError } = await supabase
               .from("profiles")
-              .update({ stripe_setup_complete: true })
+              .update({ 
+                stripe_setup_complete: account.payouts_enabled && account.details_submitted 
+              })
               .eq("stripe_account_id", account.id);
+              
+            if (updateError) {
+              console.error("Error updating profile by account ID:", updateError);
+            } else {
+              console.log("Successfully updated profile by account ID");
+            }
+          } else {
+            console.error("No profiles found with account ID:", account.id);
           }
         }
 

@@ -53,9 +53,17 @@ serve(async (req) => {
       );
     }
 
-    // Verify if the account is valid and can receive payments
     // Initialize Stripe with the secret key
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
+    if (!stripeKey) {
+      console.error('Missing STRIPE_SECRET_KEY');
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+
+    const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
       httpClient: Stripe.createFetchHttpClient(),
     });
@@ -68,6 +76,26 @@ serve(async (req) => {
         payouts_enabled: account.payouts_enabled,
         charges_enabled: account.charges_enabled
       });
+      
+      // If the metadata is missing, update it
+      if (!account.metadata?.supabaseUserId) {
+        console.log('Adding missing supabaseUserId to metadata');
+        await stripe.accounts.update(authorProfile.stripe_account_id, {
+          metadata: { supabaseUserId: authorId }
+        });
+        
+        // Update the profile in the database
+        const { error: updateError } = await supabaseAdmin
+          .from('profiles')
+          .update({ 
+            stripe_setup_complete: account.details_submitted && account.payouts_enabled
+          })
+          .eq('id', authorId);
+          
+        if (updateError) {
+          console.error('Error updating profile stripe_setup_complete:', updateError);
+        }
+      }
       
       if (!account.details_submitted || !account.payouts_enabled) {
         console.error('Stripe account is not fully set up');

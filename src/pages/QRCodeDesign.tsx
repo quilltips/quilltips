@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { useQRCodeGeneration } from "@/hooks/use-qr-code-generation";
@@ -18,10 +17,6 @@ const QRCodeDesign = () => {
   const { isCheckingOut, handleCheckout } = useQRCheckout({
     qrCodeId: qrCodeData?.id,
     bookTitle: qrCodeData?.book_title,
-    onSuccess: (qrCodeId) => {
-      // Navigate to the QRCodeSummary page instead of the dashboard
-      navigate(`/qr-summary?qr_code=${qrCodeId}`);
-    }
   });
 
   const handleCancel = () => {
@@ -138,7 +133,7 @@ const QRCodeDesign = () => {
                   </button>
                 </div>
                 
-                <p className="text-xs text-gray-500 mt-4 text-center">
+                <p className="text-xs text-center text-gray-500 mt-4">
                   Secure checkout powered by Stripe. Your information is protected.
                 </p>
               </div>
