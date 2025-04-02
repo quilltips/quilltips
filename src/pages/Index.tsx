@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
-
 const Index = () => {
   return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
@@ -31,11 +30,7 @@ const Index = () => {
             With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltips Jar, where readers can leave a tip and message!
           </p>
           <div className="flex justify-center mt-8">
-            <img 
-              src="/lovable-uploads/0b6b9cb2-dc5c-46e3-be9f-1f761dd356cf.png" 
-              alt="Quilltips app showing tip feed on mobile phones" 
-              className="w-full max-w-2xl rounded-lg"
-            />
+            <img src="/lovable-uploads/0b6b9cb2-dc5c-46e3-be9f-1f761dd356cf.png" alt="Quilltips app showing tip feed on mobile phones" className="w-full max-w-2xl rounded-lg object-scale-down" />
           </div>
         </div>
 
