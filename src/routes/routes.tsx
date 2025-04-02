@@ -20,6 +20,7 @@ import BookQRCodesPage from "@/pages/BookQRCodesPage";
 import TipFeedPage from "@/pages/TipFeedPage";
 import AuthorDataPage from "@/pages/AuthorDataPage";
 import HowItWorks from "@/pages/HowItWorks";
+import PublicProfilePage from "@/pages/PublicProfilePage";
 
 export const routes = [
   { path: "/", element: <Index /> },
@@ -28,6 +29,7 @@ export const routes = [
   { path: "/contact", element: <Contact /> },
   { path: "/terms", element: <TermsOfService /> },
   { path: "/search", element: <SearchPage /> },
+  { path: "/profile/:id", element: <PublicProfilePage /> },
   { path: "/author/register", element: <AuthorRegister /> },
   { path: "/author/login", element: <AuthorLogin /> },
   { path: "/author/dashboard", element: <AuthorDashboard /> },

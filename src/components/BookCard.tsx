@@ -50,7 +50,16 @@ export const BookCard = ({
         <div className="p-4 space-y-2">
           <div>
             <h3 className="font-semibold text-sm group-hover:text-primary transition-colors line-clamp-2">{title}</h3>
-            <p className="text-xs text-muted-foreground">by {authorName}</p>
+            <p className="text-xs text-muted-foreground">
+              by{" "}
+              <Link 
+                to={`/profile/${authorId}`} 
+                onClick={(e) => e.stopPropagation()}
+                className="hover:underline"
+              >
+                {authorName}
+              </Link>
+            </p>
           </div>
 
           {(publisher || isbn || releaseDate) && (

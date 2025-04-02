@@ -54,7 +54,7 @@ const SearchResultItem = memo(({ result }: { result: SearchResult }) => {
             </div>
             <h3 className="text-lg font-semibold">{result.book_title}</h3>
             <Link 
-              to={`/author/profile/${result.author.id}`}
+              to={`/profile/${result.author.id}`}
               className="text-sm text-muted-foreground hover:text-primary"
               onClick={(e) => e.stopPropagation()}
             >

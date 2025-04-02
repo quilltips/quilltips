@@ -1,4 +1,3 @@
-
 import { Layout } from "@/components/Layout";
 import { QRCodePublisherInvite } from "@/components/qr/QRCodePublisherInvite";
 import { PublicTipHistory } from "@/components/tips/PublicTipHistory";
@@ -77,7 +76,7 @@ const QRCodeDetails = () => {
               <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
               <p className="text-muted-foreground">
                 by <Link 
-                    to={`/author/profile/${qrCode.author_id}`}
+                    to={`/profile/${qrCode.author_id}`}
                     className="hover:underline hover:text-primary transition-colors"
                   >
                     {qrCode.author?.name || 'Unknown Author'}

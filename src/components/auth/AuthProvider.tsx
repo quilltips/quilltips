@@ -43,6 +43,29 @@ const fetchProfile = async (userId: string) => {
   }
 };
 
+// Check if a route requires authentication
+const isProtectedRoute = (pathname: string): boolean => {
+  // Public routes starting with /author/
+  const publicAuthorRoutes = [
+    '/author/login',
+    '/author/register',
+    '/author/profile',
+  ];
+  
+  // If the route starts with /author/ but is not one of the public routes
+  if (pathname.startsWith('/author/')) {
+    // Check if it's a profile route (which is public)
+    if (pathname.startsWith('/author/profile/')) {
+      return false;
+    }
+    
+    // Check other public routes
+    return !publicAuthorRoutes.some(route => pathname.startsWith(route));
+  }
+  
+  return false;
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthor, setIsAuthor] = useState(false);
@@ -62,10 +85,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const userIsAuthor = profile?.role === 'author';
         setIsAuthor(userIsAuthor);
 
-        const isProtectedRoute = location.pathname.startsWith('/author');
-        const isAuthRoute = ['/author/login', '/author/register'].includes(location.pathname);
+        const needsAuth = isProtectedRoute(location.pathname);
 
-        if (isProtectedRoute && !isAuthRoute && !userIsAuthor) {
+        if (needsAuth && !userIsAuthor) {
           navigate('/author/login');
           toast({
             title: "Unauthorized",
@@ -75,10 +97,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } else {
         setIsAuthor(false);
-        const isProtected = location.pathname.startsWith('/author') &&
-          !['/author/login', '/author/register'].includes(location.pathname);
+        const needsAuth = isProtectedRoute(location.pathname);
 
-        if (isProtected) {
+        if (needsAuth) {
           navigate('/author/login');
         }
       }

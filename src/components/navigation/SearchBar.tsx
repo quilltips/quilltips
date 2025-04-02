@@ -1,4 +1,3 @@
-
 import { Search, Book, User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -90,7 +89,7 @@ export const SearchBar = () => {
                   {results?.authors?.filter(author => author && author.id).map((author) => (
                     <Link
                       key={author.id}
-                      to={`/author/profile/${author.id}`}
+                      to={`/profile/${author.id}`}
                       className="block p-2 hover:bg-accent"
                       onClick={handleClosePopover}
                     >
@@ -134,7 +133,7 @@ export const SearchBar = () => {
                           <p className="font-medium text-sm truncate">{book.book_title}</p>
                           <p className="text-xs text-muted-foreground">
                             By <Link 
-                                to={`/author/profile/${book.author?.id}`}
+                                to={`/profile/${book.author?.id}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleClosePopover();

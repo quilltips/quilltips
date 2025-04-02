@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 import Stripe from "https://esm.sh/stripe@14.21.0?dts";
@@ -157,8 +156,8 @@ serve(async (req) => {
         },
       },
       customer_email: email,
-      // Update the success_url to point to the author's public profile page
-      success_url: `${req.headers.get('origin')}/author/profile/${authorId}?success=true`,
+      // Update success_url to use the new public profile route
+      success_url: `${req.headers.get('origin')}/profile/${authorId}?success=true`,
       cancel_url: `${req.headers.get('origin')}/qr/${qrCodeId || ''}`,
       metadata: {
         type: 'tip',
