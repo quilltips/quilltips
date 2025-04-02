@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "./use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,7 +63,7 @@ export const useTipForm = ({ authorId, authorName, bookTitle, qrCodeId }: UseTip
             description: "The author needs to complete their payment account setup before they can receive tips.",
             variant: "destructive",
           });
-          navigate(`/author/${authorId}`);
+          navigate(`/author/profile/${authorId}`);
           return;
         }
         throw new Error(data.error);
