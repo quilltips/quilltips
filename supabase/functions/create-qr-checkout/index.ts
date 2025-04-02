@@ -39,22 +39,28 @@ serve(async (req) => {
 
     console.log(`Creating checkout session for QR code ${qrCodeId}, book: ${bookTitle || 'Unknown'}`);
 
-    // Create the checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
+    // Get the product ID from environment variable or use a default
+    const QR_CODE_PRODUCT_ID = Deno.env.get('QR_CODE_PRODUCT_ID');
+    
+    // Determine if we're using a product ID or need to create price data
+    const lineItems = QR_CODE_PRODUCT_ID 
+      ? [{ price: QR_CODE_PRODUCT_ID, quantity: 1 }]
+      : [{
           price_data: {
             currency: 'usd',
             product_data: {
               name: `QR Code for ${bookTitle || 'Book'}`,
               description: 'Purchase QR code for your book',
             },
-            unit_amount: 499, // $4.99
+            unit_amount: 999, // Default to $9.99 if no product is configured
           },
           quantity: 1,
-        },
-      ],
+        }];
+
+    // Create the checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
       mode: 'payment',
       success_url: `${req.headers.get('origin')}/qr-summary?qr_code=${qrCodeId}&checkout=success`,
       cancel_url: `${req.headers.get('origin')}/author/qr-codes/${qrCodeId}?checkout=canceled`,
@@ -65,6 +71,10 @@ serve(async (req) => {
     });
 
     console.log(`Checkout session created: ${session.id}, redirecting to ${session.url}`);
+
+    // Check which Stripe environment we're using
+    const stripeMode = Deno.env.get('STRIPE_SECRET_KEY')?.startsWith('sk_test') ? 'TEST MODE' : 'LIVE MODE';
+    console.log(`Stripe is running in ${stripeMode}`);
 
     // Return the session URL
     return new Response(
