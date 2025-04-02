@@ -1,5 +1,7 @@
 
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { StyledQRCode } from "./StyledQRCode";
 
 interface QRCodePreviewProps {
@@ -15,50 +17,59 @@ export const QRCodePreview = ({
   qrCodePreview,
   onCheckout,
   onCancel,
-  isCheckingOut
+  isCheckingOut,
 }: QRCodePreviewProps) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[260px]">
-      {isGenerating ? (
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-white" />
-          <p className="text-white">Generating your QR code...</p>
-        </div>
-      ) : qrCodePreview ? (
-        <div className="flex flex-col items-center gap-6">
-          {/* Display QR code with blur effect */}
-          <div className="w-full max-w-[180px] mx-auto">
-            <StyledQRCode
-              value={qrCodePreview}
-              size={160}
-              showBranding={true}
-              blurred={true}
-              title="QR Code Preview"
-              className="border-2 border-[#FFD166] shadow-lg"
-            />
+    <Card className="overflow-hidden">
+      <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
+        {isGenerating ? (
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p>Generating your QR code...</p>
           </div>
-          <p className="text-center text-white text-sm">
-            Purchase to unlock your QR code and make it available for your readers to scan
-          </p>
-          <div className="flex gap-4 w-full">
-            <button
-              onClick={onCancel}
-              className="px-6 py-3 bg-white/10 border border-white/20 text-white rounded-lg hover:bg-white/20 w-1/2"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onCheckout}
-              disabled={isCheckingOut}
-              className="px-6 py-3 bg-[#FFD166] text-[#19363C] rounded-lg font-medium hover:bg-[#FFD166]/90 w-1/2 disabled:opacity-70"
-            >
-              {isCheckingOut ? "Processing..." : "Checkout"}
-            </button>
+        ) : qrCodePreview ? (
+          <div className="flex flex-col items-center gap-6">
+            {/* Reduced size by ~50% */}
+            <div className="w-full max-w-[150px] mx-auto">
+              <StyledQRCode
+                value={qrCodePreview}
+                size={130}
+                showBranding={true}
+                blurred={true}
+                title="QR Code Preview"
+              />
+            </div>
+            <div className="flex w-full flex-col sm:flex-row gap-4">
+              <Button 
+                onClick={onCancel}
+                size="lg"
+                variant="outline"
+                className="w-full flex items-center gap-2"
+              >
+                <X className="h-4 w-4" />
+                Cancel
+              </Button>
+              <Button 
+                onClick={onCheckout}
+                size="lg"
+                className="w-full"
+                disabled={isCheckingOut}
+              >
+                {isCheckingOut ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Purchase QR Code ($9.99)'
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
-      ) : (
-        <p className="text-white">Failed to generate QR code preview</p>
-      )}
-    </div>
+        ) : (
+          <p className="text-muted-foreground">Failed to generate QR code preview</p>
+        )}
+      </CardContent>
+    </Card>
   );
 };
