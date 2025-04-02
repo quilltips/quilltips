@@ -13,6 +13,9 @@ interface QRCodePreviewProps {
 export const QRCodePreview = ({
   isGenerating,
   qrCodePreview,
+  onCheckout,
+  onCancel,
+  isCheckingOut
 }: QRCodePreviewProps) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[260px]">
@@ -37,6 +40,21 @@ export const QRCodePreview = ({
           <p className="text-center text-white text-sm">
             Purchase to unlock your QR code and make it available for your readers to scan
           </p>
+          <div className="flex gap-4 w-full">
+            <button
+              onClick={onCancel}
+              className="px-6 py-3 bg-white/10 border border-white/20 text-white rounded-lg hover:bg-white/20 w-1/2"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onCheckout}
+              disabled={isCheckingOut}
+              className="px-6 py-3 bg-[#FFD166] text-[#19363C] rounded-lg font-medium hover:bg-[#FFD166]/90 w-1/2 disabled:opacity-70"
+            >
+              {isCheckingOut ? "Processing..." : "Checkout"}
+            </button>
+          </div>
         </div>
       ) : (
         <p className="text-white">Failed to generate QR code preview</p>
