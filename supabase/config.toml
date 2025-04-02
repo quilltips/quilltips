@@ -1,1 +1,13 @@
+
 project_id = "qrawynczvedffcvnympn"
+app_version = "0.0.1"
+
+[api]
+host = "https://qrawynczvedffcvnympn.supabase.co" 
+
+[functions.stripe-webhook]
+verify_jwt = false
+path = "/stripe-webhook"
+
+[[fetch.release]]
+uri = "https://api.uniqode.com/v2/"

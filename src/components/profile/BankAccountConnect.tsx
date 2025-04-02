@@ -36,7 +36,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('No session found');
 
-      console.log('Connecting to Stripe Connect account');
+      console.log('Connecting to Stripe Connect account for user ID:', profileId);
       const { data, error } = await supabase.functions.invoke('create-connect-account', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
