@@ -1,13 +1,12 @@
 
+# Project configuration
 project_id = "qrawynczvedffcvnympn"
-app_version = "0.0.1"
 
-[api]
-host = "https://qrawynczvedffcvnympn.supabase.co" 
-
+# Functions configuration
+[functions]
 [functions.stripe-webhook]
 verify_jwt = false
-path = "/stripe-webhook"
 
-[[fetch.release]]
+# External fetch configuration 
+[[functions.fetch.release]]
 uri = "https://api.uniqode.com/v2/"
