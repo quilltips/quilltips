@@ -7,8 +7,6 @@ project_id = "qrawynczvedffcvnympn"
 [functions.stripe-webhook]
 verify_jwt = false
 
-# External fetch configuration
-[functions.external_fetch]
-enabled = true
-[[functions.external_fetch.origins]]
-url = "https://api.uniqode.com/v2/"
+# External fetch configuration for all functions
+[functions]
+external_fetch = true
