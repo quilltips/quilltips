@@ -1,14 +1,13 @@
 
 // supabase/functions/stripe-webhook/index.ts
 
-//@ts-nocheck
 // ✅ Tell Supabase to allow unauthenticated access
 export const config = {
   path: "/stripe-webhook",
   auth: false,
 };
 
-console.log("🔄 Updated Stripe webhook handler deployed")
+console.log("🔄 Updated Stripe webhook handler deployed");
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import Stripe from "npm:stripe@14.21.0";
@@ -20,10 +19,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Create Stripe instance
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2023-10-16",
+  httpClient: Stripe.createFetchHttpClient(),
 });
 
+// Create Supabase client
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -59,21 +61,9 @@ serve(async (req) => {
       });
     }
 
-    let event;
-    try {
-      event = stripe.webhooks.constructEvent(
-        body,
-        sig,
-        webhookSecret
-      );
-    } catch (err) {
-      console.error("❌ Webhook signature verification failed:", err.message);
-      return new Response(`Invalid signature: ${err.message}`, { 
-        status: 400, 
-        headers: corsHeaders 
-      });
-    }
-
+    // Important: We need to manually parse the event for Deno compatibility
+    // instead of using stripe.webhooks.constructEvent directly
+    const event = await parseStripeEvent(body, sig, webhookSecret);
     console.log("✅ Stripe event received:", event.type, event.id);
 
     try {
@@ -222,3 +212,85 @@ serve(async (req) => {
     });
   }
 });
+
+/**
+ * Manual implementation of Stripe signature verification for Deno compatibility
+ * This avoids the SubtleCryptoProvider synchronous context error
+ */
+async function parseStripeEvent(payload: string, signature: string, secret: string) {
+  try {
+    const header = parseHeader(signature);
+    const expectedSignature = await computeSignature(payload, secret, header.timestamp);
+    
+    if (!secureCompare(expectedSignature, header.signature)) {
+      throw new Error('Signature verification failed');
+    }
+
+    // If signature is valid, parse the payload as a Stripe event
+    return JSON.parse(payload);
+  } catch (err) {
+    throw new Error(`Webhook signature verification failed: ${err.message}`);
+  }
+}
+
+/**
+ * Parse the Stripe signature header
+ */
+function parseHeader(header: string) {
+  const pairs = header.split(',').map(item => item.split('='));
+  const timestamp = pairs.find(pair => pair[0] === 't')?.[1];
+  const signature = pairs.find(pair => pair[0] === 'v1')?.[1];
+
+  if (!timestamp || !signature) {
+    throw new Error('Invalid Stripe signature header format');
+  }
+
+  return { timestamp, signature };
+}
+
+/**
+ * Compute HMAC signature for payload
+ */
+async function computeSignature(payload: string, secret: string, timestamp: string) {
+  const signedPayload = `${timestamp}.${payload}`;
+  
+  // Convert the secret to a key
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const key = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  // Sign the payload
+  const signatureData = encoder.encode(signedPayload);
+  const signatureBuffer = await crypto.subtle.sign(
+    'HMAC', 
+    key, 
+    signatureData
+  );
+  
+  // Convert to hex
+  return Array.from(new Uint8Array(signatureBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+/**
+ * Secure comparison of two strings to prevent timing attacks
+ */
+function secureCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  
+  return result === 0;
+}
