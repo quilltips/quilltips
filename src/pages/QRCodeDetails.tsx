@@ -8,6 +8,7 @@ import { useQRCodeDetails } from "@/hooks/use-qr-code-details";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { QRCodeTipForm } from "@/components/qr/QRCodeTipForm";
+import { Link } from "react-router-dom";
 
 const QRCodeDetails = () => {
   const {
@@ -74,7 +75,14 @@ const QRCodeDetails = () => {
             </div>
             <div className="space-y-1 pt-2">
               <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
-              <p className="text-muted-foreground">by {qrCode.author?.name || 'Unknown Author'}</p>
+              <p className="text-muted-foreground">
+                by <Link 
+                    to={`/author/profile/${qrCode.author_id}`}
+                    className="hover:underline hover:text-primary transition-colors"
+                  >
+                    {qrCode.author?.name || 'Unknown Author'}
+                  </Link>
+              </p>
               
               {/* Added publisher and release date info */}
               <div className="mt-2 text-sm text-muted-foreground">

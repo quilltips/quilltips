@@ -99,7 +99,7 @@ serve(async (req) => {
       line_items: lineItems,
       mode: 'payment',
       success_url: `${req.headers.get('origin')}/qr-summary?qr_code=${qrCodeId}`,
-      cancel_url: `${req.headers.get('origin')}/author/qr-codes/${qrCodeId}?checkout=canceled`,
+      cancel_url: `${req.headers.get('origin')}/author/dashboard`,
       metadata: {
         qrCodeId,
         authorId: user.id,

@@ -157,9 +157,9 @@ serve(async (req) => {
         },
       },
       customer_email: email,
-      // Update the success_url to point to the author's profile page
+      // Update the success_url to point to the author's public profile page
       success_url: `${req.headers.get('origin')}/author/profile/${authorId}?success=true`,
-      cancel_url: `${req.headers.get('origin')}/author/profile/${authorId}?canceled=true`,
+      cancel_url: `${req.headers.get('origin')}/qr/${qrCodeId || ''}`,
       metadata: {
         type: 'tip',
         author_id: authorId,
@@ -180,7 +180,7 @@ serve(async (req) => {
         qr_code_id: qrCodeId || null,
         stripe_session_id: session.id,
         status: 'pending',
-        reader_name: name || null  // Make sure we're storing the reader's name here
+        reader_name: name || null  // Store the reader's name
       });
 
     if (tipError) {

@@ -24,10 +24,10 @@ export const useTipHistory = (authorId: string, qrCodeId?: string, limit?: numbe
       
       if (error) throw error;
 
-      // Map the nested profile data to the tip object
+      // Map the data to include the reader's name correctly
       return data.map(tip => ({
         ...tip,
-        reader_name: tip.profiles?.name || "Anonymous Reader",
+        reader_name: tip.reader_name || "Anonymous Reader",
         reader_avatar_url: tip.profiles?.avatar_url
       }));
     }

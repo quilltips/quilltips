@@ -133,7 +133,16 @@ export const SearchBar = () => {
                         <div>
                           <p className="font-medium text-sm truncate">{book.book_title}</p>
                           <p className="text-xs text-muted-foreground">
-                            By {book.author?.name || "Anonymous Author"}
+                            By <Link 
+                                to={`/author/profile/${book.author?.id}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleClosePopover();
+                                }}
+                                className="hover:underline"
+                              >
+                                {book.author?.name || "Anonymous Author"}
+                              </Link>
                           </p>
                         </div>
                       </div>
