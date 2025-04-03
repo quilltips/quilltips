@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 
 export const useTipSubmission = (qrCode: any) => {
   const [amount, setAmount] = useState("5");
@@ -12,7 +11,6 @@ export const useTipSubmission = (qrCode: any) => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   // Extract author's first name
   const authorFirstName = qrCode?.author?.name?.split(' ')[0] || 'the author';
@@ -56,7 +54,6 @@ export const useTipSubmission = (qrCode: any) => {
             description: "The author needs to complete their payment account setup before they can receive tips.",
             variant: "destructive",
           });
-          navigate(`/profile/${qrCode.author_id}`);
           return;
         }
         throw new Error(data.error);

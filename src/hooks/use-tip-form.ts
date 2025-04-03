@@ -63,7 +63,7 @@ export const useTipForm = ({ authorId, authorName, bookTitle, qrCodeId }: UseTip
             description: "The author needs to complete their payment account setup before they can receive tips.",
             variant: "destructive",
           });
-          navigate(`/profile/${authorId}`);
+          navigate(`/author/profile/${authorId}`);
           return;
         }
         throw new Error(data.error);

@@ -2,12 +2,9 @@
 # Project configuration
 project_id = "qrawynczvedffcvnympn"
 
-# Enable external fetch for all functions
-external_fetch = { enabled = true }
-
 # Functions configuration
 [functions]
+external_fetch = true
 
 [functions.stripe-webhook]
 verify_jwt = false
-
