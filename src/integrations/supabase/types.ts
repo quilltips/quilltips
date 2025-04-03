@@ -234,6 +234,7 @@ export type Database = {
           message: string | null
           qr_code_id: string | null
           reader_avatar_url: string | null
+          reader_email: string | null
           reader_name: string | null
           status: string | null
           stripe_session_id: string | null
@@ -247,6 +248,7 @@ export type Database = {
           message?: string | null
           qr_code_id?: string | null
           reader_avatar_url?: string | null
+          reader_email?: string | null
           reader_name?: string | null
           status?: string | null
           stripe_session_id?: string | null
@@ -260,6 +262,7 @@ export type Database = {
           message?: string | null
           qr_code_id?: string | null
           reader_avatar_url?: string | null
+          reader_email?: string | null
           reader_name?: string | null
           status?: string | null
           stripe_session_id?: string | null

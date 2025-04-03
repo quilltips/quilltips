@@ -49,6 +49,9 @@ const AuthorDashboard = () => {
     }
   });
 
+  // Extract first name for welcome message
+  const authorFirstName = profile?.name?.split(' ')[0] || '';
+
   if (isLoading) {
     return (
       <Layout>
@@ -67,7 +70,9 @@ const AuthorDashboard = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
           <div className="max-w-6xl mx-auto space-y-8">
             <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">Welcome to Quilltips</h1>
+              <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">
+                Welcome to Quilltips{authorFirstName ? `, ${authorFirstName}` : ''}
+              </h1>
               <p className="text-[#4A5568] text-lg">Helping authors get paid</p>
             </div>
 

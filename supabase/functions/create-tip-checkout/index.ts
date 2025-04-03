@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 import Stripe from "https://esm.sh/stripe@14.21.0?dts";
@@ -179,7 +180,8 @@ serve(async (req) => {
         qr_code_id: qrCodeId || null,
         stripe_session_id: session.id,
         status: 'pending',
-        reader_name: name || null  // Store the reader's name
+        reader_name: name || null,
+        reader_email: email || null  // Store the reader's email
       });
 
     if (tipError) {

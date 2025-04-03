@@ -30,7 +30,8 @@ export const useTipSubmission = (qrCode: any) => {
       console.log('Creating tip checkout for:', { 
         amount: finalAmount, 
         authorId: qrCode.author_id,
-        qrCodeId: qrCode.id 
+        qrCodeId: qrCode.id,
+        email
       });
       
       const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
