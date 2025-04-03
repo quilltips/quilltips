@@ -157,7 +157,7 @@ serve(async (req) => {
         },
       },
       customer_email: email,
-      // Update success_url to use the new public profile route
+      // Use the new profile route 
       success_url: `${req.headers.get('origin')}/profile/${authorId}?success=true`,
       cancel_url: `${req.headers.get('origin')}/qr/${qrCodeId || ''}`,
       metadata: {
