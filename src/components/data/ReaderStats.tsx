@@ -1,72 +1,50 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
-interface ReaderLocation {
+interface ReaderInfo {
   name: string;
+  email: string;
   value: number;
-  percentage: number;
 }
 
 interface ReaderStatsProps {
-  readerLocations: ReaderLocation[];
+  readerInfo: ReaderInfo[];
+  onDownload: () => void;
 }
 
-export const ReaderStats = ({ readerLocations }: ReaderStatsProps) => {
-  const COLORS = ['#FFD166', '#FFA94D', '#FF719A', '#5271FF', '#64F4AC'];
-  
+export const ReaderStats = ({ readerInfo, onDownload }: ReaderStatsProps) => {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-6 bg-[#19363C] text-white">
         <div className="space-y-6">
           <h2 className="text-2xl font-playfair">Your readers</h2>
           
-          {readerLocations.length > 0 ? (
-            <div className="flex flex-col md:flex-row items-center justify-between">
-              <div className="w-40 h-40">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={readerLocations}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={0}
-                      outerRadius={70}
-                      fill="#8884d8"
-                      paddingAngle={0}
-                      dataKey="value"
-                    >
-                      {readerLocations.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              
-              <div className="space-y-2 mt-4 md:mt-0">
-                {readerLocations.map((location, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div 
-                      className="h-3 w-3 rounded-full" 
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }} 
-                    />
-                    <div>{location.name}</div>
-                    <div>{location.percentage}%</div>
-                  </div>
-                ))}
-              </div>
+          {readerInfo.length > 0 ? (
+            <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2">
+              {readerInfo.map((reader, index) => (
+                <div key={index} className="flex justify-between items-center border-b border-white/10 pb-2">
+                  <div className="font-medium">{reader.name || "Anonymous"}</div>
+                  <div className="text-sm text-white/70">{reader.email || "No email"}</div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="text-center text-white/70 py-8">
-              No reader location data available yet
+              No reader data available yet
             </div>
           )}
           
-          <div className="text-center text-sm">
-            <button className="text-white hover:text-[#FFD166] transition-colors underline">
-              Download data to see more reader information.
-            </button>
+          <div className="text-center">
+            <Button
+              onClick={onDownload}
+              variant="outline"
+              className="bg-transparent border border-white text-white hover:bg-white/10 flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Download data to see more reader information
+            </Button>
           </div>
         </div>
       </CardContent>

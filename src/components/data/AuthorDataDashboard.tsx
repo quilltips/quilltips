@@ -30,10 +30,10 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
       
       if (qrError) throw qrError;
 
-      // Fetch tips
+      // Fetch tips with reader information
       const { data: tips, error: tipsError } = await supabase
         .from('tips')
-        .select('*, reader_name')
+        .select('*, reader_name, reader_email')
         .eq('author_id', authorId);
       
       if (tipsError) throw tipsError;
@@ -61,30 +61,26 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
         .sort((a, b) => b.tipCount - a.tipCount)
         .slice(0, 3);
       
-      // Get reader locations - using city data from the tips table
-      // Since location doesn't exist in the profiles table, we'll use the reader_name field
-      // and group tips by reader name to create approximate locations
-      const readerDistribution = {};
+      // Get reader information
+      const readerMap = {};
+      
       tips.forEach(tip => {
-        if (tip.reader_name) {
-          readerDistribution[tip.reader_name] = (readerDistribution[tip.reader_name] || 0) + 1;
+        const readerKey = tip.reader_email || tip.reader_name || 'anonymous';
+        
+        if (!readerMap[readerKey]) {
+          readerMap[readerKey] = {
+            name: tip.reader_name || 'Anonymous',
+            email: tip.reader_email || '',
+            value: 1
+          };
+        } else {
+          readerMap[readerKey].value += 1;
         }
       });
       
-      const readerLocations = Object.entries(readerDistribution)
-        .map(([name, count]: [string, number]) => ({
-          name,
-          value: count
-        }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 5);
-      
-      const totalLocations = readerLocations.reduce((sum, loc) => sum + loc.value, 0);
-      
-      const readerLocationPercentages = readerLocations.map(loc => ({
-        ...loc,
-        percentage: Math.round((loc.value / totalLocations) * 100)
-      }));
+      const readerInfo = Object.values(readerMap)
+        .sort((a: any, b: any) => b.value - a.value)
+        .slice(0, 10);
       
       return {
         totalBooks,
@@ -92,7 +88,7 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
         totalAmount,
         averageTip,
         topBooks,
-        readerLocationPercentages,
+        readerInfo,
         qrCodes,
         tips
       };
@@ -103,15 +99,16 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
     try {
       if (!data) return;
       
-      // Create CSV content for tips
+      // Create CSV content for tips with reader information
       const tipsCsvContent = [
-        ['Date', 'Book', 'Amount', 'Message', 'Reader'].join(','),
+        ['Date', 'Book', 'Amount', 'Message', 'Reader', 'Email'].join(','),
         ...(data.tips || []).map(tip => [
           new Date(tip.created_at).toLocaleDateString(),
           `"${(tip.book_title || 'Unknown').replace(/"/g, '""')}"`,
           tip.amount,
           `"${(tip.message || '').replace(/"/g, '""')}"`,
-          `"${(tip.reader_name || 'Anonymous').replace(/"/g, '""')}"`
+          `"${(tip.reader_name || 'Anonymous').replace(/"/g, '""')}"`,
+          `"${(tip.reader_email || '').replace(/"/g, '""')}"`
         ].join(','))
       ].join('\n');
 
@@ -171,7 +168,8 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
         />
         
         <ReaderStats 
-          readerLocations={data?.readerLocationPercentages || []}
+          readerInfo={data?.readerInfo || []}
+          onDownload={handleDownload}
         />
       </div>
     </div>

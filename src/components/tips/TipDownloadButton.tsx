@@ -1,3 +1,4 @@
+
 import { Button } from "../ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -21,12 +22,14 @@ export const TipDownloadButton = ({
     try {
       // Create CSV content
       const csvContent = [
-        ['Date', 'Book', 'Amount', 'Message', 'Likes', 'Comments'].join(','),
+        ['Date', 'Book', 'Amount', 'Message', 'Reader', 'Email', 'Likes', 'Comments'].join(','),
         ...(tips || []).map(tip => [
           new Date(tip.created_at).toLocaleDateString(),
           `"${(tip.book_title || 'N/A').replace(/"/g, '""')}"`,
           tip.amount,
           `"${(tip.message || '').replace(/"/g, '""')}"`,
+          `"${(tip.reader_name || 'Anonymous').replace(/"/g, '""')}"`,
+          `"${(tip.reader_email || '').replace(/"/g, '""')}"`,
           likes?.filter(like => like.tip_id === tip.id).length || 0,
           comments?.filter(comment => comment.tip_id === tip.id).length || 0
         ].join(','))
