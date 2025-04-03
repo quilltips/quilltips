@@ -4,7 +4,7 @@ project_id = "qrawynczvedffcvnympn"
 
 # Functions configuration
 [functions]
-external_fetch = true
+external_fetch = { enabled = true }
 
 [functions.stripe-webhook]
 verify_jwt = false
