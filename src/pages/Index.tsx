@@ -1,10 +1,8 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share, DollarSign, Link as LinkIcon } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import { Layout } from "@/components/Layout";
-
 const Index = () => {
   return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
@@ -147,9 +145,7 @@ const Index = () => {
           <div className="grid md:grid-cols-1 gap-8 items-center">
             <div className="text-lg text-muted-foreground space-y-4 text-left">
               <p>Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on used books and reused library copies are nonexistent.</p>
-              <p>
-                As the demand for used books grows, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accesible way. Most readers would be happy to directly support their favorite authors, if only there was a way to do it!
-              </p>
+              <p>As the demand for used books grows, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accessible way. Most readers would be happy to directly support their favorite authors, if only there was a way to do it!</p>
               <p>
                 This is the idea that hatched Quilltips, a platform that supports fair author compensation and connects authors directly with their audience.
               </p>
