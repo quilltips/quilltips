@@ -75,6 +75,51 @@ export type Database = {
         }
         Relationships: []
       }
+      public_tips: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          message: string | null
+          qr_code_id: string | null
+          reader_avatar_url: string | null
+          reader_name: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id: string
+          message?: string | null
+          qr_code_id?: string | null
+          reader_avatar_url?: string | null
+          reader_name?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          message?: string | null
+          qr_code_id?: string | null
+          reader_avatar_url?: string | null
+          reader_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_tips_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "tips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_tips_qr_code_id_fkey"
+            columns: ["qr_code_id"]
+            isOneToOne: false
+            referencedRelation: "qr_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       qr_codes: {
         Row: {
           author_id: string

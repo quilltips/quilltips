@@ -15,7 +15,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
     queryKey: ['public-tips', qrCodeId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('tips')
+        .from('public_tips')
         .select(`
           id,
           created_at,
