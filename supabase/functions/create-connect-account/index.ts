@@ -47,7 +47,7 @@ serve(async (req) => {
     // Get existing account info
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
-      .select('stripe_account_id, stripe_setup_complete, name, email')
+      .select('stripe_account_id, stripe_setup_complete, name')
       .eq('id', user.id)
       .single();
 
@@ -121,13 +121,10 @@ serve(async (req) => {
       if (!accountId) {
         console.log('Creating new Stripe Connect account with prefilled information');
         
-        // Email to use - prefer user email from auth but fall back to profile email if available
-        const email = user.email || profile?.email || '';
-        
         // Create a new Connect account with enhanced prefilled data
         const account = await stripe.accounts.create({
           type: 'express',
-          email: email,
+          email: user.email, // Only use the authenticated user's email
           business_type: 'individual',
           capabilities: {
             transfers: { requested: true },
