@@ -1,10 +1,8 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share, DollarSign, Link } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import { Layout } from "@/components/Layout";
-
 const Index = () => {
   return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
@@ -38,7 +36,7 @@ const Index = () => {
 
         {/* Value Proposition Section - NEW */}
         <div className="max-w-4xl mx-auto mt-24">
-          <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Authors Love Quilltips</h2>
+          <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Do Authors Love Quilltips?</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Value Prop 1 */}
