@@ -47,7 +47,7 @@ export const TipDownloadButton = ({
           tip.amount,
           `"${(tip.message || '').replace(/"/g, '""')}"`,
           `"${(tip.reader_name || 'Anonymous').replace(/"/g, '""')}"`,
-          `"${(tip.reader_email || '').replace(/"/g, '""')}"``,
+          `"${(tip.reader_email || '').replace(/"/g, '""')}"`, // Fixed: removed extra backtick
           likes?.filter(like => like.tip_id === tip.id).length || 0,
           comments?.filter(comment => comment.tip_id === tip.id).length || 0
         ].join(','))
