@@ -2,8 +2,23 @@
 import { Layout } from "@/components/Layout";
 import { Link } from "react-router-dom";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const HowItWorks = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleCreateQRCode = () => {
+    if (!user) {
+      // Redirect to login page instead of showing an error
+      navigate("/author/login");
+      return;
+    }
+    navigate("/author/create-qr");
+  };
+  
   return (
     <Layout>
       <main className="container mx-auto px-4 py-8 md:py-16 max-w-4xl">
@@ -53,15 +68,6 @@ const HowItWorks = () => {
             </div>
           </div>
           
-          {/* Step-by-step process graphic */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden my-12">
-            <img 
-              src="/lovable-uploads/2a39fe94-297c-4e9f-bc9d-d237e58d98bc.png" 
-              alt="Quilltips How It Works: 4 Step Process" 
-              className="w-full h-auto"
-            />
-          </div>
-          
           {/* How do QR codes work section from Figma */}
           <div className="space-y-6">
             <h2 className="text-2xl md:text-3xl font-playfair font-medium text-center mb-6">How do QR codes work?</h2>
@@ -83,12 +89,12 @@ const HowItWorks = () => {
         </div>
         
         <div className="mt-12 flex justify-center">
-          <Link 
-            to="/author/create-qr" 
+          <Button 
+            onClick={handleCreateQRCode}
             className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] py-4 px-8 rounded-full font-medium text-lg"
           >
             Create a QR code
-          </Link>
+          </Button>
         </div>
       </main>
     </Layout>

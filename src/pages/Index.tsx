@@ -1,9 +1,27 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { QrCode, MessageSquare, Share, DollarSign, Link as LinkIcon } from "lucide-react";
+import { QrCode, MessageSquare, Share, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+
 const Index = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleCreateQRCode = () => {
+    if (!user) {
+      // Redirect to login page instead of showing an error
+      navigate("/author/login");
+      return;
+    }
+    navigate("/author/create-qr");
+  };
+
   return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
         {/* Hero Section */}
@@ -84,11 +102,11 @@ const Index = () => {
         <div className="max-w-3xl mx-auto mt-24">
           <h2 className="text-4xl font-playfair font-medium text-center mb-20">How Does It Work?</h2>
 
-          {/* Step 1 - Right aligned */}
+          {/* Step 1 - Right aligned with QR code icon */}
           <div className="grid md:grid-cols-2 gap-10 items-center mb-24">
             <div className="order-last md:order-first flex justify-center">
               <div className="w-48 h-48 bg-[#FFF8E7] rounded-full flex items-center justify-center">
-                <img src="/lovable-uploads/4b6effb9-aa80-4dd5-b728-7af0326d2cef.png" alt="QR Code Icon" className="w-20 h-20" />
+                <QrCode className="w-20 h-20 text-[#FFD166]" />
               </div>
             </div>
             <div>
@@ -99,7 +117,7 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Step 2 - Left aligned */}
+          {/* Step 2 - Left aligned with reader icon */}
           <div className="grid md:grid-cols-2 gap-10 items-center mb-24">
             <div>
               <h3 className="font-semibold text-2xl mb-4">Step 2. Meet your readers</h3>
@@ -109,16 +127,16 @@ const Index = () => {
             </div>
             <div className="flex justify-center">
               <div className="w-48 h-48 bg-[#FFF8E7] rounded-full flex items-center justify-center">
-                <img src="/lovable-uploads/9e90f592-f57f-4a5d-885b-5ff4be99a800.png" alt="Book Icon" className="w-20 h-20" />
+                <Users className="w-20 h-20 text-[#FFD166]" />
               </div>
             </div>
           </div>
 
-          {/* Step 3 - Right aligned */}
+          {/* Step 3 - Right aligned with book/data icon */}
           <div className="grid md:grid-cols-2 gap-10 items-center mb-12">
             <div className="order-last md:order-first flex justify-center">
               <div className="w-48 h-48 bg-[#FFF8E7] rounded-full flex items-center justify-center">
-                <Share className="w-20 h-20 text-[#FFD166]" />
+                <BookOpen className="w-20 h-20 text-[#FFD166]" />
               </div>
             </div>
             <div>
@@ -156,6 +174,16 @@ const Index = () => {
             <div className="relative w-full h-full flex justify-center items-center">
              
             </div>
+            
+            {/* About page link */}
+            <div className="flex justify-center mt-8">
+              <RouterLink to="/about">
+                <Button variant="outline" className="rounded-full px-10 flex items-center gap-2">
+                  Learn more about us
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </RouterLink>
+            </div>
           </div>
         </div>
 
@@ -167,11 +195,13 @@ const Index = () => {
               Create an account to connect with readers and collect tips!
             </h3>
           </div>
-          <RouterLink to="/author/register">
-            <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]">
-              Create an account
-            </Button>
-          </RouterLink>
+          <Button 
+            onClick={handleCreateQRCode}
+            size="lg" 
+            className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]"
+          >
+            Create a QR code
+          </Button>
         </div>
       </div>
     </Layout>;
