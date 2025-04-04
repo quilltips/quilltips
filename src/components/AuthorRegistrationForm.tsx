@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
@@ -160,6 +161,21 @@ export const AuthorRegistrationForm = () => {
       }
 
       console.log("Registration successful:", data);
+      
+      // Send account_setup_complete email notification
+      try {
+        await supabase.functions.invoke('send-email-notification', {
+          body: {
+            type: 'account_setup_complete',
+            userId: data.user.id
+          }
+        });
+        console.log("Registration welcome email sent");
+      } catch (emailError) {
+        console.error("Error sending welcome email:", emailError);
+        // Continue with registration flow even if email fails
+      }
+      
       setCurrentStep("stripe-onboarding");
       
       toast({
