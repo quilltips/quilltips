@@ -1,8 +1,10 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { QrCode, MessageSquare, Share, DollarSign, Link } from "lucide-react";
+import { QrCode, MessageSquare, Share, DollarSign, Link as LinkIcon } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+
 const Index = () => {
   return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
@@ -131,11 +133,11 @@ const Index = () => {
 
           {/* Learn More Button */}
           <div className="flex justify-center mt-12">
-            <Link to="/how-it-works">
+            <RouterLink to="/how-it-works">
               <Button variant="outline" className="rounded-full px-10">
                 Learn more
               </Button>
-            </Link>
+            </RouterLink>
           </div>
         </div>
 
@@ -169,11 +171,11 @@ const Index = () => {
               Create an account to connect with readers and collect tips!
             </h3>
           </div>
-          <Link to="/author/register">
+          <RouterLink to="/author/register">
             <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]">
               Create an account
             </Button>
-          </Link>
+          </RouterLink>
         </div>
       </div>
     </Layout>;
