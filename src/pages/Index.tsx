@@ -1,8 +1,10 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { QrCode, MessageSquare, Share } from "lucide-react";
-import { Link } from "react-router-dom";
+import { QrCode, MessageSquare, Share, DollarSign, Link } from "lucide-react";
+import { Link as RouterLink } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+
 const Index = () => {
   return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
@@ -16,11 +18,11 @@ const Index = () => {
             </h2>
           </div>
 
-          <Link to="/author/register">
+          <RouterLink to="/author/register">
             <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]">
               Create an account
             </Button>
-          </Link>
+          </RouterLink>
         </div>
 
         {/* Connecting Authors Section */}
@@ -31,6 +33,52 @@ const Index = () => {
           </p>
           <div className="flex justify-center mt-8">
             <img src="/lovable-uploads/0b6b9cb2-dc5c-46e3-be9f-1f761dd356cf.png" alt="Quilltips app showing tip feed on mobile phones" className="w-full max-w-2xl rounded-lg object-scale-down" />
+          </div>
+        </div>
+
+        {/* Value Proposition Section - NEW */}
+        <div className="max-w-4xl mx-auto mt-24">
+          <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Authors Love Quilltips</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Value Prop 1 */}
+            <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 bg-[#FFF8E7] rounded-full flex items-center justify-center mb-2">
+                  <DollarSign className="w-8 h-8 text-[#FFD166]" />
+                </div>
+                <h3 className="text-xl font-semibold">Earn More From Your Books</h3>
+                <p className="text-muted-foreground">
+                  Give readers an easy way to support you directly, even with used books and library copies.
+                </p>
+              </div>
+            </Card>
+            
+            {/* Value Prop 2 */}
+            <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 bg-[#FFF8E7] rounded-full flex items-center justify-center mb-2">
+                  <MessageSquare className="w-8 h-8 text-[#FFD166]" />
+                </div>
+                <h3 className="text-xl font-semibold">Connect With Your Readers</h3>
+                <p className="text-muted-foreground">
+                  Receive messages from fans and build your email list with each tip your books generate.
+                </p>
+              </div>
+            </Card>
+            
+            {/* Value Prop 3 */}
+            <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 bg-[#FFF8E7] rounded-full flex items-center justify-center mb-2">
+                  <Link className="w-8 h-8 text-[#FFD166]" />
+                </div>
+                <h3 className="text-xl font-semibold">Promote Your Platform</h3>
+                <p className="text-muted-foreground">
+                  Link to your website, social media, and newsletter - all from one centralized place.
+                </p>
+              </div>
+            </Card>
           </div>
         </div>
 
