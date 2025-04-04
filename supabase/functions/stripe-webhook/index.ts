@@ -45,12 +45,32 @@ serve(async (req)=>{
       case "checkout.session.completed":
         {
           const session = event.data.object;
+          console.log("📊 Processing completed checkout session:", session.id);
+          
           if (session.metadata?.type === "tip") {
-            const { error } = await supabase.from("tips").update({
-              status: "complete"
-            }).eq("stripe_session_id", session.id);
-            if (error) throw error;
+            console.log("💰 Processing tip payment");
+            
+            // Get reader email from the session
+            const readerEmail = session.customer_email;
+            console.log("📧 Reader email from session:", readerEmail);
+            
+            // Update the tip record with completed status and ensure reader email is saved
+            const { data, error } = await supabase.from("tips")
+              .update({
+                status: "complete",
+                reader_email: readerEmail || null
+              })
+              .eq("stripe_session_id", session.id)
+              .select();
+            
+            if (error) {
+              console.error("❌ Error updating tip record:", error);
+              throw error;
+            }
+            
+            console.log("✅ Tip record updated successfully:", data);
           }
+          
           if (session.metadata?.type === "qr_code_purchase") {
             const { error } = await supabase.from("qr_codes").update({
               qr_code_status: "active",
