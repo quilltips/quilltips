@@ -55,7 +55,7 @@ serve(async (req) => {
       );
     }
     
-    // Extract user email - NOTE: we need to add this field to the profiles table
+    // Extract user email
     const email = profile.email;
     if (!email) {
       console.error("❌ User does not have an email in their profile");
