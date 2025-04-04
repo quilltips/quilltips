@@ -20,22 +20,8 @@ export const BookStats = ({ totalBooks }: BookStatsProps) => {
             </div>
             
             <div className="flex items-center">
-              <div className="bg-[#FFD166] rounded-full p-2 mr-2">
-                <Book className="h-6 w-6 text-[#19363C]" />
-              </div>
-              <div className="flex">
-                {['S', 'E', 'G'].map((letter, i) => (
-                  <div 
-                    key={i}
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-[#19363C] font-bold -ml-2 border-2 border-[#19363C]"
-                    style={{ 
-                      backgroundColor: i === 0 ? '#FF719A' : i === 1 ? '#5271FF' : '#64F4AC',
-                      zIndex: 3 - i
-                    }}
-                  >
-                    {letter}
-                  </div>
-                ))}
+              <div className="bg-[#FFD166] rounded-full p-4">
+                <Book className="h-8 w-8 text-[#19363C]" />
               </div>
             </div>
           </div>

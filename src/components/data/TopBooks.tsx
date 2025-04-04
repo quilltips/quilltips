@@ -20,10 +20,7 @@ export const TopBooks = ({ topBooks }: TopBooksProps) => {
             {topBooks.length > 0 ? (
               topBooks.map((book) => (
                 <div key={book.id} className="flex justify-between items-center">
-                  <div>
-                    <div className="font-medium">{book.book_title}</div>
-                    <div className="text-sm text-white/70">Susan Stanley</div>
-                  </div>
+                  <div className="font-medium">{book.book_title}</div>
                   <div className="text-[#FFD166]">
                     {book.tipCount} {book.tipCount === 1 ? 'Tip' : 'Tips'}
                   </div>

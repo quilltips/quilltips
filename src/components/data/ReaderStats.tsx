@@ -1,7 +1,5 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
 
 interface ReaderInfo {
   name: string;
@@ -14,7 +12,7 @@ interface ReaderStatsProps {
   onDownload: () => void;
 }
 
-export const ReaderStats = ({ readerInfo, onDownload }: ReaderStatsProps) => {
+export const ReaderStats = ({ readerInfo }: ReaderStatsProps) => {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-6 bg-[#19363C] text-white">
@@ -35,17 +33,6 @@ export const ReaderStats = ({ readerInfo, onDownload }: ReaderStatsProps) => {
               No reader data available yet
             </div>
           )}
-          
-          <div className="text-center">
-            <Button
-              onClick={onDownload}
-              variant="outline"
-              className="bg-transparent border border-white text-white hover:bg-white/10 flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Download data to see more reader information
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>
