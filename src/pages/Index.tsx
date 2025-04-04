@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share, DollarSign, Link as LinkIcon } from "lucide-react";
@@ -71,7 +70,7 @@ const Index = () => {
             <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="w-16 h-16 bg-[#FFF8E7] rounded-full flex items-center justify-center mb-2">
-                  <Link className="w-8 h-8 text-[#FFD166]" />
+                  <LinkIcon className="w-8 h-8 text-[#FFD166]" />
                 </div>
                 <h3 className="text-xl font-semibold">Promote Your Platform</h3>
                 <p className="text-muted-foreground">
