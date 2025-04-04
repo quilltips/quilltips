@@ -33,3 +33,4 @@ port = 54327
 [functions]
 [functions.send-email-notification]
 verify_jwt = false
+

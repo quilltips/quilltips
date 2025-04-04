@@ -77,6 +77,20 @@ const AuthorBankAccount = () => {
         throw new Error('No URL returned from Stripe');
       }
 
+      // Send email notification about Stripe setup being initiated
+      try {
+        await supabase.functions.invoke('send-email-notification', {
+          body: {
+            type: 'stripe_setup_incomplete',
+            userId: session.user.id
+          }
+        });
+        console.log("Stripe setup initiated email sent");
+      } catch (emailError) {
+        console.error("Error sending Stripe setup email:", emailError);
+        // Continue with Stripe setup flow even if email fails
+      }
+
       // Redirect to Stripe Connect onboarding
       window.location.href = data.url;
     } catch (error: any) {

@@ -23,12 +23,25 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         title: "Account Setup",
         description: "Your Stripe account setup has been updated successfully.",
       });
+      
+      // Send email notification about Stripe setup completion
+      try {
+        supabase.functions.invoke('send-email-notification', {
+          body: {
+            type: 'stripe_setup_complete',
+            userId: profileId
+          }
+        });
+        console.log("Stripe setup complete email notification sent");
+      } catch (emailError) {
+        console.error("Error sending Stripe setup complete email:", emailError);
+      }
     }
     // Handle refresh flow
     else if (searchParams.get('refresh') === 'true' && stripeAccountId) {
       handleConnect();
     }
-  }, [searchParams, stripeAccountId]);
+  }, [searchParams, stripeAccountId, profileId]);
 
   const handleConnect = async () => {
     setIsConnecting(true);
@@ -57,6 +70,20 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
 
       if (!data?.url) {
         throw new Error('Failed to get Stripe onboarding URL');
+      }
+
+      // Send email notification about Stripe setup in progress
+      try {
+        await supabase.functions.invoke('send-email-notification', {
+          body: {
+            type: 'stripe_setup_incomplete',
+            userId: profileId
+          }
+        });
+        console.log("Stripe setup in progress email sent");
+      } catch (emailError) {
+        console.error("Error sending Stripe setup in progress email:", emailError);
+        // Continue with Stripe flow even if email fails
       }
 
       // Redirect to Stripe for onboarding or dashboard
