@@ -10,10 +10,21 @@ interface PublicTipHistoryProps {
   qrCodeId: string;
 }
 
+// Define a type for the public tip data
+interface PublicTip {
+  id: string;
+  created_at: string;
+  message: string | null;
+  amount: number;
+  reader_name: string | null;
+  reader_avatar_url: string | null;
+}
+
 export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
   const { data: tips, isLoading } = useQuery({
     queryKey: ['public-tips', qrCodeId],
     queryFn: async () => {
+      // Cast the response type to handle the type issue with the new table
       const { data, error } = await supabase
         .from('public_tips')
         .select(`
@@ -28,7 +39,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as PublicTip[];
     }
   });
 
