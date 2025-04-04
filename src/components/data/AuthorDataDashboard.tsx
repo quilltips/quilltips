@@ -16,6 +16,13 @@ interface AuthorDataDashboardProps {
   authorId: string;
 }
 
+// Define types to match the ReaderInfo interface in ReaderStats component
+interface ReaderInfo {
+  name: string;
+  email: string;
+  value: number;
+}
+
 export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
   const { toast } = useToast();
   
@@ -62,7 +69,7 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
         .slice(0, 3);
       
       // Get reader information
-      const readerMap = {};
+      const readerMap: Record<string, ReaderInfo> = {};
       
       tips.forEach(tip => {
         const readerKey = tip.reader_email || tip.reader_name || 'anonymous';
@@ -78,8 +85,8 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
         }
       });
       
-      const readerInfo = Object.values(readerMap)
-        .sort((a: any, b: any) => b.value - a.value)
+      const readerInfo: ReaderInfo[] = Object.values(readerMap)
+        .sort((a, b) => b.value - a.value)
         .slice(0, 10);
       
       return {
@@ -175,3 +182,4 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
     </div>
   );
 };
+

@@ -3,10 +3,28 @@ import { Button } from "../ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+interface Tip {
+  id: string;
+  created_at: string;
+  book_title?: string;
+  amount: number;
+  message?: string;
+  reader_name?: string;
+  reader_email?: string;
+}
+
+interface Like {
+  tip_id: string;
+}
+
+interface Comment {
+  tip_id: string;
+}
+
 interface TipDownloadButtonProps {
-  tips: any[];
-  likes: any[];
-  comments: any[];
+  tips: Tip[];
+  likes: Like[];
+  comments: Comment[];
   qrCodeId?: string;
 }
 
@@ -29,7 +47,7 @@ export const TipDownloadButton = ({
           tip.amount,
           `"${(tip.message || '').replace(/"/g, '""')}"`,
           `"${(tip.reader_name || 'Anonymous').replace(/"/g, '""')}"`,
-          `"${(tip.reader_email || '').replace(/"/g, '""')}"`,
+          `"${(tip.reader_email || '').replace(/"/g, '""')}"``,
           likes?.filter(like => like.tip_id === tip.id).length || 0,
           comments?.filter(comment => comment.tip_id === tip.id).length || 0
         ].join(','))
