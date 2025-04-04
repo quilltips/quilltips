@@ -195,15 +195,17 @@ const Index = () => {
               Create an account to connect with readers and collect tips!
             </h3>
           </div>
-          <Button 
-            onClick={handleCreateQRCode}
-            size="lg" 
-            className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]"
-          >
-            Create a QR code
-          </Button>
+          <RouterLink to="/author/register">
+            <Button 
+              size="lg" 
+              className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]"
+            >
+              Create an account
+            </Button>
+          </RouterLink>
         </div>
       </div>
     </Layout>;
 };
 export default Index;
+
