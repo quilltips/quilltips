@@ -3,6 +3,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from 'https://esm.sh/stripe@14.21.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { corsHeaders } from './config.ts';
+import { handleGenericError, handlePlatformSetupError, handleInvalidAccountError } from './error-handlers.ts';
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -30,7 +31,7 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    console.log('User authenticated:', user.id);
+    console.log('User authenticated:', user.id, 'with email:', user.email);
 
     // Initialize Stripe
     const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
@@ -44,19 +45,37 @@ serve(async (req) => {
       httpClient: Stripe.createFetchHttpClient(),
     });
 
-    // Get existing account info
+    // Get existing account info - use maybeSingle() instead of single()
+    console.log('Fetching profile data for user:', user.id);
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
       .select('stripe_account_id, stripe_setup_complete, name')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError) {
       console.error('Error fetching profile:', profileError);
       throw new Error('Failed to fetch profile');
     }
 
-    console.log('Profile data:', profile);
+    // Check if profile exists - it should based on our auth triggers, but handle the case if it doesn't
+    if (!profile) {
+      console.log('Profile not found, creating a basic profile');
+      const { error: createProfileError } = await supabaseClient
+        .from('profiles')
+        .insert({
+          id: user.id,
+          name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          role: 'author'
+        });
+
+      if (createProfileError) {
+        console.error('Error creating profile:', createProfileError);
+        throw new Error('Failed to create profile');
+      }
+    }
+
+    console.log('Profile data:', profile || 'Will use new profile');
     
     try {
       let accountId = profile?.stripe_account_id;
@@ -124,7 +143,7 @@ serve(async (req) => {
         // Create a new Connect account with enhanced prefilled data
         const account = await stripe.accounts.create({
           type: 'express',
-          email: user.email, // Only use the authenticated user's email
+          email: user.email, // Use the authenticated user's email from auth
           business_type: 'individual',
           capabilities: {
             transfers: { requested: true },
