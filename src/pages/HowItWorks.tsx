@@ -1,4 +1,3 @@
-
 import { Layout } from "@/components/Layout";
 import { Link } from "react-router-dom";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
@@ -12,7 +11,6 @@ const HowItWorks = () => {
 
   const handleCreateQRCode = () => {
     if (!user) {
-      // Redirect to login page instead of showing an error
       navigate("/author/login");
       return;
     }
@@ -25,14 +23,12 @@ const HowItWorks = () => {
         <h1 className="text-3xl md:text-4xl font-playfair font-medium text-center mb-12">How Quilltips Works</h1>
         
         <div className="space-y-10">
-          {/* Detailed explanation */}
           <div className="space-y-6">
             <p className="text-lg text-center">
               Quilltips connects readers directly with authors through QR codes printed on books. It's simple, seamless, and meaningful:
             </p>
           </div>
           
-          {/* Detailed steps section */}
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div className="space-y-8 order-1">
               <div className="space-y-3">
@@ -58,7 +54,6 @@ const HowItWorks = () => {
               </div>
             </div>
             
-            {/* QR code example */}
             <div className="bg-white rounded-xl shadow-lg overflow-hidden order-2 flex justify-center items-center p-6">
               <StyledQRCode 
                 value="https://quilltips.com/example" 
@@ -68,7 +63,6 @@ const HowItWorks = () => {
             </div>
           </div>
           
-          {/* How do QR codes work section from Figma */}
           <div className="space-y-6">
             <h2 className="text-2xl md:text-3xl font-playfair font-medium text-center mb-6">How do QR codes work?</h2>
             
@@ -86,6 +80,14 @@ const HowItWorks = () => {
               </p>
             </div>
           </div>
+        </div>
+        
+        <div className="mt-16 text-center">
+          <img 
+            src="/lovable-uploads/298794ad-18a4-4ee0-a2ad-6a89775c0227.png" 
+            alt="How Quilltips Works" 
+            className="mx-auto max-w-full h-auto"
+          />
         </div>
         
         <div className="mt-12 flex justify-center">
