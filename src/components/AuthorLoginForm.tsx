@@ -18,7 +18,7 @@ export const AuthorLoginForm = () => {
   } = useAuthorLogin();
 
   return (
-    <Card className="auth-card max-w-md mx-auto animate-enter">
+    <Card className="auth-card mx-auto animate-enter">
       {!showResetForm ? (
         <LoginForm
           isLoading={isLoading}

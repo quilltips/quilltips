@@ -8,7 +8,7 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F7F2]">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navigation />
       <main className="flex-grow pt-16">
         {children}

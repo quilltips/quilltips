@@ -66,7 +66,7 @@ const AuthorDashboard = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#F8F7F2]">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
           <div className="max-w-6xl mx-auto space-y-8">
             <div className="space-y-2">

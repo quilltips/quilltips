@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -6,7 +7,7 @@
 
 @layer base {
   :root {
-    --background: 48 100% 98%;
+    --background: 0 0% 100%; /* Changed to white */
     --foreground: 197 39% 16%;
     --card: 0 0% 100%;
     --card-foreground: 197 39% 16%;
@@ -67,7 +68,7 @@
   }
 
   .auth-card {
-    @apply bg-[#FEF7CD]/30 rounded-3xl p-8 shadow-sm backdrop-blur-sm border border-[#FFD166]/20;
+    @apply rounded-3xl p-8 shadow-sm border border-[#E2E8F0];
   }
 
   .feature-card {

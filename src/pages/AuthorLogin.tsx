@@ -59,7 +59,7 @@ const AuthorLogin = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 pt-24 pb-12">
+      <div className="container mx-auto px-4 pt-24 pb-12 max-w-lg">
         <AuthorLoginForm />
       </div>
     </Layout>
