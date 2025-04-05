@@ -57,12 +57,12 @@ export const TipLikeButton = ({ tipId, authorId, isLiked, likeCount }: TipLikeBu
 
   return (
     <Button
-      variant={isLiked ? "default" : "ghost"}
+      variant="ghost"
       size="sm"
       onClick={handleLike}
-      className={`flex items-center gap-1 ${isLiked ? "bg-primary hover:bg-primary/90" : ""}`}
+      className="flex items-center gap-1"
     >
-      <Heart className={`h-4 w-4 ${isLiked ? "fill-white" : ""}`} />
+      <Heart className={`h-4 w-4 ${isLiked ? "fill-[#19363C]" : ""}`} />
       <span>{likeCount}</span>
     </Button>
   );

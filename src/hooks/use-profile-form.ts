@@ -29,13 +29,18 @@ export function useProfileForm({
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>(initialSocialLinks);
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  // Track the current values that represent "saved" state
+  const [savedName, setSavedName] = useState(initialName);
+  const [savedBio, setSavedBio] = useState(initialBio);
+  const [savedSocialLinks, setSavedSocialLinks] = useState<SocialLink[]>(initialSocialLinks);
   const { toast } = useToast();
 
   useEffect(() => {
-    const nameChanged = name !== initialName;
-    const bioChanged = bio !== initialBio;
+    // Compare current values against saved values instead of initial values
+    const nameChanged = name !== savedName;
+    const bioChanged = bio !== savedBio;
     
-    const socialLinksChanged = JSON.stringify(socialLinks) !== JSON.stringify(initialSocialLinks);
+    const socialLinksChanged = JSON.stringify(socialLinks) !== JSON.stringify(savedSocialLinks);
     
     const newHasChanges = nameChanged || bioChanged || socialLinksChanged;
     setHasChanges(newHasChanges);
@@ -43,7 +48,7 @@ export function useProfileForm({
     if (onChangeStatus) {
       onChangeStatus(newHasChanges);
     }
-  }, [name, bio, socialLinks, initialName, initialBio, initialSocialLinks, onChangeStatus]);
+  }, [name, bio, socialLinks, savedName, savedBio, savedSocialLinks, onChangeStatus]);
 
   const addSocialLink = () => {
     setSocialLinks([...socialLinks, { url: "", label: "" }]);
@@ -100,6 +105,11 @@ export function useProfileForm({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
       });
+      
+      // After a successful save, update our "saved" state references to match current values
+      setSavedName(name);
+      setSavedBio(bio);
+      setSavedSocialLinks(JSON.parse(JSON.stringify(socialLinks)));
       
       setHasChanges(false);
       

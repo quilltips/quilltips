@@ -33,7 +33,7 @@ export const TipCommentButton = ({
       onClick={handleClick}
       className="flex items-center gap-1"
     >
-      <MessageCircle className="h-4 w-4" />
+      <MessageCircle className="h-4 w-4 fill-[#19363C]/10 stroke-[#19363C]" />
       <span>{commentCount}</span>
     </Button>
   );
