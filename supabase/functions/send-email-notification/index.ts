@@ -65,7 +65,7 @@ serve(async (req) => {
 
     // Send email via Resend
     const emailResponse = await resend.emails.send({
-      from: "Quilltips <notifications@quilltips.app>",
+      from: "Quilltips <notifications@quilltips.co>",
       to: email,
       ...emailContent
     });
