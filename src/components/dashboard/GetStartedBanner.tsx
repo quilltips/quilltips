@@ -30,7 +30,7 @@ export const GetStartedBanner = ({ onClose, hasStripeAccount }: GetStartedBanner
           onClick={() => navigate('/author/bank-account')}
           className="w-full sm:w-auto px-6 py-2 h-auto bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium text-base"
         >
-          Link a bank account
+          {hasStripeAccount ? 'Manage payment settings' : 'Link a bank account'}
         </Button>
         
         <Button 
