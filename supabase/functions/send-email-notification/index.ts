@@ -1,3 +1,4 @@
+
 console.log("send-email edge function is open!");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -142,6 +143,23 @@ function generateEmailContent(type, userName, data) {
           <p>Your payment account has been successfully set up. You can now receive tips from your readers directly to your bank account.</p>
           <p>Create QR codes for your books to start receiving tips.</p>
           <p><a href="https://quilltips.app/author/create-qr">Create QR Code</a></p>
+        `
+      };
+    case 'test_email':
+      return {
+        subject: "Quilltips Email System Test",
+        html: `
+          <h1>Email System Test</h1>
+          <p>Hello ${userName},</p>
+          <p>This is a test email to verify that the Quilltips email notification system is working correctly.</p>
+          <p>If you're receiving this email, it means our system can successfully send emails to your address.</p>
+          <p>Test details:</p>
+          <ul>
+            <li>Timestamp: ${new Date(data.timestamp || Date.now()).toLocaleString()}</li>
+            <li>User ID: ${userId || 'Not provided'}</li>
+          </ul>
+          <p>You can ignore this email as it was sent for testing purposes only.</p>
+          <p>Thank you for using Quilltips!</p>
         `
       };
     default:
