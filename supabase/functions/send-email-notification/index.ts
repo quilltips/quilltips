@@ -3,6 +3,8 @@ console.log("send-email edge function is open!");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
+import { generateEmailHtml } from "./quilltips-email-template.ts";
+
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
@@ -67,7 +69,14 @@ serve(async (req) => {
     const emailResponse = await resend.emails.send({
       from: "Quilltips <notifications@quilltips.co>",
       to: email,
-      ...emailContent
+      subject: emailContent.subject,
+      html: generateEmailHtml({
+        header: emailContent.header || emailContent.subject,
+        message: emailContent.mainMessage,
+        cta: emailContent.cta?.text,
+        ctaUrl: emailContent.cta?.url,
+        additionalContent: emailContent.additionalContent
+      })
     });
 
     console.log(`✅ Email sent successfully for ${type} notification`);
@@ -96,89 +105,90 @@ serve(async (req) => {
   }
 });
 
-// Generate email subject and content based on notification type
+// Generate email content based on notification type
 function generateEmailContent(type, userName, data, userId) {
   switch(type) {
     case 'account_setup_complete':
       return {
         subject: "Welcome to Quilltips! Your account is ready",
-        html: `
-          <h1>Welcome to Quilltips, ${userName}!</h1>
-          <p>Your author account has been successfully created. You're all set to start receiving tips from your readers.</p>
-          <p>Next steps:</p>
-          <ul>
+        header: `Welcome to Quilltips, ${userName}!`,
+        mainMessage: "Your author account has been successfully created. You're all set to start receiving tips from your readers.",
+        additionalContent: `
+          <p><strong>Next steps:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
             <li>Complete your Stripe setup to receive payments</li>
             <li>Create your first QR code for your book</li>
             <li>Share your QR code with readers</li>
           </ul>
-          <p>Thank you for joining Quilltips!</p>
-        `
+        `,
+        cta: {
+          text: "Go to Dashboard",
+          url: "https://quilltips.app/author/dashboard"
+        }
       };
     case 'qr_code_purchased':
       return {
         subject: "Your Quilltips QR Code is Ready!",
-        html: `
-          <h1>QR Code Purchase Successful</h1>
-          <p>Hello ${userName},</p>
-          <p>Your QR code for "${data.bookTitle || 'your book'}" has been successfully purchased and is now ready to use.</p>
-          <p>You can view and download your QR code from your <a href="https://quilltips.app/author/book-qr-codes">dashboard</a>.</p>
-          <p>Happy writing!</p>
-        `
+        header: "QR Code Purchase Successful",
+        mainMessage: `Hello ${userName}, your QR code for "${data.bookTitle || 'your book'}" has been successfully purchased and is now ready to use.`,
+        cta: {
+          text: "View Your QR Codes",
+          url: "https://quilltips.app/author/book-qr-codes"
+        }
       };
     case 'tip_received':
       return {
         subject: "You've Received a Tip on Quilltips!",
-        html: `
-          <h1>You Received a Tip!</h1>
-          <p>Great news, ${userName}! Someone appreciated your work.</p>
+        header: "You Received a Tip!",
+        mainMessage: `Great news, ${userName}! Someone appreciated your work.`,
+        additionalContent: `
           <p>You've received a tip of $${data.amount || '0'} for your book "${data.bookTitle || 'your book'}".</p>
-          ${data.message ? `<p>Message from the reader: "${data.message}"</p>` : ''}
-          <p>View all your tips in your <a href="https://quilltips.app/author/tip-feed">Tip Feed</a>.</p>
-        `
+          ${data.message ? `<p><em>"${data.message}"</em></p>` : ''}
+        `,
+        cta: {
+          text: "View Tip Details",
+          url: "https://quilltips.app/author/tip-feed"
+        }
       };
     case 'stripe_setup_incomplete':
       return {
         subject: "Action Required: Complete Your Payment Setup",
-        html: `
-          <h1>Complete Your Payment Setup</h1>
-          <p>Hello ${userName},</p>
-          <p>We noticed that your Stripe payment setup is incomplete. To start receiving tips from your readers, please complete your payment setup.</p>
-          <p><a href="https://quilltips.app/author/bank-account">Complete Setup Now</a></p>
-          <p>If you have any questions, please don't hesitate to contact us.</p>
-        `
+        header: "Complete Your Payment Setup",
+        mainMessage: `Hello ${userName}, we noticed that your Stripe payment setup is incomplete. To start receiving tips from your readers, please complete your payment setup.`,
+        cta: {
+          text: "Complete Setup Now",
+          url: "https://quilltips.app/author/bank-account"
+        }
       };
     case 'stripe_setup_complete':
       return {
         subject: "Payment Setup Complete - Ready to Receive Tips!",
-        html: `
-          <h1>You're All Set to Receive Tips!</h1>
-          <p>Congratulations, ${userName}!</p>
-          <p>Your payment account has been successfully set up. You can now receive tips from your readers directly to your bank account.</p>
-          <p>Create QR codes for your books to start receiving tips.</p>
-          <p><a href="https://quilltips.app/author/create-qr">Create QR Code</a></p>
-        `
+        header: "You're All Set to Receive Tips!",
+        mainMessage: `Congratulations, ${userName}! Your payment account has been successfully set up. You can now receive tips from your readers directly to your bank account.`,
+        cta: {
+          text: "Create QR Code",
+          url: "https://quilltips.app/author/create-qr"
+        }
       };
     case 'test_email':
       return {
         subject: "Quilltips Email System Test",
-        html: `
-          <h1>Email System Test</h1>
-          <p>Hello ${userName},</p>
-          <p>This is a test email to verify that the Quilltips email notification system is working correctly.</p>
+        header: "Email System Test",
+        mainMessage: `Hello ${userName}, this is a test email to verify that the Quilltips email notification system is working correctly.`,
+        additionalContent: `
           <p>If you're receiving this email, it means our system can successfully send emails to your address.</p>
-          <p>Test details:</p>
-          <ul>
+          <p><strong>Test details:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
             <li>Timestamp: ${new Date(data.timestamp || Date.now()).toLocaleString()}</li>
             <li>User ID: ${userId || 'Not provided'}</li>
           </ul>
           <p>You can ignore this email as it was sent for testing purposes only.</p>
-          <p>Thank you for using Quilltips!</p>
         `
       };
     default:
       return {
         subject: "Notification from Quilltips",
-        html: `<p>Hello ${userName}, this is a notification from Quilltips.</p>`
+        mainMessage: `Hello ${userName}, this is a notification from Quilltips.`
       };
   }
 }
