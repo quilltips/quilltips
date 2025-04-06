@@ -5,6 +5,7 @@ import { useQRCodeGeneration } from "@/hooks/use-qr-code-generation";
 import { useQRCheckout } from "@/hooks/use-qr-checkout";
 import { QRCodeHeader } from "@/components/qr/QRCodeHeader";
 import { QRCodePreview } from "@/components/qr/QRCodePreview";
+import { Button } from "@/components/ui/button";
 
 const QRCodeDesign = () => {
   const location = useLocation();
@@ -119,6 +120,7 @@ const QRCodeDesign = () => {
                   <Button 
                     onClick={handleCancel}
                     className="px-6 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                    variant="outline"
                   >
                     Cancel
                   </Button>
@@ -126,6 +128,7 @@ const QRCodeDesign = () => {
                     onClick={handleCheckout}
                     className="px-6 py-3 bg-[#FFD166] text-[#19363C] rounded-md font-medium hover:bg-[#FFD166]/90 transition-colors flex-1 flex justify-center items-center"
                     disabled={isCheckingOut}
+                    variant="default"
                   >
                     {isCheckingOut ? (
                       <>
