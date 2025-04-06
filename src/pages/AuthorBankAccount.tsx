@@ -6,7 +6,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Wallet } from "lucide-react";
+import { Loader2, Wallet, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const AuthorBankAccount = () => {
   const [isConnecting, setIsConnecting] = useState(false);
@@ -100,7 +101,6 @@ const AuthorBankAccount = () => {
         description: error.message || "Failed to connect bank account",
         variant: "destructive",
       });
-    } finally {
       setIsConnecting(false);
     }
   };
@@ -136,9 +136,16 @@ const AuthorBankAccount = () => {
                 </p>
               </div>
 
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  You'll need to provide some basic information to verify your identity and connect your bank account. This typically takes 5-10 minutes.
+                </AlertDescription>
+              </Alert>
+
               <div className="space-y-4">
                 <Button
-                  className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+                  className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium"
                   onClick={connectBankAccount}
                   disabled={isConnecting}
                 >
@@ -157,6 +164,26 @@ const AuthorBankAccount = () => {
                 >
                   Skip for now
                 </Button>
+              </div>
+              
+              {/* Stripe explanation section */}
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 className="text-lg font-medium text-[#19363C] mb-3">How payments work with Quilltips</h3>
+                <div className="space-y-3 text-sm text-gray-600">
+                  <p>
+                    Quilltips uses Stripe as its payments partner. Authors who create accounts with Quilltips use 
+                    Stripe to enable their QR codes to pay out to their bank account.
+                  </p>
+                  <p>
+                    To get set up, Stripe needs to collect some basic information from you. This page will redirect 
+                    you to the Stripe onboarding flow, which should take less than 5 minutes to complete. 
+                    You will be asked to link a bank account.
+                  </p>
+                  <p>
+                    If you have any questions, don't hesitate to reach out to Quilltips. Once your account is set up, 
+                    you will be able to receive tips from your readers!
+                  </p>
+                </div>
               </div>
             </div>
           </Card>
