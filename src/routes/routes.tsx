@@ -21,6 +21,7 @@ import TipFeedPage from "@/pages/TipFeedPage";
 import AuthorDataPage from "@/pages/AuthorDataPage";
 import HowItWorks from "@/pages/HowItWorks";
 import PublicProfilePage from "@/pages/PublicProfilePage";
+import TipSuccessPage from "@/pages/TipSuccessPage";
 
 export const routes = [
   { path: "/", element: <Index /> },
@@ -45,4 +46,5 @@ export const routes = [
   { path: "/how-it-works", element: <HowItWorks /> },
   { path: "/qr-summary", element: <QRCodeSummary /> },
   { path: "/qr/:id", element: <QRCodeDetails /> },
+  { path: "/tip-success", element: <TipSuccessPage /> },
 ];
