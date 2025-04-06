@@ -12,6 +12,7 @@ import { QRCodesList } from "@/components/qr/QRCodesList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreateQRCode } from "@/components/CreateQRCode";
+import { HowQRCodesWork } from "@/components/qr/HowQRCodesWork";
 
 const BookQRCodesPage = () => {
   const navigate = useNavigate();
@@ -108,6 +109,9 @@ const BookQRCodesPage = () => {
                   </div>
                   
                   <CreateQRCode authorId={profile.id} />
+                  
+                  {/* Add How QR Codes Work section */}
+                  <HowQRCodesWork />
                 </div>
               </TabsContent>
             </Tabs>

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CreateQRCode } from "@/components/CreateQRCode";
 import { useToast } from "@/hooks/use-toast";
 import { Layout } from "@/components/Layout";
+import { HowQRCodesWork } from "@/components/qr/HowQRCodesWork";
 
 const CreateQRPage = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -65,7 +66,12 @@ const CreateQRPage = () => {
     <Layout>
       <main className="container mx-auto px-4 pt-24 pb-12">
         <h1 className="text-2xl font-bold mb-6">Create New QR Code</h1>
-        <CreateQRCode authorId={profile.id} />
+        <div className="max-w-2xl mx-auto">
+          <CreateQRCode authorId={profile.id} />
+          
+          {/* Add How QR Codes Work section */}
+          <HowQRCodesWork />
+        </div>
       </main>
     </Layout>
   );
