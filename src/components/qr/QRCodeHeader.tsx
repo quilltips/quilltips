@@ -12,6 +12,7 @@ interface QRCodeHeaderProps {
 
 export const QRCodeHeader = ({ coverImage, bookTitle, publisher, releaseDate }: QRCodeHeaderProps) => {
   const [imageError, setImageError] = useState(false);
+  const defaultImage = "/lovable-uploads/quill_icon.png";
 
   // Reset error state if cover image changes
   useEffect(() => {
@@ -26,7 +27,7 @@ export const QRCodeHeader = ({ coverImage, bookTitle, publisher, releaseDate }: 
   return (
     <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-white rounded-lg shadow-sm">
       <div className="w-32 h-44 flex items-center justify-center bg-gray-100 rounded overflow-hidden shadow-md">
-        {coverImage && !imageError ? (
+        {(!imageError && coverImage) ? (
           <img
             src={coverImage}
             alt={`Cover for ${bookTitle}`}
@@ -34,10 +35,11 @@ export const QRCodeHeader = ({ coverImage, bookTitle, publisher, releaseDate }: 
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center text-gray-400 p-4">
-            <ImageOff className="h-8 w-8 mb-2" />
-            <p className="text-xs text-center">Cover image unavailable</p>
-          </div>
+          <img
+            src={defaultImage}
+            alt="Default book cover"
+            className="w-16 h-16 object-contain"
+          />
         )}
       </div>
       <div className="text-center md:text-left">
@@ -53,10 +55,6 @@ export const QRCodeHeader = ({ coverImage, bookTitle, publisher, releaseDate }: 
         )}
         
         <p className="text-gray-500">Create a QR code for readers to tip and message you</p>
-        <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full bg-[#FFD166]/20 text-[#FFD166] text-sm">
-          <span className="mr-1 h-2 w-2 rounded-full bg-[#FFD166]"></span>
-          QR Code Ready for Purchase
-        </div>
       </div>
     </div>
   );

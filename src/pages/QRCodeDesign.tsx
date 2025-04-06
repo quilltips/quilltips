@@ -41,7 +41,7 @@ const QRCodeDesign = () => {
             releaseDate={qrCodeData.release_date}
           />
           
-          {/* Banner Section - Updated with the #19363C color */}
+          {/* Banner Section - No change to the #19363C color */}
           <div className="bg-[#19363C] text-white rounded-lg p-8 shadow-lg">
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1">
@@ -69,8 +69,8 @@ const QRCodeDesign = () => {
             </div>
           </div>
           
-          {/* Checkout Section */}
-          <div className="bg-white rounded-lg shadow-md p-8">
+          {/* Checkout Section - Made transparent background */}
+          <div className="rounded-lg p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Complete Your QR Code Purchase</h2>
             
             <div className="grid md:grid-cols-2 gap-8 items-start">
