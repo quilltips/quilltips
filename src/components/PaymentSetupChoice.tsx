@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -25,10 +26,6 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: {
-          returnUrl: window.location.origin + '/author/dashboard?setup=complete',
-          refreshUrl: window.location.origin + '/author/dashboard?refresh=true'
-        }
       });
 
       if (error) throw error;
@@ -50,10 +47,8 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
       // Redirect to Stripe for onboarding
       window.location.href = data.url;
       
-      // This code will only execute if the redirect fails
-      console.error("Stripe redirect failed - this code should not execute");
-      setIsLoading(false);
-      onContinue(); // Only call onContinue if redirect fails
+      // This will only execute if the redirect fails
+      onContinue();
     } catch (error: any) {
       console.error("Error connecting to Stripe:", error);
       toast({
@@ -119,6 +114,7 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
           </p>
         </div>
 
+        {/* Stripe explanation section */}
         <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
           <h3 className="text-lg font-medium text-[#19363C] mb-3">How payments work with Quilltips</h3>
           <div className="space-y-3 text-sm text-gray-600">
