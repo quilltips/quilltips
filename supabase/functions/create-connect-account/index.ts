@@ -14,6 +14,13 @@ serve(async (req) => {
   try {
     console.log('Starting create-connect-account function');
     
+    // Parse the request body to get any custom parameters
+    const requestData = await req.json().catch(() => ({}));
+    const { returnUrl, refreshUrl } = requestData;
+
+    console.log('Custom return URL:', returnUrl);
+    console.log('Custom refresh URL:', refreshUrl);
+    
     // Get the authenticated user
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -81,6 +88,14 @@ serve(async (req) => {
       let accountId = profile?.stripe_account_id;
       let accountUrl;
 
+      // Set default URLs if not provided in the request
+      const defaultOrigin = req.headers.get('origin') || 'https://quilltips.co';
+      const actualReturnUrl = returnUrl || `${defaultOrigin}/author/settings?setup=complete`;
+      const actualRefreshUrl = refreshUrl || `${defaultOrigin}/author/settings?refresh=true`;
+      
+      console.log(`Using return URL: ${actualReturnUrl}`);
+      console.log(`Using refresh URL: ${actualRefreshUrl}`);
+
       if (accountId) {
         console.log('Existing Stripe account found:', accountId);
         try {
@@ -107,11 +122,11 @@ serve(async (req) => {
             accountUrl = dashboardLink.url;
           } else {
             console.log('Account exists but setup incomplete, creating onboarding link');
-            // Create account link for completing setup
+            // Create account link for completing setup with custom URLs
             const accountLink = await stripe.accountLinks.create({
               account: accountId,
-              refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
-              return_url: `${req.headers.get('origin')}/author/settings?setup=complete`,
+              refresh_url: actualRefreshUrl,
+              return_url: actualReturnUrl,
               type: 'account_onboarding',
             });
             accountUrl = accountLink.url;
@@ -176,11 +191,11 @@ serve(async (req) => {
           throw updateError;
         }
 
-        // Create account link for onboarding
+        // Create account link for onboarding with custom URLs
         const accountLink = await stripe.accountLinks.create({
           account: account.id,
-          refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
-          return_url: `${req.headers.get('origin')}/author/settings?setup=complete`,
+          refresh_url: actualRefreshUrl,
+          return_url: actualReturnUrl,
           type: 'account_onboarding',
         });
         accountUrl = accountLink.url;

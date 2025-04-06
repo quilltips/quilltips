@@ -54,6 +54,11 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
+        body: {
+          // Custom return URLs for the settings page context
+          returnUrl: window.location.origin + '/author/settings?setup=complete',
+          refreshUrl: window.location.origin + '/author/settings?refresh=true'
+        }
       });
 
       if (error) throw error;

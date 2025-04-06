@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Card } from "../ui/card";
 import { ArrowRight, Wallet, Info } from "lucide-react";
 import { Alert, AlertDescription } from "../ui/alert";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +27,11 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
+        body: {
+          // Use a proper return URL that will directly redirect to dashboard after Stripe setup
+          returnUrl: window.location.origin + '/author/dashboard?setup=complete',
+          refreshUrl: window.location.origin + '/author/dashboard?refresh=true'
+        }
       });
 
       if (error) throw error;
@@ -61,8 +65,12 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
       }
 
       // Redirect to Stripe for onboarding
+      // Important: Do NOT call onComplete() here - let Stripe handle the redirect back
       window.location.href = data.url;
-      onComplete(); // This will only run if there's no redirect
+      
+      // This code only runs if the redirect fails
+      console.error("Stripe redirect failed - this code should not execute");
+      setIsLoading(false);
     } catch (error: any) {
       console.error("Error connecting to Stripe:", error);
       toast({

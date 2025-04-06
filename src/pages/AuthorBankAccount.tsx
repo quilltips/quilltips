@@ -67,6 +67,11 @@ const AuthorBankAccount = () => {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
+        body: {
+          // Specify where to return after Stripe setup
+          returnUrl: window.location.origin + '/author/bank-account?setup=complete',
+          refreshUrl: window.location.origin + '/author/bank-account?refresh=true'
+        }
       });
 
       if (error) throw error;
