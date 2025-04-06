@@ -37,10 +37,12 @@ const QRCodeDesign = () => {
           <QRCodeHeader
             coverImage={qrCodeData.cover_image}
             bookTitle={qrCodeData.book_title}
+            publisher={qrCodeData.publisher}
+            releaseDate={qrCodeData.release_date}
           />
           
-          {/* Banner Section */}
-          <div className="bg-[#1E40AF] text-white rounded-lg p-8 shadow-lg">
+          {/* Banner Section - Updated with the #19363C color */}
+          <div className="bg-[#19363C] text-white rounded-lg p-8 shadow-lg">
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1">
                 <h2 className="text-2xl font-bold mb-4">Enable Readers to Tip You</h2>
@@ -53,7 +55,8 @@ const QRCodeDesign = () => {
                 </p>
               </div>
               
-              <div className="w-full max-w-[180px] mx-auto">
+              {/* Enlarged QR code preview */}
+              <div className="w-full max-w-[240px] mx-auto">
                 <QRCodePreview
                   isGenerating={isGenerating}
                   qrCodePreview={qrCodePreview}
@@ -75,19 +78,19 @@ const QRCodeDesign = () => {
                 <h3 className="text-lg font-medium mb-4">What you're getting:</h3>
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span>
+                    <span className="text-[#FFD166] mr-2">✓</span>
                     <span>Custom QR code for "{qrCodeData.book_title}"</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span>
+                    <span className="text-[#FFD166] mr-2">✓</span>
                     <span>Unlimited scans and tips from readers</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span>
+                    <span className="text-[#FFD166] mr-2">✓</span>
                     <span>Downloadable in multiple formats (PNG, SVG)</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span>
+                    <span className="text-[#FFD166] mr-2">✓</span>
                     <span>Reader analytics and message history</span>
                   </li>
                 </ul>
@@ -97,14 +100,14 @@ const QRCodeDesign = () => {
                 <div className="bg-gray-50 p-6 rounded-lg mb-6">
                   <div className="flex justify-between items-center mb-4">
                     <span className="font-medium">QR Code</span>
-                    <span className="font-bold">$9.99</span>
+                    <span className="font-bold">$35.00</span>
                   </div>
                   <p className="text-sm text-gray-600 mb-4">
                     One-time purchase for this book. No subscription or recurring charges.
                   </p>
                   <div className="border-t border-gray-200 pt-4 flex justify-between">
                     <span className="font-medium">Total</span>
-                    <span className="font-bold">$9.99</span>
+                    <span className="font-bold">$35.00</span>
                   </div>
                 </div>
                 
@@ -117,19 +120,19 @@ const QRCodeDesign = () => {
                   </button>
                   <button 
                     onClick={handleCheckout}
-                    className="px-6 py-3 bg-[#9b87f5] text-white rounded-md font-medium hover:bg-[#8b77e5] transition-colors flex-1 flex justify-center items-center"
+                    className="px-6 py-3 bg-[#FFD166] text-[#19363C] rounded-md font-medium hover:bg-[#FFD166]/90 transition-colors flex-1 flex justify-center items-center"
                     disabled={isCheckingOut}
                   >
                     {isCheckingOut ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#19363C]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         Processing...
                       </>
                     ) : (
-                      'Checkout with Stripe'
+                      'Checkout with Stripe ($35.00)'
                     )}
                   </button>
                 </div>

@@ -14,7 +14,7 @@ interface StyledQRCodeProps {
 
 export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   value,
-  size = 120, // Reduced from 180 (approx 60% smaller)
+  size = 160, // Increased from 120 (approx 35% larger)
   title,
   showBranding = true,
   className = "",
@@ -52,7 +52,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           {blurred && (
             <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center rounded-lg">
               <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center rounded-lg">
-                <div className="text-xs text-center text-gray-700 font-medium px-2">
+                <div className="text-sm text-center text-gray-700 font-medium px-2">
                   Purchase to unlock your QR code
                 </div>
               </div>
@@ -60,13 +60,11 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           )}
         </div>
 
-        {/* Branding text - with smaller font size */}
+        {/* Branding text - adjust width to fit on 3 lines or less */}
         {showBranding && (
-          <div className="text-center text-xs leading-tight text-muted-foreground">
-            <div>Love this book? Tip and</div>
-            <div>
-              message the author with <span className="font-bold">Quilltips</span>!
-            </div>
+          <div className="text-center text-xs leading-tight text-muted-foreground max-w-[160px]">
+            <div>Love this book? Tip and message</div>
+            <div>the author with <span className="font-bold">Quilltips</span>!</div>
           </div>
         )}
       </div>

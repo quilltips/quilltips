@@ -31,11 +31,11 @@ export const QRCodePreview = ({
           </div>
         ) : qrCodePreview ? (
           <div className="flex flex-col items-center gap-6">
-            {/* QR Code Preview */}
-            <div className="w-full max-w-[150px] mx-auto">
+            {/* QR Code Preview - larger container to match the enlarged QR code */}
+            <div className="w-full max-w-[200px] mx-auto">
               <StyledQRCode
                 value={qrCodePreview}
-                size={130}
+                size={175}
                 showBranding={true}
                 blurred={true}
                 title="QR Code Preview"
@@ -67,7 +67,7 @@ export const QRCodePreview = ({
                       Processing...
                     </>
                   ) : (
-                    'Purchase QR Code ($9.99)'
+                    'Purchase QR Code ($35.00)'
                   )}
                 </Button>
               </div>
