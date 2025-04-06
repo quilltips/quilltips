@@ -19,18 +19,27 @@ interface QRCodeDownloadOptionsProps {
   onDownloadSVG: () => void;
   onDownloadPNG: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 export const QRCodeDownloadOptions = ({
   onDownloadSVG,
   onDownloadPNG,
-  className
+  className,
+  disabled = false
 }: QRCodeDownloadOptionsProps) => {
+  const tooltipContent = disabled
+    ? "Purchase this QR code to enable downloads"
+    : "SVG is perfect for print and keeps your QR code crisp at any size. PNG works well for digital use and is widely compatible.";
+    
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="flex-grow bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]">
+          <Button 
+            className={`flex-grow ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#FFD166] hover:bg-[#FFD166]/90'} text-[#2D3748]`}
+            disabled={disabled}
+          >
             <Download className="mr-2 h-4 w-4" />
             Download QR Code
           </Button>
@@ -58,7 +67,7 @@ export const QRCodeDownloadOptions = ({
             </div>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
-            <p><span className="font-medium">SVG</span> is perfect for print and keeps your QR code crisp at any size. <br/><span className="font-medium">PNG</span> works well for digital use and is widely compatible.</p>
+            <p>{tooltipContent}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

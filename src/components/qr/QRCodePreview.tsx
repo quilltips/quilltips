@@ -11,6 +11,7 @@ interface QRCodePreviewProps {
   onCancel: () => void;
   isCheckingOut: boolean;
   showButtons?: boolean;
+  isPaid?: boolean;
 }
 
 export const QRCodePreview = ({
@@ -20,6 +21,7 @@ export const QRCodePreview = ({
   onCancel,
   isCheckingOut,
   showButtons = true,
+  isPaid = false,
 }: QRCodePreviewProps) => {
   return (
     <Card className={`overflow-hidden ${!showButtons ? 'bg-transparent border-0 shadow-none' : ''}`}>
@@ -37,7 +39,8 @@ export const QRCodePreview = ({
                 value={qrCodePreview}
                 size={175}
                 showBranding={true}
-                blurred={true}
+                blurred={!isPaid}
+                isPaid={isPaid}
                 title="QR Code Preview"
                 className={!showButtons ? 'border-white' : ''}
               />

@@ -5,6 +5,7 @@ import { RefObject } from "react";
 import { StyledQRCode } from "./StyledQRCode";
 import { QRCodeDownloadOptions } from "./QRCodeDownloadOptions";
 import { toPng, toSvg } from "html-to-image";
+import { useToast } from "@/hooks/use-toast";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -17,12 +18,25 @@ interface QRCodeStatsCardProps {
   qrCode: {
     id: string;
     book_title: string;
+    is_paid?: boolean;
   } & QRCodeStats;
   qrCodeRef?: RefObject<HTMLDivElement>;
 }
 
 export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => {
+  const { toast } = useToast();
+  const isPaid = qrCode.is_paid === true;
+
   const handleDownloadSVG = async () => {
+    if (!isPaid) {
+      toast({
+        title: "QR Code not purchased",
+        description: "You need to purchase this QR code before you can download it.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (!qrCodeRef?.current) return;
 
     try {
@@ -46,6 +60,15 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
   };
 
   const handleDownloadPNG = async () => {
+    if (!isPaid) {
+      toast({
+        title: "QR Code not purchased",
+        description: "You need to purchase this QR code before you can download it.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (!qrCodeRef?.current) return;
 
     try {
@@ -79,12 +102,20 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             value={`${window.location.origin}/qr/${qrCode.id}`}
             size={200}
             showBranding={true}
+            isPaid={isPaid}
           />
         </div>
         <QRCodeDownloadOptions 
           onDownloadSVG={handleDownloadSVG}
           onDownloadPNG={handleDownloadPNG}
+          disabled={!isPaid}
         />
+        
+        {!isPaid && (
+          <p className="text-sm text-center text-orange-500">
+            This QR code hasn't been purchased yet. Please complete your purchase to download.
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">

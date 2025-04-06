@@ -10,11 +10,13 @@ import { StyledQRCode } from "@/components/qr/StyledQRCode";
 import { useRef } from "react";
 import { toPng, toSvg } from "html-to-image";
 import { QRCodeDownloadOptions } from "@/components/qr/QRCodeDownloadOptions";
+import { useToast } from "@/hooks/use-toast";
 
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
   const qrCodeId = searchParams.get('qr_code');
   const qrCodeRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const { data: qrCode, isLoading } = useQuery({
     queryKey: ['qr-code', qrCodeId],
@@ -32,7 +34,18 @@ const QRCodeSummary = () => {
     }
   });
 
+  const isPaid = qrCode?.is_paid === true;
+
   const handleDownloadSVG = async () => {
+    if (!isPaid) {
+      toast({
+        title: "QR Code not purchased",
+        description: "You need to purchase this QR code before you can download it.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (!qrCodeRef.current) return;
 
     try {
@@ -56,6 +69,15 @@ const QRCodeSummary = () => {
   };
 
   const handleDownloadPNG = async () => {
+    if (!isPaid) {
+      toast({
+        title: "QR Code not purchased",
+        description: "You need to purchase this QR code before you can download it.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (!qrCodeRef.current) return;
 
     try {
@@ -153,6 +175,7 @@ const QRCodeSummary = () => {
                       value={qrValue}
                       size={200}
                       showBranding={true}
+                      isPaid={isPaid}
                     />
                   </div>
 
@@ -160,6 +183,7 @@ const QRCodeSummary = () => {
                     <QRCodeDownloadOptions 
                       onDownloadSVG={handleDownloadSVG}
                       onDownloadPNG={handleDownloadPNG}
+                      disabled={!isPaid}
                     />
                     <Button 
                       variant="outline" 
@@ -170,6 +194,12 @@ const QRCodeSummary = () => {
                       Share QR Code
                     </Button>
                   </div>
+
+                  {!isPaid && (
+                    <p className="text-sm text-center text-orange-500">
+                      This QR code hasn't been purchased yet. Please complete your purchase to download.
+                    </p>
+                  )}
 
                   <p className="text-sm text-center text-muted-foreground">
                     Does your publisher need access to info about this book in Quilltips?{' '}

@@ -29,6 +29,9 @@ const QRCodeDesign = () => {
     return null;
   }
 
+  // Check if QR code is paid for
+  const isPaid = qrCodeData?.is_paid === true;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Navigation />
@@ -64,6 +67,7 @@ const QRCodeDesign = () => {
                   onCancel={handleCancel}
                   isCheckingOut={isCheckingOut}
                   showButtons={false}
+                  isPaid={isPaid}
                 />
               </div>
             </div>
@@ -112,13 +116,13 @@ const QRCodeDesign = () => {
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button 
+                  <Button 
                     onClick={handleCancel}
                     className="px-6 py-3 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition-colors"
                   >
                     Cancel
-                  </button>
-                  <button 
+                  </Button>
+                  <Button 
                     onClick={handleCheckout}
                     className="px-6 py-3 bg-[#FFD166] text-[#19363C] rounded-md font-medium hover:bg-[#FFD166]/90 transition-colors flex-1 flex justify-center items-center"
                     disabled={isCheckingOut}
@@ -134,7 +138,7 @@ const QRCodeDesign = () => {
                     ) : (
                       'Checkout with Stripe ($35.00)'
                     )}
-                  </button>
+                  </Button>
                 </div>
                 
                 <p className="text-xs text-center text-gray-500 mt-4">

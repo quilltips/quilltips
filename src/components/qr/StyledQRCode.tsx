@@ -10,6 +10,7 @@ interface StyledQRCodeProps {
   showBranding?: boolean;
   className?: string;
   blurred?: boolean;
+  isPaid?: boolean;
 }
 
 export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
@@ -19,7 +20,11 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   showBranding = true,
   className = "",
   blurred = false,
+  isPaid = true,
 }, ref) => {
+  // If isPaid is false, we force the blurred effect regardless of the blurred prop
+  const shouldBlur = !isPaid || blurred;
+  
   return (
     <Card ref={ref} className={`bg-white p-4 rounded-lg ${className}`}>
       <div className="flex flex-col items-center space-y-3">
@@ -49,7 +54,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           )}
           
           {/* Blurred overlay for unpurchased QR codes */}
-          {blurred && (
+          {shouldBlur && (
             <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center rounded-lg">
               <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center rounded-lg">
                 <div className="text-sm text-center text-gray-700 font-medium px-2">
