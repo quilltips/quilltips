@@ -68,10 +68,10 @@ const TipSuccessPage = () => {
           {authorId && (
             <Button 
               asChild 
-              className="bg-[#9b87f5] hover:bg-[#8b77e5] text-white px-8 py-6 h-auto text-lg font-medium rounded-full"
+              className="bg-[#19363C] hover:bg-[#19363C]/90 text-white px-8 py-6 h-auto text-lg font-medium rounded-full"
             >
               <Link to={`/profile/${authorId}`}>
-                Go to Author Profile
+                Return to Author Profile
               </Link>
             </Button>
           )}
