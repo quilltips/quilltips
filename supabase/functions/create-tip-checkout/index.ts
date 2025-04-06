@@ -157,8 +157,8 @@ serve(async (req) => {
         },
       },
       customer_email: email,
-      // Update success_url to use the new public profile route
-      success_url: `${req.headers.get('origin')}/profile/${authorId}?success=true`,
+      // Update success_url to use the new tip success page
+      success_url: `${req.headers.get('origin')}/tip-success?authorId=${authorId}&amount=${amount}`,
       cancel_url: `${req.headers.get('origin')}/qr/${qrCodeId || ''}`,
       metadata: {
         type: 'tip',
