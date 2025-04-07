@@ -1,11 +1,13 @@
 
-# This file defines your Supabase project configuration.
-# It is used by Supabase CLI to support local development and CI/CD workflows.
-#
-# You can find more information on local development here:
-# https://supabase.com/docs/guides/getting-started/local-development
+project_id = "qrawynczvedffcvnympn"
+app_version = "0.0.1"
 
-[functions]
+[api]
+host = "https://qrawynczvedffcvnympn.supabase.co" 
+service_role_key = "YOUR-SERVICE-ROLE-KEY" # Don't worry about filling this in
 
-[functions.verify-stripe-session]
-verify_jwt = true
+[functions.platform-webhook]
+verify_jwt = false
+
+[[fetch.release]]
+uri = "https://api.uniqode.com/v2/"
