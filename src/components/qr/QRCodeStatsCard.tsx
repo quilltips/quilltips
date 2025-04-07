@@ -25,7 +25,9 @@ interface QRCodeStatsCardProps {
 
 export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => {
   const { toast } = useToast();
-  const isPaid = qrCode.is_paid === true;
+  const isPaid = qrCode.is_paid !== false; // Consider it paid unless explicitly set to false
+  
+  console.log("QRCodeStatsCard isPaid:", isPaid, "is_paid value:", qrCode.is_paid); // Debug log
 
   const handleDownloadSVG = async () => {
     if (!isPaid) {

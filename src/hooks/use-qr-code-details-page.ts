@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,7 @@ export type QRCode = {
   total_amount: number | null;
   average_tip: number | null;
   last_tip_date: string | null;
+  is_paid: boolean;  // Added is_paid field to the type
 };
 
 export type TipData = {
@@ -36,11 +38,12 @@ export const useQRCodeDetailsPage = () => {
       
       const { data, error } = await supabase
         .from('qr_codes')
-        .select('id, author_id, book_title, publisher, release_date, isbn, cover_image, total_tips, total_amount, average_tip, last_tip_date')
+        .select('id, author_id, book_title, publisher, release_date, isbn, cover_image, total_tips, total_amount, average_tip, last_tip_date, is_paid')
         .eq('id', id)
         .maybeSingle();
 
       if (error) throw error;
+      console.log("QR Code data fetched:", data); // Added logging to check data
       return data as QRCode;
     }
   });

@@ -22,8 +22,10 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   blurred = false,
   isPaid = true,
 }, ref) => {
-  // If isPaid is false, we force the blurred effect regardless of the blurred prop
-  const shouldBlur = !isPaid || blurred;
+  // Consider it as paid unless explicitly set to false
+  const shouldBlur = isPaid === false || blurred;
+  
+  console.log("StyledQRCode shouldBlur:", shouldBlur, "isPaid value:", isPaid); // Debug log
   
   return (
     <Card ref={ref} className={`bg-white p-4 rounded-lg ${className}`}>
