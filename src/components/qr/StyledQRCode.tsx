@@ -1,4 +1,3 @@
-
 import { QRCodeCanvas } from "qrcode.react";
 import { Card } from "@/components/ui/card";
 import { forwardRef } from "react";
@@ -15,7 +14,7 @@ interface StyledQRCodeProps {
 
 export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   value,
-  size = 160,
+  size = 180,
   title,
   showBranding = true,
   className = "",
@@ -23,14 +22,14 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   isPaid = true,
 }, ref) => {
   const shouldBlur = isPaid === false || blurred;
-  
+
   return (
-    <Card 
-      ref={ref} 
-      prominent 
-      className={`bg-white p-4 rounded-lg border-black border ${className}`}
+    <Card
+      ref={ref}
+      prominent
+      className={`w-[240px] h-[360px] bg-white px-4 py-12 rounded-xl border border-black flex flex-col items-center justify-start ${className}`}
     >
-      <div className="flex flex-col items-center space-y-3">
+      <div className="flex flex-col items-center gap-2">
         <div className="relative">
           {/* QR Code */}
           <QRCodeCanvas
@@ -42,20 +41,20 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
             fgColor="#000000"
             className="mx-auto rounded"
           />
-          
+
           {/* Logo overlay */}
           {showBranding && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white rounded-full p-1 w-[22%] h-[22%] flex items-center justify-center">
-                <img 
-                  src="/lovable-uploads/quill_icon.png" 
+              <div className="bg-white rounded-full p-1 w-[18%] h-[18%] flex items-center justify-center">
+                <img
+                  src="/lovable-uploads/quill_icon.png"
                   alt="Quilltips Logo"
                   className="w-full h-full object-contain"
                 />
               </div>
             </div>
           )}
-          
+
           {/* Blurred overlay for unpurchased QR codes */}
           {shouldBlur && (
             <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center rounded-lg">
@@ -68,10 +67,12 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           )}
         </div>
 
-        {/* Branding text - adjust width to fit on 3 lines or less */}
+        {/* Branding text */}
         {showBranding && (
-          <div className="text-center text-xs leading-tight text-muted-foreground max-w-[160px] mt-2">
-            <div>Love this book? Tip & message the author with <span className="font-bold">Quilltips</span>!</div>
+          <div className="text-center text-sm leading-tight text-muted-foreground px-1 max-w-[200px]">
+            <div>
+              Love this book? Tip & message the author with <span className="font-bold">Quilltips</span>!
+            </div>
           </div>
         )}
       </div>
