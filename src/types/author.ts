@@ -19,7 +19,6 @@ export interface AuthorProfile {
   avatar_url: string | null;
   social_links: SocialLink[] | null;
   role: string;
-  created_at?: string; // Added property for when the author joined
 }
 
 export interface DatabaseProfile {

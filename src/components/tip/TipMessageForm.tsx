@@ -1,87 +1,63 @@
 
-import { FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { Checkbox } from "../ui/checkbox";
 
 interface TipMessageFormProps {
   name: string;
   message: string;
   email: string;
-  isPrivate?: boolean;
   onNameChange: (value: string) => void;
   onMessageChange: (value: string) => void;
   onEmailChange: (value: string) => void;
-  onPrivateChange?: (value: boolean) => void;
 }
 
 export const TipMessageForm = ({
   name,
   message,
   email,
-  isPrivate = false,
   onNameChange,
   onMessageChange,
   onEmailChange,
-  onPrivateChange
 }: TipMessageFormProps) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="space-y-2">
-        <FormLabel htmlFor="name">Your Name (Optional)</FormLabel>
+        <Label htmlFor="name" className="text-lg font-medium text-[#1A2B3B]">Name (optional)</Label>
         <Input
           id="name"
           type="text"
-          placeholder="Your name"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
+          placeholder="Your name"
+          className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary"
         />
       </div>
-      
+
       <div className="space-y-2">
-        <FormLabel htmlFor="email" className="flex items-center gap-1">
-          Email
-          <span className="text-red-500 text-xs">*</span>
-        </FormLabel>
+        <Label htmlFor="email" className="text-lg font-medium text-[#1A2B3B]">Email</Label>
         <Input
           id="email"
           type="email"
-          placeholder="your.email@example.com"
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
+          placeholder="Your email address"
+          className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary"
           required
         />
-        <p className="text-xs text-muted-foreground">
-          Required for receipt. Won't be shared with the author.
-        </p>
       </div>
-      
+
       <div className="space-y-2">
-        <FormLabel htmlFor="message">Leave a message (Optional)</FormLabel>
+        <Label htmlFor="message" className="text-lg font-medium text-[#1A2B3B]">Message (optional)</Label>
         <Textarea
           id="message"
-          placeholder="Type your message here..."
           value={message}
           onChange={(e) => onMessageChange(e.target.value)}
-          rows={4}
+          placeholder="Leave a message for the author"
+          className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary resize-none"
+          rows={3}
         />
       </div>
-      
-      {onPrivateChange && (
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="privacy" 
-            checked={isPrivate}
-            onCheckedChange={(checked) => onPrivateChange(checked === true)}
-          />
-          <label 
-            htmlFor="privacy"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Keep this tip private (only visible to the author)
-          </label>
-        </div>
-      )}
     </div>
   );
 };

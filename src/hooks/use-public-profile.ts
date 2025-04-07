@@ -48,8 +48,7 @@ export const usePublicProfile = (id: string | undefined) => {
                     label: String(link.label || 'Link')
                   }))
                 : null,
-              role: 'author', // Adding role to match existing interface
-              created_at: profileData.created_at // Include the created_at field
+              role: 'author' // Adding role to match existing interface
             } as AuthorProfile;
           }
         }
@@ -78,8 +77,7 @@ export const usePublicProfile = (id: string | undefined) => {
                 label: String(link.label || 'Link')
               }))
             : null,
-          role: 'author', // Adding role to match existing interface
-          created_at: profileData.created_at // Include the created_at field
+          role: 'author' // Adding role to match existing interface
         } as AuthorProfile;
       } catch (error) {
         console.error('Error fetching author:', error);

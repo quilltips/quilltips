@@ -25,8 +25,6 @@ export const TipForm = ({ authorId, authorName, bookTitle, qrCodeId }: TipFormPr
     setName,
     email,
     setEmail,
-    isPrivate,
-    setIsPrivate,
     isLoading,
     handleSubmit,
     authorFirstName
@@ -43,11 +41,9 @@ export const TipForm = ({ authorId, authorName, bookTitle, qrCodeId }: TipFormPr
           name={name}
           message={message}
           email={email}
-          isPrivate={isPrivate}
           onNameChange={setName}
           onMessageChange={setMessage}
           onEmailChange={setEmail}
-          onPrivateChange={setIsPrivate}
         />
 
         <TipAmountSelector
