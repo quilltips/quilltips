@@ -1,4 +1,5 @@
 
+import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Share2, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import { toPng, toSvg } from "html-to-image";
 import { QRCodeDownloadOptions } from "@/components/qr/QRCodeDownloadOptions";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +19,7 @@ const QRCodeSummary = () => {
   const sessionId = searchParams.get('session_id'); // Stripe checkout session ID
   const qrCodeRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const [verificationAttempted, setVerificationAttempted] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<'idle' | 'pending' | 'complete'>('idle');
 
   // Query to fetch QR code data
   const { data: qrCode, isLoading, refetch } = useQuery({
@@ -30,7 +31,7 @@ const QRCodeSummary = () => {
         .from('qr_codes')
         .select('*')
         .eq('id', qrCodeId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -43,18 +44,22 @@ const QRCodeSummary = () => {
       if (!qrCodeId || !sessionId) return;
 
       // First verify the payment with Stripe directly
-      const { data: { session }, error: stripeError } = await supabase.functions.invoke('verify-stripe-session', {
+      const { data, error: stripeError } = await supabase.functions.invoke('verify-stripe-session', {
         body: { sessionId }
       });
       
-      if (stripeError || !session || session.payment_status !== 'paid') {
+      if (stripeError || !data?.session || data.session.payment_status !== 'paid') {
         throw new Error('Payment verification failed');
       }
       
       // If payment is verified, update the QR code status
       const { error: updateError } = await supabase
         .from('qr_codes')
-        .update({ is_paid: true, qr_code_status: 'active' })
+        .update({ 
+          is_paid: true, 
+          qr_code_status: 'active',
+          stripe_session_id: sessionId 
+        })
         .eq('id', qrCodeId);
         
       if (updateError) throw updateError;
@@ -66,6 +71,7 @@ const QRCodeSummary = () => {
         title: "Payment confirmed!",
         description: "Your QR code is now ready to download and use.",
       });
+      setVerificationStatus('complete');
       refetch(); // Refresh QR code data
     },
     onError: (error) => {
@@ -75,14 +81,15 @@ const QRCodeSummary = () => {
         description: "We couldn't verify your payment. Please contact support.",
         variant: "destructive"
       });
+      setVerificationStatus('idle');
     }
   });
 
   // Check payment status when component loads with session_id parameter
   useEffect(() => {
     const verifyPayment = async () => {
-      if (sessionId && qrCode && !qrCode.is_paid && !verificationAttempted) {
-        setVerificationAttempted(true);
+      if (sessionId && qrCode && !qrCode.is_paid && verificationStatus === 'idle') {
+        setVerificationStatus('pending');
         await updatePaymentStatus.mutateAsync();
       }
     };
@@ -90,10 +97,10 @@ const QRCodeSummary = () => {
     if (qrCode) {
       verifyPayment();
     }
-  }, [qrCode, sessionId, updatePaymentStatus, verificationAttempted]);
+  }, [qrCode, sessionId, verificationStatus]);
 
   // Show loading state for both initial data fetch and payment verification
-  if (isLoading || updatePaymentStatus.isPending) {
+  if (isLoading || verificationStatus === 'pending') {
     return (
       <Layout>
         <div className="container mx-auto px-4 pt-24 pb-12">
