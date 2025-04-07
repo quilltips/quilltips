@@ -1,3 +1,4 @@
+
 // supabase/functions/stripe-webhook/index.ts
 //@ts-nocheck
 export const config = {
@@ -56,7 +57,7 @@ serve(async (req)=>{
             // Update the tip record with completed status and ensure reader email is saved
             const { data, error } = await supabase.from("tips")
               .update({
-                status: "complete",
+                status: "complete", // This will trigger the database email notification
                 reader_email: readerEmail || null
               })
               .eq("stripe_session_id", session.id)
@@ -68,68 +69,22 @@ serve(async (req)=>{
             }
             
             console.log("✅ Tip record updated successfully:", data);
-            
-            // Send email notification to author about the tip
-            if (data && data.length > 0) {
-              const tipData = data[0];
-              
-              try {
-                // Send email notification to the author about the tip
-                await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    type: 'tip_received',
-                    userId: tipData.author_id,
-                    data: {
-                      amount: tipData.amount,
-                      bookTitle: tipData.book_title,
-                      message: tipData.message
-                    }
-                  })
-                });
-                console.log("✅ Tip notification email sent to author");
-              } catch (emailError) {
-                // Don't block the process if email sending fails
-                console.error("❌ Error sending tip notification email:", emailError);
-              }
-            }
+            // Email notification now handled by database trigger
           }
           
           if (session.metadata?.type === "qr_code_purchase") {
             const { data: qrCode, error } = await supabase.from("qr_codes")
               .update({
                 qr_code_status: "active",
-                is_paid: true
+                is_paid: true // This will trigger the database email notification
               })
               .eq("id", session.metadata.qrCodeId)
               .select("author_id, book_title");
               
             if (error) throw error;
             
-            if (qrCode && qrCode.length > 0) {
-              try {
-                // Send email notification about QR code purchase
-                await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    type: 'qr_code_purchased',
-                    userId: qrCode[0].author_id,
-                    data: {
-                      bookTitle: qrCode[0].book_title
-                    }
-                  })
-                });
-                console.log("✅ QR code purchase notification email sent to author");
-              } catch (emailError) {
-                console.error("❌ Error sending QR code purchase email:", emailError);
-              }
-            }
+            console.log("✅ QR code updated to active status");
+            // Email notification now handled by database trigger
           }
           break;
         }
@@ -143,50 +98,20 @@ serve(async (req)=>{
             }).eq("id", account.metadata.supabaseUserId).select();
             
             if (error) throw error;
-            
-            // Send notification about Stripe setup status
-            try {
-              const setupComplete = account.payouts_enabled && account.details_submitted;
-              await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  type: setupComplete ? 'stripe_setup_complete' : 'stripe_setup_incomplete',
-                  userId: account.metadata.supabaseUserId
-                })
-              });
-              console.log(`✅ Stripe setup ${setupComplete ? 'complete' : 'incomplete'} notification sent`);
-            } catch (emailError) {
-              console.error("❌ Error sending Stripe setup notification:", emailError);
-            }
+            console.log("✅ Profile updated with Stripe status:", profile);
+            // Email notification now handled by database trigger
           } else {
             const { data: profiles, error: findError } = await supabase.from("profiles").select("id").eq("stripe_account_id", account.id);
             if (findError) throw findError;
+            
             if (profiles?.length) {
               const { error: updateError } = await supabase.from("profiles").update({
                 stripe_setup_complete: account.payouts_enabled && account.details_submitted
               }).eq("stripe_account_id", account.id);
-              if (updateError) throw updateError;
               
-              // Send notification about Stripe setup status
-              try {
-                const setupComplete = account.payouts_enabled && account.details_submitted;
-                await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email-notification`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    type: setupComplete ? 'stripe_setup_complete' : 'stripe_setup_incomplete',
-                    userId: profiles[0].id
-                  })
-                });
-                console.log(`✅ Stripe setup ${setupComplete ? 'complete' : 'incomplete'} notification sent`);
-              } catch (emailError) {
-                console.error("❌ Error sending Stripe setup notification:", emailError);
-              }
+              if (updateError) throw updateError;
+              console.log("✅ Profile updated via stripe_account_id lookup");
+              // Email notification now handled by database trigger
             }
           }
           break;

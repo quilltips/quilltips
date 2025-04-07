@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Loader2, Wallet } from "lucide-react";
@@ -23,18 +24,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         description: "Your Stripe account setup has been updated successfully.",
       });
       
-      // Send email notification about Stripe setup completion
-      try {
-        supabase.functions.invoke('send-email-notification', {
-          body: {
-            type: 'stripe_setup_complete',
-            userId: profileId
-          }
-        });
-        console.log("Stripe setup complete email notification sent");
-      } catch (emailError) {
-        console.error("Error sending Stripe setup complete email:", emailError);
-      }
+      // Email notification is now handled by database triggers
     }
     // Handle refresh flow
     else if (searchParams.get('refresh') === 'true' && stripeAccountId) {
@@ -71,20 +61,8 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         throw new Error('Failed to get Stripe onboarding URL');
       }
 
-      // Send email notification about Stripe setup in progress
-      try {
-        await supabase.functions.invoke('send-email-notification', {
-          body: {
-            type: 'stripe_setup_incomplete',
-            userId: profileId
-          }
-        });
-        console.log("Stripe setup in progress email sent");
-      } catch (emailError) {
-        console.error("Error sending Stripe setup in progress email:", emailError);
-        // Continue with Stripe flow even if email fails
-      }
-
+      // Email notification is now handled by database triggers when the profile is updated
+      
       // Redirect to Stripe for onboarding or dashboard
       window.location.href = data.url;
     } catch (error: any) {

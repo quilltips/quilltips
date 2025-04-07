@@ -1,3 +1,4 @@
+
 import { QRCodeCanvas } from "qrcode.react";
 import { Card } from "@/components/ui/card";
 import { forwardRef } from "react";
@@ -30,7 +31,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
       className={`w-[240px] h-[360px] bg-white px-4 py-12 rounded-xl border border-black flex flex-col items-center justify-start ${className}`}
     >
       <div className="flex flex-col items-center gap-2">
-        <div className="relative">
+        <div className="relative border border-black rounded-lg p-2">
           {/* QR Code */}
           <QRCodeCanvas
             value={value}
