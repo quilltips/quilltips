@@ -1,13 +1,13 @@
 
 import { useSearchParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Share2, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { toPng, toSvg } from "html-to-image";
 import { QRCodeDownloadOptions } from "@/components/qr/QRCodeDownloadOptions";
 import { useToast } from "@/hooks/use-toast";
@@ -15,10 +15,12 @@ import { useToast } from "@/hooks/use-toast";
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
   const qrCodeId = searchParams.get('qr_code');
+  const sessionId = searchParams.get('session_id'); // Stripe checkout session ID
   const qrCodeRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const { data: qrCode, isLoading } = useQuery({
+  // Query to fetch QR code data
+  const { data: qrCode, isLoading, refetch } = useQuery({
     queryKey: ['qr-code', qrCodeId],
     queryFn: async () => {
       if (!qrCodeId) return null;
@@ -34,8 +36,85 @@ const QRCodeSummary = () => {
     }
   });
 
-  const isPaid = qrCode?.is_paid === true;
+  // Mutation to update QR code payment status
+  const updatePaymentStatus = useMutation({
+    mutationFn: async () => {
+      if (!qrCodeId || !sessionId) return;
 
+      // First verify the payment with Stripe directly
+      const { data: { session }, error: stripeError } = await supabase.functions.invoke('verify-stripe-session', {
+        body: { sessionId }
+      });
+      
+      if (stripeError || !session || session.payment_status !== 'paid') {
+        throw new Error('Payment verification failed');
+      }
+      
+      // If payment is verified, update the QR code status
+      const { error: updateError } = await supabase
+        .from('qr_codes')
+        .update({ is_paid: true, qr_code_status: 'active' })
+        .eq('id', qrCodeId);
+        
+      if (updateError) throw updateError;
+      
+      return { success: true };
+    },
+    onSuccess: () => {
+      toast({
+        title: "Payment confirmed!",
+        description: "Your QR code is now ready to download and use.",
+      });
+      refetch(); // Refresh QR code data
+    },
+    onError: (error) => {
+      console.error("Error verifying payment:", error);
+      toast({
+        title: "Payment verification error",
+        description: "We couldn't verify your payment. Please contact support.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Check payment status when component loads with session_id parameter
+  useEffect(() => {
+    const verifyPayment = async () => {
+      if (sessionId && qrCode && !qrCode.is_paid) {
+        await updatePaymentStatus.mutateAsync();
+      }
+    };
+    
+    if (qrCode) {
+      verifyPayment();
+    }
+  }, [qrCode, sessionId, updatePaymentStatus]);
+
+  // Show loading state for both initial data fetch and payment verification
+  if (isLoading || updatePaymentStatus.isPending) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 pt-24 pb-12">
+          <div>Verifying your purchase...</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!qrCode) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 pt-24 pb-12">
+          <div>QR Code not found</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  const isPaid = qrCode.is_paid === true;
+  const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
+
+  // Download handlers
   const handleDownloadSVG = async () => {
     if (!isPaid) {
       toast({
@@ -114,18 +193,6 @@ const QRCodeSummary = () => {
       }
     }
   };
-
-  if (isLoading || !qrCode) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 pt-24 pb-12">
-          <div>Loading...</div>
-        </div>
-      </Layout>
-    );
-  }
-
-  const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
   return (
     <Layout>

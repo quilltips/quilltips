@@ -88,7 +88,7 @@ serve(async (req) => {
               name: `QR Code for "${bookTitle || 'Book'}"`,
               description: 'One-time purchase for QR code generation',
             },
-            unit_amount: 999, // $9.99 in cents
+            unit_amount: 3500, // $35.00 in cents
           },
           quantity: 1,
         }];
@@ -98,7 +98,7 @@ serve(async (req) => {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${req.headers.get('origin')}/qr-summary?qr_code=${qrCodeId}`,
+      success_url: `${req.headers.get('origin')}/qr-summary?qr_code=${qrCodeId}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/author/dashboard`,
       metadata: {
         qrCodeId,

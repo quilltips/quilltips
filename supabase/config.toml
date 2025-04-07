@@ -1,36 +1,11 @@
 
-project_id = "qrawynczvedffcvnympn"
-
-[api]
-enabled = true
-port = 54321
-schemas = ["public", "storage", "graphql_public"]
-
-[db]
-port = 54322
-
-[studio]
-port = 54323
-
-[inbucket]
-port = 54324
-smtp_port = 54325
-pop3_port = 54326
-
-[storage]
-enabled = true
-
-[auth]
-enabled = true
-
-[realtime]
-enabled = true
-
-[analytics]
-enabled = true
-port = 54327
+# This file defines your Supabase project configuration.
+# It is used by Supabase CLI to support local development and CI/CD workflows.
+#
+# You can find more information on local development here:
+# https://supabase.com/docs/guides/getting-started/local-development
 
 [functions]
-[functions.send-email-notification]
-verify_jwt = false
 
+[functions.verify-stripe-session]
+verify_jwt = true
