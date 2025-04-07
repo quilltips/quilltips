@@ -71,7 +71,7 @@ export const AuthorQRCodesList = ({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-lg font-medium text-[#2D3748]">Quilltips Jars</h2>
+        <h2 className="text-lg font-medium text-[#2D3748]">Books</h2>
         {qrCodes && qrCodes.length > 0 && (
           <Button 
             variant="ghost" 
@@ -88,7 +88,7 @@ export const AuthorQRCodesList = ({
       {!qrCodes || qrCodes.length === 0 ? (
         <div className="space-y-5">
           <div className="text-center py-3 text-[#718096] text-sm">
-            You haven't created any Quilltips jars yet.
+            You haven't created any book QR codes yet.
           </div>
           
           <Button 
