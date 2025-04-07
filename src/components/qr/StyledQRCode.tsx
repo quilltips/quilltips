@@ -70,7 +70,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
 
         {/* Branding text - adjust width to fit on 3 lines or less */}
         {showBranding && (
-          <div className="text-center text-xs leading-tight text-muted-foreground max-w-[100px]">
+          <div className="text-center text-xs leading-tight text-muted-foreground max-w-[160px] mt-2">
             <div>Love this book? Tip & message the author with <span className="font-bold">Quilltips</span>!</div>
           </div>
         )}
