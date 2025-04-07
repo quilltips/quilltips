@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Share2, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { toPng, toSvg } from "html-to-image";
 import { QRCodeDownloadOptions } from "@/components/qr/QRCodeDownloadOptions";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +18,7 @@ const QRCodeSummary = () => {
   const sessionId = searchParams.get('session_id'); // Stripe checkout session ID
   const qrCodeRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [verificationAttempted, setVerificationAttempted] = useState(false);
 
   // Query to fetch QR code data
   const { data: qrCode, isLoading, refetch } = useQuery({
@@ -80,7 +81,8 @@ const QRCodeSummary = () => {
   // Check payment status when component loads with session_id parameter
   useEffect(() => {
     const verifyPayment = async () => {
-      if (sessionId && qrCode && !qrCode.is_paid) {
+      if (sessionId && qrCode && !qrCode.is_paid && !verificationAttempted) {
+        setVerificationAttempted(true);
         await updatePaymentStatus.mutateAsync();
       }
     };
@@ -88,7 +90,7 @@ const QRCodeSummary = () => {
     if (qrCode) {
       verifyPayment();
     }
-  }, [qrCode, sessionId, updatePaymentStatus]);
+  }, [qrCode, sessionId, updatePaymentStatus, verificationAttempted]);
 
   // Show loading state for both initial data fetch and payment verification
   if (isLoading || updatePaymentStatus.isPending) {

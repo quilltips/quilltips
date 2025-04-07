@@ -29,21 +29,34 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    // Retrieve the session from Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    
-    // Return the session data
-    return new Response(
-      JSON.stringify({ 
-        session: {
-          id: session.id,
-          payment_status: session.payment_status,
-          status: session.status,
-          metadata: session.metadata,
-        }
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
-    );
+    try {
+      // Retrieve the session from Stripe
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      
+      // Return the session data
+      return new Response(
+        JSON.stringify({ 
+          session: {
+            id: session.id,
+            payment_status: session.payment_status,
+            status: session.status,
+            metadata: session.metadata,
+          }
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+      );
+    } catch (stripeError) {
+      console.error('Stripe API error:', stripeError);
+      
+      if (stripeError.code === 'rate_limit') {
+        return new Response(
+          JSON.stringify({ error: 'Too many requests to Stripe API. Please try again later.' }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 429 }
+        );
+      }
+      
+      throw stripeError;
+    }
   } catch (error) {
     console.error('Error verifying Stripe session:', error);
     return new Response(
