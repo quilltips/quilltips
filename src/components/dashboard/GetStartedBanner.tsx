@@ -1,7 +1,8 @@
 
-import { X } from "lucide-react";
+import { X, HelpCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface GetStartedBannerProps {
   onClose: () => void;
@@ -40,6 +41,16 @@ export const GetStartedBanner = ({ onClose, hasStripeAccount }: GetStartedBanner
         >
           Edit profile
         </Button>
+      </div>
+
+      <div className="mt-4 text-center">
+        <Link 
+          to="/how-it-works" 
+          className="text-xs text-[#718096] hover:text-[#2D3748] flex items-center justify-center gap-1 underline"
+        >
+          <HelpCircle size={12} />
+          How does it work?
+        </Link>
       </div>
     </div>
   );

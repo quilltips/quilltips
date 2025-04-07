@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Loader2, Wallet } from "lucide-react";
@@ -106,7 +105,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       variant="outline"
       onClick={handleConnect}
       disabled={isConnecting}
-      className="w-full sm:w-auto"
+      className="w-full sm:w-auto flex items-center gap-2"
     >
       {isConnecting ? (
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -114,6 +113,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         <Wallet className="mr-2 h-4 w-4" />
       )}
       {stripeAccountId ? "Manage Payment Settings" : "Connect Bank Account"}
+      {stripeAccountId && <span className="text-xs text-muted-foreground">(Opens Stripe)</span>}
     </Button>
   );
 };

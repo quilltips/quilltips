@@ -15,20 +15,21 @@ interface StyledQRCodeProps {
 
 export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   value,
-  size = 160, // Increased from 120 (approx 35% larger)
+  size = 160,
   title,
   showBranding = true,
   className = "",
   blurred = false,
   isPaid = true,
 }, ref) => {
-  // Consider it as paid unless explicitly set to false
   const shouldBlur = isPaid === false || blurred;
   
-  console.log("StyledQRCode shouldBlur:", shouldBlur, "isPaid value:", isPaid); // Debug log
-  
   return (
-    <Card ref={ref} className={`bg-white p-4 rounded-lg ${className}`}>
+    <Card 
+      ref={ref} 
+      prominent 
+      className={`bg-white p-4 rounded-lg border-black border ${className}`}
+    >
       <div className="flex flex-col items-center space-y-3">
         <div className="relative">
           {/* QR Code */}

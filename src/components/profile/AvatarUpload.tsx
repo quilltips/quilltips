@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Loader2, AlertCircle, Edit, X } from "lucide-react";
+import { Loader2, AlertCircle, Edit } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -21,7 +20,6 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(avatarUrl);
   const { toast } = useToast();
 
-  // Define supported image formats
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -44,10 +42,8 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Reset previous error
     setError(null);
 
-    // Check file type
     if (!SUPPORTED_FORMATS.includes(file.type)) {
       setError(`Unsupported file type: ${file.type}. Please upload a JPG, PNG, GIF, WebP or SVG image.`);
       toast({
@@ -59,7 +55,6 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
       return;
     }
 
-    // Check file size
     if (file.size > MAX_FILE_SIZE) {
       setError(`File size too large: ${(file.size / (1024 * 1024)).toFixed(2)}MB. Maximum size is 5MB.`);
       toast({
@@ -87,7 +82,6 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
         .from('avatars')
         .getPublicUrl(filePath);
 
-      // Update the user's profile
       const { error: updateProfileError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
@@ -95,7 +89,6 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
 
       if (updateProfileError) throw updateProfileError;
       
-      // Also update the public profile
       const { error: updatePublicProfileError } = await supabase
         .from('public_profiles')
         .update({ avatar_url: publicUrl })
@@ -103,10 +96,8 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
 
       if (updatePublicProfileError) {
         console.warn("Failed to update public profile avatar:", updatePublicProfileError);
-        // Don't throw here - the main profile was updated successfully
       }
 
-      // Update the local state to show the new avatar immediately
       setCurrentAvatarUrl(publicUrl);
 
       toast({
@@ -133,7 +124,6 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
     setIsUploading(true);
     
     try {
-      // Update the user's profile to remove avatar_url
       const { error: updateProfileError } = await supabase
         .from('profiles')
         .update({ avatar_url: null })
@@ -141,7 +131,6 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
 
       if (updateProfileError) throw updateProfileError;
       
-      // Also update the public profile
       const { error: updatePublicProfileError } = await supabase
         .from('public_profiles')
         .update({ avatar_url: null })
@@ -151,7 +140,6 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
         console.warn("Failed to update public profile avatar:", updatePublicProfileError);
       }
 
-      // Update the local state
       setCurrentAvatarUrl(null);
 
       toast({
@@ -210,30 +198,6 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
             </Tooltip>
           </TooltipProvider>
         </div>
-        
-        {currentAvatarUrl && (
-          <div className="absolute -top-1 -right-1">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={handleRemoveAvatar}
-                    disabled={isUploading}
-                    className="rounded-full h-6 w-6"
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p>Remove profile picture</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        )}
       </div>
       
       <div className="text-center text-lg font-medium">
