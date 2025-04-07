@@ -25,8 +25,8 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
       className="overflow-hidden border border-gray-200 hover:border-gray-300 transition-all cursor-pointer"
       onClick={handleClick}
     >
-      <div className="p-3 flex items-center gap-2">
-        <div className="flex-shrink-0 w-10 h-10 bg-[#F0F0F0] rounded-md flex items-center justify-center">
+      <div className="p-2 flex items-center gap-1.5">
+        <div className="flex-shrink-0 w-8 h-8 bg-[#F0F0F0] rounded-md flex items-center justify-center">
           {qrCode.cover_image ? (
             <img
               src={qrCode.cover_image}
@@ -37,16 +37,16 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
             <img
               src="/lovable-uploads/quill_icon.png" 
               alt="Quilltips Logo"
-              className="h-4 w-4 object-contain"
+              className="h-3 w-3 object-contain"
             />
           )}
         </div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-[#2D3748] text-base truncate">{qrCode.book_title}</h3>
+          <h3 className="font-medium text-[#2D3748] text-xs truncate">{qrCode.book_title}</h3>
           
           {(qrCode.publisher || qrCode.isbn) && (
-            <div className="mt-0.5 text-xs text-[#718096]">
+            <div className="mt-0.5 text-[10px] text-[#718096]">
               {qrCode.publisher && (
                 <p className="truncate">Publisher: {qrCode.publisher}</p>
               )}

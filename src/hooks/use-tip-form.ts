@@ -17,6 +17,7 @@ export const useTipForm = ({ authorId, authorName, bookTitle, qrCodeId }: UseTip
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -39,7 +40,8 @@ export const useTipForm = ({ authorId, authorName, bookTitle, qrCodeId }: UseTip
         name, 
         email,
         bookTitle, 
-        qrCodeId 
+        qrCodeId,
+        isPrivate
       });
       
       const { data, error } = await supabase.functions.invoke('create-tip-checkout', {
@@ -51,6 +53,7 @@ export const useTipForm = ({ authorId, authorName, bookTitle, qrCodeId }: UseTip
           email,
           bookTitle,
           qrCodeId,
+          isPrivate,
         },
       });
 
@@ -100,6 +103,8 @@ export const useTipForm = ({ authorId, authorName, bookTitle, qrCodeId }: UseTip
     setName,
     email,
     setEmail,
+    isPrivate,
+    setIsPrivate,
     isLoading,
     handleSubmit,
     authorFirstName

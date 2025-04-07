@@ -38,7 +38,7 @@ export const BookCard = ({
   return (
     <Card className="overflow-hidden group cursor-pointer">
       <Link to={`/qr/${id}`} className="block">
-        <div className="h-24 relative">
+        <div className="h-16 relative">
           <img
             src={coverImage || "/lovable-uploads/quill_icon.png"}
             alt={title}
@@ -47,9 +47,9 @@ export const BookCard = ({
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
         
-        <div className="p-3 space-y-1">
+        <div className="p-2 space-y-0.5">
           <div>
-            <h3 className="font-semibold text-xs group-hover:text-primary transition-colors line-clamp-2">{title}</h3>
+            <h3 className="font-medium text-xs group-hover:text-primary transition-colors line-clamp-2">{title}</h3>
             <p className="text-xs text-muted-foreground">
               by{" "}
               <Link 
@@ -63,18 +63,18 @@ export const BookCard = ({
           </div>
 
           {(publisher || isbn || releaseDate) && (
-            <div className="space-y-0.5 text-xs text-muted-foreground">
-              {publisher && <p className="truncate text-[10px]">Publisher: {publisher}</p>}
-              {isbn && <p className="truncate text-[10px]">ISBN: {isbn}</p>}
+            <div className="space-y-0.5 text-[10px] text-muted-foreground">
+              {publisher && <p className="truncate">Publisher: {publisher}</p>}
+              {isbn && <p className="truncate">ISBN: {isbn}</p>}
               {releaseDate && (
-                <p className="truncate text-[10px]">Released: {new Date(releaseDate).toLocaleDateString()}</p>
+                <p className="truncate">Released: {new Date(releaseDate).toLocaleDateString()}</p>
               )}
             </div>
           )}
         </div>
       </Link>
 
-      <div className="p-2">
+      <div className="p-1 pt-0">
         <Button 
           onClick={(e) => {
             e.preventDefault(); // Prevent navigation when clicking the button

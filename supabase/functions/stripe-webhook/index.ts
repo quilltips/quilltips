@@ -1,3 +1,4 @@
+
 // supabase/functions/stripe-webhook/index.ts
 //@ts-nocheck
 export const config = {
