@@ -7,8 +7,10 @@ interface AuthorProfileHeaderProps {
 }
 
 export const AuthorProfileHeader = ({ author }: AuthorProfileHeaderProps) => {
-  // Extract year from created_at if available
-  const joinedYear = author.created_at ? new Date(author.created_at).getFullYear().toString() : undefined;
+  // Extract year from created_at if available, safely handling the optional property
+  const joinedYear = author.created_at && author.created_at.trim() !== '' 
+    ? new Date(author.created_at).getFullYear().toString() 
+    : undefined;
   
   return (
     <AuthorPublicProfileView

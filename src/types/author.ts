@@ -19,6 +19,7 @@ export interface AuthorProfile {
   avatar_url: string | null;
   social_links: SocialLink[] | null;
   role: string;
+  created_at?: string; // Added the created_at field as optional
 }
 
 export interface DatabaseProfile {
