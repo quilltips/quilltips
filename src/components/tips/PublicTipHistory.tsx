@@ -6,7 +6,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { MessageSquare, ThumbsUp } from "lucide-react";
 import { useAuth } from "../auth/AuthProvider";
 import { useState } from "react";
-import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,7 +21,14 @@ interface PublicTip {
   amount: number;
   reader_name: string | null;
   reader_avatar_url: string | null;
-  is_private: boolean;
+  is_private: boolean | null;
+}
+
+interface TipLike {
+  id: string;
+  tip_id: string;
+  author_id: string;
+  created_at: string;
 }
 
 export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
@@ -32,24 +38,27 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
   const { data: tips, isLoading } = useQuery({
     queryKey: ['public-tips', qrCodeId],
     queryFn: async () => {
-      // Cast the response type to handle the type issue with the new table
-      const { data, error } = await supabase
-        .from('public_tips')
-        .select(`
-          id,
-          created_at,
-          message,
-          amount,
-          reader_name,
-          reader_avatar_url,
-          is_private
-        `)
-        .eq('qr_code_id', qrCodeId)
-        .eq('is_private', false) // Only show non-private tips
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('public_tips')
+          .select(`
+            id,
+            created_at,
+            message,
+            amount,
+            reader_name,
+            reader_avatar_url,
+            is_private
+          `)
+          .eq('qr_code_id', qrCodeId)
+          .eq('is_private', false); // Only show non-private tips
 
-      if (error) throw error;
-      return data as PublicTip[];
+        if (error) throw error;
+        return (data || []) as PublicTip[];
+      } catch (error) {
+        console.error('Error fetching public tips:', error);
+        return [] as PublicTip[];
+      }
     }
   });
 
@@ -57,16 +66,18 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
     queryKey: ['public-tip-likes', qrCodeId],
     queryFn: async () => {
       try {
+        if (!tips || tips.length === 0) return [];
+        
         const { data, error } = await supabase
           .from('tip_likes')
           .select('*')
-          .in('tip_id', tips?.map(tip => tip.id) || []);
+          .in('tip_id', tips.map(tip => tip.id));
           
         if (error) throw error;
-        return data || [];
+        return data as TipLike[] || [];
       } catch (error) {
         console.error('Error fetching likes:', error);
-        return [];
+        return [] as TipLike[];
       }
     },
     enabled: !!tips?.length,
