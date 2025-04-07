@@ -16,6 +16,7 @@ interface AuthorPublicProfileProps {
   imageUrl: string;
   socialLinks?: SocialLink[];
   authorId: string;
+  joinedDate?: string;
 }
 
 const getFirstName = (fullName: string): string => {
@@ -36,7 +37,8 @@ export const AuthorPublicProfileView = ({
   bio,
   imageUrl,
   socialLinks = [],
-  authorId
+  authorId,
+  joinedDate
 }: AuthorPublicProfileProps) => {
   const [showTipDialog, setShowTipDialog] = useState(false);
   const firstName = getFirstName(name);
@@ -59,22 +61,26 @@ export const AuthorPublicProfileView = ({
         
         <h1 className="text-2xl font-semibold text-[#2D3748] mb-2">{name}</h1>
         
-        {/* Bio Section - Moved up from About section */}
+        {/* Joined date */}
+        {joinedDate && (
+          <p className="text-sm text-[#718096] mb-4">
+            joined in {joinedDate}
+          </p>
+        )}
+        
+        {/* Bio Section - Moved up from About section but without the button */}
         {bio && (
-          <div className="mt-4 mb-6 max-w-md">
-            <div className="inline-block bg-[#19363C] text-white py-1 px-4 rounded-full mb-3">
-              Bio
-            </div>
+          <div className="mt-2 mb-6 max-w-md">
             <p className="text-[#718096]">{bio}</p>
           </div>
         )}
       </div>
 
-      {/* Links Section - Previously part of About section */}
+      {/* Links Section - Changed title from "Connect with" to "Links" */}
       {socialLinks.length > 0 && (
         <Card className="mb-8 border border-black shadow-sm rounded-lg overflow-hidden" prominent>
           <CardHeader>
-            <CardTitle className="text-xl text-[#2D3748]">Connect with {firstName}</CardTitle>
+            <CardTitle className="text-xl text-[#2D3748]">Links</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">

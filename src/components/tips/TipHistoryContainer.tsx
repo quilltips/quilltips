@@ -5,7 +5,6 @@ import { TipDetailsDialog } from "../TipDetailsDialog";
 import { useTipHistory } from "@/hooks/use-tip-history";
 import { TipHistoryHeader } from "./TipHistoryHeader";
 import { LoadingSpinner } from "../ui/loading-spinner";
-import { Separator } from "../ui/separator";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
@@ -93,7 +92,7 @@ export const TipHistoryContainer = ({
         </>
       ) : (
         <div className="text-center py-4 text-[#718096] text-sm">
-          No tips yet. Share your QR codes to start receiving tips!
+          No tips yet.
         </div>
       )}
 

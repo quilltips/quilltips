@@ -7,6 +7,9 @@ interface AuthorProfileHeaderProps {
 }
 
 export const AuthorProfileHeader = ({ author }: AuthorProfileHeaderProps) => {
+  // Extract year from created_at if available
+  const joinedYear = author.created_at ? new Date(author.created_at).getFullYear().toString() : undefined;
+  
   return (
     <AuthorPublicProfileView
       name={author.name || 'Anonymous Author'}
@@ -14,6 +17,7 @@ export const AuthorProfileHeader = ({ author }: AuthorProfileHeaderProps) => {
       imageUrl={author.avatar_url || "/placeholder.svg"}
       authorId={author.id}
       socialLinks={author.social_links || []}
+      joinedDate={joinedYear}
     />
   );
 };
