@@ -375,6 +375,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      test_pg_net_extension: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       update_public_profile: {
         Args: {
           profile_id: string

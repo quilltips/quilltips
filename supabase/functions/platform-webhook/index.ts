@@ -67,7 +67,8 @@ serve(async (req) => {
           // Update the tip record with completed status
           const { data, error } = await supabase.from("tips")
             .update({
-              status: "complete" // This will trigger the database email notification
+              status: "complete", // This will trigger the database email notification
+              reader_email: readerEmail || null
             })
             .eq("stripe_session_id", session.id)
             .select();
