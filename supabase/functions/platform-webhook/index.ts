@@ -65,7 +65,7 @@ serve(async (req) => {
           console.log("📧 Reader email from platform session:", readerEmail);
           
           // Update the tip record with completed status
-          const { data, error } = await supabase.from("tips")
+          const { data: tipData, error: tipError } = await supabase.from("tips")
             .update({
               status: "complete", // This will trigger the database email notification
               reader_email: readerEmail || null
@@ -73,30 +73,59 @@ serve(async (req) => {
             .eq("stripe_session_id", session.id)
             .select();
           
-          if (error) {
-            console.error("❌ Error updating tip record:", error);
-            throw error;
+          if (tipError) {
+            console.error("❌ Error updating tip record:", tipError);
+            throw tipError;
           }
           
-          console.log("✅ Platform tip record updated successfully:", data);
+          console.log("✅ Platform tip record updated successfully:", tipData);
+          
+          // Directly call the email notification function instead of relying on database trigger
+          if (tipData && tipData.length > 0) {
+            const tip = tipData[0];
+            try {
+              await sendEmailNotification('tip_received', tip.author_id, {
+                amount: tip.amount,
+                bookTitle: tip.book_title || 'your book',
+                message: tip.message
+              });
+              console.log("📧 Email notification sent successfully");
+            } catch (emailError) {
+              console.error("❌ Failed to send email notification:", emailError);
+              // Continue processing - don't fail the webhook just because email failed
+            }
+          }
         }
         
         if (session.metadata?.type === "qr_code_purchase") {
           console.log("🔍 Processing platform-level QR code purchase");
-          const { data: qrCode, error } = await supabase.from("qr_codes")
+          const { data: qrCode, error: qrError } = await supabase.from("qr_codes")
             .update({
               qr_code_status: "active",
-              is_paid: true // This will trigger the database email notification
+              is_paid: true
             })
             .eq("id", session.metadata.qrCodeId)
             .select("author_id, book_title");
             
-          if (error) {
-            console.error("❌ Error updating QR code record:", error);
-            throw error;
+          if (qrError) {
+            console.error("❌ Error updating QR code record:", qrError);
+            throw qrError;
           }
           
           console.log("✅ Platform QR code updated to active status");
+          
+          // Directly call the email notification function
+          if (qrCode && qrCode.length > 0) {
+            try {
+              await sendEmailNotification('qr_code_purchased', qrCode[0].author_id, {
+                bookTitle: qrCode[0].book_title
+              });
+              console.log("📧 QR code purchase email notification sent successfully");
+            } catch (emailError) {
+              console.error("❌ Failed to send QR code purchase email notification:", emailError);
+              // Continue processing - don't fail the webhook just because email failed
+            }
+          }
         }
         break;
       }
@@ -128,6 +157,34 @@ serve(async (req) => {
     });
   }
 });
+
+// Helper function to directly call the send-email-notification edge function
+async function sendEmailNotification(type, userId, data = {}) {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") || '';
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || '';
+  
+  console.log(`📧 Sending ${type} notification for user ${userId}`);
+  
+  const response = await fetch(`${supabaseUrl}/functions/v1/send-email-notification`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${anonKey}`
+    },
+    body: JSON.stringify({
+      type,
+      userId,
+      data
+    })
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to send email notification: ${response.status} ${errorText}`);
+  }
+  
+  return await response.json();
+}
 
 async function parseStripeEvent(payload, sig, secret) {
   const header = parseSigHeader(sig);
