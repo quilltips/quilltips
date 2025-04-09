@@ -3,49 +3,61 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { MessageSquare, ThumbsUp } from "lucide-react";
+import { LoadingSpinner } from "../ui/loading-spinner";
 
-interface PublicTipHistoryProps {
-  qrCodeId: string;
+interface AuthorPublicTipFeedProps {
+  authorId: string;
+  limit?: number;
 }
 
-// Define a type for the public tip data
 interface PublicTip {
   id: string;
   created_at: string;
   message: string | null;
-  amount: number;
   reader_name: string | null;
   reader_avatar_url: string | null;
+  qr_code_id: string | null;
 }
 
-export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
+export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeedProps) => {
   const { data: tips, isLoading } = useQuery({
-    queryKey: ['public-tips', qrCodeId],
+    queryKey: ['author-public-tips', authorId],
     queryFn: async () => {
-      // Cast the response type to handle the type issue with the new table
-      const { data, error } = await supabase
+      // First, get all QR codes for this author
+      const { data: qrCodes, error: qrError } = await supabase
+        .from('qr_codes')
+        .select('id')
+        .eq('author_id', authorId);
+      
+      if (qrError) throw qrError;
+      if (!qrCodes || qrCodes.length === 0) return [];
+      
+      const qrCodeIds = qrCodes.map(qr => qr.id);
+      
+      // Then get all public tips for these QR codes
+      const { data: tipsData, error: tipsError } = await supabase
         .from('public_tips')
         .select(`
           id,
           created_at,
           message,
-          amount,
           reader_name,
-          reader_avatar_url
+          reader_avatar_url,
+          qr_code_id
         `)
-        .eq('qr_code_id', qrCodeId)
-        .order('created_at', { ascending: false });
+        .in('qr_code_id', qrCodeIds)
+        .order('created_at', { ascending: false })
+        .limit(limit || 5);
 
-      if (error) throw error;
-      return data as PublicTip[];
+      if (tipsError) throw tipsError;
+      return tipsData as PublicTip[];
     }
   });
 
   if (isLoading) {
     return (
       <div className="flex justify-center p-6">
-        <div className="animate-spin w-6 h-6 border-2 border-primary rounded-full border-t-transparent" />
+        <LoadingSpinner />
       </div>
     );
   }
@@ -54,7 +66,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
     return (
       <div className="text-center py-8">
         <p className="text-muted-foreground">
-          No tips yet. Be the first to leave a tip!
+          No tips yet.
         </p>
       </div>
     );
@@ -67,7 +79,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
         const readerFirstName = tip.reader_name 
           ? tip.reader_name.split(' ')[0] 
           : "Someone";
-          
+        
         return (
           <div key={tip.id} className="space-y-4">
             <div className="flex items-start gap-3">
@@ -79,26 +91,16 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
               </Avatar>
               <div className="flex-1">
                 <div className="space-y-1">
-                  <div className="flex justify-between items-baseline">
-                    <p className="font-medium">
-                      {readerFirstName} sent some love
-                      {/* We've removed the amount display as requested */}
-                    </p>
-                  </div>
+                  <p className="font-medium">
+                    {readerFirstName} sent some love
+                    {/* We've removed the amount display as requested */}
+                  </p>
                   {tip.message && (
                     <p className="text-muted-foreground">"{tip.message}"</p>
                   )}
                   <p className="text-sm text-muted-foreground">
                     {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
                   </p>
-                </div>
-                <div className="flex gap-4 mt-3">
-                  <button className="flex items-center text-muted-foreground hover:text-foreground">
-                    <ThumbsUp className="h-5 w-5 mr-1" />
-                  </button>
-                  <button className="flex items-center text-muted-foreground hover:text-foreground">
-                    <MessageSquare className="h-5 w-5 mr-1" />
-                  </button>
                 </div>
               </div>
             </div>

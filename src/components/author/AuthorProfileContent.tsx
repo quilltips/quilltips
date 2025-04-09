@@ -1,7 +1,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
-import { TipHistory } from "@/components/TipHistory";
+import { AuthorPublicTipFeed } from "@/components/tips/AuthorPublicTipFeed";
 
 interface AuthorProfileContentProps {
   authorId: string;
@@ -29,7 +29,7 @@ export const AuthorProfileContent = ({
           <CardTitle className="text-xl text-[#2D3748]">Tip feed</CardTitle>
         </CardHeader>
         <CardContent>
-          <TipHistory authorId={authorId} authorName={authorName} isDashboard={false} showHeader={false} />
+          <AuthorPublicTipFeed authorId={authorId} />
         </CardContent>
       </Card>
     </div>;
