@@ -31,14 +31,14 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
       className={`w-[240px] h-[360px] bg-white px-4 py-12 rounded-xl border border-black flex flex-col items-center justify-start ${className}`}
     >
       <div className="flex flex-col items-center gap-2">
-        <div className="relative rounded-lg p-2">
+        <div className="relative rounded-lg">
           {/* QR Code */}
           <QRCodeCanvas
             value={value}
             size={size}
             level="H"
             includeMargin
-            bgColor="#ffffff"
+            bgColor="#transparent"
             fgColor="#000000"
             className="mx-auto rounded"
           />
