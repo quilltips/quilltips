@@ -1,3 +1,4 @@
+
 import {
   Body,
   Button,
@@ -32,7 +33,7 @@ export const QuilltipsEmail = ({
       <Container style={container}>
         <Section style={box}>
           <Img
-            src={`${baseUrl}/lovable-uploads/quilltip-logo-email.png`}
+            src={`${baseUrl}/lovable-uploads/quill_icon.png`}
             width="60"
             alt="Quilltips Logo"
             style={{ borderRadius: '8px', marginBottom: '12px' }}
