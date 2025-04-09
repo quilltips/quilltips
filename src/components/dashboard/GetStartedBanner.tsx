@@ -1,15 +1,17 @@
 
-import { X, HelpCircle } from "lucide-react";
+import { X, HelpCircle, AlertTriangle } from "lucide-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { Alert, AlertDescription } from "../ui/alert";
 
 interface GetStartedBannerProps {
   onClose: () => void;
   hasStripeAccount: boolean;
+  stripeSetupComplete: boolean;
 }
 
-export const GetStartedBanner = ({ onClose, hasStripeAccount }: GetStartedBannerProps) => {
+export const GetStartedBanner = ({ onClose, hasStripeAccount, stripeSetupComplete }: GetStartedBannerProps) => {
   const navigate = useNavigate();
 
   return (
@@ -26,6 +28,15 @@ export const GetStartedBanner = ({ onClose, hasStripeAccount }: GetStartedBanner
         <h2 className="text-xl font-semibold text-[#2D3748] mb-1">Get started</h2>
       </div>
       
+      {hasStripeAccount && !stripeSetupComplete && (
+        <Alert className="mb-4 bg-amber-50 border-amber-200">
+          <AlertTriangle className="h-4 w-4 text-amber-500" />
+          <AlertDescription className="text-amber-700">
+            Your Stripe account setup is incomplete. Please complete your account setup to receive payments.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <div className="flex flex-col sm:flex-row gap-4">
         <Button 
           onClick={() => navigate('/author/bank-account')}
@@ -41,16 +52,14 @@ export const GetStartedBanner = ({ onClose, hasStripeAccount }: GetStartedBanner
         >
           Edit profile
         </Button>
-      </div>
 
-      <div className="mt-4 text-center">
-        <Link 
-          to="/how-it-works" 
-          className="text-xs text-[#718096] hover:text-[#2D3748] flex items-center justify-center gap-1 underline"
+        <Button 
+          onClick={() => navigate('/how-it-works')}
+          variant="outline" 
+          className="w-full sm:w-auto px-6 py-2 h-auto border-[#2D3748] text-[#2D3748] hover:bg-[#2D3748]/5 font-medium text-base"
         >
-          <HelpCircle size={12} />
           How does it work?
-        </Link>
+        </Button>
       </div>
     </div>
   );

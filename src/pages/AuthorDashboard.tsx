@@ -51,6 +51,13 @@ const AuthorDashboard = () => {
 
   // Extract first name for welcome message
   const authorFirstName = profile?.name?.split(' ')[0] || '';
+  
+  // Check if Stripe account is complete
+  const hasStripeAccount = !!profile?.stripe_account_id;
+  const stripeSetupComplete = !!profile?.stripe_setup_complete;
+  
+  // Determine if the Get Started banner should show
+  const shouldShowBanner = showGetStarted && (!hasStripeAccount || !stripeSetupComplete);
 
   if (isLoading) {
     return (
@@ -76,10 +83,11 @@ const AuthorDashboard = () => {
               <p className="text-[#4A5568] text-lg">Helping authors get paid</p>
             </div>
 
-            {showGetStarted && (
+            {shouldShowBanner && (
               <GetStartedBanner 
                 onClose={() => setShowGetStarted(false)} 
-                hasStripeAccount={!!profile.stripe_account_id}
+                hasStripeAccount={hasStripeAccount}
+                stripeSetupComplete={stripeSetupComplete}
               />
             )}
 
