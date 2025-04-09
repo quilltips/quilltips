@@ -57,7 +57,7 @@ serve(async (req)=>{
             // Update the tip record with completed status and ensure reader email is saved
             const { data, error } = await supabase.from("tips")
               .update({
-                status: "complete", // This will trigger the database email notification
+                status: "complete",
                 reader_email: readerEmail || null
               })
               .eq("stripe_session_id", session.id)
@@ -69,14 +69,29 @@ serve(async (req)=>{
             }
             
             console.log("✅ Tip record updated successfully:", data);
-            // Email notification now handled by database trigger
+            
+            // Send email notification directly instead of relying on database trigger
+            if (data && data.length > 0) {
+              const tip = data[0];
+              try {
+                await sendEmailNotification('tip_received', tip.author_id, {
+                  amount: tip.amount,
+                  bookTitle: tip.book_title || 'your book',
+                  message: tip.message
+                });
+                console.log("📧 Tip received email notification sent successfully");
+              } catch (emailError) {
+                console.error("❌ Failed to send tip received email notification:", emailError);
+                // Continue processing - don't fail the webhook just because email failed
+              }
+            }
           }
           
           if (session.metadata?.type === "qr_code_purchase") {
             const { data: qrCode, error } = await supabase.from("qr_codes")
               .update({
                 qr_code_status: "active",
-                is_paid: true // This will trigger the database email notification
+                is_paid: true
               })
               .eq("id", session.metadata.qrCodeId)
               .select("author_id, book_title");
@@ -84,7 +99,19 @@ serve(async (req)=>{
             if (error) throw error;
             
             console.log("✅ QR code updated to active status");
-            // Email notification now handled by database trigger
+            
+            // Send email notification directly
+            if (qrCode && qrCode.length > 0) {
+              try {
+                await sendEmailNotification('qr_code_purchased', qrCode[0].author_id, {
+                  bookTitle: qrCode[0].book_title
+                });
+                console.log("📧 QR code purchase email notification sent successfully");
+              } catch (emailError) {
+                console.error("❌ Failed to send QR code purchase email notification:", emailError);
+                // Continue processing - don't fail the webhook just because email failed
+              }
+            }
           }
           break;
         }
@@ -99,7 +126,20 @@ serve(async (req)=>{
             
             if (error) throw error;
             console.log("✅ Profile updated with Stripe status:", profile);
-            // Email notification now handled by database trigger
+            
+            // Send email notification based on stripe setup status
+            if (profile && profile.length > 0) {
+              try {
+                const notificationType = account.payouts_enabled && account.details_submitted
+                  ? 'stripe_setup_complete'
+                  : 'stripe_setup_incomplete';
+                
+                await sendEmailNotification(notificationType, account.metadata.supabaseUserId, {});
+                console.log(`📧 ${notificationType} email notification sent successfully`);
+              } catch (emailError) {
+                console.error(`❌ Failed to send stripe setup email notification:`, emailError);
+              }
+            }
           } else {
             const { data: profiles, error: findError } = await supabase.from("profiles").select("id").eq("stripe_account_id", account.id);
             if (findError) throw findError;
@@ -111,7 +151,20 @@ serve(async (req)=>{
               
               if (updateError) throw updateError;
               console.log("✅ Profile updated via stripe_account_id lookup");
-              // Email notification now handled by database trigger
+              
+              // Send email notification for each profile found
+              for (const profile of profiles) {
+                try {
+                  const notificationType = account.payouts_enabled && account.details_submitted
+                    ? 'stripe_setup_complete'
+                    : 'stripe_setup_incomplete';
+                  
+                  await sendEmailNotification(notificationType, profile.id, {});
+                  console.log(`📧 ${notificationType} email notification sent successfully for user ${profile.id}`);
+                } catch (emailError) {
+                  console.error(`❌ Failed to send stripe setup email notification:`, emailError);
+                }
+              }
             }
           }
           break;
@@ -142,6 +195,34 @@ serve(async (req)=>{
   }
 });
 
+// Helper function to directly call the send-email-notification edge function
+async function sendEmailNotification(type, userId, data = {}) {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") || '';
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || '';
+  
+  console.log(`📧 Sending ${type} notification for user ${userId}`);
+  
+  const response = await fetch(`${supabaseUrl}/functions/v1/send-email-notification`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${anonKey}`
+    },
+    body: JSON.stringify({
+      type,
+      userId,
+      data
+    })
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to send email notification: ${response.status} ${errorText}`);
+  }
+  
+  return await response.json();
+}
+
 async function parseStripeEvent(payload, sig, secret) {
   const header = parseSigHeader(sig);
   const expectedSig = await computeSignature(payload, secret, header.timestamp);
@@ -168,9 +249,7 @@ async function computeSignature(payload, secret, timestamp) {
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), {
     name: "HMAC",
     hash: "SHA-256"
-  }, false, [
-    "sign"
-  ]);
+  }, false, ["sign"]);
   const sigBuffer = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(data));
   return Array.from(new Uint8Array(sigBuffer)).map((b)=>b.toString(16).padStart(2, "0")).join("");
 }

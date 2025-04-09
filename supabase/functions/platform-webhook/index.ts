@@ -89,7 +89,7 @@ serve(async (req) => {
                 bookTitle: tip.book_title || 'your book',
                 message: tip.message
               });
-              console.log("📧 Email notification sent successfully");
+              console.log("📧 Email notification sent successfully for tip_received");
             } catch (emailError) {
               console.error("❌ Failed to send email notification:", emailError);
               // Continue processing - don't fail the webhook just because email failed

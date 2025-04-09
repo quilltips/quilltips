@@ -6,5 +6,8 @@ app_version = "0.0.1"
 host = "https://qrawynczvedffcvnympn.supabase.co" 
 service_role_key = "YOUR-SERVICE-ROLE-KEY" # Don't worry about filling this in
 
+[functions.account-created-listener]
+verify_jwt = false
+
 [[fetch.release]]
 uri = "https://api.uniqode.com/v2/"
