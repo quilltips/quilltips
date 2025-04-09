@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
@@ -7,12 +6,14 @@ import { Layout } from "@/components/Layout";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-
 const Index = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const {
+    user
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-
   const handleCreateQRCode = () => {
     if (!user) {
       // Redirect to login page instead of showing an error
@@ -21,7 +22,6 @@ const Index = () => {
     }
     navigate("/author/create-qr");
   };
-
   return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
         {/* Hero Section */}
@@ -191,15 +191,10 @@ const Index = () => {
         <div className="max-w-4xl mx-auto mt-24 text-center space-y-8 animate-enter py-[75px]">
           <div className="space-y-4">
             <h2 className="text-4xl font-playfair font-medium">Ready to get started?</h2>
-            <h3 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
-              Create an account to connect with readers and collect tips!
-            </h3>
+            <h3 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">Create an account to connect with readers and earn tips!</h3>
           </div>
           <RouterLink to="/author/register">
-            <Button 
-              size="lg" 
-              className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]"
-            >
+            <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]">
               Create an account
             </Button>
           </RouterLink>
@@ -208,4 +203,3 @@ const Index = () => {
     </Layout>;
 };
 export default Index;
-
