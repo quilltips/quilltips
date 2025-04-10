@@ -12,8 +12,9 @@ import { Card } from "./ui/card";
 import { TipCommentForm } from "./tips/TipCommentForm";
 import { formatDistanceToNow } from "date-fns";
 import { Separator } from "./ui/separator";
-import { TipInteractionButtons } from "./tips/TipInteractionButtons";
+import { MessageCircle } from "lucide-react";
 import { useAuth } from "./auth/AuthProvider";
+import { Button } from "./ui/button";
 
 interface TipDetailsDialogProps {
   isOpen: boolean;
@@ -50,28 +51,9 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
     enabled: !!tip?.id,
   });
 
-  // Fetch likes for this tip
-  const { data: likes = [] } = useQuery({
-    queryKey: ['tip_likes', tip?.id],
-    queryFn: async () => {
-      if (!tip?.id) return [];
-      const { data, error } = await supabase
-        .from('tip_likes')
-        .select('*')
-        .eq('tip_id', tip.id);
-        
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!tip?.id,
-  });
-
-  // Check if the current user has liked this tip
-  const isLiked = user ? likes.some(like => like.author_id === user.id) : false;
-  const likeCount = likes.length;
-  const commentCount = comments.length;
-
   if (!tip) return null;
+
+  const commentCount = comments.length;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -107,13 +89,14 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
             )}
             
             <div className="pt-2">
-              <TipInteractionButtons
-                tipId={tip.id}
-                authorId={user?.id || tip.author_id}
-                isLiked={isLiked}
-                likeCount={likeCount}
-                commentCount={commentCount}
-              />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                <MessageCircle className="h-4 w-4 fill-[#19363C]/10 stroke-[#19363C]" />
+                <span>{commentCount}</span>
+              </Button>
             </div>
           </Card>
           

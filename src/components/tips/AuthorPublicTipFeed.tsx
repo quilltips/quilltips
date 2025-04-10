@@ -4,10 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { LoadingSpinner } from "../ui/loading-spinner";
-import { TipInteractionButtons } from "./TipInteractionButtons";
 import { useState } from "react";
 import { TipDetailsDialog } from "../TipDetailsDialog";
 import { useAuth } from "../auth/AuthProvider";
+import { PublicTipCommentButton } from "./PublicTipCommentButton";
 
 interface AuthorPublicTipFeedProps {
   authorId: string;
@@ -73,18 +73,6 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
     }
   });
 
-  const { data: likes = [] } = useQuery({
-    queryKey: ['public-tip-likes'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tip_likes')
-        .select('*');
-        
-      if (error) throw error;
-      return data || [];
-    }
-  });
-
   const { data: comments = [] } = useQuery({
     queryKey: ['public-tip-comments'],
     queryFn: async () => {
@@ -123,14 +111,8 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
           ? tip.reader_name.split(' ')[0] 
           : "Someone";
         
-        // Find like and comment counts
-        const likeCount = likes.filter(like => like.tip_id === tip.id).length;
+        // Find comment count
         const commentCount = comments.filter(comment => comment.tip_id === tip.id).length;
-        
-        // Check if current user has liked this tip
-        const isLiked = user ? likes.some(like => 
-          like.tip_id === tip.id && like.author_id === user.id
-        ) : false;
         
         return (
           <div key={tip.id} className="space-y-4">
@@ -156,13 +138,9 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
                 </div>
                 
                 <div className="mt-2">
-                  <TipInteractionButtons 
-                    tipId={tip.id}
-                    authorId={user?.id || authorId}
-                    isLiked={isLiked}
-                    likeCount={likeCount}
+                  <PublicTipCommentButton 
                     commentCount={commentCount}
-                    onCommentClick={() => setSelectedTip({
+                    onClick={() => setSelectedTip({
                       ...tip,
                       author_id: authorId,
                       book_title: tip.book_title || "Unknown book" // Ensure book_title is not null
