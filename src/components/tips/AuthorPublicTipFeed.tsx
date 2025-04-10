@@ -74,11 +74,11 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
   });
 
   const { data: comments = [] } = useQuery({
-    queryKey: ['public-tip-comments'],
+    queryKey: ['public-tip-comments', authorId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tip_comments')
-        .select('*');
+        .select('*, profiles(name, avatar_url)');
         
       if (error) throw error;
       return data || [];

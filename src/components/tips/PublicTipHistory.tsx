@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
@@ -13,7 +12,6 @@ interface PublicTipHistoryProps {
   qrCodeId: string;
 }
 
-// Define a type for the public tip data
 interface PublicTip {
   id: string;
   created_at: string;
@@ -45,7 +43,6 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
   const { data: tips, isLoading } = useQuery({
     queryKey: ['public-tips', qrCodeId],
     queryFn: async () => {
-      // Cast the response type to handle the type issue with the new table
       const { data, error } = await supabase
         .from('public_tips')
         .select(`
@@ -60,7 +57,6 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      // Add book title to each tip
       return (data || []).map(tip => ({
         ...tip,
         book_title: book?.book_title
@@ -74,7 +70,8 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tip_comments')
-        .select('*');
+        .select('*, profiles(name, avatar_url)')
+        .eq('tip_id', qrCodeId);
         
       if (error) throw error;
       return data || [];
@@ -102,12 +99,10 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
   return (
     <div className="space-y-6">
       {tips.map((tip) => {
-        // Extract first name from reader_name for privacy
         const readerFirstName = tip.reader_name 
           ? tip.reader_name.split(' ')[0] 
           : "Someone";
         
-        // Find comment count
         const commentCount = comments.filter(comment => comment.tip_id === tip.id).length;
         
         return (
@@ -139,7 +134,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
                     onClick={() => setSelectedTip({
                       ...tip,
                       author_id: book?.author_id || '',
-                      book_title: tip.book_title || "Unknown book" // Ensure book_title is not null
+                      book_title: tip.book_title || "Unknown book"
                     })}
                   />
                 </div>
