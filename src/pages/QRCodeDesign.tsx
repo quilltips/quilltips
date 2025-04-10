@@ -43,21 +43,10 @@ const QRCodeDesign = () => {
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Success Message with Book Title */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">Success!</h1>
-            <p className="text-xl">
-              <span className="font-normal">Your QR code for </span>
-              <span className="font-bold text-[#FFD166] underline decoration-2 underline-offset-4">
-                {qrCodeData.book_title}
-              </span>
-              <span className="font-normal"> is ready for download</span>
-            </p>
-          </div>
-          
-          {/* Centered Book Cover Image with placeholder fallback */}
-          <div className="flex flex-col items-center justify-center">
-            <div className="w-[200px] h-[280px] bg-gray-50 rounded-md shadow-sm flex items-center justify-center overflow-hidden">
+         
+           {/* Centered Book Cover Image with placeholder fallback */}
+           <div className="flex flex-col items-center justify-center">
+            <div className="w-[150px] h-[180px] bg-transparent rounded-md flex items-center justify-center overflow-hidden">
               {qrCodeData.cover_image ? (
                 <img
                   src={qrCodeData.cover_image}
@@ -68,12 +57,25 @@ const QRCodeDesign = () => {
                 <img
                   src="/lovable-uploads/quill_icon.png"
                   alt="Quilltips Logo"
-                  className="w-24 h-24 object-contain opacity-60"
+                  className="w-20 h-20 object-contain opacity-90"
                 />
               )}
             </div>
-            <h2 className="text-xl font-medium text-center mt-4">{qrCodeData.book_title}</h2>
           </div>
+          
+          {/* Success Message with Book Title */}
+          <div className="bg-[#FFD166] text-black rounded-lg p-8 shadow-lg">
+  <div className="flex flex-col justify-center items-center text-center min-h-[100px]">
+    <h2 className="text-2xl font-normal">
+      Success! Your QR code for "
+      <span className="font-bold text-[#19363C] underline underline-offset-4 decoration-2">
+        {qrCodeData.book_title}
+      </span>
+      " is ready for download
+    </h2>
+  </div>
+</div>
+        
           
           {/* Banner Section with improved book details */}
           <div className="bg-[#19363C] text-white rounded-lg p-8 shadow-lg">
