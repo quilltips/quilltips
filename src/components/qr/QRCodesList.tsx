@@ -66,7 +66,7 @@ export const QRCodesList = ({ authorId }: QRCodesListProps) => {
     return (
       <div className="space-y-8">
         <div className="text-center py-4 text-[#718096]">
-          You haven't created any QR codes yet.
+          You haven't created any Quilltips Jars yet.
         </div>
         
         <div className="flex justify-center">

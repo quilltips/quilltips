@@ -70,7 +70,7 @@ const BookQRCodesPage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-              <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Book QR Codes</h1>
+              <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Quilltips Jars</h1>
               <Button 
                 onClick={() => navigate('/author/create-qr')} 
                 className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium md:hidden"
