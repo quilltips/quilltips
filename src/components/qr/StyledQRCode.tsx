@@ -28,7 +28,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
     <Card
       ref={ref}
       prominent
-      className={`w-[240px] h-[360px] bg-white px-4 py-12 rounded-xl border border-black flex flex-col items-center justify-start ${className}`}
+      className={`w-[240px] h-[340px] bg-white px-4 py-3 rounded-xl border border-black flex flex-col items-center justify-start ${className}`}
     >
       <div className="flex flex-col items-center gap-2">
         <div className="relative rounded-lg p-2">
@@ -46,7 +46,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           {/* Logo overlay */}
           {showBranding && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white rounded-full p-1 w-[18%] h-[18%] flex items-center justify-center">
+              <div className="bg-white rounded-full p-2 w-[18%] h-[18%] flex items-center justify-center">
                 <img
                   src="/lovable-uploads/quill_icon.png"
                   alt="Quilltips Logo"
@@ -70,7 +70,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
 
         {/* Branding text */}
         {showBranding && (
-          <div className="text-center text-sm leading-tight text-muted-foreground px-1 max-w-[200px]">
+          <div className="font-playfair text-center text-sm leading-normal text-muted-foreground px-1 max-w-[200px]">
             <div>
               Love this book? Tip & message the author with <span className="font-bold">Quilltips</span>!
             </div>
