@@ -3,7 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { MessageSquare, ThumbsUp } from "lucide-react";
+import { TipInteractionButtons } from "./TipInteractionButtons";
+import { useState } from "react";
+import { TipDetailsDialog } from "../TipDetailsDialog";
+import { useAuth } from "../auth/AuthProvider";
+import { LoadingSpinner } from "../ui/loading-spinner";
 
 interface PublicTipHistoryProps {
   qrCodeId: string;
@@ -17,9 +21,27 @@ interface PublicTip {
   amount: number;
   reader_name: string | null;
   reader_avatar_url: string | null;
+  book_title?: string | null;
 }
 
 export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
+  const { user } = useAuth();
+  const [selectedTip, setSelectedTip] = useState<PublicTip | null>(null);
+  
+  const { data: book } = useQuery({
+    queryKey: ['qr-book-title', qrCodeId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('qr_codes')
+        .select('book_title, author_id')
+        .eq('id', qrCodeId)
+        .single();
+        
+      if (error) throw error;
+      return data;
+    }
+  });
+  
   const { data: tips, isLoading } = useQuery({
     queryKey: ['public-tips', qrCodeId],
     queryFn: async () => {
@@ -38,14 +60,43 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as PublicTip[];
+      // Add book title to each tip
+      return (data || []).map(tip => ({
+        ...tip,
+        book_title: book?.book_title
+      })) as PublicTip[];
+    },
+    enabled: !!book
+  });
+  
+  const { data: likes = [] } = useQuery({
+    queryKey: ['public-tip-likes', qrCodeId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tip_likes')
+        .select('*');
+        
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  const { data: comments = [] } = useQuery({
+    queryKey: ['public-tip-comments', qrCodeId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tip_comments')
+        .select('*');
+        
+      if (error) throw error;
+      return data || [];
     }
   });
 
   if (isLoading) {
     return (
       <div className="flex justify-center p-6">
-        <div className="animate-spin w-6 h-6 border-2 border-primary rounded-full border-t-transparent" />
+        <LoadingSpinner />
       </div>
     );
   }
@@ -67,7 +118,16 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
         const readerFirstName = tip.reader_name 
           ? tip.reader_name.split(' ')[0] 
           : "Someone";
-          
+        
+        // Find like and comment counts
+        const likeCount = likes.filter(like => like.tip_id === tip.id).length;
+        const commentCount = comments.filter(comment => comment.tip_id === tip.id).length;
+        
+        // Check if current user has liked this tip
+        const isLiked = user ? likes.some(like => 
+          like.tip_id === tip.id && like.author_id === user.id
+        ) : false;
+        
         return (
           <div key={tip.id} className="space-y-4">
             <div className="flex items-start gap-3">
@@ -79,12 +139,10 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
               </Avatar>
               <div className="flex-1">
                 <div className="space-y-1">
-                  <div className="flex justify-between items-baseline">
-                    <p className="font-medium">
-                      {readerFirstName} sent some love
-                      {/* We've removed the amount display as requested */}
-                    </p>
-                  </div>
+                  <p className="font-medium">
+                    {readerFirstName} sent a tip
+                    {tip.book_title ? ` for "${tip.book_title}"!` : "!"}
+                  </p>
                   {tip.message && (
                     <p className="text-muted-foreground">"{tip.message}"</p>
                   )}
@@ -92,13 +150,16 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
                     {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
                   </p>
                 </div>
-                <div className="flex gap-4 mt-3">
-                  <button className="flex items-center text-muted-foreground hover:text-foreground">
-                    <ThumbsUp className="h-5 w-5 mr-1" />
-                  </button>
-                  <button className="flex items-center text-muted-foreground hover:text-foreground">
-                    <MessageSquare className="h-5 w-5 mr-1" />
-                  </button>
+                
+                <div className="mt-2">
+                  <TipInteractionButtons 
+                    tipId={tip.id}
+                    authorId={user?.id || (book?.author_id || '')}
+                    isLiked={isLiked}
+                    likeCount={likeCount}
+                    commentCount={commentCount}
+                    onCommentClick={() => setSelectedTip(tip)}
+                  />
                 </div>
               </div>
             </div>
@@ -106,6 +167,17 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
           </div>
         );
       })}
+      
+      {selectedTip && (
+        <TipDetailsDialog 
+          isOpen={!!selectedTip}
+          onClose={() => setSelectedTip(null)}
+          tip={{
+            ...selectedTip,
+            author_id: book?.author_id || ''
+          }}
+        />
+      )}
     </div>
   );
 };

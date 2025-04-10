@@ -99,30 +99,23 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
 
           <Card className="p-4 space-y-4">
             <div className="text-lg font-semibold">
-              {tip.reader_name || 'Anonymous Reader'} sent ${tip.amount}
+              {(tip.reader_name?.split(' ')[0] || 'Anonymous')} sent a tip
+              {tip.book_title ? ` for "${tip.book_title}"!` : "!"}
             </div>
             
             {tip.message && (
               <p className="text-muted-foreground">"{tip.message}"</p>
             )}
             
-            {tip.book_title && (
-              <div className="text-sm">
-                <span className="font-medium">Book: </span>{tip.book_title}
-              </div>
-            )}
-            
-            {user && (
-              <div className="pt-2">
-                <TipInteractionButtons
-                  tipId={tip.id}
-                  authorId={user.id}
-                  isLiked={isLiked}
-                  likeCount={likeCount}
-                  commentCount={commentCount}
-                />
-              </div>
-            )}
+            <div className="pt-2">
+              <TipInteractionButtons
+                tipId={tip.id}
+                authorId={user?.id || tip.author_id}
+                isLiked={isLiked}
+                likeCount={likeCount}
+                commentCount={commentCount}
+              />
+            </div>
           </Card>
           
           {comments.length > 0 && (
@@ -162,6 +155,12 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 onCommentAdded={() => refetchComments()}
               />
             </>
+          )}
+          
+          {!user && comments.length === 0 && (
+            <p className="text-center text-muted-foreground text-sm">
+              Sign in to leave a comment
+            </p>
           )}
         </div>
       </DialogContent>

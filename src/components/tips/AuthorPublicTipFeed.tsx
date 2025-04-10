@@ -4,6 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { LoadingSpinner } from "../ui/loading-spinner";
+import { TipInteractionButtons } from "./TipInteractionButtons";
+import { useState } from "react";
+import { TipDetailsDialog } from "../TipDetailsDialog";
+import { useAuth } from "../auth/AuthProvider";
 
 interface AuthorPublicTipFeedProps {
   authorId: string;
@@ -17,22 +21,31 @@ interface PublicTip {
   reader_name: string | null;
   reader_avatar_url: string | null;
   qr_code_id: string | null;
+  amount: number;
+  book_title?: string | null;
 }
 
 export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeedProps) => {
+  const { user } = useAuth();
+  const [selectedTip, setSelectedTip] = useState<PublicTip | null>(null);
+  
   const { data: tips, isLoading } = useQuery({
     queryKey: ['author-public-tips', authorId],
     queryFn: async () => {
       // First, get all QR codes for this author
       const { data: qrCodes, error: qrError } = await supabase
         .from('qr_codes')
-        .select('id')
+        .select('id, book_title')
         .eq('author_id', authorId);
       
       if (qrError) throw qrError;
       if (!qrCodes || qrCodes.length === 0) return [];
       
       const qrCodeIds = qrCodes.map(qr => qr.id);
+      const qrCodeTitleMap = qrCodes.reduce((acc, qr) => {
+        acc[qr.id] = qr.book_title;
+        return acc;
+      }, {} as Record<string, string>);
       
       // Then get all public tips for these QR codes
       const { data: tipsData, error: tipsError } = await supabase
@@ -43,14 +56,44 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
           message,
           reader_name,
           reader_avatar_url,
-          qr_code_id
+          qr_code_id,
+          amount
         `)
         .in('qr_code_id', qrCodeIds)
         .order('created_at', { ascending: false })
         .limit(limit || 5);
 
       if (tipsError) throw tipsError;
-      return tipsData as PublicTip[];
+      
+      // Add book titles to tips
+      return (tipsData || []).map(tip => ({
+        ...tip,
+        book_title: tip.qr_code_id ? qrCodeTitleMap[tip.qr_code_id] : null
+      })) as PublicTip[];
+    }
+  });
+
+  const { data: likes = [] } = useQuery({
+    queryKey: ['public-tip-likes'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tip_likes')
+        .select('*');
+        
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  const { data: comments = [] } = useQuery({
+    queryKey: ['public-tip-comments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tip_comments')
+        .select('*');
+        
+      if (error) throw error;
+      return data || [];
     }
   });
 
@@ -80,6 +123,15 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
           ? tip.reader_name.split(' ')[0] 
           : "Someone";
         
+        // Find like and comment counts
+        const likeCount = likes.filter(like => like.tip_id === tip.id).length;
+        const commentCount = comments.filter(comment => comment.tip_id === tip.id).length;
+        
+        // Check if current user has liked this tip
+        const isLiked = user ? likes.some(like => 
+          like.tip_id === tip.id && like.author_id === user.id
+        ) : false;
+        
         return (
           <div key={tip.id} className="space-y-4">
             <div className="flex items-start gap-3">
@@ -92,8 +144,8 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
               <div className="flex-1">
                 <div className="space-y-1">
                   <p className="font-medium">
-                    {readerFirstName} sent some love
-                    {/* We've removed the amount display as requested */}
+                    {readerFirstName} sent a tip
+                    {tip.book_title ? ` for "${tip.book_title}"!` : "!"}
                   </p>
                   {tip.message && (
                     <p className="text-muted-foreground">"{tip.message}"</p>
@@ -102,12 +154,31 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
                     {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
                   </p>
                 </div>
+                
+                <div className="mt-2">
+                  <TipInteractionButtons 
+                    tipId={tip.id}
+                    authorId={user?.id || authorId}
+                    isLiked={isLiked}
+                    likeCount={likeCount}
+                    commentCount={commentCount}
+                    onCommentClick={() => setSelectedTip(tip)}
+                  />
+                </div>
               </div>
             </div>
             <div className="border-t border-border mt-2 pt-2"></div>
           </div>
         );
       })}
+      
+      {selectedTip && (
+        <TipDetailsDialog 
+          isOpen={!!selectedTip}
+          onClose={() => setSelectedTip(null)}
+          tip={selectedTip}
+        />
+      )}
     </div>
   );
 };
