@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
@@ -65,13 +66,13 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
     enabled: !!book
   });
   
-  const { data: comments = [] } = useQuery({
-    queryKey: ['public-tip-comments', qrCodeId],
+  // Updated to fetch all comments without filtering by qrCodeId
+  const { data: allComments = [] } = useQuery({
+    queryKey: ['all-public-tip-comments'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tip_comments')
-        .select('*, profiles(name, avatar_url)')
-        .eq('tip_id', qrCodeId);
+        .select('*, profiles(name, avatar_url)');
         
       if (error) throw error;
       return data || [];
@@ -103,7 +104,8 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
           ? tip.reader_name.split(' ')[0] 
           : "Someone";
         
-        const commentCount = comments.filter(comment => comment.tip_id === tip.id).length;
+        // Calculate comment count by filtering all comments for this specific tip
+        const commentCount = allComments.filter(comment => comment.tip_id === tip.id).length;
         
         return (
           <div key={tip.id} className="space-y-4">
