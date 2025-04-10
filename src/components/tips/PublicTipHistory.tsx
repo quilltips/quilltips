@@ -26,7 +26,7 @@ interface PublicTip {
 
 export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
   const { user } = useAuth();
-  const [selectedTip, setSelectedTip] = useState<(PublicTip & { author_id: string }) | null>(null);
+  const [selectedTip, setSelectedTip] = useState<(PublicTip & { author_id: string; book_title: string }) | null>(null);
   
   const { data: book } = useQuery({
     queryKey: ['qr-book-title', qrCodeId],

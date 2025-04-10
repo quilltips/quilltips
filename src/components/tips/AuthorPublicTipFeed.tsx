@@ -27,7 +27,7 @@ interface PublicTip {
 
 export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeedProps) => {
   const { user } = useAuth();
-  const [selectedTip, setSelectedTip] = useState<(PublicTip & { author_id: string }) | null>(null);
+  const [selectedTip, setSelectedTip] = useState<(PublicTip & { author_id: string; book_title: string }) | null>(null);
   
   const { data: tips, isLoading } = useQuery({
     queryKey: ['author-public-tips', authorId],
@@ -164,7 +164,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
                     commentCount={commentCount}
                     onCommentClick={() => setSelectedTip({
                       ...tip,
-                      author_id: authorId, // Add the required author_id property
+                      author_id: authorId,
                       book_title: tip.book_title || "Unknown book" // Ensure book_title is not null
                     })}
                   />

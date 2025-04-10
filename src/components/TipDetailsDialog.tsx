@@ -23,7 +23,7 @@ interface TipDetailsDialogProps {
     amount: number;
     message: string | null;
     created_at: string;
-    book_title: string;
+    book_title: string | null;
     author_id: string;
     reader_name?: string | null;
     reader_avatar_url?: string | null;
