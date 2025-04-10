@@ -2,10 +2,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { useQRCodeGeneration } from "@/hooks/use-qr-code-generation";
-import { useQRCheckout } from "@/hooks/use-qr-checkout";
-import { QRCodeHeader } from "@/components/qr/QRCodeHeader";
+import { useQRCodeCheckout } from "@/hooks/use-qr-checkout";
 import { QRCodePreview } from "@/components/qr/QRCodePreview";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 const QRCodeDesign = () => {
   const location = useLocation();
@@ -16,7 +16,7 @@ const QRCodeDesign = () => {
     qrCodeData
   });
 
-  const { isCheckingOut, handleCheckout } = useQRCheckout({
+  const { isCheckingOut, handleCheckout } = useQRCodeCheckout({
     qrCodeId: qrCodeData?.id,
     bookTitle: qrCodeData?.book_title,
   });
@@ -33,33 +33,47 @@ const QRCodeDesign = () => {
   // Check if QR code is paid for
   const isPaid = qrCodeData?.is_paid === true;
 
+  // Format release date if available
+  const formattedReleaseDate = qrCodeData.release_date 
+    ? format(new Date(qrCodeData.release_date), 'MMMM d, yyyy')
+    : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto space-y-8">
-          <QRCodeHeader
-            coverImage={qrCodeData.cover_image}
-            bookTitle={qrCodeData.book_title}
-            publisher={qrCodeData.publisher}
-            releaseDate={qrCodeData.release_date}
-          />
+          {/* Centered Book Cover Image - removed card effect */}
+          <div className="flex flex-col items-center justify-center">
+            {qrCodeData.cover_image && (
+              <img
+                src={qrCodeData.cover_image}
+                alt={`Cover for ${qrCodeData.book_title}`}
+                className="max-w-[200px] h-auto mx-auto rounded-md"
+              />
+            )}
+            <h1 className="text-2xl font-bold text-center mt-4">{qrCodeData.book_title}</h1>
+          </div>
           
-          {/* Banner Section - No change to the #19363C color */}
+          {/* Banner Section with book details instead of promotional text */}
           <div className="bg-[#19363C] text-white rounded-lg p-8 shadow-lg">
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-4">Enable Readers to Tip You</h2>
-                <p className="mb-4">
-                  Once purchased, your custom QR code can be printed inside your books, 
-                  on bookmarks, or promotional materials.
-                </p>
-                <p>
-                  Every scan lets readers send tips and messages directly to you.
-                </p>
+                <h2 className="text-xl font-bold mb-4">Book Details</h2>
+                <div className="space-y-2">
+                  {qrCodeData.publisher && (
+                    <p>Publisher: <span className="font-medium">{qrCodeData.publisher}</span></p>
+                  )}
+                  {formattedReleaseDate && (
+                    <p>Release Date: <span className="font-medium">{formattedReleaseDate}</span></p>
+                  )}
+                  {qrCodeData.isbn && (
+                    <p>ISBN: <span className="font-medium">{qrCodeData.isbn}</span></p>
+                  )}
+                </div>
               </div>
               
-              {/* Enlarged QR code preview */}
+              {/* QR code preview */}
               <div className="w-full max-w-[240px] mx-auto">
                 <QRCodePreview
                   isGenerating={isGenerating}

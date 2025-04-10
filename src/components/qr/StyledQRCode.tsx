@@ -27,7 +27,6 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   return (
     <Card
       ref={ref}
-      prominent
       className={`w-[240px] h-[340px] bg-white px-4 py-3 rounded-xl border border-black flex flex-col items-center justify-start ${className}`}
     >
       <div className="flex flex-col items-center gap-2">
@@ -46,7 +45,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           {/* Logo overlay */}
           {showBranding && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white rounded-full p-2 w-[18%] h-[18%] flex items-center justify-center">
+              <div className="bg-white rounded-full p-1.5 w-[18%] h-[18%] flex items-center justify-center">
                 <img
                   src="/lovable-uploads/quill_icon.png"
                   alt="Quilltips Logo"
