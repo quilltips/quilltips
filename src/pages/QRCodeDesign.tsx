@@ -43,32 +43,61 @@ const QRCodeDesign = () => {
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Centered Book Cover Image - removed card effect */}
-          <div className="flex flex-col items-center justify-center">
-            {qrCodeData.cover_image && (
-              <img
-                src={qrCodeData.cover_image}
-                alt={`Cover for ${qrCodeData.book_title}`}
-                className="max-w-[200px] h-auto mx-auto rounded-md"
-              />
-            )}
-            <h1 className="text-2xl font-bold text-center mt-4">{qrCodeData.book_title}</h1>
+          {/* Success Message with Book Title */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-2">Success!</h1>
+            <p className="text-xl">
+              <span className="font-normal">Your QR code for </span>
+              <span className="font-bold text-[#FFD166] underline decoration-2 underline-offset-4">
+                {qrCodeData.book_title}
+              </span>
+              <span className="font-normal"> is ready for download</span>
+            </p>
           </div>
           
-          {/* Banner Section with book details instead of promotional text */}
+          {/* Centered Book Cover Image with placeholder fallback */}
+          <div className="flex flex-col items-center justify-center">
+            <div className="w-[200px] h-[280px] bg-gray-50 rounded-md shadow-sm flex items-center justify-center overflow-hidden">
+              {qrCodeData.cover_image ? (
+                <img
+                  src={qrCodeData.cover_image}
+                  alt={`Cover for ${qrCodeData.book_title}`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img
+                  src="/lovable-uploads/quill_icon.png"
+                  alt="Quilltips Logo"
+                  className="w-24 h-24 object-contain opacity-60"
+                />
+              )}
+            </div>
+            <h2 className="text-xl font-medium text-center mt-4">{qrCodeData.book_title}</h2>
+          </div>
+          
+          {/* Banner Section with improved book details */}
           <div className="bg-[#19363C] text-white rounded-lg p-8 shadow-lg">
             <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-1">
-                <h2 className="text-xl font-bold mb-4">Book Details</h2>
-                <div className="space-y-2">
+              <div className="flex-1 md:pl-4">
+                <h2 className="text-2xl font-bold mb-6">Book Details</h2>
+                <div className="space-y-4 text-lg">
                   {qrCodeData.publisher && (
-                    <p>Publisher: <span className="font-medium">{qrCodeData.publisher}</span></p>
+                    <p className="flex items-baseline">
+                      <span className="font-medium mr-2 min-w-[120px]">Publisher:</span>
+                      <span>{qrCodeData.publisher}</span>
+                    </p>
                   )}
                   {formattedReleaseDate && (
-                    <p>Release Date: <span className="font-medium">{formattedReleaseDate}</span></p>
+                    <p className="flex items-baseline">
+                      <span className="font-medium mr-2 min-w-[120px]">Release Date:</span>
+                      <span>{formattedReleaseDate}</span>
+                    </p>
                   )}
                   {qrCodeData.isbn && (
-                    <p>ISBN: <span className="font-medium">{qrCodeData.isbn}</span></p>
+                    <p className="flex items-baseline">
+                      <span className="font-medium mr-2 min-w-[120px]">ISBN:</span>
+                      <span>{qrCodeData.isbn}</span>
+                    </p>
                   )}
                 </div>
               </div>
