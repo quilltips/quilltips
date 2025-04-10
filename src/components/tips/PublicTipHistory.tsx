@@ -26,7 +26,7 @@ interface PublicTip {
 
 export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
   const { user } = useAuth();
-  const [selectedTip, setSelectedTip] = useState<PublicTip | null>(null);
+  const [selectedTip, setSelectedTip] = useState<(PublicTip & { author_id: string }) | null>(null);
   
   const { data: book } = useQuery({
     queryKey: ['qr-book-title', qrCodeId],
@@ -158,7 +158,11 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
                     isLiked={isLiked}
                     likeCount={likeCount}
                     commentCount={commentCount}
-                    onCommentClick={() => setSelectedTip(tip)}
+                    onCommentClick={() => setSelectedTip({
+                      ...tip,
+                      author_id: book?.author_id || '',
+                      book_title: tip.book_title || "Unknown book" // Ensure book_title is not null
+                    })}
                   />
                 </div>
               </div>
@@ -172,10 +176,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
         <TipDetailsDialog 
           isOpen={!!selectedTip}
           onClose={() => setSelectedTip(null)}
-          tip={{
-            ...selectedTip,
-            author_id: book?.author_id || ''
-          }}
+          tip={selectedTip}
         />
       )}
     </div>

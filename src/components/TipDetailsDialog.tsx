@@ -5,7 +5,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -24,10 +23,10 @@ interface TipDetailsDialogProps {
     amount: number;
     message: string | null;
     created_at: string;
-    book_title: string | null;
+    book_title: string;
     author_id: string;
-    reader_name?: string;
-    reader_avatar_url?: string;
+    reader_name?: string | null;
+    reader_avatar_url?: string | null;
   } | null;
 }
 
