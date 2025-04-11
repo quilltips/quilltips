@@ -18,7 +18,7 @@ export const AuthorQRCodeDetailsSection = ({
 }: AuthorQRCodeDetailsSectionProps) => {
   return (
     <div className="grid md:grid-cols-2 gap-8">
-      <QRCodeInfoCard qrCode={qrCode} />
+      <QRCodeInfoCard qrCode={qrCode} isEditable={true} />
       <QRCodeStatsCard qrCode={qrCode} qrCodeRef={qrCodeRef} />
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -137,7 +136,6 @@ export const useQRCodeDetailsPage = () => {
     id,
     qrCode,
     qrLoading,
-    tipData,
     handleDownloadSVG,
     handleDownloadPNG,
     qrCodeRef
