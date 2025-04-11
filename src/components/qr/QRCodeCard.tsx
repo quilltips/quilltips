@@ -20,7 +20,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onNavigate }) =>
       onClick={onNavigate} 
       className="p-3 cursor-pointer hover:bg-slate-50 transition-colors flex items-center gap-3 shadow-sm border-gray-200"
     >
-      <div className="w-12 h-16 flex-shrink-0 bg-muted rounded-md overflow-hidden">
+      <div className="w-12 h-16 flex-shrink-0 rounded-md overflow-hidden">
         {qrCode.cover_image ? (
           <img
             src={qrCode.cover_image}
@@ -28,8 +28,8 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onNavigate }) =>
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-100">
-            <Book className="h-5 w-5 text-gray-400" />
+          <div className="w-full h-full flex items-center justify-center">
+            <Book className="h-8 w-8 text-black-400" />
           </div>
         )}
       </div>
