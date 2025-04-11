@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Loader2, AlertCircle, Edit, Image as ImageIcon } from "lucide-react";
+import { Loader2, AlertCircle, Edit } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -100,38 +100,6 @@ export const BookCoverUpload = ({
     }
   };
 
-  const handleRemoveCoverImage = async () => {
-    if (!coverImage) return;
-    
-    setIsUploading(true);
-    
-    try {
-      const { error: updateQrCodeError } = await supabase
-        .from('qr_codes')
-        .update({ cover_image: null })
-        .eq('id', qrCodeId);
-
-      if (updateQrCodeError) throw updateQrCodeError;
-      
-      // Call the callback to update the image in the parent component
-      onImageUpdate('');
-
-      toast({
-        title: "Cover Image Removed",
-        description: "Your book cover image has been removed successfully.",
-      });
-    } catch (error: any) {
-      console.error("Error removing cover image:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to remove cover image",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
   return (
     <div className="relative">
       <Input
@@ -168,32 +136,6 @@ export const BookCoverUpload = ({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      
-      {coverImage && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={handleRemoveCoverImage}
-                disabled={isUploading}
-                className="absolute bottom-2 left-2 z-10"
-              >
-                {isUploading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <span>Remove</span>
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              <p>Remove cover image</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
       
       {error && (
         <Alert variant="destructive" className="mt-4">
