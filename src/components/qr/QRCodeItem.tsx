@@ -1,4 +1,3 @@
-
 import { Card } from "../ui/card";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +25,7 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
       onClick={handleClick}
     >
       <div className="p-3 flex items-center gap-2">
-        <div className="flex-shrink-0 w-10 h-10 bg-[#F0F0F0] rounded-md flex items-center justify-center">
+        <div className="flex-shrink-0 w-10 h-10 rounded-md flex items-center justify-center overflow-hidden">
           {qrCode.cover_image ? (
             <img
               src={qrCode.cover_image}
@@ -37,13 +36,15 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
             <img
               src="/lovable-uploads/quill_icon.png" 
               alt="Quilltips Logo"
-              className="h-4 w-4 object-contain"
+              className="h-6 w-6 object-contain"
             />
           )}
         </div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-[#2D3748] text-base truncate">{qrCode.book_title}</h3>
+          <h3 className="font-medium text-[#2D3748] text-base truncate">
+            {qrCode.book_title}
+          </h3>
           
           {(qrCode.publisher || qrCode.isbn) && (
             <div className="mt-0.5 text-xs text-[#718096]">
