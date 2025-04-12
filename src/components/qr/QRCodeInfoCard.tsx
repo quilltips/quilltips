@@ -2,7 +2,7 @@
 import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { BookCoverUpload } from "./BookCoverUpload";
-import { useState } from "react";
+import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
 
 interface QRCodeInfoCardProps {
   qrCode: {
@@ -18,20 +18,17 @@ interface QRCodeInfoCardProps {
 }
 
 export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardProps) => {
-  const [coverImage, setCoverImage] = useState<string | null>(qrCode.cover_image);
-
-  const handleImageUpdate = (newImageUrl: string) => {
-    setCoverImage(newImageUrl || null);
-  };
+  // Get the mutation function from the hook if we're in an editable context
+  const { updateCoverImage } = isEditable ? useQRCodeDetailsPage() : { updateCoverImage: undefined };
 
   return (
     <Card className="p-6 space-y-6">
       <h1 className="text-2xl font-bold text-[#19363C]">{qrCode.book_title}</h1>
 
       <div className="aspect-square relative rounded-xl overflow-hidden border border-muted">
-        {coverImage ? (
+        {qrCode.cover_image ? (
           <img
-            src={coverImage}
+            src={qrCode.cover_image}
             alt={qrCode.book_title}
             className="w-full h-full object-cover"
           />
@@ -48,9 +45,9 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
         {isEditable && qrCode.id && (
           <BookCoverUpload 
             qrCodeId={qrCode.id}
-            coverImage={coverImage}
+            coverImage={qrCode.cover_image}
             bookTitle={qrCode.book_title}
-            onImageUpdate={handleImageUpdate}
+            updateCoverImage={updateCoverImage}
           />
         )}
       </div>
