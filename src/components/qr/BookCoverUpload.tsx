@@ -64,7 +64,8 @@ export const BookCoverUpload = ({
       const fileExt = file.name.split('.').pop();
       const filePath = `${qrCodeId}-${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      // Fix: Ensure we use the correct bucket name 'book_covers'
+      const { error: uploadError, data } = await supabase.storage
         .from('book_covers')
         .upload(filePath, file);
 
@@ -77,6 +78,10 @@ export const BookCoverUpload = ({
       // Use the mutation if provided (preferred method)
       if (updateCoverImage) {
         await updateCoverImage(publicUrl);
+        toast({
+          title: "Cover Image Updated",
+          description: "Your book cover image has been updated successfully.",
+        });
       } 
       // Fallback to the callback method if mutation isn't provided
       else if (onUpdateImage) {
@@ -105,6 +110,7 @@ export const BookCoverUpload = ({
       });
     } finally {
       setIsUploading(false);
+      // Force clear the input value to ensure we can select the same file again if needed
       e.target.value = '';
     }
   };

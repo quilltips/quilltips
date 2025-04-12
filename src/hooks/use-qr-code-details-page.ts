@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toPng, toSvg } from "html-to-image";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useToast } from "./use-toast";
 
 // Define explicit database types
@@ -19,7 +19,7 @@ export type QRCode = {
   total_amount: number | null;
   average_tip: number | null;
   last_tip_date: string | null;
-  is_paid: boolean;  // Added is_paid field to the type
+  is_paid: boolean;
 };
 
 export type TipData = {
@@ -48,7 +48,8 @@ export const useQRCodeDetailsPage = () => {
       if (error) throw error;
       console.log("QR Code data fetched:", data);
       return data as QRCode;
-    }
+    },
+    staleTime: 30000, // Consider data fresh for 30 seconds
   });
 
   // Add mutation for updating the cover image
@@ -82,6 +83,13 @@ export const useQRCodeDetailsPage = () => {
       });
     }
   });
+
+  // Force refetch to ensure we have the latest data
+  useEffect(() => {
+    if (id) {
+      queryClient.invalidateQueries({ queryKey: ['qr-code', id] });
+    }
+  }, [id, queryClient]);
 
   const { data: tipData } = useQuery({
     queryKey: ['qr-tips', id],
@@ -175,6 +183,6 @@ export const useQRCodeDetailsPage = () => {
     handleDownloadSVG,
     handleDownloadPNG,
     qrCodeRef,
-    updateCoverImage
+    updateCoverImage,
   };
 };

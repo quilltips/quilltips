@@ -103,8 +103,9 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         const fileExt = coverImage.name.split('.').pop();
         const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
+        // Fix: Change bucket from 'covers' to 'book_covers' for consistency
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('covers')
+          .from('book_covers')
           .upload(filePath, coverImage);
 
         if (uploadError) {
@@ -115,7 +116,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         }
 
         const { data: { publicUrl } } = supabase.storage
-          .from('covers')
+          .from('book_covers')
           .getPublicUrl(filePath);
 
         coverImageUrl = publicUrl;

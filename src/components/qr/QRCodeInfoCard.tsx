@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { BookCoverUpload } from "./BookCoverUpload";
 import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
+import { useState, useEffect } from "react";
 
 interface QRCodeInfoCardProps {
   qrCode: {
@@ -20,17 +21,29 @@ interface QRCodeInfoCardProps {
 export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardProps) => {
   // Get the mutation function from the hook if we're in an editable context
   const { updateCoverImage } = isEditable ? useQRCodeDetailsPage() : { updateCoverImage: undefined };
+  const [imageError, setImageError] = useState(false);
+  
+  // Reset image error state if cover image changes
+  useEffect(() => {
+    setImageError(false);
+  }, [qrCode.cover_image]);
+
+  const handleImageError = () => {
+    console.log("Image failed to load:", qrCode.cover_image);
+    setImageError(true);
+  };
 
   return (
     <Card className="p-6 space-y-6">
       <h1 className="text-2xl font-bold text-[#19363C]">{qrCode.book_title}</h1>
 
       <div className="aspect-square relative rounded-xl overflow-hidden border border-muted">
-        {qrCode.cover_image ? (
+        {qrCode.cover_image && !imageError ? (
           <img
             src={qrCode.cover_image}
             alt={qrCode.book_title}
             className="w-full h-full object-cover"
+            onError={handleImageError}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-transparent">
