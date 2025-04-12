@@ -1,8 +1,10 @@
+
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toPng, toSvg } from "html-to-image";
 import { useRef } from "react";
+import { useToast } from "./use-toast";
 
 // Define explicit database types
 export type QRCode = {
@@ -29,6 +31,8 @@ export type TipData = {
 export const useQRCodeDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const qrCodeRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: qrCode, isLoading: qrLoading } = useQuery({
     queryKey: ['qr-code', id],
@@ -42,8 +46,40 @@ export const useQRCodeDetailsPage = () => {
         .maybeSingle();
 
       if (error) throw error;
-      console.log("QR Code data fetched:", data); // Added logging to check data
+      console.log("QR Code data fetched:", data);
       return data as QRCode;
+    }
+  });
+
+  // Add mutation for updating the cover image
+  const { mutateAsync: updateCoverImage } = useMutation({
+    mutationFn: async (imageUrl: string) => {
+      if (!id) throw new Error('QR code ID is required');
+      
+      const { error } = await supabase
+        .from('qr_codes')
+        .update({ cover_image: imageUrl || null })
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      return imageUrl;
+    },
+    onSuccess: () => {
+      // Invalidate and refetch the QR code data
+      queryClient.invalidateQueries({ queryKey: ['qr-code', id] });
+      toast({
+        title: "Cover Image Updated",
+        description: "Your book cover image has been updated successfully.",
+      });
+    },
+    onError: (error) => {
+      console.error("Error updating cover image:", error);
+      toast({
+        title: "Update Error",
+        description: error instanceof Error ? error.message : "Failed to update cover image",
+        variant: "destructive",
+      });
     }
   });
 
@@ -138,6 +174,7 @@ export const useQRCodeDetailsPage = () => {
     qrLoading,
     handleDownloadSVG,
     handleDownloadPNG,
-    qrCodeRef
+    qrCodeRef,
+    updateCoverImage
   };
 };

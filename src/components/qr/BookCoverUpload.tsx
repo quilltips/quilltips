@@ -12,14 +12,16 @@ interface BookCoverUploadProps {
   qrCodeId: string;
   coverImage?: string | null;
   bookTitle: string;
-  onImageUpdate: (newImageUrl: string) => void;
+  onUpdateImage?: (newImageUrl: string) => void;
+  updateCoverImage?: (imageUrl: string) => Promise<any>;
 }
 
 export const BookCoverUpload = ({ 
   qrCodeId, 
   coverImage, 
   bookTitle,
-  onImageUpdate 
+  onUpdateImage,
+  updateCoverImage
 }: BookCoverUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,20 +74,27 @@ export const BookCoverUpload = ({
         .from('book_covers')
         .getPublicUrl(filePath);
 
-      const { error: updateQrCodeError } = await supabase
-        .from('qr_codes')
-        .update({ cover_image: publicUrl })
-        .eq('id', qrCodeId);
+      // Use the mutation if provided (preferred method)
+      if (updateCoverImage) {
+        await updateCoverImage(publicUrl);
+      } 
+      // Fallback to the callback method if mutation isn't provided
+      else if (onUpdateImage) {
+        const { error: updateQrCodeError } = await supabase
+          .from('qr_codes')
+          .update({ cover_image: publicUrl })
+          .eq('id', qrCodeId);
 
-      if (updateQrCodeError) throw updateQrCodeError;
-      
-      // Call the callback to update the image in the parent component
-      onImageUpdate(publicUrl);
-
-      toast({
-        title: "Cover Image Updated",
-        description: "Your book cover image has been updated successfully.",
-      });
+        if (updateQrCodeError) throw updateQrCodeError;
+        
+        // Call the callback to update the image in the parent component
+        onUpdateImage(publicUrl);
+        
+        toast({
+          title: "Cover Image Updated",
+          description: "Your book cover image has been updated successfully.",
+        });
+      }
     } catch (error: any) {
       console.error("Error uploading cover image:", error);
       setError(error.message || "Failed to upload cover image");
