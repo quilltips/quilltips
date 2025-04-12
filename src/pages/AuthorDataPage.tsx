@@ -7,14 +7,11 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AuthorDataDashboard } from "@/components/data/AuthorDataDashboard";
+
 const AuthorDataPage = () => {
   const navigate = useNavigate();
-  const {
-    toast
-  } = useToast();
-  const {
-    user
-  } = useAuth();
+  const { toast } = useToast();
+  const { user } = useAuth();
 
   // Fetch author profile
   const {
@@ -48,6 +45,7 @@ const AuthorDataPage = () => {
       }
     }
   });
+
   if (isLoading) {
     return <Layout>
         <div className="container mx-auto px-4 pt-24">
@@ -57,7 +55,7 @@ const AuthorDataPage = () => {
   }
   if (error || !profile) return null;
   return <Layout>
-      <div className="min-h-screen bg-[#F8F7F2]">
+      <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
           <div className="max-w-6xl mx-auto space-y-8">
             <div className="space-y-2">
@@ -71,4 +69,5 @@ const AuthorDataPage = () => {
       </div>
     </Layout>;
 };
+
 export default AuthorDataPage;

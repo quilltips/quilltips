@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
@@ -19,7 +18,6 @@ const BookQRCodesPage = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   
-  // Fetch author profile
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['author-profile', user?.id],
     queryFn: async () => {
@@ -66,7 +64,7 @@ const BookQRCodesPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#F8F7F2]">
+      <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -110,7 +108,6 @@ const BookQRCodesPage = () => {
                   
                   <CreateQRCode authorId={profile.id} />
                   
-                  {/* Add How QR Codes Work section */}
                   <HowQRCodesWork />
                 </div>
               </TabsContent>
