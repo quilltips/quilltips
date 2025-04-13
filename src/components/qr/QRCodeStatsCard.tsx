@@ -6,6 +6,9 @@ import { StyledQRCode } from "./StyledQRCode";
 import { QRCodeDownloadOptions } from "./QRCodeDownloadOptions";
 import { toPng, toSvg } from "html-to-image";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "../ui/button";
+import { useQRCheckout } from "@/hooks/use-qr-checkout";
+import { ShoppingCart } from "lucide-react";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -26,6 +29,10 @@ interface QRCodeStatsCardProps {
 export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => {
   const { toast } = useToast();
   const isPaid = qrCode.is_paid !== false; // Consider it paid unless explicitly set to false
+  const { isCheckingOut, handleCheckout } = useQRCheckout({
+    qrCodeId: qrCode.id,
+    bookTitle: qrCode.book_title
+  });
   
   console.log("QRCodeStatsCard isPaid:", isPaid, "is_paid value:", qrCode.is_paid); // Debug log
 
@@ -114,9 +121,19 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         />
         
         {!isPaid && (
-          <p className="text-sm text-center text-orange-500">
-            This QR code hasn't been purchased yet. Please complete your purchase to download.
-          </p>
+          <div className="space-y-2">
+            <p className="text-sm text-center text-orange-500">
+              This QR code hasn't been purchased yet. Please complete your purchase to download.
+            </p>
+            <Button 
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+              className="w-full bg-[#FFD166] hover:bg-[#FFD166]/80 text-[#19363C]"
+            >
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              {isCheckingOut ? "Processing..." : "Purchase QR Code"}
+            </Button>
+          </div>
         )}
       </div>
 
