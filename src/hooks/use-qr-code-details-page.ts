@@ -52,7 +52,7 @@ export const useQRCodeDetailsPage = () => {
       console.log("QR Code data fetched:", data);
       return data as QRCode;
     },
-    staleTime: 0, // Don't use stale data, always refetch to ensure latest image
+    staleTime: 60000, // Use a reasonable stale time to prevent constant refetching (1 minute)
   });
 
   // Add mutation for updating the cover image
@@ -77,8 +77,7 @@ export const useQRCodeDetailsPage = () => {
     onSuccess: (newImageUrl) => {
       // Invalidate and refetch the QR code data
       console.log("Cover image updated successfully:", newImageUrl);
-      queryClient.removeQueries({ queryKey: ['qr-code', id] }); // Remove from cache completely
-      queryClient.invalidateQueries({ queryKey: ['qr-code', id] }); // Force refetch
+      queryClient.invalidateQueries({ queryKey: ['qr-code', id] }); // Only invalidate, don't remove
       
       toast({
         title: "Cover Image Updated",
@@ -94,15 +93,6 @@ export const useQRCodeDetailsPage = () => {
       });
     }
   });
-
-  // Force refetch to ensure we have the latest data
-  useEffect(() => {
-    if (id) {
-      // Immediate refetch on mount
-      queryClient.removeQueries({ queryKey: ['qr-code', id] });
-      queryClient.invalidateQueries({ queryKey: ['qr-code', id] });
-    }
-  }, [id, queryClient]);
 
   const { data: tipData } = useQuery({
     queryKey: ['qr-tips', id],
