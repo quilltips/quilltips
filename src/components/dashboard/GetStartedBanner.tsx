@@ -4,14 +4,23 @@ import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Alert, AlertDescription } from "../ui/alert";
+import { BankAccountConnect } from "../profile/BankAccountConnect";
 
 interface GetStartedBannerProps {
   onClose: () => void;
   hasStripeAccount: boolean;
   stripeSetupComplete: boolean;
+  profileId?: string;
+  stripeAccountId?: string | null;
 }
 
-export const GetStartedBanner = ({ onClose, hasStripeAccount, stripeSetupComplete }: GetStartedBannerProps) => {
+export const GetStartedBanner = ({ 
+  onClose, 
+  hasStripeAccount, 
+  stripeSetupComplete,
+  profileId,
+  stripeAccountId 
+}: GetStartedBannerProps) => {
   const navigate = useNavigate();
 
   return (
@@ -38,12 +47,12 @@ export const GetStartedBanner = ({ onClose, hasStripeAccount, stripeSetupComplet
       )}
       
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button 
-          onClick={() => navigate('/author/bank-account')}
-          className="w-full sm:w-auto px-6 py-2 h-auto bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium text-base"
-        >
-          {hasStripeAccount ? 'Manage payment settings' : 'Link a bank account'}
-        </Button>
+        {profileId && (
+          <BankAccountConnect
+            profileId={profileId}
+            stripeAccountId={stripeAccountId}
+          />
+        )}
         
         <Button 
           onClick={() => navigate('/author/settings')}

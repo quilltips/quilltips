@@ -88,6 +88,8 @@ const AuthorDashboard = () => {
                 onClose={() => setShowGetStarted(false)} 
                 hasStripeAccount={hasStripeAccount}
                 stripeSetupComplete={stripeSetupComplete}
+                profileId={profile.id}
+                stripeAccountId={profile.stripe_account_id}
               />
             )}
 
