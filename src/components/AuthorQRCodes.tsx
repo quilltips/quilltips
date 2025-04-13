@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,7 +48,6 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
     );
   }
 
-  // Only show the first 5 QR codes if showAll is false
   const displayedQRCodes = showAll ? qrCodes : qrCodes.slice(0, 5);
 
   return (
@@ -63,7 +61,7 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
           <Card className="overflow-hidden hover:bg-slate-50 transition-colors">
             <CardContent className="p-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-24 flex-shrink-0 bg-muted rounded-md overflow-hidden">
+                <div className="w-16 h-24 flex-shrink-0 rounded-md overflow-hidden">
                   {qrCode.cover_image ? (
                     <img
                       src={qrCode.cover_image}
@@ -71,8 +69,8 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                      <Book className="h-6 w-6 text-gray-400" />
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Book className="h-8 w-8 text-[#2D3748]" />
                     </div>
                   )}
                 </div>
