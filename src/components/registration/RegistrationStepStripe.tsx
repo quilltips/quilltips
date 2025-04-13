@@ -62,7 +62,7 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
 
       // Redirect to Stripe for onboarding
       window.location.href = data.url;
-      onComplete(); // This will only run if there's no redirect
+      // Remove the onComplete call here - we'll handle the return in the dashboard
     } catch (error: any) {
       console.error("Error connecting to Stripe:", error);
       toast({

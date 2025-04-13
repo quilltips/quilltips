@@ -92,7 +92,7 @@ const AuthorBankAccount = () => {
         // Continue with Stripe setup flow even if email fails
       }
 
-      // Redirect to Stripe Connect onboarding
+      // Direct redirect to Stripe Connect onboarding without going through dashboard first
       window.location.href = data.url;
     } catch (error: any) {
       console.error("Error connecting bank account:", error);

@@ -63,7 +63,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
 
       // Email notification is now handled by database triggers when the profile is updated
       
-      // Redirect to Stripe for onboarding or dashboard
+      // Redirect directly to Stripe for onboarding or dashboard
       window.location.href = data.url;
     } catch (error: any) {
       console.error("Error connecting to Stripe:", error);

@@ -7,7 +7,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { GetStartedBanner } from "@/components/dashboard/GetStartedBanner";
 import { StripeOnboardingStatus } from "@/components/dashboard/StripeOnboardingStatus";
 
@@ -16,6 +16,7 @@ const AuthorDashboard = () => {
   const { toast } = useToast();
   const [showGetStarted, setShowGetStarted] = useState(true);
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   
   // Fetch author profile
   const { data: profile, isLoading, error } = useQuery({
@@ -47,6 +48,16 @@ const AuthorDashboard = () => {
         });
         navigate("/author/login");
       }
+    }
+  });
+
+  // Handle Stripe setup completion
+  useState(() => {
+    if (searchParams.get('setup') === 'complete' && profile) {
+      toast({
+        title: "Account Setup Complete",
+        description: "Your Stripe account has been connected successfully.",
+      });
     }
   });
 
