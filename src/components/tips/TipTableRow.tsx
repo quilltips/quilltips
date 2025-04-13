@@ -102,7 +102,7 @@ export const TipTableRow = ({
               <TipInteractionButtons
                 tipId={tip.id}
                 authorId={user.id}
-                authorName={user.name || ""}
+                authorName={user.user_metadata?.name || user.email || ""}
                 isLiked={isLiked}
                 likeCount={likeCount}
                 commentCount={commentCount}

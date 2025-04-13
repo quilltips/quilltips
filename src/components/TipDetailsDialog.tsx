@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -130,7 +131,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
               <TipInteractionButtons
                 tipId={tip.id}
                 authorId={user.id}
-                authorName={user.name || ""}
+                authorName={user.user_metadata?.name || user.email || ""}
                 isLiked={isLiked}
                 likeCount={likeCount}
                 commentCount={commentCount}
