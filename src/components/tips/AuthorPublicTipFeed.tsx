@@ -118,7 +118,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
           <div key={tip.id} className="space-y-4">
             <div className="flex items-start gap-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={tip.reader_avatar_url || "/placeholder.svg"} />
+                <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={readerFirstName} />
                 <AvatarFallback>
                   {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
                 </AvatarFallback>

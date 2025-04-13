@@ -48,7 +48,7 @@ export const TipTableRow = ({
     >
       <div className="flex gap-3">
         <Avatar className="h-8 w-8">
-          <AvatarImage src={tip.reader_avatar_url || "/placeholder.svg"} />
+          <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={firstName} />
           <AvatarFallback>
             {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
           </AvatarFallback>

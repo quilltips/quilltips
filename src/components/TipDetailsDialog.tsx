@@ -54,6 +54,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
   if (!tip) return null;
 
   const commentCount = comments.length;
+  const readerFirstName = tip.reader_name?.split(' ')[0] || 'Anonymous';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -65,7 +66,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
         <div className="space-y-6 py-4">
           <div className="flex items-center space-x-4">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={tip.reader_avatar_url || "/placeholder.svg"} />
+              <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={readerFirstName} />
               <AvatarFallback>
                 {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
               </AvatarFallback>
@@ -80,7 +81,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
 
           <Card className="p-4 space-y-4">
             <div className="text-lg font-semibold">
-              {(tip.reader_name?.split(' ')[0] || 'Anonymous')} sent a tip
+              {readerFirstName} sent a tip
               {tip.book_title ? ` for "${tip.book_title}"!` : "!"}
             </div>
             
@@ -108,7 +109,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 {comments.map(comment => (
                   <div key={comment.id} className="flex space-x-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={(comment.profiles as any)?.avatar_url || "/placeholder.svg"} />
+                      <AvatarImage src={(comment.profiles as any)?.avatar_url || "/reader-avatar.svg"} alt={(comment.profiles as any)?.name || "Anonymous"} />
                       <AvatarFallback>
                         {((comment.profiles as any)?.name || "A").charAt(0).toUpperCase()}
                       </AvatarFallback>
