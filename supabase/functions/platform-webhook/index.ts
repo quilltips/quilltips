@@ -1,4 +1,3 @@
-
 // supabase/functions/platform-webhook/index.ts
 export const config = {
   path: "/platform-webhook",
@@ -57,54 +56,24 @@ serve(async (req) => {
         const session = event.data.object;
         console.log("📊 Processing platform-level completed checkout session:", session.id);
         
-        if (session.metadata?.type === "tip") {
-          console.log("💰 Processing platform-level tip payment");
-          
-          // Get reader email from the session
-          const readerEmail = session.customer_email;
-          console.log("📧 Reader email from platform session:", readerEmail);
-          
-          // Update the tip record with completed status
-          const { data: tipData, error: tipError } = await supabase.from("tips")
-            .update({
-              status: "complete", // This will trigger the database email notification
-              reader_email: readerEmail || null
-            })
-            .eq("stripe_session_id", session.id)
-            .select();
-          
-          if (tipError) {
-            console.error("❌ Error updating tip record:", tipError);
-            throw tipError;
-          }
-          
-          console.log("✅ Platform tip record updated successfully:", tipData);
-          
-          // Directly call the email notification function instead of relying on database trigger
-          if (tipData && tipData.length > 0) {
-            const tip = tipData[0];
-            try {
-              await sendEmailNotification('tip_received', tip.author_id, {
-                amount: tip.amount,
-                bookTitle: tip.book_title || 'your book',
-                message: tip.message
-              });
-              console.log("📧 Email notification sent successfully for tip_received");
-            } catch (emailError) {
-              console.error("❌ Failed to send email notification:", emailError);
-              // Continue processing - don't fail the webhook just because email failed
-            }
-          }
-        }
-        
+        // Centralized handling for different payment types
         if (session.metadata?.type === "qr_code_purchase") {
-          console.log("🔍 Processing platform-level QR code purchase");
+          console.log("🔍 Processing QR code purchase");
+          
+          // Validate required metadata
+          if (!session.metadata.qrCodeId || !session.metadata.authorId) {
+            console.error("❌ Missing required metadata for QR code purchase");
+            throw new Error("Invalid QR code purchase metadata");
+          }
+          
+          // Update QR code status with comprehensive logging
           const { data: qrCode, error: qrError } = await supabase.from("qr_codes")
             .update({
               qr_code_status: "active",
-              is_paid: true
+              is_paid: true,
+              stripe_session_id: session.id
             })
-            .eq("id", session.metadata.qrCodeId)
+            .eq('id', session.metadata.qrCodeId)
             .select("author_id, book_title");
             
           if (qrError) {
@@ -112,9 +81,9 @@ serve(async (req) => {
             throw qrError;
           }
           
-          console.log("✅ Platform QR code updated to active status");
+          console.log("✅ QR code updated to active status:", qrCode);
           
-          // Directly call the email notification function
+          // Send email notification for QR code purchase
           if (qrCode && qrCode.length > 0) {
             try {
               await sendEmailNotification('qr_code_purchased', qrCode[0].author_id, {
@@ -123,7 +92,6 @@ serve(async (req) => {
               console.log("📧 QR code purchase email notification sent successfully");
             } catch (emailError) {
               console.error("❌ Failed to send QR code purchase email notification:", emailError);
-              // Continue processing - don't fail the webhook just because email failed
             }
           }
         }

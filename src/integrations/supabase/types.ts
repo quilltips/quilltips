@@ -343,6 +343,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_qr_code: {
+        Args: {
+          author_id: string
+          book_title: string
+          template?: string
+          publisher?: string
+          isbn?: string
+          cover_image?: string
+        }
+        Returns: string
+      }
       get_public_profile_by_id: {
         Args: { profile_id: string }
         Returns: {
