@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      notification_rate_limits: {
+        Row: {
+          id: string
+          last_sent_at: string
+          notification_type: string
+          reader_email: string
+        }
+        Insert: {
+          id?: string
+          last_sent_at?: string
+          notification_type: string
+          reader_email: string
+        }
+        Update: {
+          id?: string
+          last_sent_at?: string
+          notification_type?: string
+          reader_email?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -290,6 +311,7 @@ export type Database = {
           reader_name: string | null
           status: string | null
           stripe_session_id: string | null
+          unsubscribed: boolean | null
         }
         Insert: {
           amount: number
@@ -305,6 +327,7 @@ export type Database = {
           reader_name?: string | null
           status?: string | null
           stripe_session_id?: string | null
+          unsubscribed?: boolean | null
         }
         Update: {
           amount?: number
@@ -320,6 +343,7 @@ export type Database = {
           reader_name?: string | null
           status?: string | null
           stripe_session_id?: string | null
+          unsubscribed?: boolean | null
         }
         Relationships: [
           {
@@ -334,6 +358,38 @@ export type Database = {
             columns: ["qr_code_id"]
             isOneToOne: false
             referencedRelation: "qr_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      unsubscribe_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          tip_id: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          tip_id: string
+          token: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          tip_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unsubscribe_tokens_tip_id_fkey"
+            columns: ["tip_id"]
+            isOneToOne: false
+            referencedRelation: "tips"
             referencedColumns: ["id"]
           },
         ]

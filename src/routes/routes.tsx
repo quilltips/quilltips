@@ -1,4 +1,3 @@
-
 import Index from "@/pages/Index";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
@@ -22,6 +21,7 @@ import AuthorDataPage from "@/pages/AuthorDataPage";
 import HowItWorks from "@/pages/HowItWorks";
 import PublicProfilePage from "@/pages/PublicProfilePage";
 import TipSuccessPage from "@/pages/TipSuccessPage";
+import UnsubscribePage from "@/pages/UnsubscribePage";
 
 export const routes = [
   { path: "/", element: <Index /> },
@@ -47,4 +47,8 @@ export const routes = [
   { path: "/qr-summary", element: <QRCodeSummary /> },
   { path: "/qr/:id", element: <QRCodeDetails /> },
   { path: "/tip-success", element: <TipSuccessPage /> },
+  {
+    path: "/unsubscribe",
+    element: <UnsubscribePage />,
+  },
 ];
