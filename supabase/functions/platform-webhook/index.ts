@@ -1,3 +1,4 @@
+
 // supabase/functions/platform-webhook/index.ts
 export const config = {
   path: "/platform-webhook",
@@ -12,6 +13,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
 
+// Create a Supabase client with the service role key for admin operations
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL") || '',
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ''
@@ -98,6 +100,92 @@ serve(async (req) => {
         break;
       }
       
+      case "account.updated": {
+        const account = event.data.object;
+        console.log("🔄 Processing Stripe Connect account update:", account.id);
+        
+        // Look for the Supabase user ID in the account metadata
+        if (account.metadata?.supabaseUserId) {
+          console.log("🔍 Found supabaseUserId in metadata:", account.metadata.supabaseUserId);
+          
+          // Update the user's profile with the Stripe account status
+          const { data: profile, error: updateError } = await supabase
+            .from("profiles")
+            .update({
+              stripe_account_id: account.id, // Ensure the ID is saved
+              stripe_setup_complete: account.payouts_enabled && account.details_submitted
+            })
+            .eq('id', account.metadata.supabaseUserId)
+            .select();
+            
+          if (updateError) {
+            console.error("❌ Error updating profile with Stripe status:", updateError);
+            throw updateError;
+          }
+          
+          console.log("✅ Profile updated with Stripe account status:", profile);
+          
+          // Send notification based on account status
+          try {
+            const notificationType = account.payouts_enabled && account.details_submitted
+              ? 'stripe_setup_complete'
+              : 'stripe_setup_incomplete';
+              
+            await sendEmailNotification(notificationType, account.metadata.supabaseUserId, {});
+            console.log(`📧 ${notificationType} email notification sent`);
+          } catch (emailError) {
+            console.error("❌ Failed to send status update notification:", emailError);
+          }
+        } else {
+          // If no user ID in metadata, try to find by account ID
+          console.log("⚠️ No supabaseUserId in metadata, searching by account ID");
+          
+          const { data: profiles, error: findError } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("stripe_account_id", account.id);
+            
+          if (findError) {
+            console.error("❌ Error finding profile by account ID:", findError);
+            throw findError;
+          }
+          
+          if (profiles && profiles.length > 0) {
+            console.log(`✅ Found ${profiles.length} profiles with this account ID`);
+            
+            // Update profile status
+            const { error: updateError } = await supabase
+              .from("profiles")
+              .update({
+                stripe_setup_complete: account.payouts_enabled && account.details_submitted
+              })
+              .eq("stripe_account_id", account.id);
+              
+            if (updateError) {
+              console.error("❌ Error updating profile status:", updateError);
+              throw updateError;
+            }
+            
+            // Update metadata on the Stripe account
+            try {
+              if (profiles.length === 1) {
+                console.log("🔄 Updating Stripe account metadata with user ID");
+                await stripe.accounts.update(account.id, {
+                  metadata: { supabaseUserId: profiles[0].id }
+                });
+              }
+            } catch (stripeError) {
+              console.error("❌ Error updating Stripe account metadata:", stripeError);
+            }
+            
+            console.log("✅ Profile status updated successfully");
+          } else {
+            console.warn("⚠️ No profile found with this account ID:", account.id);
+          }
+        }
+        break;
+      }
+      
       default:
         console.log(`⚠️ Unhandled platform event: ${event.type}`);
     }
@@ -125,6 +213,21 @@ serve(async (req) => {
     });
   }
 });
+
+// Initialize Stripe for edge function webhook handling
+let stripe;
+try {
+  const Stripe = (await import('https://esm.sh/stripe@14.21.0')).default;
+  const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+  if (stripeSecretKey) {
+    stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2023-10-16',
+      httpClient: Stripe.createFetchHttpClient(),
+    });
+  }
+} catch (err) {
+  console.error("❌ Error initializing Stripe:", err);
+}
 
 // Helper function to directly call the send-email-notification edge function
 async function sendEmailNotification(type, userId, data = {}) {

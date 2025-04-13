@@ -20,6 +20,12 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
     );
 
+    // Create an admin client for database operations that need elevated privileges
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
+
     const authHeader = req.headers.get('Authorization')!;
     const token = authHeader.replace('Bearer ', '');
     
@@ -47,7 +53,7 @@ serve(async (req) => {
 
     // Get existing account info - use maybeSingle() instead of single()
     console.log('Fetching profile data for user:', user.id);
-    const { data: profile, error: profileError } = await supabaseClient
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('stripe_account_id, stripe_setup_complete, name')
       .eq('id', user.id)
@@ -61,7 +67,7 @@ serve(async (req) => {
     // Check if profile exists - it should based on our auth triggers, but handle the case if it doesn't
     if (!profile) {
       console.log('Profile not found, creating a basic profile');
-      const { error: createProfileError } = await supabaseClient
+      const { error: createProfileError } = await supabaseAdmin
         .from('profiles')
         .insert({
           id: user.id,
@@ -80,12 +86,15 @@ serve(async (req) => {
     try {
       let accountId = profile?.stripe_account_id;
       let accountUrl;
+      let accountExists = false;
 
       if (accountId) {
         console.log('Existing Stripe account found:', accountId);
         try {
           // Check if the account exists and get its status
           const account = await stripe.accounts.retrieve(accountId);
+          accountExists = true;
+          
           console.log('Account details:', {
             details_submitted: account.details_submitted,
             payouts_enabled: account.payouts_enabled,
@@ -118,26 +127,12 @@ serve(async (req) => {
           }
         } catch (error) {
           console.error('Error with existing account, will create new one:', error);
-          
-          // Reset the account ID if it's invalid
-          const { error: updateError } = await supabaseClient
-            .from('profiles')
-            .update({ 
-              stripe_account_id: null,
-              stripe_setup_complete: false
-            })
-            .eq('id', user.id);
-            
-          if (updateError) {
-            console.error('Error resetting account ID:', updateError);
-          }
-          
-          // Force new account creation
-          accountId = null;
+          // Reset the account ID as it's invalid and we'll create a new one
+          accountExists = false;
         }
       }
 
-      if (!accountId) {
+      if (!accountExists) {
         console.log('Creating new Stripe Connect account with prefilled information');
         
         // Create a new Connect account with enhanced prefilled data
@@ -162,8 +157,8 @@ serve(async (req) => {
         accountId = account.id;
         console.log('New account created:', accountId);
 
-        // Update profile with the new account ID
-        const { error: updateError } = await supabaseClient
+        // Update profile with the new account ID - using supabaseAdmin with service role key
+        const { error: updateError } = await supabaseAdmin
           .from('profiles')
           .update({ 
             stripe_account_id: account.id,
@@ -172,8 +167,11 @@ serve(async (req) => {
           .eq('id', user.id);
 
         if (updateError) {
-          console.error('Error updating profile:', updateError);
-          throw updateError;
+          console.error('Error updating profile with Stripe account ID:', updateError);
+          // Even if update fails, continue to create the onboarding link
+          // We'll attempt to repair this in a future session
+        } else {
+          console.log('Profile updated with new Stripe account ID:', account.id);
         }
 
         // Create account link for onboarding
@@ -184,6 +182,25 @@ serve(async (req) => {
           type: 'account_onboarding',
         });
         accountUrl = accountLink.url;
+      }
+
+      // Double-check that the account ID is properly saved to the profile
+      // This is a safety check to avoid duplicate accounts
+      if (accountId) {
+        const { data: checkProfile } = await supabaseAdmin
+          .from('profiles')
+          .select('stripe_account_id')
+          .eq('id', user.id)
+          .maybeSingle();
+        
+        // If the account ID isn't saved properly, try updating again
+        if (!checkProfile?.stripe_account_id) {
+          console.log('Stripe account ID not properly saved, trying update again');
+          await supabaseAdmin
+            .from('profiles')
+            .update({ stripe_account_id: accountId })
+            .eq('id', user.id);
+        }
       }
 
       return new Response(

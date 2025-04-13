@@ -1,5 +1,5 @@
+
 // supabase/functions/stripe-webhook/index.ts
-//@ts-nocheck
 export const config = {
   path: "/stripe-webhook",
   auth: false
@@ -7,12 +7,19 @@ export const config = {
 console.log("🔄 Stripe webhook handler deployed");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
-const supabase = createClient(Deno.env.get("SUPABASE_URL"), Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
-serve(async (req)=>{
+
+// Create a Supabase client with the service role key for admin operations
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL") || '',
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ''
+);
+
+serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       headers: corsHeaders
@@ -87,15 +94,23 @@ serve(async (req)=>{
           }
           
           if (session.metadata?.type === "qr_code_purchase") {
+            // Get author ID from the metadata
+            const { authorId, qrCodeId } = session.metadata;
+            console.log(`💰 Processing QR code purchase for author ${authorId}, code ${qrCodeId}`);
+            
             const { data: qrCode, error } = await supabase.from("qr_codes")
               .update({
                 qr_code_status: "active",
-                is_paid: true
+                is_paid: true,
+                stripe_session_id: session.id
               })
-              .eq("id", session.metadata.qrCodeId)
+              .eq("id", qrCodeId)
               .select("author_id, book_title");
               
-            if (error) throw error;
+            if (error) {
+              console.error("❌ Error updating QR code status:", error);
+              throw error;
+            }
             
             console.log("✅ QR code updated to active status");
             
@@ -108,7 +123,6 @@ serve(async (req)=>{
                 console.log("📧 QR code purchase email notification sent successfully");
               } catch (emailError) {
                 console.error("❌ Failed to send QR code purchase email notification:", emailError);
-                // Continue processing - don't fail the webhook just because email failed
               }
             }
           }
@@ -117,13 +131,25 @@ serve(async (req)=>{
       case "account.updated":
         {
           const account = event.data.object;
+          console.log("🔄 Processing Stripe Connect account update:", account.id);
+          
+          // Check if the account has a user ID in the metadata
           if (account.metadata?.supabaseUserId) {
-            const { error, data: profile } = await supabase.from("profiles").update({
-              stripe_account_id: account.id,
-              stripe_setup_complete: account.payouts_enabled && account.details_submitted
-            }).eq("id", account.metadata.supabaseUserId).select();
+            console.log("🔍 Found user ID in account metadata:", account.metadata.supabaseUserId);
             
-            if (error) throw error;
+            const { error, data: profile } = await supabase.from("profiles")
+              .update({
+                stripe_account_id: account.id, // Ensure ID is saved
+                stripe_setup_complete: account.payouts_enabled && account.details_submitted
+              })
+              .eq("id", account.metadata.supabaseUserId)
+              .select();
+            
+            if (error) {
+              console.error("❌ Error updating profile with Stripe status:", error);
+              throw error;
+            }
+            
             console.log("✅ Profile updated with Stripe status:", profile);
             
             // Send email notification based on stripe setup status
@@ -140,15 +166,33 @@ serve(async (req)=>{
               }
             }
           } else {
-            const { data: profiles, error: findError } = await supabase.from("profiles").select("id").eq("stripe_account_id", account.id);
-            if (findError) throw findError;
+            console.log("⚠️ No user ID found in account metadata, searching by account ID");
+            
+            const { data: profiles, error: findError } = await supabase
+              .from("profiles")
+              .select("id")
+              .eq("stripe_account_id", account.id);
+            
+            if (findError) {
+              console.error("❌ Error finding profiles with account ID:", findError);
+              throw findError;
+            }
             
             if (profiles?.length) {
-              const { error: updateError } = await supabase.from("profiles").update({
-                stripe_setup_complete: account.payouts_enabled && account.details_submitted
-              }).eq("stripe_account_id", account.id);
+              console.log(`✅ Found ${profiles.length} profiles with this account ID`);
               
-              if (updateError) throw updateError;
+              const { error: updateError } = await supabase
+                .from("profiles")
+                .update({
+                  stripe_setup_complete: account.payouts_enabled && account.details_submitted
+                })
+                .eq("stripe_account_id", account.id);
+              
+              if (updateError) {
+                console.error("❌ Error updating profile status:", updateError);
+                throw updateError;
+              }
+              
               console.log("✅ Profile updated via stripe_account_id lookup");
               
               // Send email notification for each profile found
@@ -159,11 +203,13 @@ serve(async (req)=>{
                     : 'stripe_setup_incomplete';
                   
                   await sendEmailNotification(notificationType, profile.id, {});
-                  console.log(`📧 ${notificationType} email notification sent successfully for user ${profile.id}`);
+                  console.log(`📧 ${notificationType} email notification sent for user ${profile.id}`);
                 } catch (emailError) {
                   console.error(`❌ Failed to send stripe setup email notification:`, emailError);
                 }
               }
+            } else {
+              console.warn("⚠️ No profiles found with this account ID:", account.id);
             }
           }
           break;
