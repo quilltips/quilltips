@@ -1,6 +1,7 @@
 
 import { TipLikeButton } from "../TipLikeButton";
 import { TipCommentButton } from "../TipCommentButton";
+import { PublicTipCommentButton } from "./PublicTipCommentButton";
 
 interface TipInteractionButtonsProps {
   tipId: string;
@@ -28,13 +29,19 @@ export const TipInteractionButtons = ({
         initialLiked={isLiked}
         likesCount={likeCount}
       />
-      <TipCommentButton
-        tipId={tipId}
-        authorId={authorId}
-        authorName="" // Adding required prop
-        initialCount={commentCount}
-        onClick={onCommentClick}
-      />
+      {onCommentClick ? (
+        <PublicTipCommentButton 
+          commentCount={commentCount}
+          onClick={onCommentClick}
+        />
+      ) : (
+        <TipCommentButton
+          tipId={tipId}
+          authorId={authorId}
+          authorName="" // Adding required prop
+          initialCount={commentCount}
+        />
+      )}
     </div>
   );
 };
