@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { GetStartedBanner } from "@/components/dashboard/GetStartedBanner";
+import { StripeOnboardingStatus } from "@/components/dashboard/StripeOnboardingStatus";
 
 const AuthorDashboard = () => {
   const navigate = useNavigate();
@@ -76,11 +77,17 @@ const AuthorDashboard = () => {
       <div className="min-h-screen">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
           <div className="max-w-6xl mx-auto space-y-8">
-            <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">
-                Welcome to Quilltips{authorFirstName ? `, ${authorFirstName}` : ''}
-              </h1>
-              <p className="text-[#4A5568] text-lg">Helping authors get paid</p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div className="space-y-2">
+                <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">
+                  Welcome to Quilltips{authorFirstName ? `, ${authorFirstName}` : ''}
+                </h1>
+                <p className="text-[#4A5568] text-lg">Helping authors get paid</p>
+              </div>
+              
+              {hasStripeAccount && stripeSetupComplete && (
+                <StripeOnboardingStatus className="text-[#2D3748] mt-2 sm:mt-0" />
+              )}
             </div>
 
             {shouldShowBanner && (
