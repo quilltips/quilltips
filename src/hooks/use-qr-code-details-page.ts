@@ -20,12 +20,24 @@ export type QRCode = {
   average_tip: number | null;
   last_tip_date: string | null;
   is_paid: boolean;
+  author?: {
+    name: string | null;
+    avatar_url: string | null;
+    bio: string | null;
+  };
 };
 
 export type TipData = {
   tips: any[];
   likes: any[];
   comments: any[];
+};
+
+// Create a consistent queryKey generator to avoid mismatches
+export const qrCodeQueryKeys = {
+  all: ['qr-codes'] as const,
+  detail: (id: string) => [...qrCodeQueryKeys.all, 'detail', id] as const,
+  tips: (id: string) => [...qrCodeQueryKeys.all, 'tips', id] as const,
 };
 
 export const useQRCodeDetailsPage = () => {
@@ -38,21 +50,41 @@ export const useQRCodeDetailsPage = () => {
   const BUCKET_NAME = 'covers';
 
   const { data: qrCode, isLoading: qrLoading } = useQuery({
-    queryKey: ['qr-code', id],
+    queryKey: qrCodeQueryKeys.detail(id || ''),
     queryFn: async () => {
       if (!id) throw new Error('QR code ID is required');
       
       const { data, error } = await supabase
         .from('qr_codes')
-        .select('id, author_id, book_title, publisher, release_date, isbn, cover_image, total_tips, total_amount, average_tip, last_tip_date, is_paid')
+        .select(`
+          id, 
+          author_id, 
+          book_title, 
+          publisher, 
+          release_date, 
+          isbn, 
+          cover_image, 
+          total_tips, 
+          total_amount, 
+          average_tip, 
+          last_tip_date, 
+          is_paid,
+          author:author_id (
+            name,
+            avatar_url,
+            bio
+          )
+        `)
         .eq('id', id)
         .maybeSingle();
 
       if (error) throw error;
       console.log("QR Code data fetched:", data);
+      
       return data as QRCode;
     },
-    staleTime: 60000, // Use a reasonable stale time to prevent constant refetching (1 minute)
+    staleTime: 60000, // 1 minute stale time
+    enabled: !!id,
   });
 
   // Add mutation for updating the cover image
@@ -77,7 +109,18 @@ export const useQRCodeDetailsPage = () => {
     onSuccess: (newImageUrl) => {
       // Invalidate and refetch the QR code data
       console.log("Cover image updated successfully:", newImageUrl);
-      queryClient.invalidateQueries({ queryKey: ['qr-code', id] }); // Only invalidate, don't remove
+      
+      // Update cache immediately for instant UI feedback
+      queryClient.setQueryData(qrCodeQueryKeys.detail(id || ''), (oldData: QRCode | undefined) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          cover_image: newImageUrl
+        };
+      });
+      
+      // Also invalidate to ensure any other components get updated
+      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id || '') });
       
       toast({
         title: "Cover Image Updated",
@@ -95,7 +138,7 @@ export const useQRCodeDetailsPage = () => {
   });
 
   const { data: tipData } = useQuery({
-    queryKey: ['qr-tips', id],
+    queryKey: qrCodeQueryKeys.tips(id || ''),
     queryFn: async () => {
       if (!id) return { tips: [], likes: [], comments: [] };
 

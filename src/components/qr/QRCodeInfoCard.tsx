@@ -25,10 +25,10 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
   const [imageKey, setImageKey] = useState(Date.now()); // Used to force image reload
   const imgRef = useRef<HTMLImageElement>(null);
   
-  // Reset image error state if cover image URL changes
+  // Reset image error state and force reload whenever cover image URL changes
   useEffect(() => {
     if (qrCode.cover_image) {
-      console.log("Cover image URL changed, resetting image error state:", qrCode.cover_image);
+      console.log("QRCodeInfoCard: Cover image URL changed, refreshing image:", qrCode.cover_image);
       setImageError(false);
       // Force image reload by updating the key
       setImageKey(Date.now());
@@ -36,7 +36,7 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
   }, [qrCode.cover_image]);
 
   const handleImageError = () => {
-    console.log("Image failed to load:", qrCode.cover_image);
+    console.log("QRCodeInfoCard: Image failed to load:", qrCode.cover_image);
     setImageError(true);
   };
 
@@ -47,12 +47,16 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
     try {
       // Parse the URL to check if it's valid
       const url = new URL(qrCode.cover_image);
+      
       // Add a cache-busting parameter to the URL
       const hasQueryParams = qrCode.cover_image.includes('?');
       const cacheKey = `cache=${imageKey}`;
-      return `${qrCode.cover_image}${hasQueryParams ? '&' : '?'}${cacheKey}`;
+      const imageUrl = `${qrCode.cover_image}${hasQueryParams ? '&' : '?'}${cacheKey}`;
+      
+      console.log("QRCodeInfoCard: Using cache-busted image URL:", imageUrl);
+      return imageUrl;
     } catch (e) {
-      console.error("Invalid cover image URL:", qrCode.cover_image, e);
+      console.error("QRCodeInfoCard: Invalid cover image URL:", qrCode.cover_image, e);
       return qrCode.cover_image; // Return the original URL if we can't parse it
     }
   };

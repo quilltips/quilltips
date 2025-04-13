@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
+import { qrCodeQueryKeys } from "./use-qr-code-details-page";
 
 export const useQRCodeFetch = () => {
   const { id } = useParams();
@@ -12,7 +13,7 @@ export const useQRCodeFetch = () => {
   const [showPublisherInvite, setShowPublisherInvite] = useState(false);
 
   const { data: qrCode, isLoading: qrCodeLoading } = useQuery({
-    queryKey: ['qr-code', id],
+    queryKey: qrCodeQueryKeys.detail(id || ''),
     queryFn: async () => {
       const { data: qrData, error: qrError } = await supabase
         .from('qr_codes')
@@ -29,8 +30,11 @@ export const useQRCodeFetch = () => {
 
       if (qrError) throw qrError;
       if (!qrData) throw new Error('QR code not found');
+      console.log("QRCodeFetch: QR code data loaded:", qrData);
       return qrData;
-    }
+    },
+    staleTime: 60000, // 1 minute stale time
+    enabled: !!id,
   });
 
   useEffect(() => {

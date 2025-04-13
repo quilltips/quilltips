@@ -7,6 +7,8 @@ import { Loader2, AlertCircle, Edit } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { useQueryClient } from "@tanstack/react-query";
+import { qrCodeQueryKeys } from "@/hooks/use-qr-code-details-page";
 
 interface BookCoverUploadProps {
   qrCodeId: string;
@@ -26,6 +28,7 @@ export const BookCoverUpload = ({
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -90,10 +93,7 @@ export const BookCoverUpload = ({
       if (updateCoverImage) {
         console.log("Using mutation to update cover image");
         await updateCoverImage(publicUrl);
-        toast({
-          title: "Cover Image Updated",
-          description: "Your book cover image has been updated successfully.",
-        });
+        // Cache updating is handled in the mutation
       } 
       // Fallback to the callback method if mutation isn't provided
       else if (onUpdateImage) {
@@ -107,6 +107,9 @@ export const BookCoverUpload = ({
           console.error("Database update error:", updateQrCodeError);
           throw updateQrCodeError;
         }
+        
+        // Update the cache manually in this case
+        queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(qrCodeId) });
         
         // Call the callback to update the image in the parent component
         onUpdateImage(publicUrl);
