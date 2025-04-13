@@ -1,149 +1,145 @@
-
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Card } from "./ui/card";
-import { TipCommentForm } from "./tips/TipCommentForm";
-import { formatDistanceToNow } from "date-fns";
-import { Separator } from "./ui/separator";
-import { MessageCircle } from "lucide-react";
-import { useAuth } from "./auth/AuthProvider";
-import { Button } from "./ui/button";
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { formatDistanceToNow } from 'date-fns';
+import { TipInteractionButtons } from './tips/TipInteractionButtons';
+import { useAuth } from './auth/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TipDetailsDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  tip: {
-    id: string;
-    amount: number;
-    message: string | null;
-    created_at: string;
-    book_title: string | null;
-    author_id: string;
-    reader_name?: string | null;
-    reader_avatar_url?: string | null;
-  } | null;
+  tip: any;
 }
 
 export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps) => {
   const { user } = useAuth();
+  const [likes, setLikes] = useState<any[]>([]);
+  const [comments, setComments] = useState<any[]>([]);
+  const [readerEmail, setReaderEmail] = useState<string | null>(null);
   
-  // Fetch tip comments
-  const { data: comments = [], refetch: refetchComments } = useQuery({
-    queryKey: ['tip_comments', tip?.id],
-    queryFn: async () => {
-      if (!tip?.id) return [];
-      const { data, error } = await supabase
-        .from('tip_comments')
-        .select('*, profiles(name, avatar_url)')
-        .eq('tip_id', tip.id)
-        .order('created_at', { ascending: true });
+  useEffect(() => {
+    if (!tip || !isOpen) return;
 
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!tip?.id,
-  });
+    const fetchLikesAndComments = async () => {
+      // Fetch likes
+      const { data: likesData, error: likesError } = await supabase
+        .from('tip_likes')
+        .select('*')
+        .eq('tip_id', tip.id);
+      
+      if (!likesError) {
+        setLikes(likesData || []);
+      }
+
+      // Fetch comments
+      const { data: commentsData, error: commentsError } = await supabase
+        .from('tip_comments')
+        .select('*')
+        .eq('tip_id', tip.id);
+      
+      if (!commentsError) {
+        setComments(commentsData || []);
+      }
+
+      // Fetch reader email
+      const { data: tipData, error: tipError } = await supabase
+        .from('tips')
+        .select('reader_email')
+        .eq('id', tip.id)
+        .single();
+      
+      if (!tipError && tipData) {
+        setReaderEmail(tipData.reader_email);
+      }
+    };
+
+    fetchLikesAndComments();
+  }, [tip, isOpen]);
 
   if (!tip) return null;
 
-  const commentCount = comments.length;
-  const readerFirstName = tip.reader_name?.split(' ')[0] || 'Anonymous';
+  const isLiked = user ? likes.some(like => 
+    like.tip_id === tip.id && like.author_id === user.id
+  ) : false;
+  
+  const likeCount = likes.filter(like => like.tip_id === tip.id).length;
+  const commentCount = comments.filter(comment => comment.tip_id === tip.id).length;
+
+  // Extract first name from reader_name
+  const firstName = tip.reader_name ? tip.reader_name.split(' ')[0] : "Anonymous";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[550px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Tip Details</DialogTitle>
+          <DialogDescription>
+            View details about this tip
+          </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-6 py-4">
-          <div className="flex items-center space-x-4">
+        <div className="space-y-4 pt-4">
+          <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={readerFirstName} />
+              <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={firstName} />
               <AvatarFallback>
                 {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
+            
             <div>
-              <p className="font-medium">{tip.reader_name || 'Anonymous Reader'}</p>
+              <p className="font-medium">{tip.reader_name || "Anonymous Reader"}</p>
               <p className="text-sm text-muted-foreground">
                 {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
               </p>
             </div>
           </div>
-
-          <Card className="p-4 space-y-4">
-            <div className="text-lg font-semibold">
-              {readerFirstName} sent a tip
-              {tip.book_title ? ` for "${tip.book_title}"!` : "!"}
+          
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Amount:</span>
+              <span className="font-medium">${tip.amount}</span>
             </div>
             
-            {tip.message && (
-              <p className="text-muted-foreground">"{tip.message}"</p>
+            {tip.book_title && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Book:</span>
+                <span className="font-medium italic">{tip.book_title}</span>
+              </div>
             )}
             
-            <div className="pt-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-1"
-              >
-                <MessageCircle className="h-4 w-4 fill-[#19363C]/10 stroke-[#19363C]" />
-                <span>{commentCount}</span>
-              </Button>
-            </div>
-          </Card>
-          
-          {comments.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Comments ({comments.length})</h3>
-              
-              <div className="space-y-4">
-                {comments.map(comment => (
-                  <div key={comment.id} className="flex space-x-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={(comment.profiles as any)?.avatar_url || "/reader-avatar.svg"} alt={(comment.profiles as any)?.name || "Anonymous"} />
-                      <AvatarFallback>
-                        {((comment.profiles as any)?.name || "A").charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="bg-muted p-3 rounded-lg">
-                        <div className="font-medium">{(comment.profiles as any)?.name || "Anonymous"}</div>
-                        <p>{comment.content}</p>
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            {tip.message && (
+              <div className="mt-4">
+                <p className="text-muted-foreground mb-1">Message:</p>
+                <div className="bg-muted p-3 rounded-md">
+                  <p>{tip.message}</p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
           
           {user && (
-            <>
-              <Separator />
-              <TipCommentForm 
-                tipId={tip.id} 
-                authorId={user.id} 
-                onCommentAdded={() => refetchComments()}
+            <div className="pt-2">
+              <TipInteractionButtons
+                tipId={tip.id}
+                authorId={user.id}
+                authorName={user.name || ""}
+                isLiked={isLiked}
+                likeCount={likeCount}
+                commentCount={commentCount}
+                readerEmail={readerEmail}
+                bookTitle={tip.book_title}
+                tipMessage={tip.message}
+                tipAmount={tip.amount}
               />
-            </>
-          )}
-          
-          {!user && comments.length === 0 && (
-            <p className="text-center text-muted-foreground text-sm">
-              Sign in to leave a comment
-            </p>
+            </div>
           )}
         </div>
       </DialogContent>

@@ -3,38 +3,35 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useTipHistory = (authorId: string, qrCodeId?: string, limit?: number) => {
-  const { data: tips, isLoading } = useQuery({
-    queryKey: ['tips', authorId, qrCodeId, limit],
+  const { data: tips, isLoading: tipsLoading } = useQuery({
+    queryKey: ['tip-history', authorId, qrCodeId, limit],
     queryFn: async () => {
       let query = supabase
         .from('tips')
-        .select('*, profiles!tips_author_id_fkey(name, avatar_url)')
+        .select(`
+          *,
+          qr_code:qr_code_id(book_title)
+        `)
         .eq('author_id', authorId)
         .order('created_at', { ascending: false });
-        
+
       if (qrCodeId) {
         query = query.eq('qr_code_id', qrCodeId);
       }
-      
+
       if (limit) {
         query = query.limit(limit);
       }
-      
+
       const { data, error } = await query;
       
       if (error) throw error;
-
-      // Map the data to include the reader's name correctly
-      return data.map(tip => ({
-        ...tip,
-        reader_name: tip.reader_name || "Anonymous Reader",
-        reader_avatar_url: tip.profiles?.avatar_url
-      }));
+      return data || [];
     }
   });
 
-  const { data: likes } = useQuery({
-    queryKey: ['tip_likes', authorId],
+  const { data: likes, isLoading: likesLoading } = useQuery({
+    queryKey: ['tip-likes', authorId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tip_likes')
@@ -46,8 +43,8 @@ export const useTipHistory = (authorId: string, qrCodeId?: string, limit?: numbe
     }
   });
 
-  const { data: comments } = useQuery({
-    queryKey: ['tip_comments', authorId],
+  const { data: comments, isLoading: commentsLoading } = useQuery({
+    queryKey: ['tip-comments', authorId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tip_comments')
@@ -60,9 +57,9 @@ export const useTipHistory = (authorId: string, qrCodeId?: string, limit?: numbe
   });
 
   return {
-    tips: tips || [],
-    likes: likes || [],
-    comments: comments || [],
-    isLoading
+    tips,
+    likes,
+    comments,
+    isLoading: tipsLoading || likesLoading || commentsLoading
   };
 };

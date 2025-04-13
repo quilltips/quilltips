@@ -4,6 +4,8 @@ import { formatDistanceToNow } from "date-fns";
 import { TipMessagePreview } from "./TipMessagePreview";
 import { TipInteractionButtons } from "./TipInteractionButtons";
 import { useAuth } from "../auth/AuthProvider";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TipTableRowProps {
   tip: {
@@ -15,6 +17,7 @@ interface TipTableRowProps {
     author_id: string;
     reader_name?: string;
     reader_avatar_url?: string;
+    qr_code_id?: string;
   };
   authorId: string;
   likes?: any[];
@@ -30,6 +33,7 @@ export const TipTableRow = ({
   onSelectTip 
 }: TipTableRowProps) => {
   const { user } = useAuth();
+  const [readerEmail, setReaderEmail] = useState<string | null>(null);
   
   const isLiked = user ? likes?.some(like => 
     like.tip_id === tip.id && like.author_id === user.id
@@ -40,6 +44,27 @@ export const TipTableRow = ({
   
   // Extract first name from reader_name
   const firstName = tip.reader_name ? tip.reader_name.split(' ')[0] : "Anonymous";
+
+  // Fetch the reader's email from the tips table
+  useEffect(() => {
+    const fetchReaderEmail = async () => {
+      if (tip.id) {
+        const { data, error } = await supabase
+          .from('tips')
+          .select('reader_email')
+          .eq('id', tip.id)
+          .single();
+        
+        if (!error && data) {
+          setReaderEmail(data.reader_email);
+        } else {
+          console.error('Error fetching reader email:', error);
+        }
+      }
+    };
+
+    fetchReaderEmail();
+  }, [tip.id]);
 
   return (
     <div 
@@ -77,9 +102,14 @@ export const TipTableRow = ({
               <TipInteractionButtons
                 tipId={tip.id}
                 authorId={user.id}
+                authorName={user.name || ""}
                 isLiked={isLiked}
                 likeCount={likeCount}
                 commentCount={commentCount}
+                readerEmail={readerEmail}
+                bookTitle={tip.book_title}
+                tipMessage={tip.message}
+                tipAmount={tip.amount}
                 onCommentClick={() => onSelectTip(tip)}
               />
             </div>
