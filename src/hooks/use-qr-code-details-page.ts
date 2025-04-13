@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toPng, toSvg } from "html-to-image";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useToast } from "./use-toast";
 
 // Define explicit database types
@@ -33,6 +33,9 @@ export const useQRCodeDetailsPage = () => {
   const qrCodeRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  
+  // Use a consistent bucket name throughout the application
+  const BUCKET_NAME = 'covers';
 
   const { data: qrCode, isLoading: qrLoading } = useQuery({
     queryKey: ['qr-code', id],
@@ -49,7 +52,7 @@ export const useQRCodeDetailsPage = () => {
       console.log("QR Code data fetched:", data);
       return data as QRCode;
     },
-    staleTime: 30000, // Consider data fresh for 30 seconds
+    staleTime: 0, // Don't use stale data, always refetch to ensure latest image
   });
 
   // Add mutation for updating the cover image
@@ -57,18 +60,26 @@ export const useQRCodeDetailsPage = () => {
     mutationFn: async (imageUrl: string) => {
       if (!id) throw new Error('QR code ID is required');
       
+      console.log("Updating cover image in database to:", imageUrl);
+      
       const { error } = await supabase
         .from('qr_codes')
         .update({ cover_image: imageUrl || null })
         .eq('id', id);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Database update error:", error);
+        throw error;
+      }
       
       return imageUrl;
     },
-    onSuccess: () => {
+    onSuccess: (newImageUrl) => {
       // Invalidate and refetch the QR code data
-      queryClient.invalidateQueries({ queryKey: ['qr-code', id] });
+      console.log("Cover image updated successfully:", newImageUrl);
+      queryClient.removeQueries({ queryKey: ['qr-code', id] }); // Remove from cache completely
+      queryClient.invalidateQueries({ queryKey: ['qr-code', id] }); // Force refetch
+      
       toast({
         title: "Cover Image Updated",
         description: "Your book cover image has been updated successfully.",
@@ -87,6 +98,8 @@ export const useQRCodeDetailsPage = () => {
   // Force refetch to ensure we have the latest data
   useEffect(() => {
     if (id) {
+      // Immediate refetch on mount
+      queryClient.removeQueries({ queryKey: ['qr-code', id] });
       queryClient.invalidateQueries({ queryKey: ['qr-code', id] });
     }
   }, [id, queryClient]);

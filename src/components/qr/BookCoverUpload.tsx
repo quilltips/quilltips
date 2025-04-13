@@ -29,6 +29,9 @@ export const BookCoverUpload = ({
 
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  
+  // Use a consistent bucket name throughout the application
+  const BUCKET_NAME = 'covers';
 
   const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,22 +64,31 @@ export const BookCoverUpload = ({
     setIsUploading(true);
 
     try {
+      console.log("Starting upload to bucket:", BUCKET_NAME);
       const fileExt = file.name.split('.').pop();
       const filePath = `${qrCodeId}-${Date.now()}.${fileExt}`;
 
-      // Fix: Ensure we use the correct bucket name 'book_covers'
+      // Use the consistent bucket name ('covers')
       const { error: uploadError, data } = await supabase.storage
-        .from('book_covers')
+        .from(BUCKET_NAME)
         .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        throw uploadError;
+      }
+
+      console.log("Upload successful:", data);
 
       const { data: { publicUrl } } = supabase.storage
-        .from('book_covers')
+        .from(BUCKET_NAME)
         .getPublicUrl(filePath);
+
+      console.log("Generated public URL:", publicUrl);
 
       // Use the mutation if provided (preferred method)
       if (updateCoverImage) {
+        console.log("Using mutation to update cover image");
         await updateCoverImage(publicUrl);
         toast({
           title: "Cover Image Updated",
@@ -85,12 +97,16 @@ export const BookCoverUpload = ({
       } 
       // Fallback to the callback method if mutation isn't provided
       else if (onUpdateImage) {
+        console.log("Using direct Supabase update");
         const { error: updateQrCodeError } = await supabase
           .from('qr_codes')
           .update({ cover_image: publicUrl })
           .eq('id', qrCodeId);
 
-        if (updateQrCodeError) throw updateQrCodeError;
+        if (updateQrCodeError) {
+          console.error("Database update error:", updateQrCodeError);
+          throw updateQrCodeError;
+        }
         
         // Call the callback to update the image in the parent component
         onUpdateImage(publicUrl);

@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { BookCoverUpload } from "./BookCoverUpload";
 import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface QRCodeInfoCardProps {
   qrCode: {
@@ -22,15 +22,28 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
   // Get the mutation function from the hook if we're in an editable context
   const { updateCoverImage } = isEditable ? useQRCodeDetailsPage() : { updateCoverImage: undefined };
   const [imageError, setImageError] = useState(false);
+  const [imageKey, setImageKey] = useState(Date.now()); // Used to force image reload
+  const imgRef = useRef<HTMLImageElement>(null);
   
   // Reset image error state if cover image changes
   useEffect(() => {
     setImageError(false);
+    // Force image reload by updating the key
+    setImageKey(Date.now());
   }, [qrCode.cover_image]);
 
   const handleImageError = () => {
     console.log("Image failed to load:", qrCode.cover_image);
     setImageError(true);
+  };
+
+  // Prevent browser caching of images by adding timestamp parameter
+  const getCoverImageWithCache = () => {
+    if (!qrCode.cover_image) return null;
+    // Add a cache-busting parameter to the URL
+    const hasQueryParams = qrCode.cover_image.includes('?');
+    const cacheKey = `cache=${imageKey}`;
+    return `${qrCode.cover_image}${hasQueryParams ? '&' : '?'}${cacheKey}`;
   };
 
   return (
@@ -40,7 +53,9 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
       <div className="aspect-square relative rounded-xl overflow-hidden border border-muted">
         {qrCode.cover_image && !imageError ? (
           <img
-            src={qrCode.cover_image}
+            ref={imgRef}
+            key={imageKey} // Force rerender when cover image changes
+            src={getCoverImageWithCache()}
             alt={qrCode.book_title}
             className="w-full h-full object-cover"
             onError={handleImageError}

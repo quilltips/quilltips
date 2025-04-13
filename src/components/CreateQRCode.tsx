@@ -28,6 +28,9 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const imgRef = useRef<HTMLImageElement>(null);
+  
+  // Use a consistent bucket name throughout the application
+  const BUCKET_NAME = 'covers';
 
   const validateImage = (file: File): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -103,22 +106,28 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         const fileExt = coverImage.name.split('.').pop();
         const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
-        // Fix: Change bucket from 'covers' to 'book_covers' for consistency
+        console.log("Uploading to bucket:", BUCKET_NAME);
+        
+        // Use the consistent bucket name ('covers')
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('book_covers')
+          .from(BUCKET_NAME)
           .upload(filePath, coverImage);
 
         if (uploadError) {
+          console.error("Upload error:", uploadError);
           if (uploadError.message.includes('duplicate')) {
             throw new Error('A QR code with this ISBN already exists');
           }
           throw uploadError;
         }
 
+        console.log("Upload successful:", uploadData);
+
         const { data: { publicUrl } } = supabase.storage
-          .from('book_covers')
+          .from(BUCKET_NAME)
           .getPublicUrl(filePath);
 
+        console.log("Generated public URL:", publicUrl);
         coverImageUrl = publicUrl;
       }
 
@@ -138,11 +147,14 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         .single();
 
       if (qrError) {
+        console.error("QR code creation error:", qrError);
         if (qrError.message.includes('qr_codes_isbn_unique')) {
           throw new Error('A QR code with this ISBN already exists');
         }
         throw qrError;
       }
+
+      console.log("QR Code created:", qrCode);
 
       toast({
         title: "Success",
