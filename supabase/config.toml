@@ -12,5 +12,27 @@ verify_jwt = false
 [functions.stripe-webhook]
 verify_jwt = false
 
+[functions.send-reader-notification]
+verify_jwt = false
+
+[functions.verify-stripe-session]
+verify_jwt = false
+
+[functions.send-email-notification]
+verify_jwt = false
+
+[functions.create-qr-checkout]
+verify_jwt = false
+
+[functions.create-tip-checkout]
+verify_jwt = false
+
+
+[functions.create-connect-account]
+verify_jwt = false
+
+[functions.create-checkout-session]
+verify_jwt = false
+
 [[fetch.release]]
 uri = "https://api.uniqode.com/v2/"
