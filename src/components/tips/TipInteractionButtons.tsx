@@ -24,13 +24,15 @@ export const TipInteractionButtons = ({
       <TipLikeButton
         tipId={tipId}
         authorId={authorId}
-        isLiked={isLiked}
-        likeCount={likeCount}
+        authorName="" // Adding required prop
+        initialLiked={isLiked}
+        likesCount={likeCount}
       />
       <TipCommentButton
         tipId={tipId}
         authorId={authorId}
-        commentCount={commentCount}
+        authorName="" // Adding required prop
+        initialCount={commentCount}
         onClick={onCommentClick}
       />
     </div>
