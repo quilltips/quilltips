@@ -41,6 +41,9 @@ export type Database = {
           role: string | null
           social_links: Json | null
           stripe_account_id: string | null
+          stripe_emails_sent: Json | null
+          stripe_onboarding_completed_at: string | null
+          stripe_onboarding_started_at: string | null
           stripe_setup_complete: boolean | null
           updated_at: string
         }
@@ -54,6 +57,9 @@ export type Database = {
           role?: string | null
           social_links?: Json | null
           stripe_account_id?: string | null
+          stripe_emails_sent?: Json | null
+          stripe_onboarding_completed_at?: string | null
+          stripe_onboarding_started_at?: string | null
           stripe_setup_complete?: boolean | null
           updated_at?: string
         }
@@ -67,6 +73,9 @@ export type Database = {
           role?: string | null
           social_links?: Json | null
           stripe_account_id?: string | null
+          stripe_emails_sent?: Json | null
+          stripe_onboarding_completed_at?: string | null
+          stripe_onboarding_started_at?: string | null
           stripe_setup_complete?: boolean | null
           updated_at?: string
         }
@@ -432,6 +441,10 @@ export type Database = {
           social_links: Json | null
         }[]
       }
+      has_email_been_sent: {
+        Args: { user_id: string; email_type: string }
+        Returns: boolean
+      }
       insert_public_profile: {
         Args: {
           profile_id: string
@@ -440,6 +453,10 @@ export type Database = {
           profile_avatar_url: string
           profile_social_links: Json
         }
+        Returns: undefined
+      }
+      record_email_sent: {
+        Args: { user_id: string; email_type: string }
         Returns: undefined
       }
       test_pg_net_extension: {
