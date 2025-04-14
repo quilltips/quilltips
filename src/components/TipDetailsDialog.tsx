@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -42,7 +41,6 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
         setComments(commentsData);
       }
 
-      // Fetch reader email
       const { data: tipData } = await supabase
         .from('tips')
         .select('reader_email')
@@ -56,7 +54,6 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
 
     fetchComments();
 
-    // Set up real-time subscription for comments
     const commentsSubscription = supabase
       .channel('comments-channel')
       .on('postgres_changes', {
@@ -65,7 +62,6 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
         table: 'tip_comments',
         filter: `tip_id=eq.${tip.id}`
       }, async () => {
-        // Refresh comments when there's a change
         const { data: newComments } = await supabase
           .from('tip_comments')
           .select('*, profiles(name, avatar_url)')
@@ -100,7 +96,6 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
 
       setNewComment('');
       
-      // Send notification to reader if we have their email
       if (readerEmail) {
         try {
           await supabase.functions.invoke('send-reader-notification', {
@@ -134,15 +129,15 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] p-0">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto p-0">
         <DialogHeader className="p-4 border-b">
           <DialogTitle className="text-lg font-playfair">Tip Details</DialogTitle>
         </DialogHeader>
         
         <ScrollArea className="max-h-[calc(90vh-4rem)]">
-          <div className="p-4 space-y-4">
-            {/* Reader info - more compact */}
-            <div className="flex items-center gap-2 pb-2">
+          <div className="p-4 space-y-6">
+            {/* Reader info */}
+            <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={firstName} />
                 <AvatarFallback>{(tip.reader_name || "A").charAt(0).toUpperCase()}</AvatarFallback>
@@ -154,30 +149,33 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 </p>
               </div>
             </div>
-            
-            {/* Tip details - more compact */}
-            <div className="space-y-3">
-              <div className="flex justify-between items-center bg-accent/10 px-3 py-2 rounded-md text-sm">
-                <span className="text-muted-foreground">Amount</span>
-                <span className="font-medium">${tip.amount}</span>
+
+            {/* Tip details */}
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="text-muted-foreground">Amount</p>
+                <p className="text-lg font-medium">${tip.amount}</p>
               </div>
-              
+
               {tip.book_title && (
-                <div className="flex justify-between items-center bg-accent/10 px-3 py-2 rounded-md text-sm">
-                  <span className="text-muted-foreground">Book</span>
-                  <span className="font-medium italic">{tip.book_title}</span>
+                <div>
+                  <p className="text-muted-foreground">Book</p>
+                  <p className="text-lg italic font-medium">{tip.book_title}</p>
                 </div>
               )}
-              
+
               {tip.message && (
-                <div className="bg-accent/10 px-3 py-2 rounded-md text-sm">
-                  <p className="text-muted-foreground mb-1">Message</p>
-                  <p>{tip.message}</p>
+                <div className="bg-muted/50 p-4 rounded-lg space-y-2">
+                  <div className="flex items-center gap-2">
+            
+                    <p className="text-sm font-semibold uppercase text-muted-foreground tracking-wide">Message from reader</p>
+                  </div>
+                  <p className="text-base text-foreground leading-relaxed">{tip.message}</p>
                 </div>
               )}
             </div>
-            
-            {/* Comments section */}
+
+            {/* Comments */}
             <div className="space-y-3">
               <div className="flex items-center gap-1">
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
