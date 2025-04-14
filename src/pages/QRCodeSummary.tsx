@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -21,7 +20,6 @@ const QRCodeSummary = () => {
   const { toast } = useToast();
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'pending' | 'complete'>('idle');
 
-  // Query to fetch QR code data
   const { data: qrCode, isLoading, refetch } = useQuery({
     queryKey: ['qr-code', qrCodeId],
     queryFn: async () => {
@@ -38,12 +36,10 @@ const QRCodeSummary = () => {
     }
   });
 
-  // Mutation to update QR code payment status
   const updatePaymentStatus = useMutation({
     mutationFn: async () => {
       if (!qrCodeId || !sessionId) return;
 
-      // First verify the payment with Stripe directly
       const { data, error: stripeError } = await supabase.functions.invoke('verify-stripe-session', {
         body: { sessionId }
       });
@@ -52,7 +48,6 @@ const QRCodeSummary = () => {
         throw new Error('Payment verification failed');
       }
       
-      // If payment is verified, update the QR code status
       const { error: updateError } = await supabase
         .from('qr_codes')
         .update({ 
@@ -72,7 +67,7 @@ const QRCodeSummary = () => {
         description: "Your QR code is now ready to download and use.",
       });
       setVerificationStatus('complete');
-      refetch(); // Refresh QR code data
+      refetch();
     },
     onError: (error) => {
       console.error("Error verifying payment:", error);
@@ -85,7 +80,6 @@ const QRCodeSummary = () => {
     }
   });
 
-  // Check payment status when component loads with session_id parameter
   useEffect(() => {
     const verifyPayment = async () => {
       if (sessionId && qrCode && !qrCode.is_paid && verificationStatus === 'idle') {
@@ -99,7 +93,6 @@ const QRCodeSummary = () => {
     }
   }, [qrCode, sessionId, verificationStatus]);
 
-  // Show loading state for both initial data fetch and payment verification
   if (isLoading || verificationStatus === 'pending') {
     return (
       <Layout>
@@ -123,7 +116,6 @@ const QRCodeSummary = () => {
   const isPaid = qrCode.is_paid === true;
   const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
-  // Download handlers
   const handleDownloadSVG = async () => {
     if (!isPaid) {
       toast({
@@ -209,7 +201,7 @@ const QRCodeSummary = () => {
         <div className="max-w-4xl mx-auto">
           <Link 
             to="/author/dashboard" 
-            className="inline-flex items-center text-[#9b87f5] hover:text-[#9b87f5]/80 mb-8"
+            className="inline-flex items-center text-[#19363C] hover:text-[#19363C]/80 mb-8"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Return to Dashboard

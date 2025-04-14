@@ -1,4 +1,3 @@
-
 // supabase/functions/platform-webhook/index.ts
 export const config = {
   path: "/platform-webhook",
@@ -58,8 +57,42 @@ serve(async (req) => {
         const session = event.data.object;
         console.log("📊 Processing platform-level completed checkout session:", session.id);
         
-        // Centralized handling for different payment types
-        if (session.metadata?.type === "qr_code_purchase") {
+        // Handle different payment types
+        if (session.metadata?.type === "tip") {
+          console.log("💰 Processing tip payment");
+          
+          // Update tip status
+          const { data: tipData, error: tipError } = await supabase
+            .from("tips")
+            .update({ 
+              status: "complete",
+              reader_email: session.customer_email || null 
+            })
+            .eq("stripe_session_id", session.id)
+            .select("author_id, amount, book_title, message")
+            .single();
+            
+          if (tipError) {
+            console.error("❌ Error updating tip record:", tipError);
+            throw tipError;
+          }
+          
+          console.log("✅ Tip record updated:", tipData);
+          
+          // Send email notification for tip
+          if (tipData) {
+            try {
+              await sendEmailNotification('tip_received', tipData.author_id, {
+                amount: tipData.amount,
+                bookTitle: tipData.book_title || 'your book',
+                message: tipData.message || ''
+              });
+              console.log("📧 Tip received email notification sent successfully");
+            } catch (emailError) {
+              console.error("❌ Failed to send tip received email notification:", emailError);
+            }
+          }
+        } else if (session.metadata?.type === "qr_code_purchase") {
           console.log("🔍 Processing QR code purchase");
           
           // Validate required metadata
