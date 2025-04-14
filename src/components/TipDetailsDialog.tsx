@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -30,38 +29,63 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
 
     const fetchLikesAndComments = async () => {
       // Fetch likes
-      const { data: likesData, error: likesError } = await supabase
+      const { data: likesData } = await supabase
         .from('tip_likes')
         .select('*')
         .eq('tip_id', tip.id);
       
-      if (!likesError) {
-        setLikes(likesData || []);
+      if (likesData) {
+        setLikes(likesData);
       }
 
       // Fetch comments
-      const { data: commentsData, error: commentsError } = await supabase
+      const { data: commentsData } = await supabase
         .from('tip_comments')
-        .select('*')
+        .select('*, profiles(name, avatar_url)')
         .eq('tip_id', tip.id);
       
-      if (!commentsError) {
-        setComments(commentsData || []);
+      if (commentsData) {
+        setComments(commentsData);
       }
 
       // Fetch reader email
-      const { data: tipData, error: tipError } = await supabase
+      const { data: tipData } = await supabase
         .from('tips')
         .select('reader_email')
         .eq('id', tip.id)
         .single();
       
-      if (!tipError && tipData) {
+      if (tipData) {
         setReaderEmail(tipData.reader_email);
       }
     };
 
     fetchLikesAndComments();
+
+    // Set up real-time subscription for comments
+    const commentsSubscription = supabase
+      .channel('comments-channel')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'tip_comments',
+        filter: `tip_id=eq.${tip.id}`
+      }, async (payload) => {
+        // Refresh comments when there's a change
+        const { data: newComments } = await supabase
+          .from('tip_comments')
+          .select('*, profiles(name, avatar_url)')
+          .eq('tip_id', tip.id);
+        
+        if (newComments) {
+          setComments(newComments);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      commentsSubscription.unsubscribe();
+    };
   }, [tip, isOpen]);
 
   if (!tip) return null;
@@ -140,6 +164,26 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 tipMessage={tip.message}
                 tipAmount={tip.amount}
               />
+            </div>
+          )}
+
+          {/* Display comments */}
+          {comments.length > 0 && (
+            <div className="mt-4 space-y-3">
+              <h3 className="text-sm font-medium">Comments ({commentCount})</h3>
+              {comments.map((comment) => (
+                <div key={comment.id} className="bg-gray-50 p-3 rounded-md">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium">
+                      {comment.profiles?.name || "Author"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                    </span>
+                  </div>
+                  <p className="text-sm">{comment.content}</p>
+                </div>
+              ))}
             </div>
           )}
         </div>

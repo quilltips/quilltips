@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from 'https://esm.sh/stripe@14.21.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
@@ -119,8 +118,8 @@ serve(async (req) => {
             // Create account link for completing setup
             const accountLink = await stripe.accountLinks.create({
               account: accountId,
-              refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
-              return_url: `${req.headers.get('origin')}/author/settings?setup=complete`,
+              refresh_url: `${req.headers.get('origin')}/author/dashboard?refresh=true`,
+              return_url: `${req.headers.get('origin')}/author/dashboard?setup=complete`,
               type: 'account_onboarding',
             });
             accountUrl = accountLink.url;
@@ -177,8 +176,8 @@ serve(async (req) => {
         // Create account link for onboarding
         const accountLink = await stripe.accountLinks.create({
           account: account.id,
-          refresh_url: `${req.headers.get('origin')}/author/settings?refresh=true`,
-          return_url: `${req.headers.get('origin')}/author/settings?setup=complete`,
+          refresh_url: `${req.headers.get('origin')}/author/dashboard?refresh=true`,
+          return_url: `${req.headers.get('origin')}/author/dashboard?setup=complete`,
           type: 'account_onboarding',
         });
         accountUrl = accountLink.url;

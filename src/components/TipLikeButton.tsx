@@ -36,54 +36,41 @@ export const TipLikeButton = ({
   const { toast } = useToast();
 
   const handleLike = async () => {
-    if (isLoading) return;
+    // Prevent liking if already liked (no unlike functionality)
+    if (isLoading || liked) return;
+    
     setIsLoading(true);
 
     try {
-      if (liked) {
-        // Remove like
-        const { error } = await supabase
-          .from('tip_likes')
-          .delete()
-          .match({ author_id: authorId, tip_id: tipId });
+      // Add like
+      const { error } = await supabase
+        .from('tip_likes')
+        .insert([{ author_id: authorId, tip_id: tipId }]);
 
-        if (error) throw error;
-        
-        setLiked(false);
-        setCount(prev => Math.max(0, prev - 1));
-        
-      } else {
-        // Add like
-        const { error } = await supabase
-          .from('tip_likes')
-          .insert([{ author_id: authorId, tip_id: tipId }]);
-
-        if (error) throw error;
-        
-        setLiked(true);
-        setCount(prev => prev + 1);
-        
-        // Send notification to reader if we have their email
-        if (readerEmail) {
-          try {
-            await supabase.functions.invoke('send-reader-notification', {
-              body: {
-                type: 'tip_liked',
-                readerEmail,
-                data: {
-                  tipId,
-                  authorName,
-                  bookTitle,
-                  amount: tipAmount,
-                  message: tipMessage
-                }
+      if (error) throw error;
+      
+      setLiked(true);
+      setCount(prev => prev + 1);
+      
+      // Send notification to reader
+      if (readerEmail) {
+        try {
+          await supabase.functions.invoke('send-reader-notification', {
+            body: {
+              type: 'tip_liked',
+              readerEmail,
+              data: {
+                tipId,
+                authorName,
+                bookTitle,
+                amount: tipAmount,
+                message: tipMessage
               }
-            });
-            console.log('Reader notification sent successfully');
-          } catch (notifyError) {
-            console.error('Failed to send reader notification:', notifyError);
-            // Continue with the UI update even if notification fails
-          }
+            }
+          });
+          console.log('Reader notification sent successfully');
+        } catch (notifyError) {
+          console.error('Failed to send reader notification:', notifyError);
         }
       }
     } catch (error: any) {
@@ -102,12 +89,13 @@ export const TipLikeButton = ({
     <Button 
       variant="outline" 
       size="sm"
-      className={`flex items-center gap-1 ${className} ${liked ? 'bg-green-50 border-green-200 text-green-600' : ''}`}
+      className={`flex items-center gap-1 ${className} ${liked ? 'bg-green-50 border-green-200 text-green-600 cursor-default' : ''}`}
       onClick={handleLike}
-      disabled={isLoading}
+      disabled={isLoading || liked}
     >
       <ThumbsUp size={16} className={liked ? 'text-green-600' : ''} />
       <span>{count}</span>
     </Button>
   );
 };
+
