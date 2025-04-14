@@ -22,6 +22,7 @@ import HowItWorks from "@/pages/HowItWorks";
 import PublicProfilePage from "@/pages/PublicProfilePage";
 import TipSuccessPage from "@/pages/TipSuccessPage";
 import UnsubscribePage from "@/pages/UnsubscribePage";
+import StripeHelp from "@/pages/StripeHelp";
 
 export const routes = [
   { path: "/", element: <Index /> },
@@ -50,5 +51,9 @@ export const routes = [
   {
     path: "/unsubscribe",
     element: <UnsubscribePage />,
+  },
+  {
+    path: "/stripe-help",
+    element: <StripeHelp />,
   },
 ];

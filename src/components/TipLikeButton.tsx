@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -36,13 +35,11 @@ export const TipLikeButton = ({
   const { toast } = useToast();
 
   const handleLike = async () => {
-    // Prevent liking if already liked (no unlike functionality)
     if (isLoading || liked) return;
     
     setIsLoading(true);
 
     try {
-      // Add like
       const { error } = await supabase
         .from('tip_likes')
         .insert([{ author_id: authorId, tip_id: tipId }]);
@@ -52,7 +49,6 @@ export const TipLikeButton = ({
       setLiked(true);
       setCount(prev => prev + 1);
       
-      // Send notification to reader
       if (readerEmail) {
         try {
           await supabase.functions.invoke('send-reader-notification', {
@@ -89,13 +85,12 @@ export const TipLikeButton = ({
     <Button 
       variant="outline" 
       size="sm"
-      className={`flex items-center gap-1 ${className} ${liked ? 'bg-green-50 border-green-200 text-green-600 cursor-default' : ''}`}
+      className={`flex items-center gap-1 ${className} ${liked ? 'bg-[#19363C]/5 border-[#19363C] text-[#19363C] cursor-default' : ''}`}
       onClick={handleLike}
       disabled={isLoading || liked}
     >
-      <ThumbsUp size={16} className={liked ? 'text-green-600' : ''} />
+      <ThumbsUp size={16} className={liked ? 'text-[#FFD166]' : ''} />
       <span>{count}</span>
     </Button>
   );
 };
-

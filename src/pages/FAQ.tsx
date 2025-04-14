@@ -1,4 +1,3 @@
-
 import { Layout } from "@/components/Layout";
 import {
   Accordion,
@@ -96,7 +95,7 @@ const FAQ = () => {
                 <AccordionItem value="collect-payments">
                   <AccordionTrigger>How do I collect payments?</AccordionTrigger>
                   <AccordionContent>
-                    During the account creation process, you'll be asked to set up a Stripe Connect account so you can link your preferred payment method. After this is done, you can receive tips directly from readers.
+                    During the account creation process, you'll be asked to set up a Stripe Connect account so you can link your preferred payment method. After this is done, you can receive tips directly from readers. For detailed guidance on the Stripe setup process, visit our <Link to="/stripe-help" className="text-[#19363C] underline">Stripe setup guide</Link>.
                   </AccordionContent>
                 </AccordionItem>
                 

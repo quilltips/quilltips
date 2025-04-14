@@ -48,10 +48,19 @@ export const GetStartedBanner = ({
       
       <div className="flex flex-col sm:flex-row gap-4">
         {profileId && (
-          <BankAccountConnect
-            profileId={profileId}
-            stripeAccountId={stripeAccountId}
-          />
+          <>
+            <BankAccountConnect
+              profileId={profileId}
+              stripeAccountId={stripeAccountId}
+            />
+            <Button 
+              onClick={() => navigate('/stripe-help')}
+              variant="outline" 
+              className="w-full sm:w-auto px-6 py-2 h-auto border-[#2D3748] text-[#2D3748] hover:bg-[#2D3748]/5 font-medium text-base"
+            >
+              Help with Stripe
+            </Button>
+          </>
         )}
         
         <Button 
