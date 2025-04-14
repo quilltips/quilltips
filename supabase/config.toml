@@ -36,3 +36,22 @@ verify_jwt = false
 [functions.stripe-email-reminders]
 verify_jwt = false
 schedule = "@daily" # Run once a day
+
+
+[functions.platform-webhook]
+verify_jwt = false
+
+[functions.verify-stripe-session]
+verify_jwt = false
+
+[functions.create-qr-checkout]
+verify_jwt = false
+
+[functions.create-tip-checkout]
+verify_jwt = false
+
+[functions.create-connect-account]
+verify_jwt = false
+
+[functions.create-checkout-session]
+verify_jwt = false
