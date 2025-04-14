@@ -112,7 +112,7 @@ const Index = () => {
             <div>
               <h3 className="font-semibold text-2xl mb-4">Step 1. Create your Quilltips Jar</h3>
               <p className="text-muted-foreground">
-                Create a virtual tip jar, accessible through a QR code. Download the code to print on the cover or inside the jacket of your next book.
+                Create a virtual tip jar, accessible through a QR code. Download the code to print on the cover or inside the jacket of your next book. Link your bank account with Stripe. 
               </p>
             </div>
           </div>
@@ -142,7 +142,7 @@ const Index = () => {
             <div>
               <h3 className="font-semibold text-2xl mb-4">Step 3. Build support</h3>
               <p className="text-muted-foreground">
-                Use information gathered from your readers to market your future books.
+                Grow your e-mail list and understand your audience.
               </p>
             </div>
           </div>
