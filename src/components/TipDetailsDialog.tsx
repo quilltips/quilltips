@@ -168,7 +168,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 <div className="bg-muted/50 p-4 rounded-lg space-y-2">
                   <div className="flex items-center gap-2">
             
-                    <p className="text-sm font-semibold uppercase text-muted-foreground tracking-wide">Message from reader</p>
+                    <p className="text-sm font-semibold uppercase text-muted-foreground tracking-wide">Message</p>
                   </div>
                   <p className="text-base text-foreground leading-relaxed">{tip.message}</p>
                 </div>
