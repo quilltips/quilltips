@@ -10,6 +10,14 @@ const StripeHelp = () => {
         </h1>
         
         <div className="space-y-6 text-gray-600">
+        <section className="space-y-4">
+            <h2 className="text-2xl font-playfair text-[#19363C]">*IMPORTANT*</h2>
+            <p>
+              Stripe is required by law to verify user identity. Please make sure to fill out all identify verification requirements  during Stripe onboarding to ensure proper account setup. If this is missed the first time, no biggie. You will see a prompt in your author dashboard to complete Stripe setup which will bring you back into their onboarding. 
+            </p>
+            <img src="/lovable-uploads/Stripe_onboarding_example.png" alt="Stripe onboarding example" />
+
+          </section>
           <section className="space-y-4">
             <h2 className="text-2xl font-playfair text-[#19363C]">What to expect during Stripe Connect setup</h2>
             <p>
@@ -18,7 +26,7 @@ const StripeHelp = () => {
             </p>
             <ul className="list-disc pl-6 space-y-2">
               <li>You'll be redirected to Stripe's secure platform</li>
-              <li>You'll need to provide basic information about yourself or your business</li>
+              <li>You'll need to provide basic information about yourself</li>
               <li>You'll need to connect a bank account to receive payments</li>
               <li>The entire process typically takes 5-10 minutes</li>
             </ul>
@@ -28,10 +36,10 @@ const StripeHelp = () => {
             <h2 className="text-2xl font-playfair text-[#19363C]">Required Information</h2>
             <p>Please have the following information ready:</p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Legal name and business information (if applicable)</li>
+              <li>Legal name</li>
               <li>Address and phone number</li>
               <li>Banking details for receiving payments</li>
-              <li>Tax identification number (SSN for individuals, EIN for businesses)</li>
+              <li>Tax identification number (SSN)</li>
             </ul>
           </section>
 
