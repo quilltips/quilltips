@@ -1,4 +1,3 @@
-
 // supabase/functions/stripe-webhook/index.ts
 export const config = {
   path: "/stripe-webhook",
@@ -137,40 +136,70 @@ serve(async (req) => {
           if (account.metadata?.supabaseUserId) {
             console.log("🔍 Found user ID in account metadata:", account.metadata.supabaseUserId);
             
-            const { error, data: profile } = await supabase.from("profiles")
-              .update({
-                stripe_account_id: account.id, // Ensure ID is saved
-                stripe_setup_complete: account.payouts_enabled && account.details_submitted
-              })
+            // Get current profile data
+            const { data: profileData, error: profileError } = await supabase
+              .from("profiles")
+              .select("stripe_setup_complete, stripe_onboarding_started_at, stripe_onboarding_completed_at")
               .eq("id", account.metadata.supabaseUserId)
-              .select();
+              .single();
             
-            if (error) {
-              console.error("❌ Error updating profile with Stripe status:", error);
-              throw error;
+            if (profileError) {
+              console.error("❌ Error fetching profile:", profileError);
+              throw profileError;
             }
             
-            console.log("✅ Profile updated with Stripe status:", profile);
+            // Determine onboarding progress
+            const onboardingStarted = account.details_submitted || 
+                                     (account.requirements?.currently_due?.length !== account.requirements?.eventually_due?.length);
             
-            // Send email notification based on stripe setup status
-            if (profile && profile.length > 0) {
+            const onboardingCompleted = account.payouts_enabled && account.details_submitted;
+            
+            // Prepare update data
+            const updateData: any = {
+              stripe_account_id: account.id,
+              stripe_setup_complete: onboardingCompleted
+            };
+            
+            // Track onboarding start time if needed
+            if (onboardingStarted && !profileData.stripe_onboarding_started_at) {
+              updateData.stripe_onboarding_started_at = new Date().toISOString();
+            }
+            
+            // Track onboarding completion time if newly completed
+            if (onboardingCompleted && !profileData.stripe_onboarding_completed_at) {
+              updateData.stripe_onboarding_completed_at = new Date().toISOString();
+              
+              // Send completion email only when newly completed
               try {
-                const notificationType = account.payouts_enabled && account.details_submitted
-                  ? 'stripe_setup_complete'
-                  : 'stripe_setup_incomplete';
-                
-                await sendEmailNotification(notificationType, account.metadata.supabaseUserId, {});
-                console.log(`📧 ${notificationType} email notification sent successfully`);
+                await sendEmailNotification('stripe_setup_complete', account.metadata.supabaseUserId, {});
+                await supabase.rpc('record_email_sent', {
+                  user_id: account.metadata.supabaseUserId,
+                  email_type: 'stripe_setup_complete'
+                });
+                console.log("📧 stripe_setup_complete email notification sent");
               } catch (emailError) {
-                console.error(`❌ Failed to send stripe setup email notification:`, emailError);
+                console.error("❌ Failed to send stripe setup complete email:", emailError);
               }
             }
+            
+            // Update profile
+            const { error: updateError } = await supabase
+              .from("profiles")
+              .update(updateData)
+              .eq("id", account.metadata.supabaseUserId);
+            
+            if (updateError) {
+              console.error("❌ Error updating profile:", updateError);
+              throw updateError;
+            }
+            
+            console.log("✅ Profile updated with onboarding progress");
           } else {
             console.log("⚠️ No user ID found in account metadata, searching by account ID");
             
             const { data: profiles, error: findError } = await supabase
               .from("profiles")
-              .select("id")
+              .select("id, stripe_setup_complete, stripe_onboarding_started_at, stripe_onboarding_completed_at")
               .eq("stripe_account_id", account.id);
             
             if (findError) {
@@ -181,32 +210,52 @@ serve(async (req) => {
             if (profiles?.length) {
               console.log(`✅ Found ${profiles.length} profiles with this account ID`);
               
-              const { error: updateError } = await supabase
-                .from("profiles")
-                .update({
-                  stripe_setup_complete: account.payouts_enabled && account.details_submitted
-                })
-                .eq("stripe_account_id", account.id);
-              
-              if (updateError) {
-                console.error("❌ Error updating profile status:", updateError);
-                throw updateError;
-              }
-              
-              console.log("✅ Profile updated via stripe_account_id lookup");
-              
-              // Send email notification for each profile found
               for (const profile of profiles) {
-                try {
-                  const notificationType = account.payouts_enabled && account.details_submitted
-                    ? 'stripe_setup_complete'
-                    : 'stripe_setup_incomplete';
-                  
-                  await sendEmailNotification(notificationType, profile.id, {});
-                  console.log(`📧 ${notificationType} email notification sent for user ${profile.id}`);
-                } catch (emailError) {
-                  console.error(`❌ Failed to send stripe setup email notification:`, emailError);
+                // Determine onboarding progress
+                const onboardingStarted = account.details_submitted || 
+                                         (account.requirements?.currently_due?.length !== account.requirements?.eventually_due?.length);
+                
+                const onboardingCompleted = account.payouts_enabled && account.details_submitted;
+                
+                // Prepare update data
+                const updateData: any = {
+                  stripe_setup_complete: onboardingCompleted
+                };
+                
+                // Track onboarding start time if needed
+                if (onboardingStarted && !profile.stripe_onboarding_started_at) {
+                  updateData.stripe_onboarding_started_at = new Date().toISOString();
                 }
+                
+                // Track onboarding completion time if newly completed
+                if (onboardingCompleted && !profile.stripe_onboarding_completed_at) {
+                  updateData.stripe_onboarding_completed_at = new Date().toISOString();
+                  
+                  // Send completion email only when newly completed
+                  try {
+                    await sendEmailNotification('stripe_setup_complete', profile.id, {});
+                    await supabase.rpc('record_email_sent', {
+                      user_id: profile.id,
+                      email_type: 'stripe_setup_complete'
+                    });
+                    console.log(`📧 stripe_setup_complete email notification sent to user ${profile.id}`);
+                  } catch (emailError) {
+                    console.error(`❌ Failed to send stripe setup complete email to user ${profile.id}:`, emailError);
+                  }
+                }
+                
+                // Update profile
+                const { error: updateError } = await supabase
+                  .from("profiles")
+                  .update(updateData)
+                  .eq("id", profile.id);
+                
+                if (updateError) {
+                  console.error(`❌ Error updating profile ${profile.id}:`, updateError);
+                  throw updateError;
+                }
+                
+                console.log(`✅ Profile ${profile.id} updated with onboarding progress`);
               }
             } else {
               console.warn("⚠️ No profiles found with this account ID:", account.id);

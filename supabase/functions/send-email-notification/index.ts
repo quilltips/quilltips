@@ -165,9 +165,52 @@ function generateEmailContent(type, userName, data, userId) {
         subject: "Payment Setup Complete - Ready to Receive Tips!",
         header: "You're All Set to Receive Tips!",
         mainMessage: `Congratulations, ${userName}! Your payment account has been successfully set up. You can now receive tips from your readers directly to your bank account.`,
+        additionalContent: `
+          <p>All the necessary payment details have been verified and your account is ready to go. Tips will be automatically transferred to your connected bank account.</p>
+          <p>Now's a great time to create QR codes for your books so readers can show their appreciation!</p>
+        `,
         cta: {
           text: "Create QR Code",
           url: "https://quilltips.app/author/create-qr"
+        }
+      };
+    case 'stripe_setup_reminder_day1':
+      return {
+        subject: "Finish Your Payment Setup - Just a Few Steps Left",
+        header: "Almost There! Finish Your Payment Setup",
+        mainMessage: `Hello ${userName}, you've started setting up your payment account but haven't completed it yet.`,
+        additionalContent: `
+          <p>You're just a few steps away from being able to receive tips from your readers. It only takes a few minutes to complete the remaining steps.</p>
+          <p><strong>Benefits of completing your setup:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            <li>Start receiving tips directly to your bank account</li>
+            <li>Track all your earnings in one place</li>
+            <li>Get paid automatically when readers appreciate your work</li>
+          </ul>
+        `,
+        cta: {
+          text: "Complete Your Setup",
+          url: "https://quilltips.app/author/bank-account"
+        }
+      };
+    case 'stripe_setup_reminder_day3':
+      return {
+        subject: "Set Up Payments to Start Receiving Tips",
+        header: "Don't Miss Out on Reader Tips",
+        mainMessage: `Hello ${userName}, we noticed you haven't set up your payment account yet.`,
+        additionalContent: `
+          <p>Setting up your payment account is essential to start receiving tips from your readers. The process is simple and only takes a few minutes.</p>
+          <p><strong>Why connect your bank account?</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            <li>Allow readers to send you tips for your books</li>
+            <li>Receive payments directly into your bank account</li>
+            <li>Build a stronger connection with your audience</li>
+          </ul>
+          <p>Our authors who complete their payment setup see an average increase of 30% in reader engagement!</p>
+        `,
+        cta: {
+          text: "Connect Your Bank Account",
+          url: "https://quilltips.app/author/bank-account"
         }
       };
     case 'test_email':

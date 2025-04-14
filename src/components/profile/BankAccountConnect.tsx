@@ -24,7 +24,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         description: "Your Stripe account setup has been updated successfully.",
       });
       
-      // Email notification is now handled by database triggers
+      // Update in database is now handled by webhooks
     }
     // Handle refresh flow
     else if (searchParams.get('refresh') === 'true' && stripeAccountId) {
@@ -60,8 +60,6 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
       if (!data?.url) {
         throw new Error('Failed to get Stripe onboarding URL');
       }
-
-      // Email notification is now handled by database triggers when the profile is updated
       
       // Redirect directly to Stripe for onboarding or dashboard
       window.location.href = data.url;
