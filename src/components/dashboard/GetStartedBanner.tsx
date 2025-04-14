@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { Alert, AlertDescription } from "../ui/alert";
 import { BankAccountConnect } from "../profile/BankAccountConnect";
 
-interface GetStartedBannerProps {
+interface BannerProps {
   onClose: () => void;
   hasStripeAccount: boolean;
   stripeSetupComplete: boolean;
@@ -14,13 +14,13 @@ interface GetStartedBannerProps {
   stripeAccountId?: string | null;
 }
 
-export const GetStartedBanner = ({ 
+export const Banner = ({ 
   onClose, 
   hasStripeAccount, 
   stripeSetupComplete,
   profileId,
   stripeAccountId 
-}: GetStartedBannerProps) => {
+}: BannerProps) => {
   const navigate = useNavigate();
 
   return (
@@ -76,7 +76,7 @@ export const GetStartedBanner = ({
           variant="outline" 
           className="w-full sm:w-auto px-6 py-2 h-auto border-[#2D3748] text-[#2D3748] hover:bg-[#2D3748]/5 font-medium text-base"
         >
-          How does it work?
+          How do Quilltips Jars work?
         </Button>
       </div>
     </div>

@@ -8,13 +8,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { GetStartedBanner } from "@/components/dashboard/GetStartedBanner";
+import { Banner } from "@/components/dashboard/Banner";
 import { StripeOnboardingStatus } from "@/components/dashboard/StripeOnboardingStatus";
 
 const AuthorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [showGetStarted, setShowGetStarted] = useState(true);
+  const [show, setShow] = useState(true);
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   
@@ -69,7 +69,7 @@ const AuthorDashboard = () => {
   const stripeSetupComplete = !!profile?.stripe_setup_complete;
   
   // Determine if the Get Started banner should show
-  const shouldShowBanner = showGetStarted && (!hasStripeAccount || !stripeSetupComplete);
+  const shouldShowBanner = show && (!hasStripeAccount || !stripeSetupComplete);
 
   if (isLoading) {
     return (
@@ -102,8 +102,8 @@ const AuthorDashboard = () => {
             </div>
 
             {shouldShowBanner && (
-              <GetStartedBanner 
-                onClose={() => setShowGetStarted(false)} 
+              <Banner 
+                onClose={() => setShow(false)} 
                 hasStripeAccount={hasStripeAccount}
                 stripeSetupComplete={stripeSetupComplete}
                 profileId={profile.id}
