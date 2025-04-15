@@ -82,8 +82,8 @@ export const Navigation = () => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link to={isAuthor ? "/author/dashboard" : "/"} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <img src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" alt="Quilltips Logo" className="h-5 w-auto" />
-            <span className="text-lg font-medium">Quilltips</span>
+            <img src="/lovable-uploads/qt_logo_text.png" alt="Quilltips Logo" className="h-7 w-auto" />
+         
           </Link>
         </div>
         

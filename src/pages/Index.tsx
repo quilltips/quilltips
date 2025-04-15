@@ -27,8 +27,8 @@ const Index = () => {
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-enter">
           <div className="space-y-4">
-            <img src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" alt="Quilltips" className="h-36 mx-auto" />
-            <h1 className="font-playfair font-medium text-6xl">Quilltips</h1>
+            <img src="/lovable-uploads/logo_nav.png" alt="Quilltips" className="h-36 mx-auto" />
+            <h1 className="font-playfair font-medium text-6xl text-[#19363C]">Quilltips</h1>
             <h2 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
               Helping authors get paid
             </h2>
@@ -64,8 +64,8 @@ const Index = () => {
             {/* Value Prop 1 */}
             <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-[#19363C] rounded-full flex items-center justify-center mb-2">
-                  <DollarSign className="w-8 h-8 text-[#FFD166]" />
+                <div className="w-16 h-16 bg-[#FFD166] rounded-full flex items-center justify-center mb-2">
+                  <DollarSign className="w-8 h-8 text-[#19363C]" />
                 </div>
                 <h3 className="text-xl font-semibold">Earn More From Your Books</h3>
                 <p className="text-muted-foreground">
@@ -77,8 +77,8 @@ const Index = () => {
             {/* Value Prop 2 */}
             <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-[#19363C] rounded-full flex items-center justify-center mb-2">
-                  <MessageSquare className="w-8 h-8 text-[#FFD166]" />
+                <div className="w-16 h-16 bg-[#FFD166] rounded-full flex items-center justify-center mb-2">
+                  <MessageSquare className="w-8 h-8 text-[#19363C]" />
                 </div>
                 <h3 className="text-xl font-semibold">Connect With Your Readers</h3>
                 <p className="text-muted-foreground">
@@ -90,8 +90,8 @@ const Index = () => {
             {/* Value Prop 3 */}
             <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-[#19363C] rounded-full flex items-center justify-center mb-2">
-                  <LinkIcon className="w-8 h-8 text-[#FFD166]" />
+                <div className="w-16 h-16 bg-[#FFD166] rounded-full flex items-center justify-center mb-2">
+                  <LinkIcon className="w-8 h-8 text-[#19363C]" />
                 </div>
                 <h3 className="text-xl font-semibold">Promote Your Platform</h3>
                 <p className="text-muted-foreground">
