@@ -55,11 +55,11 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
               alt={qrCode.book_title}
               className="w-full h-full object-cover rounded-md"
               onError={() => setImageError(true)}
-              key={cacheBuster}
+              key={cacheBuster} // Force rerender when cover image changes
             />
           ) : (
             <img
-              src="/lovable-uploads/2be90d2b-bfb0-47d4-9715-bff8d737048d.png" 
+              src="/lovable-uploads/quill_icon.png" 
               alt="Quilltips Logo"
               className="h-6 w-6 object-contain"
             />

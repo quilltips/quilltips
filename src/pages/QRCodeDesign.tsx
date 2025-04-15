@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { useQRCodeGeneration } from "@/hooks/use-qr-code-generation";
@@ -29,8 +30,10 @@ const QRCodeDesign = () => {
     return null;
   }
 
+  // Check if QR code is paid for
   const isPaid = qrCodeData?.is_paid === true;
 
+  // Format release date if available
   const formattedReleaseDate = qrCodeData.release_date 
     ? format(new Date(qrCodeData.release_date), 'MMMM d, yyyy')
     : null;
@@ -40,7 +43,9 @@ const QRCodeDesign = () => {
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto space-y-8">
-          <div className="flex flex-col items-center justify-center">
+         
+           {/* Centered Book Cover Image with placeholder fallback */}
+           <div className="flex flex-col items-center justify-center">
             <div className="w-[150px] h-[180px] bg-transparent rounded-md flex items-center justify-center overflow-hidden">
               {qrCodeData.cover_image ? (
                 <img
@@ -50,7 +55,7 @@ const QRCodeDesign = () => {
                 />
               ) : (
                 <img
-                  src="/lovable-uploads/2be90d2b-bfb0-47d4-9715-bff8d737048d.png"
+                  src="/lovable-uploads/quill_icon.png"
                   alt="Quilltips Logo"
                   className="w-20 h-20 object-contain opacity-90"
                 />
@@ -58,18 +63,21 @@ const QRCodeDesign = () => {
             </div>
           </div>
           
+          {/* Success Message with Book Title */}
           <div className="bg-[#FFD166] text-black rounded-lg p-8 shadow-lg">
-            <div className="flex flex-col justify-center items-center text-center min-h-[100px]">
-              <h2 className="text-2xl font-normal">
-                Success! Your QR code for "
-                <span className="font-bold text-[#19363C] underline underline-offset-4 decoration-2">
-                  {qrCodeData.book_title}
-                </span>
-                " is ready for download
-              </h2>
-            </div>
-          </div>
+  <div className="flex flex-col justify-center items-center text-center min-h-[100px]">
+    <h2 className="text-2xl font-normal">
+      Success! Your QR code for "
+      <span className="font-bold text-[#19363C] underline underline-offset-4 decoration-2">
+        {qrCodeData.book_title}
+      </span>
+      " is ready for download
+    </h2>
+  </div>
+</div>
+        
           
+          {/* Banner Section with improved book details */}
           <div className="bg-[#19363C] text-white rounded-lg p-8 shadow-lg">
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1 md:pl-4">
@@ -96,6 +104,7 @@ const QRCodeDesign = () => {
                 </div>
               </div>
               
+              {/* QR code preview */}
               <div className="w-full max-w-[240px] mx-auto">
                 <QRCodePreview
                   isGenerating={isGenerating}
@@ -110,6 +119,7 @@ const QRCodeDesign = () => {
             </div>
           </div>
           
+          {/* Checkout Section - Made transparent background */}
           <div className="rounded-lg p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Complete Your QR Code Purchase</h2>
             

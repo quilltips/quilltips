@@ -1,3 +1,4 @@
+
 import { QRCodeCanvas } from "qrcode.react";
 import { Card } from "@/components/ui/card";
 import { forwardRef } from "react";
@@ -30,6 +31,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
     >
       <div className="flex flex-col items-center gap-2">
         <div className="relative rounded-lg p-2">
+          {/* QR Code */}
           <QRCodeCanvas
             value={value}
             size={size}
@@ -40,11 +42,12 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
             className="mx-auto rounded"
           />
 
+          {/* Logo overlay */}
           {showBranding && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-white rounded-full p-1.5 w-[18%] h-[18%] flex items-center justify-center">
                 <img
-                  src="/lovable-uploads/2be90d2b-bfb0-47d4-9715-bff8d737048d.png"
+                  src="/lovable-uploads/quill_icon.png"
                   alt="Quilltips Logo"
                   className="w-full h-full object-contain"
                 />
@@ -52,6 +55,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
             </div>
           )}
 
+          {/* Blurred overlay for unpurchased QR codes */}
           {shouldBlur && (
             <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center rounded-lg">
               <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center rounded-lg">
@@ -63,6 +67,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           )}
         </div>
 
+        {/* Branding text */}
         {showBranding && (
           <div className="font-playfair text-center text-sm leading-normal text-muted-foreground px-1 max-w-[200px]">
             <div>

@@ -6,7 +6,6 @@ import { Layout } from "@/components/Layout";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-
 const Index = () => {
   const {
     user
@@ -15,21 +14,20 @@ const Index = () => {
     toast
   } = useToast();
   const navigate = useNavigate();
-
   const handleCreateQRCode = () => {
     if (!user) {
+      // Redirect to login page instead of showing an error
       navigate("/author/login");
       return;
     }
     navigate("/author/create-qr");
   };
-
   return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-enter">
           <div className="space-y-4">
-            <img src="/lovable-uploads/2be90d2b-bfb0-47d4-9715-bff8d737048d.png" alt="Quilltips" className="h-36 mx-auto" />
+            <img src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" alt="Quilltips" className="h-36 mx-auto" />
             <h1 className="font-playfair font-medium text-6xl">Quilltips</h1>
             <h2 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
               Helping authors get paid
@@ -204,5 +202,4 @@ const Index = () => {
       </div>
     </Layout>;
 };
-
 export default Index;
