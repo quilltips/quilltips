@@ -9,11 +9,10 @@ export const Footer = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <img 
-                src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" 
+                src="/lovable-uploads/qt_logo_text.png" 
                 alt="Quilltips Logo" 
                 className="h-6 w-auto"
               />
-              <span className="text-xl font-semibold">quilltips</span>
             </Link>
           </div>
           
