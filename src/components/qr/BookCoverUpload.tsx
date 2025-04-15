@@ -69,6 +69,7 @@ export const BookCoverUpload = ({
     try {
       console.log("Starting upload to bucket:", BUCKET_NAME);
       const fileExt = file.name.split('.').pop();
+      // Add timestamp to filename to prevent conflicts and caching issues
       const filePath = `${qrCodeId}-${Date.now()}.${fileExt}`;
 
       // Use the consistent bucket name ('covers')
@@ -93,7 +94,9 @@ export const BookCoverUpload = ({
       if (updateCoverImage) {
         console.log("Using mutation to update cover image");
         await updateCoverImage(publicUrl);
-        // Cache updating is handled in the mutation
+        
+        // After successful mutation, invalidate ALL related queries
+        queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
       } 
       // Fallback to the callback method if mutation isn't provided
       else if (onUpdateImage) {
@@ -108,8 +111,8 @@ export const BookCoverUpload = ({
           throw updateQrCodeError;
         }
         
-        // Update the cache manually in this case
-        queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(qrCodeId) });
+        // Invalidate ALL relevant queries to ensure updates everywhere
+        queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
         
         // Call the callback to update the image in the parent component
         onUpdateImage(publicUrl);

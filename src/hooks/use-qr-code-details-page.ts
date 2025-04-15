@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toPng, toSvg } from "html-to-image";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useToast } from "./use-toast";
 
 // Define explicit database types
@@ -36,6 +36,7 @@ export type TipData = {
 // Create a consistent queryKey generator to avoid mismatches
 export const qrCodeQueryKeys = {
   all: ['qr-codes'] as const,
+  list: () => [...qrCodeQueryKeys.all, 'list'] as const,
   detail: (id: string) => [...qrCodeQueryKeys.all, 'detail', id] as const,
   tips: (id: string) => [...qrCodeQueryKeys.all, 'tips', id] as const,
 };
@@ -48,6 +49,13 @@ export const useQRCodeDetailsPage = () => {
   
   // Use a consistent bucket name throughout the application
   const BUCKET_NAME = 'covers';
+
+  // For image refresh
+  const [imageRefreshKey, setImageRefreshKey] = useState(Date.now());
+  
+  const refreshImage = useCallback(() => {
+    setImageRefreshKey(Date.now());
+  }, []);
 
   const { data: qrCode, isLoading: qrLoading } = useQuery({
     queryKey: qrCodeQueryKeys.detail(id || ''),
@@ -83,9 +91,16 @@ export const useQRCodeDetailsPage = () => {
       
       return data as QRCode;
     },
-    staleTime: 60000, // 1 minute stale time
+    staleTime: 20000, // Reduced stale time to 20 seconds for more frequent refreshes
     enabled: !!id,
   });
+
+  // When QR code data changes, refresh the image
+  useEffect(() => {
+    if (qrCode?.cover_image) {
+      refreshImage();
+    }
+  }, [qrCode?.cover_image, refreshImage]);
 
   // Add mutation for updating the cover image
   const { mutateAsync: updateCoverImage } = useMutation({
@@ -119,8 +134,11 @@ export const useQRCodeDetailsPage = () => {
         };
       });
       
-      // Also invalidate to ensure any other components get updated
-      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id || '') });
+      // Invalidate ALL QR code queries to ensure consistency across screens
+      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+      
+      // Force image refresh
+      refreshImage();
       
       toast({
         title: "Cover Image Updated",
@@ -230,5 +248,7 @@ export const useQRCodeDetailsPage = () => {
     handleDownloadPNG,
     qrCodeRef,
     updateCoverImage,
+    imageRefreshKey, // Expose the refresh key for components
+    refreshImage,    // Expose refresh function
   };
 };

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Book, ChevronRight } from "lucide-react";
 import { Card } from "../ui/card";
 
@@ -15,17 +15,41 @@ interface QRCodeCardProps {
 }
 
 export const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onNavigate }) => {
+  const [imageError, setImageError] = useState(false);
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
+  
+  // Refresh the image every time the cover_image changes
+  useEffect(() => {
+    setCacheBuster(Date.now());
+  }, [qrCode.cover_image]);
+  
+  // Add cache-busting parameter to cover image URL
+  const getCachedImageUrl = () => {
+    if (!qrCode.cover_image) return null;
+    
+    try {
+      const url = new URL(qrCode.cover_image);
+      const hasQueryParams = qrCode.cover_image.includes('?');
+      const cacheKey = `cache=${cacheBuster}`;
+      return `${qrCode.cover_image}${hasQueryParams ? '&' : '?'}${cacheKey}`;
+    } catch (e) {
+      return qrCode.cover_image;
+    }
+  };
+  
   return (
     <Card 
       onClick={onNavigate} 
       className="p-3 cursor-pointer hover:bg-slate-50 transition-colors flex items-center gap-3 shadow-sm border-gray-200"
     >
       <div className="w-12 h-16 flex-shrink-0 rounded-md overflow-hidden">
-        {qrCode.cover_image ? (
+        {qrCode.cover_image && !imageError ? (
           <img
-            src={qrCode.cover_image}
+            src={getCachedImageUrl()}
             alt={qrCode.book_title}
             className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+            key={cacheBuster} // Force rerender when cover image changes
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

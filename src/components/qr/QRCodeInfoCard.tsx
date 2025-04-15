@@ -20,20 +20,22 @@ interface QRCodeInfoCardProps {
 
 export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardProps) => {
   // Get the mutation function from the hook if we're in an editable context
-  const { updateCoverImage } = isEditable ? useQRCodeDetailsPage() : { updateCoverImage: undefined };
+  const { updateCoverImage, imageRefreshKey, refreshImage } = isEditable ? useQRCodeDetailsPage() : { 
+    updateCoverImage: undefined, 
+    imageRefreshKey: Date.now(),
+    refreshImage: () => {}
+  };
+  
   const [imageError, setImageError] = useState(false);
-  const [imageKey, setImageKey] = useState(Date.now()); // Used to force image reload
   const imgRef = useRef<HTMLImageElement>(null);
   
-  // Reset image error state and force reload whenever cover image URL changes
+  // Reset image error state whenever cover image URL changes or refresh key changes
   useEffect(() => {
     if (qrCode.cover_image) {
-      console.log("QRCodeInfoCard: Cover image URL changed, refreshing image:", qrCode.cover_image);
+      console.log("QRCodeInfoCard: Cover image URL changed or refresh triggered:", qrCode.cover_image);
       setImageError(false);
-      // Force image reload by updating the key
-      setImageKey(Date.now());
     }
-  }, [qrCode.cover_image]);
+  }, [qrCode.cover_image, imageRefreshKey]);
 
   const handleImageError = () => {
     console.log("QRCodeInfoCard: Image failed to load:", qrCode.cover_image);
@@ -48,9 +50,9 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
       // Parse the URL to check if it's valid
       const url = new URL(qrCode.cover_image);
       
-      // Add a cache-busting parameter to the URL
+      // Add a cache-busting parameter to the URL using imageRefreshKey for maximum effectiveness
       const hasQueryParams = qrCode.cover_image.includes('?');
-      const cacheKey = `cache=${imageKey}`;
+      const cacheKey = `cache=${imageRefreshKey}`;
       const imageUrl = `${qrCode.cover_image}${hasQueryParams ? '&' : '?'}${cacheKey}`;
       
       console.log("QRCodeInfoCard: Using cache-busted image URL:", imageUrl);
@@ -69,7 +71,7 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
         {qrCode.cover_image && !imageError ? (
           <img
             ref={imgRef}
-            key={imageKey} // Force rerender when cover image changes
+            key={imageRefreshKey} // Force rerender when refreshKey changes
             src={getCoverImageWithCache()}
             alt={qrCode.book_title}
             className="w-full h-full object-cover"
