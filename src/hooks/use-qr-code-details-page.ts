@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,7 +5,6 @@ import { toPng, toSvg } from "html-to-image";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { useToast } from "./use-toast";
 
-// Define explicit database types
 export type QRCode = {
   id: string;
   author_id: string;
@@ -33,7 +31,6 @@ export type TipData = {
   comments: any[];
 };
 
-// Create a consistent queryKey generator to avoid mismatches
 export const qrCodeQueryKeys = {
   all: ['qr-codes'] as const,
   list: () => [...qrCodeQueryKeys.all, 'list'] as const,
@@ -47,10 +44,8 @@ export const useQRCodeDetailsPage = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
-  // Use a consistent bucket name throughout the application
   const BUCKET_NAME = 'covers';
 
-  // For image refresh
   const [imageRefreshKey, setImageRefreshKey] = useState(Date.now());
   
   const refreshImage = useCallback(() => {
@@ -95,23 +90,24 @@ export const useQRCodeDetailsPage = () => {
       console.log("QR Code data fetched:", data);
       return data as QRCode;
     },
-    staleTime: 0, // Disable stale time to always fetch fresh data
+    staleTime: 0,
     enabled: !!id,
   });
 
-  // Add mutation for updating the cover image
   const { mutateAsync: updateCoverImage } = useMutation({
     mutationFn: async (imageUrl: string) => {
-      if (!id) throw new Error('QR code ID is required');
+      if (!id) {
+        console.error("QRCodeDetailsPage: No QR code ID provided");
+        throw new Error('QR code ID is required');
+      }
       
-      console.log("Updating cover image in database to:", imageUrl);
+      console.log(`Updating cover image for QR code ${id} to: ${imageUrl}`);
       
       const { data, error } = await supabase
         .from('qr_codes')
         .update({ cover_image: imageUrl })
         .eq('id', id)
-        .select()
-        .single();
+        .select();
       
       if (error) {
         console.error("Database update error:", error);
@@ -121,13 +117,10 @@ export const useQRCodeDetailsPage = () => {
       return data;
     },
     onMutate: async (newImageUrl) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: qrCodeQueryKeys.detail(id || '') });
       
-      // Snapshot the previous value
       const previousQRCode = queryClient.getQueryData(qrCodeQueryKeys.detail(id || ''));
       
-      // Optimistically update the cache
       queryClient.setQueryData(qrCodeQueryKeys.detail(id || ''), (old: any) => ({
         ...old,
         cover_image: newImageUrl
@@ -138,10 +131,8 @@ export const useQRCodeDetailsPage = () => {
     onSuccess: (data) => {
       console.log("Cover image updated successfully:", data);
       
-      // Invalidate ALL QR code queries to ensure consistency
       queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
       
-      // Force image refresh
       refreshImage();
       
       toast({
@@ -152,7 +143,6 @@ export const useQRCodeDetailsPage = () => {
     onError: (error, _, context) => {
       console.error("Error updating cover image:", error);
       
-      // Revert to previous state if available
       if (context?.previousQRCode) {
         queryClient.setQueryData(qrCodeQueryKeys.detail(id || ''), context.previousQRCode);
       }
@@ -164,7 +154,6 @@ export const useQRCodeDetailsPage = () => {
       });
     },
     onSettled: () => {
-      // Refetch all QR code queries to ensure consistency
       queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
     }
   });
