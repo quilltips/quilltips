@@ -23,6 +23,7 @@ import PublicProfilePage from "@/pages/PublicProfilePage";
 import TipSuccessPage from "@/pages/TipSuccessPage";
 import UnsubscribePage from "@/pages/UnsubscribePage";
 import StripeHelp from "@/pages/StripeHelp";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
 
 export const routes = [
   { path: "/", element: <Index /> },
@@ -55,5 +56,9 @@ export const routes = [
   {
     path: "/stripe-help",
     element: <StripeHelp />,
+  },
+  {
+    path: "/privacy",
+    element: <PrivacyPolicy />,
   },
 ];
