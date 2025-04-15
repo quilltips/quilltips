@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Banner } from "@/components/dashboard/Banner";
+import { Banner } from "@/components/dashboard/GetStartedBanner";
 import { StripeOnboardingStatus } from "@/components/dashboard/StripeOnboardingStatus";
 
 const AuthorDashboard = () => {
