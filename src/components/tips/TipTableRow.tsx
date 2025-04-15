@@ -1,11 +1,10 @@
-
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { TipMessagePreview } from "./TipMessagePreview";
 import { TipInteractionButtons } from "./TipInteractionButtons";
 import { useAuth } from "../auth/AuthProvider";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { TipReaderAvatar } from "./TipReaderAvatar";
 
 interface TipTableRowProps {
   tip: {
@@ -72,12 +71,7 @@ export const TipTableRow = ({
       onClick={() => onSelectTip(tip)}
     >
       <div className="flex gap-3">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={firstName} />
-          <AvatarFallback>
-            {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <TipReaderAvatar readerName={tip.reader_name} className="h-8 w-8" />
 
         <div className="flex-1 space-y-1">
           <div className="space-y-0.5">

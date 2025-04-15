@@ -1,13 +1,12 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useState } from "react";
 import { TipDetailsDialog } from "../TipDetailsDialog";
 import { useAuth } from "../auth/AuthProvider";
 import { LoadingSpinner } from "../ui/loading-spinner";
 import { PublicTipCommentButton } from "./PublicTipCommentButton";
+import { TipReaderAvatar } from "./TipReaderAvatar";
 
 interface PublicTipHistoryProps {
   qrCodeId: string;
@@ -66,7 +65,6 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
     enabled: !!book
   });
   
-  // Updated to fetch all comments without filtering by qrCodeId
   const { data: allComments = [] } = useQuery({
     queryKey: ['all-public-tip-comments'],
     queryFn: async () => {
@@ -104,18 +102,12 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
           ? tip.reader_name.split(' ')[0] 
           : "Someone";
         
-        // Calculate comment count by filtering all comments for this specific tip
         const commentCount = allComments.filter(comment => comment.tip_id === tip.id).length;
         
         return (
           <div key={tip.id} className="space-y-4">
             <div className="flex items-start gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={readerFirstName} />
-                <AvatarFallback>
-                  {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <TipReaderAvatar readerName={tip.reader_name} />
               <div className="flex-1">
                 <div className="space-y-1">
                   <p className="font-medium">

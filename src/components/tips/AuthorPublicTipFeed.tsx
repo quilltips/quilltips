@@ -1,13 +1,12 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { LoadingSpinner } from "../ui/loading-spinner";
 import { useState } from "react";
 import { TipDetailsDialog } from "../TipDetailsDialog";
 import { useAuth } from "../auth/AuthProvider";
 import { PublicTipCommentButton } from "./PublicTipCommentButton";
+import { TipReaderAvatar } from "./TipReaderAvatar";
 
 interface AuthorPublicTipFeedProps {
   authorId: string;
@@ -32,7 +31,6 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
   const { data: tips, isLoading } = useQuery({
     queryKey: ['author-public-tips', authorId],
     queryFn: async () => {
-      // First, get all QR codes for this author
       const { data: qrCodes, error: qrError } = await supabase
         .from('qr_codes')
         .select('id, book_title')
@@ -47,7 +45,6 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
         return acc;
       }, {} as Record<string, string>);
       
-      // Then get all public tips for these QR codes
       const { data: tipsData, error: tipsError } = await supabase
         .from('public_tips')
         .select(`
@@ -65,7 +62,6 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
 
       if (tipsError) throw tipsError;
       
-      // Add book titles to tips
       return (tipsData || []).map(tip => ({
         ...tip,
         book_title: tip.qr_code_id ? qrCodeTitleMap[tip.qr_code_id] : null
@@ -106,23 +102,16 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
   return (
     <div className="space-y-6">
       {tips.map((tip) => {
-        // Extract first name from reader_name for privacy
         const readerFirstName = tip.reader_name 
           ? tip.reader_name.split(' ')[0] 
           : "Someone";
         
-        // Find comment count
         const commentCount = comments.filter(comment => comment.tip_id === tip.id).length;
         
         return (
           <div key={tip.id} className="space-y-4">
             <div className="flex items-start gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={readerFirstName} />
-                <AvatarFallback>
-                  {(tip.reader_name || "Anonymous").charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <TipReaderAvatar readerName={tip.reader_name} />
               <div className="flex-1">
                 <div className="space-y-1">
                   <p className="font-medium">
@@ -143,7 +132,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
                     onClick={() => setSelectedTip({
                       ...tip,
                       author_id: authorId,
-                      book_title: tip.book_title || "Unknown book" // Ensure book_title is not null
+                      book_title: tip.book_title || "Unknown book"
                     })}
                   />
                 </div>
