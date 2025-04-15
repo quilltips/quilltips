@@ -47,8 +47,12 @@ const Index = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltips Jar, where readers can leave a tip and message!
           </p>
-          <div className="flex justify-center mt-8">
-            <img src="/lovable-uploads/0b6b9cb2-dc5c-46e3-be9f-1f761dd356cf.png" alt="Quilltips app showing tip feed on mobile phones" className="w-full max-w-2xl rounded-lg object-scale-down" />
+          <div className="flex justify-center mt-8 pt-10 pb-5">
+            <img 
+                src="/lovable-uploads/screenshots/quilltips_screenshots.png" 
+                alt="Author dashboard "
+                className="rounded-xl max-w-full bg-transparent"
+              />
           </div>
         </div>
 
@@ -60,7 +64,7 @@ const Index = () => {
             {/* Value Prop 1 */}
             <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-[#FFF8E7] rounded-full flex items-center justify-center mb-2">
+                <div className="w-16 h-16 bg-[#19363C] rounded-full flex items-center justify-center mb-2">
                   <DollarSign className="w-8 h-8 text-[#FFD166]" />
                 </div>
                 <h3 className="text-xl font-semibold">Earn More From Your Books</h3>
@@ -73,7 +77,7 @@ const Index = () => {
             {/* Value Prop 2 */}
             <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-[#FFF8E7] rounded-full flex items-center justify-center mb-2">
+                <div className="w-16 h-16 bg-[#19363C] rounded-full flex items-center justify-center mb-2">
                   <MessageSquare className="w-8 h-8 text-[#FFD166]" />
                 </div>
                 <h3 className="text-xl font-semibold">Connect With Your Readers</h3>
@@ -86,7 +90,7 @@ const Index = () => {
             {/* Value Prop 3 */}
             <Card className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-[#FFF8E7] rounded-full flex items-center justify-center mb-2">
+                <div className="w-16 h-16 bg-[#19363C] rounded-full flex items-center justify-center mb-2">
                   <LinkIcon className="w-8 h-8 text-[#FFD166]" />
                 </div>
                 <h3 className="text-xl font-semibold">Promote Your Platform</h3>
@@ -105,7 +109,7 @@ const Index = () => {
           {/* Step 1 - Right aligned with QR code icon */}
           <div className="grid md:grid-cols-2 gap-10 items-center mb-24">
             <div className="order-last md:order-first flex justify-center">
-              <div className="w-48 h-48 bg-[#FFF8E7] rounded-full flex items-center justify-center">
+              <div className="w-48 h-48 bg-[#19363C] rounded-full flex items-center justify-center">
                 <QrCode className="w-20 h-20 text-[#FFD166]" />
               </div>
             </div>
@@ -126,7 +130,7 @@ const Index = () => {
               </p>
             </div>
             <div className="flex justify-center">
-              <div className="w-48 h-48 bg-[#FFF8E7] rounded-full flex items-center justify-center">
+              <div className="w-48 h-48 bg-[#19363C] rounded-full flex items-center justify-center">
                 <Users className="w-20 h-20 text-[#FFD166]" />
               </div>
             </div>
@@ -135,7 +139,7 @@ const Index = () => {
           {/* Step 3 - Right aligned with book/data icon */}
           <div className="grid md:grid-cols-2 gap-10 items-center mb-12">
             <div className="order-last md:order-first flex justify-center">
-              <div className="w-48 h-48 bg-[#FFF8E7] rounded-full flex items-center justify-center">
+              <div className="w-48 h-48 bg-[#19363C] rounded-full flex items-center justify-center">
                 <BookOpen className="w-20 h-20 text-[#FFD166]" />
               </div>
             </div>
