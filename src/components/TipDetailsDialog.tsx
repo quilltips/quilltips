@@ -13,6 +13,7 @@ import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { MessageSquare } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 
 interface TipDetailsDialogProps {
   isOpen: boolean;
@@ -22,11 +23,12 @@ interface TipDetailsDialogProps {
 
 export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [readerEmail, setReaderEmail] = useState<string | null>(null);
-  
+
   useEffect(() => {
     if (!tip || !isOpen) return;
 
@@ -36,7 +38,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
         .select('*, profiles(name, avatar_url)')
         .eq('tip_id', tip.id)
         .order('created_at', { ascending: false });
-      
+
       if (commentsData) {
         setComments(commentsData);
       }
@@ -46,7 +48,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
         .select('reader_email')
         .eq('id', tip.id)
         .single();
-      
+
       if (tipData) {
         setReaderEmail(tipData.reader_email);
       }
@@ -67,7 +69,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
           .select('*, profiles(name, avatar_url)')
           .eq('tip_id', tip.id)
           .order('created_at', { ascending: false });
-        
+
         if (newComments) {
           setComments(newComments);
         }
@@ -84,18 +86,40 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
     setIsSubmitting(true);
 
     try {
+      const trimmed = newComment.trim();
+
       const { error } = await supabase
         .from('tip_comments')
         .insert([{
           author_id: user.id,
           tip_id: tip.id,
-          content: newComment.trim()
+          content: trimmed
         }]);
 
       if (error) throw error;
 
+      // Optimistically update the comment list
+      setComments(prev => [
+        {
+          id: Math.random().toString(),
+          created_at: new Date().toISOString(),
+          content: trimmed,
+          author_id: user.id,
+          profiles: {
+            name: user.user_metadata?.name || user.email || "You",
+            avatar_url: user.user_metadata?.avatar_url || null,
+          }
+        },
+        ...prev
+      ]);
+
       setNewComment('');
-      
+
+      toast({
+        title: "Comment posted!",
+        description: "Your reply has been sent to the reader.",
+      });
+
       if (readerEmail) {
         try {
           await supabase.functions.invoke('send-reader-notification', {
@@ -108,7 +132,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 bookTitle: tip.book_title,
                 amount: tip.amount,
                 message: tip.message,
-                commentContent: newComment.trim()
+                commentContent: trimmed
               }
             }
           });
@@ -118,6 +142,11 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
       }
     } catch (error) {
       console.error('Error posting comment:', error);
+      toast({
+        title: "Error",
+        description: "There was a problem posting your comment.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -133,7 +162,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
         <DialogHeader className="p-4 border-b">
           <DialogTitle className="text-lg font-playfair">Tip Details</DialogTitle>
         </DialogHeader>
-        
+
         <ScrollArea className="max-h-[calc(90vh-4rem)]">
           <div className="p-4 space-y-6">
             {/* Reader info */}
@@ -167,7 +196,6 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
               {tip.message && (
                 <div className="bg-muted/50 p-4 rounded-lg space-y-2">
                   <div className="flex items-center gap-2">
-            
                     <p className="text-sm font-semibold uppercase text-muted-foreground tracking-wide">Message</p>
                   </div>
                   <p className="text-base text-foreground leading-relaxed">{tip.message}</p>
