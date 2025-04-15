@@ -1,4 +1,3 @@
-
 import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { BookCoverUpload } from "./BookCoverUpload";
@@ -19,7 +18,6 @@ interface QRCodeInfoCardProps {
 }
 
 export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardProps) => {
-  // Get the mutation function from the hook if we're in an editable context
   const { updateCoverImage, imageRefreshKey, refreshImage } = isEditable ? useQRCodeDetailsPage() : { 
     updateCoverImage: undefined, 
     imageRefreshKey: Date.now(),
@@ -59,7 +57,7 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
       return imageUrl;
     } catch (e) {
       console.error("QRCodeInfoCard: Invalid cover image URL:", qrCode.cover_image, e);
-      return qrCode.cover_image; // Return the original URL if we can't parse it
+      return qrCode.cover_image;
     }
   };
 

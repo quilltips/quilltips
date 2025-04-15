@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -18,9 +17,9 @@ interface BookCoverUploadProps {
   updateCoverImage?: (imageUrl: string) => Promise<any>;
 }
 
-export const BookCoverUpload = ({ 
-  qrCodeId, 
-  coverImage, 
+export const BookCoverUpload = ({
+  qrCodeId,
+  coverImage,
   bookTitle,
   onUpdateImage,
   updateCoverImage
@@ -32,8 +31,6 @@ export const BookCoverUpload = ({
 
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  
-  // Use a consistent bucket name throughout the application
   const BUCKET_NAME = 'covers';
 
   const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,10 +66,8 @@ export const BookCoverUpload = ({
     try {
       console.log("Starting upload to bucket:", BUCKET_NAME);
       const fileExt = file.name.split('.').pop();
-      // Add timestamp to filename to prevent conflicts and caching issues
       const filePath = `${qrCodeId}-${Date.now()}.${fileExt}`;
 
-      // Use the consistent bucket name ('covers')
       const { error: uploadError, data } = await supabase.storage
         .from(BUCKET_NAME)
         .upload(filePath, file);
@@ -90,36 +85,29 @@ export const BookCoverUpload = ({
 
       console.log("Generated public URL:", publicUrl);
 
-      // Use the mutation if provided (preferred method)
       if (updateCoverImage) {
         console.log("Using mutation to update cover image");
         await updateCoverImage(publicUrl);
-        
-        // After successful mutation, invalidate ALL related queries
-        queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
       } 
-      // Fallback to the callback method if mutation isn't provided
       else if (onUpdateImage) {
         console.log("Using direct Supabase update");
-        const { error: updateQrCodeError } = await supabase
+        const { error: updateError } = await supabase
           .from('qr_codes')
           .update({ cover_image: publicUrl })
           .eq('id', qrCodeId);
 
-        if (updateQrCodeError) {
-          console.error("Database update error:", updateQrCodeError);
-          throw updateQrCodeError;
+        if (updateError) {
+          console.error("Database update error:", updateError);
+          throw updateError;
         }
         
-        // Invalidate ALL relevant queries to ensure updates everywhere
         queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
         
-        // Call the callback to update the image in the parent component
         onUpdateImage(publicUrl);
         
         toast({
-          title: "Cover Image Updated",
-          description: "Your book cover image has been updated successfully.",
+          title: "Success",
+          description: "Book cover image has been updated successfully.",
         });
       }
     } catch (error: any) {
@@ -132,7 +120,6 @@ export const BookCoverUpload = ({
       });
     } finally {
       setIsUploading(false);
-      // Force clear the input value to ensure we can select the same file again if needed
       e.target.value = '';
     }
   };

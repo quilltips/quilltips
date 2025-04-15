@@ -54,6 +54,7 @@ export const useQRCodeDetailsPage = () => {
   const [imageRefreshKey, setImageRefreshKey] = useState(Date.now());
   
   const refreshImage = useCallback(() => {
+    console.log('Refreshing image with new key');
     setImageRefreshKey(Date.now());
   }, []);
 
@@ -86,21 +87,17 @@ export const useQRCodeDetailsPage = () => {
         .eq('id', id)
         .maybeSingle();
 
-      if (error) throw error;
-      console.log("QR Code data fetched:", data);
+      if (error) {
+        console.error("Error fetching QR code:", error);
+        throw error;
+      }
       
+      console.log("QR Code data fetched:", data);
       return data as QRCode;
     },
-    staleTime: 20000, // Reduced stale time to 20 seconds for more frequent refreshes
+    staleTime: 0, // Disable stale time to always fetch fresh data
     enabled: !!id,
   });
-
-  // When QR code data changes, refresh the image
-  useEffect(() => {
-    if (qrCode?.cover_image) {
-      refreshImage();
-    }
-  }, [qrCode?.cover_image, refreshImage]);
 
   // Add mutation for updating the cover image
   const { mutateAsync: updateCoverImage } = useMutation({
@@ -109,49 +106,66 @@ export const useQRCodeDetailsPage = () => {
       
       console.log("Updating cover image in database to:", imageUrl);
       
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('qr_codes')
-        .update({ cover_image: imageUrl || null })
-        .eq('id', id);
+        .update({ cover_image: imageUrl })
+        .eq('id', id)
+        .select()
+        .single();
       
       if (error) {
         console.error("Database update error:", error);
         throw error;
       }
       
-      return imageUrl;
+      return data;
     },
-    onSuccess: (newImageUrl) => {
-      // Invalidate and refetch the QR code data
-      console.log("Cover image updated successfully:", newImageUrl);
+    onMutate: async (newImageUrl) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: qrCodeQueryKeys.detail(id || '') });
       
-      // Update cache immediately for instant UI feedback
-      queryClient.setQueryData(qrCodeQueryKeys.detail(id || ''), (oldData: QRCode | undefined) => {
-        if (!oldData) return oldData;
-        return {
-          ...oldData,
-          cover_image: newImageUrl
-        };
-      });
+      // Snapshot the previous value
+      const previousQRCode = queryClient.getQueryData(qrCodeQueryKeys.detail(id || ''));
       
-      // Invalidate ALL QR code queries to ensure consistency across screens
+      // Optimistically update the cache
+      queryClient.setQueryData(qrCodeQueryKeys.detail(id || ''), (old: any) => ({
+        ...old,
+        cover_image: newImageUrl
+      }));
+      
+      return { previousQRCode };
+    },
+    onSuccess: (data) => {
+      console.log("Cover image updated successfully:", data);
+      
+      // Invalidate ALL QR code queries to ensure consistency
       queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
       
       // Force image refresh
       refreshImage();
       
       toast({
-        title: "Cover Image Updated",
-        description: "Your book cover image has been updated successfully.",
+        title: "Success",
+        description: "Book cover image has been updated successfully.",
       });
     },
-    onError: (error) => {
+    onError: (error, _, context) => {
       console.error("Error updating cover image:", error);
+      
+      // Revert to previous state if available
+      if (context?.previousQRCode) {
+        queryClient.setQueryData(qrCodeQueryKeys.detail(id || ''), context.previousQRCode);
+      }
+      
       toast({
         title: "Update Error",
         description: error instanceof Error ? error.message : "Failed to update cover image",
         variant: "destructive",
       });
+    },
+    onSettled: () => {
+      // Refetch all QR code queries to ensure consistency
+      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
     }
   });
 
@@ -248,7 +262,7 @@ export const useQRCodeDetailsPage = () => {
     handleDownloadPNG,
     qrCodeRef,
     updateCoverImage,
-    imageRefreshKey, // Expose the refresh key for components
-    refreshImage,    // Expose refresh function
+    imageRefreshKey,
+    refreshImage,
   };
 };
