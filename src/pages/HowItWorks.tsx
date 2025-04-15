@@ -33,24 +33,28 @@ const HowItWorks = () => {
             <div className="space-y-8 order-1">
               <div className="space-y-3">
                 <h2 className="text-2xl font-playfair font-medium">For Authors</h2>
-                <ol className="list-decimal list-inside space-y-4 pl-2">
+                <ul className="list-disc list-inside space-y-4 pl-2">
                   <li className="text-lg">
-                    <span className="font-medium">Create and download a QR code</span> 
-                    <p className="text-base ml-6 mt-1">Generate a unique Quilltips QR code for your book.</p>
+                      <span className="font-medium">Join Quilltips and link with Stripe</span>
+                      <p className="text-base ml-6 mt-1">Create your quilltips account and go through Stripe onboarding.</p>
+                    </li>
+                  <li className="text-lg">
+                    <span className="font-medium">Create your Quilltips Jar </span> 
+                    <p className="text-base ml-6 mt-1">Generate and download a unique Quilltips QR code for your book.</p>
                   </li>
                   <li className="text-lg">
-                    <span className="font-medium">Put it on your book</span>
-                    <p className="text-base ml-6 mt-1">Work with your publisher to print the QR code on the cover or inside the book.</p>
+                    <span className="font-medium">Put the QR code on your book</span>
+                    <p className="text-base ml-6 mt-1">Work with your publisher or designer to print the QR code on the cover or inside the book. We recommend the back cover or on the About the Author page.</p>
                   </li>
                   <li className="text-lg">
-                    <span className="font-medium">Reader scans it and sends a tip</span>
-                    <p className="text-base ml-6 mt-1">Readers can easily support you by scanning the QR code.</p>
+                    <span className="font-medium">Reader scans it and sends a tip and message</span>
+                    <p className="text-base ml-6 mt-1">Readers can easily support you by scanning the QR code and leaving you a tip and message.</p>
                   </li>
                   <li className="text-lg">
-                    <span className="font-medium">Receive tips and connect with readers</span>
-                    <p className="text-base ml-6 mt-1">Collect support and messages directly from your readers.</p>
+                    <span className="font-medium">Engage with your readers</span>
+                    <p className="text-base ml-6 mt-1">Respond with likes or comments directly to your readers. Direct readers to your website and socials. Build your email list.</p>
                   </li>
-                </ol>
+                </ul>
               </div>
             </div>
             
@@ -63,20 +67,20 @@ const HowItWorks = () => {
             </div>
           </div>
           
-          <div className="space-y-6">
+          <div className="space-y-6 pt-10 pb-8">
             <h2 className="text-2xl md:text-3xl font-playfair font-medium text-center mb-6">How do QR codes work?</h2>
             
             <div className="space-y-4">
               <p className="text-lg">
-                A QR code is like a barcode that readers can scan to open your virtual Quilltips Jar. Any author can create a QR code for a book using Quilltips. After you purchase the QR code, we generate a virtual Quilltips Jar associated with the QR code where readers can leave a tip and a message about the book.
+                A QR code is like a barcode that readers can scan to open your virtual Quilltips Jar. Any author can create a QR code for a book using Quilltips. After you purchase the QR code, we generate a virtual Quilltips Jar associated with the QR code where readers can leave a tip and a message about the book. 
               </p>
               
               <p className="text-lg">
-                Work with the publisher to get the QR code printed on the book. We recommend printing the QR code directly on the cover or within the first few pages.
+                Work with the publisher or designer to get the QR code printed on the book. We recommend printing the QR code directly on the cover or on the About the Author page. <strong>QR codes should be a minimum of 1 inch by 1 inch.</strong>
               </p>
               
               <p className="text-lg">
-                You'll be able to access and download valuable reader information across all your Quilltip jars (such as emails and locations).
+                You'll be able to access and download valuable reader information across all your Quilltips Jars.
               </p>
             </div>
           </div>
@@ -84,9 +88,9 @@ const HowItWorks = () => {
         
         <div className="mt-16 text-center">
           <img 
-            src="/lovable-uploads/298794ad-18a4-4ee0-a2ad-6a89775c0227.png" 
+            src="/lovable-uploads/how-quilltips-works.png" 
             alt="How Quilltips Works" 
-            className="mx-auto max-w-full h-auto"
+            className="mx-auto max-w-full h-auto rounded-sm max-w-1xl"
           />
         </div>
         
