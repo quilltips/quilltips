@@ -9,6 +9,7 @@ import { GuestMenu } from "./navigation/GuestMenu";
 import { SearchBar } from "./navigation/SearchBar";
 import { useAuth } from "./auth/AuthProvider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -19,6 +20,7 @@ export const Navigation = () => {
   const {
     toast
   } = useToast();
+
   const handleLogout = async () => {
     setIsLoading(true);
     try {
@@ -42,6 +44,7 @@ export const Navigation = () => {
       setIsLoading(false);
     }
   };
+
   const UserDropdownMenu = () => <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-1 text-sm font-medium">
@@ -74,15 +77,17 @@ export const Navigation = () => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>;
+
   const NavLinks = () => <div className="flex items-center gap-4">
       <SearchBar />
       {user ? <UserDropdownMenu /> : <GuestMenu />}
     </div>;
+
   return <nav className="fixed top-0 w-full bg-background z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link to={isAuthor ? "/author/dashboard" : "/"} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <img src="/lovable-uploads/8718ff3b-2170-4226-b088-575917507a51.png" alt="Quilltips Logo" className="h-5 w-auto" />
+            <img src="/lovable-uploads/2be90d2b-bfb0-47d4-9715-bff8d737048d.png" alt="Quilltips Logo" className="h-5 w-auto" />
             <span className="text-lg font-medium">Quilltips</span>
           </Link>
         </div>
