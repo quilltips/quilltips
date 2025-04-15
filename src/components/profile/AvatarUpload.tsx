@@ -7,6 +7,7 @@ import { Loader2, AlertCircle, Edit } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { useImageProcessor } from "@/hooks/use-image-processor";
 
 interface AvatarUploadProps {
   profileId: string;
@@ -19,24 +20,10 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
   const [error, setError] = useState<string | null>(null);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(avatarUrl);
   const { toast } = useToast();
+  const { processImage, isProcessing } = useImageProcessor();
 
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-  const truncateFilename = (filename: string, maxLength: number = 25): string => {
-    if (!filename || filename.length <= maxLength) return filename;
-    
-    const parts = filename.split('/');
-    const actualFilename = parts[parts.length - 1];
-    
-    if (actualFilename.length <= maxLength) return actualFilename;
-    
-    const extension = actualFilename.split('.').pop() || '';
-    const nameWithoutExt = actualFilename.substring(0, actualFilename.length - extension.length - 1);
-    
-    const truncatedName = nameWithoutExt.substring(0, maxLength - 3 - extension.length);
-    return `${truncatedName}...${extension}`;
-  };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,12 +56,26 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
     setIsUploading(true);
 
     try {
-      const fileExt = file.name.split('.').pop();
+      const processedImage = await processImage(file, {
+        type: 'avatar',
+        maxWidth: 400,
+        maxHeight: 400
+      });
+
+      if (!processedImage) {
+        throw new Error('Failed to process image');
+      }
+
+      const response = await fetch(processedImage);
+      const processedFile = await response.blob();
+      const optimizedFile = new File([processedFile], file.name, { type: 'image/jpeg' });
+
+      const fileExt = 'jpg';
       const filePath = `${profileId}-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, optimizedFile);
 
       if (uploadError) throw uploadError;
 
@@ -182,10 +183,10 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
                   variant="secondary"
                   size="icon"
                   onClick={() => document.getElementById('avatar-upload')?.click()}
-                  disabled={isUploading}
+                  disabled={isUploading || isProcessing}
                   className="rounded-full h-8 w-8"
                 >
-                  {isUploading ? (
+                  {isUploading || isProcessing ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Edit className="h-3.5 w-3.5" />
