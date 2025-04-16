@@ -14,7 +14,7 @@ const About = () => {
           <section className="mb-12">
             <h2 className="text-2xl font-semibold mb-4">A way to say "thanks" to all the great authors out there</h2>
             <p>
-            Quilltips was founded to give readers a way to say thanks to the authors of books they love and to help bring those author-reader connections to life by allowing readers to easiliy send tips and message to authors. With author royalties on new books hovering around 10% for published authors, and royalties on used books and library copies 0%, authors receive only a minute share of the value they create with their stories despite their books circulating for decades after the first sale.
+            Quilltips was founded to give readers a way to say thanks to the authors of books they love and to help bring those author-reader connections to life by allowing readers to easiliy send tips and message to authors. With royalties on new books hovering around 10% for published authors, and royalties on used books and library copies 0%, authors receive only a minute share of the value they create with their stories despite their books circulating for decades after the first sale.
             </p>
           </section>
 
