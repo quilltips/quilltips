@@ -1,3 +1,4 @@
+
 // supabase/functions/platform-webhook/index.ts
 export const config = {
   path: "/platform-webhook",

@@ -124,8 +124,8 @@ serve(async (req) => {
       );
     }
 
-    // Calculate application fee (10%)
-    const applicationFeeAmount = Math.round(amount * 100 * 0.1); // 10% of the amount in cents
+    // Calculate application fee (5%)
+    const applicationFeeAmount = Math.round(amount * 100 * 0.05); // 5% of the amount in cents
 
     console.log('Creating Stripe checkout session...');
     const session = await stripe.checkout.sessions.create({

@@ -22,12 +22,20 @@ export const ProfileSocialLinks = ({
   return (
     <div className="space-y-4">
       {socialLinks.map((link, index) => (
-        <div key={index} className="flex gap-2 items-center">
+        <div key={index} className="flex flex-col sm:flex-row gap-2">
           <div className="flex-1">
             <Input
-              placeholder="Website, Twitter, Instagram..."
+              placeholder="Link label (Website, Twitter, Instagram...)"
               value={link.label}
               onChange={(e) => updateSocialLink(index, "label", e.target.value)}
+              className={`mb-2 sm:mb-0 ${hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}`}
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              placeholder="URL (https://...)"
+              value={link.url}
+              onChange={(e) => updateSocialLink(index, "url", e.target.value)}
               className={hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}
             />
           </div>
@@ -36,7 +44,7 @@ export const ProfileSocialLinks = ({
             variant="ghost"
             size="icon"
             onClick={() => removeSocialLink(index)}
-            className="h-8 w-8"
+            className="h-10 w-10 flex-shrink-0"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

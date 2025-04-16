@@ -26,13 +26,13 @@ export function useProfileForm({
 }: UseProfileFormProps) {
   const [name, setName] = useState(initialName);
   const [bio, setBio] = useState(initialBio);
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(initialSocialLinks);
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(initialSocialLinks || []);
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   // Track the current values that represent "saved" state
   const [savedName, setSavedName] = useState(initialName);
   const [savedBio, setSavedBio] = useState(initialBio);
-  const [savedSocialLinks, setSavedSocialLinks] = useState<SocialLink[]>(initialSocialLinks);
+  const [savedSocialLinks, setSavedSocialLinks] = useState<SocialLink[]>(initialSocialLinks || []);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -55,7 +55,9 @@ export function useProfileForm({
   };
 
   const removeSocialLink = (index: number) => {
-    setSocialLinks(socialLinks.filter((_, i) => i !== index));
+    const newLinks = [...socialLinks];
+    newLinks.splice(index, 1);
+    setSocialLinks(newLinks);
   };
 
   const updateSocialLink = (index: number, field: keyof SocialLink, value: string) => {
@@ -69,10 +71,16 @@ export function useProfileForm({
     setIsLoading(true);
 
     try {
-      const socialLinksJson: Json = socialLinks.map(link => ({
-        url: link.url,
-        label: link.label
+      // Filter out incomplete social links (missing both url and label)
+      const filteredLinks = socialLinks.filter(link => link.url.trim() !== '' || link.label.trim() !== '');
+      
+      // Ensure all links have at least a placeholder label if URL exists
+      const processedLinks = filteredLinks.map(link => ({
+        url: link.url.trim(),
+        label: link.label.trim() || (link.url ? new URL(link.url).hostname.replace(/^www\./, '') : 'Link')
       }));
+
+      const socialLinksJson: Json = processedLinks;
 
       // Update the main profile
       const { error: profileError } = await supabase
@@ -109,7 +117,7 @@ export function useProfileForm({
       // After a successful save, update our "saved" state references to match current values
       setSavedName(name);
       setSavedBio(bio);
-      setSavedSocialLinks(JSON.parse(JSON.stringify(socialLinks)));
+      setSavedSocialLinks(processedLinks);
       
       setHasChanges(false);
       

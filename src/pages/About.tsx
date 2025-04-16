@@ -1,3 +1,4 @@
+
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -56,7 +57,7 @@ const About = () => {
           
           <section className="mb-12">
             <h2 className="text-2xl font-semibold mb-4">For Publishers</h2>
-            <p>If you represent a publisher and would like to speak with someone from Quilltips, we’d love to hear from you. Please submit a request through the Contact page or e-mail us directly at gabriel@quilltips.co.</p>
+            <p>If you represent a publisher and would like to speak with someone from Quilltips, we'd love to hear from you. Please submit a request through the Contact page or e-mail us directly at gabriel@quilltips.co.</p>
           </section>
           
           <section className="text-center my-16">
