@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -86,12 +85,19 @@ export const TipLikeButton = ({
     <Button 
       variant="outline" 
       size="sm"
-      className={`flex items-center gap-1 ${className} ${liked ? 'bg-[#19363C]/40 border-[#19363C] text-[#19363C] cursor-default' : ''}`}
+      className={`flex items-center gap-1 border-[#19363C] text-[#19363C] transition-all ${
+        liked ? 'bg-[#19363C]/5 cursor-default' : 'hover:bg-[#19363C]/10'
+      } ${className}`}
       onClick={handleLike}
       disabled={isLoading || liked}
     >
-      <ThumbsUp size={16} className={liked ? 'text-[#19363C] fill-[#19363C]' : ''} />
-      <span>{count}</span>
+      <ThumbsUp 
+        size={16}
+        className={`transition-all stroke-[#19363C] ${
+          liked ? 'fill-[#FFD166]' : 'fill-none'
+        }`}
+      />
+      <span className="text-sm font-medium">{count}</span>
     </Button>
   );
 };

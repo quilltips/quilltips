@@ -1,4 +1,3 @@
-
 import { Button } from "../ui/button";
 import { MessageCircle } from "lucide-react";
 
@@ -13,11 +12,12 @@ export const PublicTipCommentButton = ({
 }: PublicTipCommentButtonProps) => {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    if (onClick) {
-      onClick();
-    }
+    onClick?.();
   };
+
+  const iconClass = commentCount > 0
+    ? "stroke-[#19363C] fill-[#19363C]/80"
+    : "stroke-[#19363C] fill-none";
 
   return (
     <Button
@@ -26,7 +26,7 @@ export const PublicTipCommentButton = ({
       onClick={handleClick}
       className="flex items-center gap-1"
     >
-      <MessageCircle className="h-4 w-4 fill-[#19363C]/10 stroke-[#19363C]" />
+      <MessageCircle className={`h-4 w-4 ${iconClass}`} />
       <span>{commentCount}</span>
     </Button>
   );
