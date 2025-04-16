@@ -65,9 +65,12 @@ const CreateQRPage = () => {
   return (
     <Layout>
       <main className="container mx-auto px-4 pt-24 pb-12">
-        <h1 className="text-2xl font-bold mb-6">Create New QR Code</h1>
+        <h1 className="text-3xl text-center font-bold mb-6 text-[#19363C]">Create a new Quilltips Jar</h1>
         <div className="max-w-2xl mx-auto">
+         
+         <div className="mt-6">
           <CreateQRCode authorId={profile.id} />
+          </div> 
           
           {/* Add How QR Codes Work section */}
           <HowQRCodesWork />

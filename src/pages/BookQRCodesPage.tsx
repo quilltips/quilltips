@@ -84,13 +84,13 @@ const BookQRCodesPage = () => {
                   value="all" 
                   className="rounded-none border-b-2 border-transparent px-4 py-2 text-muted-foreground data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
                 >
-                  All QR Codes
+                  All Quilltips Jars
                 </TabsTrigger>
                 <TabsTrigger 
                   value="new" 
                   className="rounded-none border-b-2 border-transparent px-4 py-2 text-muted-foreground data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
                 >
-                  New QR Code
+                  New Quilltips Jar
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="all" className="mt-6">
@@ -100,9 +100,9 @@ const BookQRCodesPage = () => {
                 <div className="max-w-2xl mx-auto">
                   <div className="text-center mb-8">
                     <QrCode className="h-12 w-12 mx-auto mb-4 text-[#2D3748]" />
-                    <h3 className="text-2xl font-medium mb-2">Create a new QR code</h3>
+                    <h3 className="text-2xl font-medium mb-2">Create a new Quilltips Jar</h3>
                     <p className="text-muted-foreground mb-6">
-                      Generate a QR code for your book to help readers support you directly.
+                      Set up your virtual tip jar for an upcoming book.
                     </p>
                   </div>
                   
