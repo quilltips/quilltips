@@ -1,6 +1,7 @@
 
 import { BookOpen } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 export const HowQRCodesWork = () => {
   return (
@@ -24,6 +25,15 @@ export const HowQRCodesWork = () => {
         
         <p>
           You'll be able to access and download valuable reader information across all your Quilltips Jars from your Data page.
+        </p>
+        
+        <p className="mt-4">
+          <Link 
+            to="/how-it-works" 
+            className="text-[#19363C] underline hover:text-[#19363C]/80 transition-colors"
+          >
+            Learn more about how Quilltips works
+          </Link>
         </p>
       </div>
     </Card>
