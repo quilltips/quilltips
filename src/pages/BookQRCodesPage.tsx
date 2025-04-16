@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -17,6 +18,18 @@ const BookQRCodesPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam === 'new' ? 'new' : 'all');
+  
+  // Update active tab when URL parameter changes
+  useEffect(() => {
+    if (tabParam === 'new') {
+      setActiveTab('new');
+    } else if (tabParam === 'all') {
+      setActiveTab('all');
+    }
+  }, [tabParam]);
   
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['author-profile', user?.id],
@@ -50,6 +63,12 @@ const BookQRCodesPage = () => {
     }
   });
 
+  // Handle tab change and update URL
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    navigate(`/author/book-qr-codes?tab=${value}`, { replace: true });
+  };
+
   if (isLoading) {
     return (
       <Layout>
@@ -70,7 +89,7 @@ const BookQRCodesPage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
               <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Quilltips Jars</h1>
               <Button 
-                onClick={() => navigate('/author/create-qr')} 
+                onClick={() => handleTabChange('new')} 
                 className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium md:hidden"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -78,7 +97,7 @@ const BookQRCodesPage = () => {
               </Button>
             </div>
 
-            <Tabs defaultValue="all" className="mb-8">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-8">
               <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0 h-auto">
                 <TabsTrigger 
                   value="all" 

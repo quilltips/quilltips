@@ -1,3 +1,4 @@
+
 import Index from "@/pages/Index";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
@@ -8,7 +9,6 @@ import AuthorRegister from "@/pages/AuthorRegister";
 import AuthorLogin from "@/pages/AuthorLogin";
 import AuthorDashboard from "@/pages/AuthorDashboard";
 import AuthorSettings from "@/pages/AuthorSettings";
-import CreateQRPage from "@/pages/CreateQRPage";
 import QRCodeDesign from "@/pages/QRCodeDesign";
 import AuthorBankAccount from "@/pages/AuthorBankAccount";
 import AuthorPublicProfile from "@/pages/AuthorPublicProfile";
@@ -24,6 +24,7 @@ import TipSuccessPage from "@/pages/TipSuccessPage";
 import UnsubscribePage from "@/pages/UnsubscribePage";
 import StripeHelp from "@/pages/StripeHelp";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import { Navigate } from "react-router-dom";
 
 export const routes = [
   { path: "/", element: <Index /> },
@@ -37,7 +38,8 @@ export const routes = [
   { path: "/author/login", element: <AuthorLogin /> },
   { path: "/author/dashboard", element: <AuthorDashboard /> },
   { path: "/author/settings", element: <AuthorSettings /> },
-  { path: "/author/create-qr", element: <CreateQRPage /> },
+  // Redirect from the old create-qr page to book-qr-codes with the "new" tab
+  { path: "/author/create-qr", element: <Navigate to="/author/book-qr-codes?tab=new" replace /> },
   { path: "/author/qr-design", element: <QRCodeDesign /> },
   { path: "/author/bank-account", element: <AuthorBankAccount /> },
   { path: "/author/profile/:id", element: <AuthorPublicProfile /> },

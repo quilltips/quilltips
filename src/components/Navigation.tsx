@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, User, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
@@ -9,6 +10,7 @@ import { GuestMenu } from "./navigation/GuestMenu";
 import { SearchBar } from "./navigation/SearchBar";
 import { useAuth } from "./auth/AuthProvider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -19,6 +21,7 @@ export const Navigation = () => {
   const {
     toast
   } = useToast();
+  
   const handleLogout = async () => {
     setIsLoading(true);
     try {
@@ -42,6 +45,7 @@ export const Navigation = () => {
       setIsLoading(false);
     }
   };
+  
   const UserDropdownMenu = () => <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-1 text-sm font-medium">
@@ -57,7 +61,7 @@ export const Navigation = () => {
         <DropdownMenuItem onClick={() => navigate('/author/tip-feed')}>
           Tip feed
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate('/author/book-qr-codes')}>
+        <DropdownMenuItem onClick={() => navigate('/author/book-qr-codes?tab=all')}>
           Book QR codes
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/author/data')}>
@@ -74,16 +78,17 @@ export const Navigation = () => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>;
+    
   const NavLinks = () => <div className="flex items-center gap-4">
       <SearchBar />
       {user ? <UserDropdownMenu /> : <GuestMenu />}
     </div>;
+    
   return <nav className="fixed top-0 w-full bg-background z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link to={isAuthor ? "/author/dashboard" : "/"} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <img src="/lovable-uploads/qt_logo_text.png" alt="Quilltips Logo" className="h-7 w-auto" />
-         
           </Link>
         </div>
         

@@ -76,7 +76,7 @@ export const AuthorQRCodesList = ({
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => navigate('/author/book-qr-codes')}
+            onClick={() => navigate('/author/book-qr-codes?tab=all')}
             className="text-[#718096] hover:text-[#2D3748] text-xs h-auto py-1 px-2"
           >
             See all 
@@ -92,7 +92,7 @@ export const AuthorQRCodesList = ({
           </div>
           
           <Button 
-            onClick={() => navigate('/author/create-qr')} 
+            onClick={() => navigate('/author/book-qr-codes?tab=new')} 
             className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] p-3 h-auto font-medium text-sm"
           >
             <Plus className="h-3 w-3 mr-2" />
@@ -133,7 +133,7 @@ export const AuthorQRCodesList = ({
           </div>
           
           <Button 
-            onClick={() => navigate('/author/create-qr')} 
+            onClick={() => navigate('/author/book-qr-codes?tab=new')} 
             className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] p-3 h-auto font-medium text-sm"
           >
             <Plus className="h-3 w-3 mr-2" />
