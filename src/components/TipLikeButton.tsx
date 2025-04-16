@@ -86,7 +86,7 @@ export const TipLikeButton = ({
     <Button 
       variant="outline" 
       size="sm"
-      className={`flex items-center gap-1 ${className} ${liked ? 'bg-[#19363C]/5 border-[#19363C] text-[#19363C] cursor-default' : ''}`}
+      className={`flex items-center gap-1 ${className} ${liked ? 'bg-[#19363C]/40 border-[#19363C] text-[#19363C] cursor-default' : ''}`}
       onClick={handleLike}
       disabled={isLoading || liked}
     >
