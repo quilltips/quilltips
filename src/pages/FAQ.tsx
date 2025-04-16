@@ -74,30 +74,30 @@ const FAQ = () => {
                 </AccordionItem>
                 
                 <AccordionItem value="qr-code-cost">
-                  <AccordionTrigger>How much does a Quilltips jar cost?</AccordionTrigger>
+                  <AccordionTrigger>How much does a Quilltips Jar cost?</AccordionTrigger>
                   <AccordionContent>
-                    Creating a Quilltips jar costs $35. A Quilltips jar includes:
+                    Creating a Quilltips Jar costs $35. A Quilltips Jar includes:
                     <ul className="list-disc pl-6 mt-2 space-y-1">
                       <li>A unique QR code that you can print on the cover of your next book for readers to scan.</li>
                       <li>A book-specific profile page on Quilltips where readers can leave you a tip and message.</li>
                       <li>A link between your Quilltips jar and your chosen payment option, secured by Stripe.</li>
                       <li>Data and insights directly from your readers to help you deepen engagement.</li>
                     </ul>
-                    <p className="mt-2">In addition to the QR code cost, Quilltips charges a 5% fee on transactions. Our payment provider, Stripe, also charges a processing fee that readers have the option to cover.</p>
+                    <p className="mt-2">In addition to the QR code cost, Quilltips charges a 5% fee on transactions. Our payment provider, Stripe, also charges a processing fee.</p>
                   </AccordionContent>
                 </AccordionItem>
                 
                 <AccordionItem value="add-qr-to-book">
                   <AccordionTrigger>I've created my QR code - how should I add it to my book?</AccordionTrigger>
                   <AccordionContent>
-                    Great job! We recommend adding the QR code to your book jacket (front or back cover) or to your About the Author page. To ensure scan-ability, the QR code should be no less than 2cm by 2cm in size. After you've added it to your book, the rest is up to us and your readers!
+                    Great job! After purchasing your QR code, you can download it in PNG or SVG format and share it with your publisher or cover designer if necessary. We recommend adding the QR code to your book jacket (front or back cover) or to your About the Author page. To ensure scan-ability, the QR code should be no less than 1 inch by 1 inch in size. After you've added it to your book, the rest is up to us and your readers!
                   </AccordionContent>
                 </AccordionItem>
                 
                 <AccordionItem value="collect-payments">
                   <AccordionTrigger>How do I collect payments?</AccordionTrigger>
                   <AccordionContent>
-                    During the account creation process, you'll be asked to set up a Stripe Connect account so you can link your preferred payment method. After this is done, you can receive tips directly from readers. For detailed guidance on the Stripe setup process, visit our <Link to="/stripe-help" className="text-[#19363C] underline">Stripe setup guide</Link>.
+                    During the account creation process, you'll be asked to set up a Stripe Connect account so you can link your preferred bank account. After this is done, you can receive tips directly from readers. For detailed guidance on the Stripe setup process, visit our <Link to="/stripe-help" className="text-[#19363C] underline">Stripe setup guide</Link>.
                   </AccordionContent>
                 </AccordionItem>
                 
@@ -117,19 +117,10 @@ const FAQ = () => {
                   </AccordionContent>
                 </AccordionItem>
                 
-                <AccordionItem value="qr-implementation">
-                  <AccordionTrigger>How do I implement the QR code in my book?</AccordionTrigger>
-                  <AccordionContent>
-                    After purchasing a QR code, you can download it in various formats suitable for print. We recommend working 
-                    with your publisher to include the QR code on the book cover or within the first few pages. For self-published 
-                    authors, you can add the QR code to your book design before printing or use stickers for existing inventory.
-                  </AccordionContent>
-                </AccordionItem>
-                
                 <AccordionItem value="track-tips">
                   <AccordionTrigger>How do I track my tips and engagement?</AccordionTrigger>
                   <AccordionContent>
-                    Your author dashboard provides detailed analytics on tips received, messages from readers, and engagement metrics 
+                    Your data dashboard provides detailed analytics on tips received, messages from readers, and engagement metrics 
                     for each of your QR codes. You can track which books are generating the most support and see reader feedback to 
                     help inform your future writing.
                   </AccordionContent>
@@ -138,9 +129,7 @@ const FAQ = () => {
                 <AccordionItem value="custom-qr-designs">
                   <AccordionTrigger>Can I customize the design of my QR codes?</AccordionTrigger>
                   <AccordionContent>
-                    Yes, Quilltips offers several templates for QR code design. You can choose different styles, colors, and add your 
-                    branding to make the QR code match your book's aesthetic. All QR codes maintain the Quilltips branding to ensure 
-                    readers recognize the purpose of the code.
+                    At this time, we don't offer customization options for the QR codes outside of the Quilltips styling we've applied. If this is something you'd like to see going forward, let us know! All QR codes maintain the Quilltips branding to ensure readers recognize the purpose of the code.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -153,21 +142,21 @@ const FAQ = () => {
                 <AccordionItem value="how-use-as-reader">
                   <AccordionTrigger>How can I use Quilltips as a reader?</AccordionTrigger>
                   <AccordionContent>
-                    Readers can scan Quilltips QR codes on their books to show appreciation and message their authors directly, or can search for authors and books on Quilltips website.
+                    Readers can scan Quilltips QR codes on their books to send a tip and message their authors directly, or can search for authors and books on the Quilltips website.
                   </AccordionContent>
                 </AccordionItem>
                 
                 <AccordionItem value="reader-tip-amount">
                   <AccordionTrigger>As a reader, how much should I tip?</AccordionTrigger>
                   <AccordionContent>
-                    This is totally up to you. We don't have any minimum tip, so you should tip whatever feels comfortable.
+                    This is totally up to you. We have a minimum tip of $1 given our relationship with Stripe, but otherwise you should tip whatever feels comfortable.
                   </AccordionContent>
                 </AccordionItem>
                 
                 <AccordionItem value="reader-info-shared">
                   <AccordionTrigger>I'm a reader - what information is shared with the author and with other readers?</AccordionTrigger>
                   <AccordionContent>
-                    In addition to your tip and optional message, by agreeing to the Quilltips terms of service, your email is shared with the author. That said, your tip and message to private if you want to keep these communications to the author.
+                    In addition to your tip and optional message, by agreeing to the Quilltips terms of service, your email is shared with the author.
                     <br /><br />
                     We might also share generalized location data with the author so they know where their readers are. Check our terms of service for more information.
                   </AccordionContent>
@@ -186,8 +175,7 @@ const FAQ = () => {
                   <AccordionTrigger>Do I need to create an account to tip an author?</AccordionTrigger>
                   <AccordionContent>
                     No, you don't need to create an account to tip an author. You can leave a tip as a guest by entering your 
-                    payment information securely. However, creating an account allows you to track your tipping history and build 
-                    a relationship with your favorite authors.
+                    payment information securely. At this time we don't offer separate reader accounts. If this is something you'd like to see in the future, let us know!
                   </AccordionContent>
                 </AccordionItem>
                 
