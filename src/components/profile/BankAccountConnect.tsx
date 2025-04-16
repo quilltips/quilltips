@@ -1,10 +1,10 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
-import { Loader2, Wallet } from "lucide-react";
+import { Loader2, Wallet, HelpCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 
 interface BankAccountConnectProps {
   profileId: string;
@@ -76,20 +76,29 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
   };
 
   return (
-    <Button
-      type="button"
-      variant="outline"
-      onClick={handleConnect}
-      disabled={isConnecting}
-      className="w-full sm:w-auto flex items-center gap-2"
-    >
-      {isConnecting ? (
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-      ) : (
-        <Wallet className="mr-2 h-4 w-4" />
-      )}
-      {stripeAccountId ? "Manage Payment Settings" : "Connect Bank Account"}
-      {stripeAccountId && <span className="text-xs text-muted-foreground">(Opens Stripe)</span>}
-    </Button>
+    <div className="space-y-3">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleConnect}
+        disabled={isConnecting}
+        className="w-full sm:w-auto flex items-center gap-2"
+      >
+        {isConnecting ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Wallet className="mr-2 h-4 w-4" />
+        )}
+        {stripeAccountId ? "Manage Payment Settings" : "Connect Bank Account"}
+        {stripeAccountId && <span className="text-xs text-muted-foreground">(Opens Stripe)</span>}
+      </Button>
+      
+      <div className="flex items-center text-sm">
+        <HelpCircle className="h-4 w-4 mr-1" />
+        <Link to="/stripe-help" className="text-[#19363C] hover:text-[#19363C]/80 underline">
+          Need help with Stripe setup?
+        </Link>
+      </div>
+    </div>
   );
 };

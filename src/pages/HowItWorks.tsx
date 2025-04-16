@@ -1,3 +1,4 @@
+
 import { Layout } from "@/components/Layout";
 import { Link } from "react-router-dom";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
@@ -14,7 +15,7 @@ const HowItWorks = () => {
       navigate("/author/login");
       return;
     }
-    navigate("/author/create-qr");
+    navigate("/author/book-qr-codes?tab=new");
   };
   
   return (
@@ -36,7 +37,12 @@ const HowItWorks = () => {
                 <ul className="list-disc list-inside space-y-4 pl-2">
                   <li className="text-lg">
                       <span className="font-medium">Join Quilltips and link with Stripe</span>
-                      <p className="text-base ml-6 mt-1">Create your quilltips account and go through Stripe onboarding.</p>
+                      <p className="text-base ml-6 mt-1">
+                        Create your quilltips account and go through Stripe onboarding. 
+                        <Link to="/stripe-help" className="ml-1 text-[#19363C] underline hover:text-[#19363C]/80">
+                          Learn more about Stripe setup.
+                        </Link>
+                      </p>
                     </li>
                   <li className="text-lg">
                     <span className="font-medium">Create your Quilltips Jar </span> 
