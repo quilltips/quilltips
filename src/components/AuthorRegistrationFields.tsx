@@ -217,7 +217,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs">
-                  We need your full name for verification purposes. Not published yet? You can still create an account.
+                  We need your full name for verification purposes.
                 </p>
               </TooltipContent>
             </Tooltip>

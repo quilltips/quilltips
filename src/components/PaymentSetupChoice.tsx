@@ -123,7 +123,7 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
               Stripe to enable their QR codes to pay out to their bank account.
             </p>
             <p>
-              To get set up, Stripe needs to collect some basic information from you. This page will redirect 
+              To get set up, Stripe needs to collect some basic information from you. Clicking "Set up payments now" above will redirect 
               you to the Stripe onboarding flow, which should take less than 5 minutes to complete. 
               You will be asked to link a bank account.
             </p>

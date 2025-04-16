@@ -139,13 +139,16 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
             Stripe to enable their QR codes to pay out to their bank account.
           </p>
           <p>
-            To get set up, Stripe needs to collect some basic information from you. This page will redirect 
-            you to the Stripe onboarding flow, which should take less than 5 minutes to complete. 
-            You will be asked to link a bank account.
+            To get set up, Stripe needs to collect some basic information from you. Clicking "set up payments now" above will redirect 
+            you to the Stripe Connect onboarding flow, which should take less than 5 minutes to complete. 
+            You will be asked to link a bank account and verify your identity.
           </p>
           <p>
             If you have any questions, don't hesitate to reach out to Quilltips. Once your account is set up, 
             you will be able to receive tips from your readers!
+          </p>
+          <p>
+            *Please note that before submitting your completed information, Stripe will verify your identity. If you see incomplete tasks at this point, you will need to complete them before Stripe approves your account.
           </p>
         </div>
       </div>
