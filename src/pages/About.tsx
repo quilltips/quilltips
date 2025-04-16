@@ -8,63 +8,55 @@ const About = () => {
       
       <main className="container mx-auto px-4 py-24 flex-grow">
         <div className="max-w-3xl mx-auto prose">
-          <h1 className="text-4xl font-bold mb-8">About Quilltips</h1>
+            <h1 className="text-4xl font-bold mb-8 text-[#19363C]">About Quilltips</h1>
           
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold mb-4">Supporting Authors A Worthwhile Cause</h2>
+            <h2 className="text-2xl font-semibold mb-4">A way to say "thanks" to all the great authors out there</h2>
             <p>
-              Authors are the architects of our literary world, crafting stories that inspire, educate, and transform lives. 
-              However, in today's digital age and second-hand book market, many authors face increasing challenges in 
-              receiving fair compensation for their work. Quilltips was created to bridge this gap, providing a direct 
-              channel between readers and authors.
+            Quilltips was founded to give readers a way to say thanks to the authors of books they love and to help bring those author-reader connections to life by allowing readers to easiliy send tips and message to authors. With author royalties on new books hovering around 10% for published authors, and royalties on used books and library copies 0%, authors receive only a minute share of the value they create with their stories despite their books circulating for decades after the first sale.
             </p>
           </section>
 
           <section className="mb-12">
             <h2 className="text-2xl font-semibold mb-4">The Hidden Reality of Used Book Sales</h2>
             <p>
-              While used bookstores and online marketplaces offer affordable access to literature, authors receive no 
-              royalties from these sales. This means that despite their books continuing to circulate and impact readers, 
-              authors don't receive any financial recognition for their ongoing influence. Quilltips provides a solution 
-              by enabling readers to directly support authors whose used books they've enjoyed.
+            The used book market is huge and growing thanks to convenient e-commerce distribution from the likes of Amazon. With a more accessible price point and envirnomental sustainability benefits, the used book market is amazing, except for the fact that only the platforms and sellers make money on these transactions. <strong>Quilltips wants to give readers the power to voice their appreciation and connect directly with the authors of their favorite titles, while improving author economics in a completely voluntary way.</strong>
             </p>
           </section>
 
           <section className="mb-12">
             <h2 className="text-2xl font-semibold mb-4">Connecting Authors with Their Readers</h2>
             <p>
-              Beyond financial support, Quilltips was designed to strengthen the bond between authors and their readers. Through our 
-              platform, readers can share their appreciation, feedback, and personal stories about how a book has impacted them. This 
-              direct connection creates a more meaningful and sustainable literary ecosystem where authors can better understand 
-              and engage with their audience.
+            The upshot of putting powerful QR codes on physical books and adding a platform behind it is that those books are now a live window between the reader and author and a tool for readers to voice support and appreciation. They can also give authors a view into the when, where, and why of their reader base. Authors can use Quilltips QR codes to convert their offline book into a long-lived digitally enabled asset. 
             </p>
+            <br></br>
+            <p>
+            With Quilltips, Authors can create Quilltips Jars for each of their books, allowing them to receive tips and messages from their readers, respond directly to those tips, direct readers to their author website and socials, and build their e-mail list. 
+            </p>
+          
           </section>
           
           <section className="mb-12">
             <h2 className="text-2xl font-semibold mb-4">How does it work?</h2>
             <p className="font-medium">Authors:</p>
-            <ol className="list-decimal pl-5 mb-4">
-              <li>Create a Quilltips account.</li>
-              <li>Purchase a Quilltips Jar, accessible by QR code.</li>
-              <li>Download and print the QR code on their next book.</li>
-            </ol>
-            <p>Readers scan the QR code to open the book's Quilltips Jar, where they can leave a tip and message.</p>
-            
+            <ul className="list-disc pl-5 mb-4">
+              <li>Create a Quilltips account and link your bank account with Stripe.</li>
+              <li>Purchase a Quilltips Jar, accessible through a downloadable QR code.</li>
+              <li>Work with your publisher or designer to get the QR code on your next book - we recommend placing it somewhere on the book jacket or on the About the Author page and keeping it larger than 1 inch by 1 inch.</li>
+              <li>Readers scan the QR code to open the book's Quilltips Jar, where they can leave a tip and message.</li>
+              <li>Authors can comment on tips and send messages directly to their readers (if they choose to do so), and can use the data gleaned from these interactions. </li>
+              <li>Quilltips collects a one-time fee of $35 for each Quilltips Jar created, and takes a 5% fee per transaction. Stripe  charges a separate fee to process payments.</li>
+            </ul>
+        
+            <p></p>
             <p className="mt-4">
-              Publishers can also use Quilltips to get insights into the authors they work with and their readers. Check out the For 
-              publishers section for more details.
+              Publishers can also use Quilltips to get insights into the authors they work with and their readers.
             </p>
           </section>
           
           <section className="mb-12">
             <h2 className="text-2xl font-semibold mb-4">For Publishers</h2>
-            <p>Publisher accounts are meant for publishers who want to have more data on their readers.</p>
-            
-            <p className="mt-4">With a publisher account you can:</p>
-            <ul className="list-disc pl-5">
-              <li>Purchase QR codes for your authors</li>
-              <li>Support author payments without sacrificing your margins</li>
-            </ul>
+            <p>If you represent a publisher and would like to speak with someone from Quilltips, we’d love to hear from you. Please submit a request through the Contact page or e-mail us directly at gabriel@quilltips.co.</p>
           </section>
           
           <section className="text-center my-16">
