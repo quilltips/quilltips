@@ -13,7 +13,7 @@ interface AuthorQRCodesProps {
 
 export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
   const [showAll, setShowAll] = useState(false);
-  
+
   const { data: qrCodes, isLoading } = useQuery({
     queryKey: ['qrCodes', authorId],
     queryFn: async () => {
@@ -51,17 +51,17 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
   const displayedQRCodes = showAll ? qrCodes : qrCodes.slice(0, 5);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {displayedQRCodes.map((qrCode) => (
         <Link 
           key={qrCode.id}
           to={`/qr/${qrCode.id}`} 
-          className="block"
+          className="block group"
         >
-          <Card className="overflow-hidden hover:bg-slate-50 transition-colors">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-24 flex-shrink-0 rounded-md overflow-hidden">
+          <Card className="transition-all hover:shadow-md hover:scale-[1.01]">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-16 flex-shrink-0 rounded-sm overflow-hidden border border-gray-200 shadow-sm bg-white">
                   {qrCode.cover_image ? (
                     <img
                       src={qrCode.cover_image}
@@ -69,22 +69,22 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Book className="h-8 w-8 text-[#2D3748]" />
+                    <div className="w-full h-full flex items-center justify-center text-[#19363C]/50">
+                      <Book className="h-6 w-6" />
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex-1">
-                  <h3 className="font-medium text-[#2D3748] text-lg">{qrCode.book_title}</h3>
-                  <p className="text-sm text-[#718096]">by {authorName}</p>
+                  <h3 className="font-medium text-base text-[#19363C] leading-tight">{qrCode.book_title}</h3>
+                  <p className="text-sm text-muted-foreground">by {authorName}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </Link>
       ))}
-      
+
       {qrCodes.length > 5 && (
         <Button 
           variant="ghost" 

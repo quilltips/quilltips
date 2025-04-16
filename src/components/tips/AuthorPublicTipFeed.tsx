@@ -27,7 +27,7 @@ interface PublicTip {
 export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeedProps) => {
   const { user } = useAuth();
   const [selectedTip, setSelectedTip] = useState<(PublicTip & { author_id: string; book_title: string }) | null>(null);
-  
+
   const { data: tips, isLoading } = useQuery({
     queryKey: ['author-public-tips', authorId],
     queryFn: async () => {
@@ -35,16 +35,16 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
         .from('qr_codes')
         .select('id, book_title')
         .eq('author_id', authorId);
-      
+
       if (qrError) throw qrError;
       if (!qrCodes || qrCodes.length === 0) return [];
-      
+
       const qrCodeIds = qrCodes.map(qr => qr.id);
       const qrCodeTitleMap = qrCodes.reduce((acc, qr) => {
         acc[qr.id] = qr.book_title;
         return acc;
       }, {} as Record<string, string>);
-      
+
       const { data: tipsData, error: tipsError } = await supabase
         .from('public_tips')
         .select(`
@@ -61,7 +61,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
         .limit(limit || 5);
 
       if (tipsError) throw tipsError;
-      
+
       return (tipsData || []).map(tip => ({
         ...tip,
         book_title: tip.qr_code_id ? qrCodeTitleMap[tip.qr_code_id] : null
@@ -75,7 +75,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
       const { data, error } = await supabase
         .from('tip_comments')
         .select('*, profiles(name, avatar_url)');
-        
+
       if (error) throw error;
       return data || [];
     }
@@ -92,59 +92,59 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
   if (!tips?.length) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">
-          No tips yet.
-        </p>
+        <p className="text-muted-foreground">No tips yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {tips.map((tip) => {
-        const readerFirstName = tip.reader_name 
-          ? tip.reader_name.split(' ')[0] 
+        const readerFirstName = tip.reader_name
+          ? tip.reader_name.split(' ')[0]
           : "Someone";
-        
+
         const commentCount = comments.filter(comment => comment.tip_id === tip.id).length;
-        
+
         return (
-          <div key={tip.id} className="space-y-4">
+          <div key={tip.id} className="space-y-1">
             <div className="flex items-start gap-3">
               <TipReaderAvatar readerName={tip.reader_name} />
-              <div className="flex-1">
-                <div className="space-y-1">
-                  <p className="font-medium">
-                    {readerFirstName} sent a tip
-                    {tip.book_title ? ` for "${tip.book_title}"!` : "!"}
+              <div className="flex-1 space-y-1">
+                <div>
+                  <p className="font-medium text-sm leading-snug">
+                    {readerFirstName} sent ${tip.amount} for
+                    {tip.book_title ? ` "${tip.book_title}"` : " a book"}
                   </p>
                   {tip.message && (
-                    <p className="text-muted-foreground">"{tip.message}"</p>
+                    <p className="text-sm text-muted-foreground leading-tight">"{tip.message}"</p>
                   )}
-                  <p className="text-sm text-muted-foreground">
-                    {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
-                  </p>
                 </div>
-                
-                <div className="mt-2">
-                  <PublicTipCommentButton 
+
+                <div className="flex justify-between items-center pt-1">
+                  <PublicTipCommentButton
                     commentCount={commentCount}
-                    onClick={() => setSelectedTip({
-                      ...tip,
-                      author_id: authorId,
-                      book_title: tip.book_title || "Unknown book"
-                    })}
+                    onClick={() =>
+                      setSelectedTip({
+                        ...tip,
+                        author_id: authorId,
+                        book_title: tip.book_title || "Unknown book",
+                      })
+                    }
                   />
+                  <span className="text-xs text-muted-foreground">
+                    {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
+                  </span>
                 </div>
               </div>
             </div>
-            <div className="border-t border-border mt-2 pt-2"></div>
+            <div className="border-t border-border pt-3"></div>
           </div>
         );
       })}
-      
+
       {selectedTip && (
-        <TipDetailsDialog 
+        <TipDetailsDialog
           isOpen={!!selectedTip}
           onClose={() => setSelectedTip(null)}
           tip={selectedTip}
