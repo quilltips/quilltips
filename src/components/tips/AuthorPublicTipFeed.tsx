@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
@@ -7,6 +8,8 @@ import { TipDetailsDialog } from "../TipDetailsDialog";
 import { useAuth } from "../auth/AuthProvider";
 import { PublicTipCommentButton } from "./PublicTipCommentButton";
 import { TipReaderAvatar } from "./TipReaderAvatar";
+import { Button } from "../ui/button";
+import { ChevronDown } from "lucide-react";
 
 interface AuthorPublicTipFeedProps {
   authorId: string;
@@ -27,6 +30,7 @@ interface PublicTip {
 export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeedProps) => {
   const { user } = useAuth();
   const [selectedTip, setSelectedTip] = useState<(PublicTip & { author_id: string; book_title: string }) | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   const { data: tips, isLoading } = useQuery({
     queryKey: ['author-public-tips', authorId],
@@ -57,8 +61,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
           amount
         `)
         .in('qr_code_id', qrCodeIds)
-        .order('created_at', { ascending: false })
-        .limit(limit || 5);
+        .order('created_at', { ascending: false });
 
       if (tipsError) throw tipsError;
 
@@ -97,9 +100,11 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
     );
   }
 
+  const displayedTips = showAll ? tips : tips.slice(0, limit);
+
   return (
     <div className="space-y-5">
-      {tips.map((tip) => {
+      {displayedTips.map((tip) => {
         const readerFirstName = tip.reader_name
           ? tip.reader_name.split(' ')[0]
           : "Someone";
@@ -142,6 +147,17 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
           </div>
         );
       })}
+
+      {tips.length > limit && (
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowAll(!showAll)} 
+          className="w-full text-[#718096] hover:text-[#2D3748] hover:bg-gray-100"
+        >
+          <ChevronDown className={`mr-2 h-4 w-4 transition-transform ${showAll ? 'rotate-180' : ''}`} />
+          {showAll ? 'Show Less' : `Show ${tips.length - limit} More`}
+        </Button>
+      )}
 
       {selectedTip && (
         <TipDetailsDialog
