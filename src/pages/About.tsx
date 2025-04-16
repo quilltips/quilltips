@@ -20,7 +20,7 @@ const About = () => {
           <section className="mb-12">
             <h2 className="text-2xl font-semibold mb-4">The Hidden Reality of Used Book Sales</h2>
             <p>
-            The used book market is huge and growing thanks to convenient e-commerce distribution from the likes of Amazon. With a more accessible price point and envirnomental sustainability benefits, the used book market is amazing, except for the fact that only the platforms and sellers make money on these transactions. <strong>Quilltips wants to give readers the power to voice their appreciation and connect directly with the authors of their favorite titles, while improving author economics in a completely voluntary way.</strong>
+            The used book market is huge and growing thanks to convenient e-commerce distribution from the likes of Amazon. With a more accessible price point and environmental sustainability benefits, the used book market is amazing, except for the fact that only the platforms and sellers make money on these transactions. <strong>Quilltips wants to give readers the power to voice their appreciation and connect directly with the authors of their favorite titles, while improving author economics in a completely voluntary way.</strong>
             </p>
           </section>
 
