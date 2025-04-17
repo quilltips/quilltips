@@ -30,7 +30,7 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
     <Card className="p-6 space-y-6">
       <h1 className="text-2xl font-bold text-[#19363C]">{qrCode.book_title}</h1>
 
-      <div className="aspect-square relative rounded-xl overflow-hidden border border-muted">
+      <div className="aspect-[2/3] relative rounded-xl overflow-hidden border border-muted">
         <OptimizedImage
           key={imageRefreshKey} // Force rerender when refreshKey changes
           src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
