@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -14,6 +15,7 @@ import { MessageSquare } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { TipReaderAvatar } from './tips/TipReaderAvatar';
+import { AuthorCommentAvatar } from './tips/AuthorCommentAvatar';
 
 interface TipDetailsDialogProps {
   isOpen: boolean;
@@ -232,8 +234,9 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 {comments.map((comment) => (
                   <div key={comment.id} className="bg-muted/50 p-3 rounded-lg space-y-2">
                     <div className="flex items-center gap-2">
-                      <TipReaderAvatar 
-                        readerName={comment.profiles?.name} 
+                      <AuthorCommentAvatar 
+                        authorName={comment.profiles?.name} 
+                        avatarUrl={comment.profiles?.avatar_url}
                         className="h-6 w-6" 
                       />
                       <div>
