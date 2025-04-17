@@ -49,7 +49,7 @@ const Index = () => {
           </p>
           <div className="flex justify-center mt-8 pt-10 pb-5">
             <img 
-                src="/lovable-uploads/screenshots/quilltips_screenshots.png" 
+                src="/lovable-uploads/dashboard-tip-screenshot.png" 
                 alt="Author dashboard "
                 className="rounded-xl max-w-full bg-transparent"
               />
