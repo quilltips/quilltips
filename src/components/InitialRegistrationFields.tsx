@@ -3,6 +3,9 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { Checkbox } from "./ui/checkbox";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface InitialRegistrationFieldsProps {
   isLoading: boolean;
@@ -13,8 +16,21 @@ export const InitialRegistrationFields = ({
   isLoading,
   onNext
 }: InitialRegistrationFieldsProps) => {
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const { toast } = useToast();
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!termsAccepted) {
+      toast({
+        title: "Agreement required",
+        description: "You must agree to the Terms and Privacy Policy to create an account.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
@@ -56,6 +72,39 @@ export const InitialRegistrationFields = ({
         </div>
       </div>
 
+      <div className="flex items-start space-x-2">
+        <Checkbox 
+          id="terms" 
+          checked={termsAccepted}
+          onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+          disabled={isLoading}
+          className="mt-1"
+        />
+        <Label 
+          htmlFor="terms" 
+          className="text-sm font-normal leading-tight cursor-pointer"
+        >
+          I agree to the{" "}
+          <Link 
+            to="/terms" 
+            className="text-[#2D3748] hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link 
+            to="/privacy" 
+            className="text-[#2D3748] hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy Policy
+          </Link>
+        </Label>
+      </div>
+
       <Button 
         type="submit" 
         disabled={isLoading} 
@@ -64,19 +113,7 @@ export const InitialRegistrationFields = ({
         Next
       </Button>
 
-      <div className="space-y-4 text-center">
-        <p className="text-sm">
-          By signing up you agree to the{" "}
-          <Link to="/terms" className="text-[#2D3748] hover:underline">
-            terms
-          </Link>{" "}
-          and{" "}
-          <Link to="/privacy" className="text-[#2D3748] hover:underline">
-            privacy policy
-          </Link>
-          .
-        </p>
-
+      <div className="text-center">
         <p className="text-sm text-muted-foreground">
           Already signed up?{" "}
           <Link to="/author/login" className="text-[#2D3748] hover:underline">
