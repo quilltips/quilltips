@@ -1,6 +1,5 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import Sharp from 'https://deno.land/x/sharp@0.32.6/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,48 +30,18 @@ serve(async (req) => {
       array[i] = binary.charCodeAt(i);
     }
 
-    // Initialize Sharp with the input buffer
-    const sharp = Sharp(array);
-
-    // Get image metadata
-    const metadata = await sharp.metadata();
-    console.log("Original image dimensions:", { 
-      width: metadata.width, 
-      height: metadata.height,
-      format: metadata.format 
-    });
-
-    // Process image with Sharp
-    let processedImage;
-    if (type === 'cover') {
-      processedImage = await sharp
-        .resize(maxWidth || 800, maxHeight || 1200, {
-          fit: 'inside',
-          withoutEnlargement: true
-        })
-        .jpeg({ quality: 85 })
-        .toBuffer();
-    } else if (type === 'avatar') {
-      const size = Math.min(maxWidth || 400, maxHeight || 400);
-      processedImage = await sharp
-        .resize(size, size, {
-          fit: 'cover',
-          position: 'center'
-        })
-        .jpeg({ quality: 90 })
-        .toBuffer();
-    }
-
-    console.log("Image processing completed successfully");
-
-    // Convert processed image back to base64
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(processedImage)));
-    const processedDataUrl = `data:image/jpeg;base64,${base64}`;
+    // Since we can't use Sharp or ImageMagick reliably in this environment,
+    // we'll return the original image for now and note that server-side processing
+    // is disabled - the processing will need to happen client-side
+    
+    console.log("Image processing is currently disabled in the edge function");
+    console.log("Returning original image");
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        processedImage: processedDataUrl 
+        processedImage: imageData,
+        note: "Server-side image processing is currently disabled. Processing should be handled client-side."
       }),
       { 
         headers: { 

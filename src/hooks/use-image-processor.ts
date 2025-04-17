@@ -1,8 +1,9 @@
 
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useClientImageProcessor } from "./use-client-image-processor";
 
-interface ProcessImageOptions {
+interface ImageProcessingOptions {
   type: 'avatar' | 'cover';
   maxWidth?: number;
   maxHeight?: number;
@@ -10,46 +11,60 @@ interface ProcessImageOptions {
 
 export const useImageProcessor = () => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const clientProcessor = useClientImageProcessor();
 
-  const processImage = async (file: File, options: ProcessImageOptions): Promise<string | null> => {
+  const processImage = async (file: File, options: ImageProcessingOptions): Promise<string | null> => {
     setIsProcessing(true);
-    setError(null);
-
+    
     try {
-      // Convert File to base64
-      const base64 = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsDataURL(file);
-      });
-
-      // Call the image processing function
-      const { data, error } = await supabase.functions.invoke('image-processor', {
-        body: {
-          imageData: base64,
-          type: options.type,
-          maxWidth: options.maxWidth,
-          maxHeight: options.maxHeight
+      // First try to use the server-side processor
+      try {
+        const imageData = await readFileAsDataURL(file);
+        
+        const { data, error } = await supabase.functions.invoke('image-processor', {
+          body: {
+            imageData,
+            type: options.type,
+            maxWidth: options.maxWidth,
+            maxHeight: options.maxHeight
+          }
+        });
+        
+        if (error) {
+          console.warn('Server-side image processing failed, falling back to client-side:', error);
+          throw error;
         }
-      });
-
-      if (error) throw error;
-      if (!data.success) throw new Error(data.error || 'Failed to process image');
-
-      return data.processedImage;
-    } catch (err) {
-      console.error('Error in image processing:', err);
-      setError(err instanceof Error ? err.message : 'Failed to process image');
+        
+        if (data.note && data.note.includes("disabled")) {
+          console.log('Server-side processing is disabled, using client-side processing');
+          throw new Error('Server-side processing disabled');
+        }
+        
+        return data.processedImage;
+      } catch (error) {
+        console.log('Falling back to client-side image processing');
+        // If server-side processing fails, fall back to client-side
+        return await clientProcessor.processImage(file, options);
+      }
+    } catch (error) {
+      console.error('Error processing image:', error);
       return null;
     } finally {
       setIsProcessing(false);
     }
   };
+  
+  const readFileAsDataURL = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
 
   return {
     processImage,
-    isProcessing,
-    error,
+    isProcessing: isProcessing || clientProcessor.isProcessing
   };
 };
