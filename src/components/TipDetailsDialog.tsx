@@ -5,7 +5,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from './auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,6 +13,7 @@ import { Button } from './ui/button';
 import { MessageSquare } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { TipReaderAvatar } from './tips/TipReaderAvatar';
 
 interface TipDetailsDialogProps {
   isOpen: boolean;
@@ -98,7 +98,6 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
 
       if (error) throw error;
 
-      // Optimistically update the comment list
       setComments(prev => [
         {
           id: Math.random().toString(),
@@ -167,10 +166,10 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
           <div className="p-4 space-y-6">
             {/* Reader info */}
             <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={tip.reader_avatar_url || "/reader-avatar.svg"} alt={firstName} />
-                <AvatarFallback>{(tip.reader_name || "A").charAt(0).toUpperCase()}</AvatarFallback>
-              </Avatar>
+              <TipReaderAvatar 
+                readerName={tip.reader_name} 
+                className="h-8 w-8" 
+              />
               <div>
                 <p className="font-medium text-sm">{tip.reader_name || "Anonymous Reader"}</p>
                 <p className="text-xs text-muted-foreground">
@@ -233,12 +232,10 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 {comments.map((comment) => (
                   <div key={comment.id} className="bg-muted/50 p-3 rounded-lg space-y-2">
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={comment.profiles?.avatar_url} />
-                        <AvatarFallback>
-                          {(comment.profiles?.name || "A").charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <TipReaderAvatar 
+                        readerName={comment.profiles?.name} 
+                        className="h-6 w-6" 
+                      />
                       <div>
                         <p className="font-medium text-xs">
                           {comment.profiles?.name || "Author"}
