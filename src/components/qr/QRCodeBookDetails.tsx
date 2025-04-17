@@ -1,5 +1,6 @@
 
 import { format } from "date-fns";
+import { OptimizedImage } from "../ui/optimized-image";
 
 interface QRCodeBookDetailsProps {
   book: {
@@ -19,10 +20,13 @@ export const QRCodeBookDetails = ({ book }: QRCodeBookDetailsProps) => {
   return (
     <div className="flex flex-col md:flex-row gap-8">
       <div className="w-full md:w-1/6 aspect-[2/3] relative rounded-lg overflow-hidden">
-        <img
+        <OptimizedImage
           src={book.cover_image || "/lovable-uploads/quill_icon.png"}
           alt={book.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full"
+          objectFit={book.cover_image ? "cover" : "contain"}
+          fallbackSrc="/lovable-uploads/quill_icon.png"
+          sizes="(max-width: 768px) 100vw, 200px"
         />
       </div>
 

@@ -1,3 +1,4 @@
+
 import { Layout } from "@/components/Layout";
 import { QRCodePublisherInvite } from "@/components/qr/QRCodePublisherInvite";
 import { PublicTipHistory } from "@/components/tips/PublicTipHistory";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { QRCodeTipForm } from "@/components/qr/QRCodeTipForm";
 import { Link } from "react-router-dom";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 const QRCodeDetails = () => {
   const {
@@ -56,21 +58,15 @@ const QRCodeDetails = () => {
           {/* Book details card with horizontal layout */}
           <div className="flex items-center space-x-6">
             <div className="w-32 aspect-[2/3] relative shrink-0 rounded-md overflow-hidden">
-              {qrCode.cover_image ? (
-                <img
-                  src={qrCode.cover_image}
-                  alt={qrCode.book_title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-transparent">
-                  <img 
-                    src="/lovable-uploads/quill_icon.png"
-                    alt="Quilltips Logo"
-                    className="w-20 h-20 object-contain opacity-60"
-                  />
-              </div>
-              )}
+              <OptimizedImage
+                src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
+                alt={qrCode.book_title}
+                className="w-full h-full"
+                objectFit={qrCode.cover_image ? "cover" : "contain"}
+                fallbackSrc="/lovable-uploads/quill_icon.png"
+                sizes="128px"
+                priority={true}
+              />
             </div>
             <div className="space-y-1 pt-2">
               <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>

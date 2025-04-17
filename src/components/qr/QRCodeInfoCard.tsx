@@ -1,8 +1,10 @@
+
 import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { BookCoverUpload } from "./BookCoverUpload";
 import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { OptimizedImage } from "../ui/optimized-image";
 
 interface QRCodeInfoCardProps {
   qrCode: {
@@ -20,45 +22,8 @@ interface QRCodeInfoCardProps {
 export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardProps) => {
   const { updateCoverImage, imageRefreshKey, refreshImage } = isEditable ? useQRCodeDetailsPage() : { 
     updateCoverImage: undefined, 
-    imageRefreshKey: Date.now(),
+    imageRefreshKey: 0,
     refreshImage: () => {}
-  };
-  
-  const [imageError, setImageError] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
-  
-  // Reset image error state whenever cover image URL changes or refresh key changes
-  useEffect(() => {
-    if (qrCode.cover_image) {
-      console.log("QRCodeInfoCard: Cover image URL changed or refresh triggered:", qrCode.cover_image);
-      setImageError(false);
-    }
-  }, [qrCode.cover_image, imageRefreshKey]);
-
-  const handleImageError = () => {
-    console.log("QRCodeInfoCard: Image failed to load:", qrCode.cover_image);
-    setImageError(true);
-  };
-
-  // Prevent browser caching of images by adding timestamp parameter
-  const getCoverImageWithCache = () => {
-    if (!qrCode.cover_image) return null;
-    
-    try {
-      // Parse the URL to check if it's valid
-      const url = new URL(qrCode.cover_image);
-      
-      // Add a cache-busting parameter to the URL using imageRefreshKey for maximum effectiveness
-      const hasQueryParams = qrCode.cover_image.includes('?');
-      const cacheKey = `cache=${imageRefreshKey}`;
-      const imageUrl = `${qrCode.cover_image}${hasQueryParams ? '&' : '?'}${cacheKey}`;
-      
-      console.log("QRCodeInfoCard: Using cache-busted image URL:", imageUrl);
-      return imageUrl;
-    } catch (e) {
-      console.error("QRCodeInfoCard: Invalid cover image URL:", qrCode.cover_image, e);
-      return qrCode.cover_image;
-    }
   };
 
   return (
@@ -66,24 +31,15 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
       <h1 className="text-2xl font-bold text-[#19363C]">{qrCode.book_title}</h1>
 
       <div className="aspect-square relative rounded-xl overflow-hidden border border-muted">
-        {qrCode.cover_image && !imageError ? (
-          <img
-            ref={imgRef}
-            key={imageRefreshKey} // Force rerender when refreshKey changes
-            src={getCoverImageWithCache()}
-            alt={qrCode.book_title}
-            className="w-full h-full object-cover"
-            onError={handleImageError}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-transparent">
-            <img 
-              src="/lovable-uploads/quill_icon.png"
-              alt="Quilltips Logo"
-              className="w-24 h-24 object-contain opacity-60"
-            />
-          </div>
-        )}
+        <OptimizedImage
+          key={imageRefreshKey} // Force rerender when refreshKey changes
+          src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
+          alt={qrCode.book_title}
+          className="w-full h-full"
+          objectFit={qrCode.cover_image ? "cover" : "contain"}
+          fallbackSrc="/lovable-uploads/quill_icon.png"
+          sizes="(max-width: 768px) 100vw, 400px"
+        />
         
         {isEditable && qrCode.id && (
           <BookCoverUpload 

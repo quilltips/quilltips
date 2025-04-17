@@ -1,7 +1,6 @@
 
-import { useState, useEffect } from "react";
-import { ImageOff } from "lucide-react";
 import { format } from "date-fns";
+import { OptimizedImage } from "../ui/optimized-image";
 
 interface QRCodeHeaderProps {
   coverImage: string | null;
@@ -11,14 +10,6 @@ interface QRCodeHeaderProps {
 }
 
 export const QRCodeHeader = ({ coverImage, bookTitle, publisher, releaseDate }: QRCodeHeaderProps) => {
-  const [imageError, setImageError] = useState(false);
-  const defaultImage = "/lovable-uploads/quill_icon.png";
-
-  // Reset error state if cover image changes
-  useEffect(() => {
-    setImageError(false);
-  }, [coverImage]);
-
   // Format the release date if it exists
   const formattedDate = releaseDate 
     ? format(new Date(releaseDate), "MMMM d, yyyy")
@@ -27,20 +18,14 @@ export const QRCodeHeader = ({ coverImage, bookTitle, publisher, releaseDate }: 
   return (
     <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-white rounded-lg shadow-sm">
       <div className="w-32 h-44 flex items-center justify-center rounded overflow-hidden shadow-md">
-        {(!imageError && coverImage) ? (
-          <img
-            src={coverImage}
-            alt={`Cover for ${bookTitle}`}
-            className="w-full h-full object-cover"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <img
-            src={defaultImage}
-            alt="Default book cover"
-            className="w-16 h-16 object-contain"
-          />
-        )}
+        <OptimizedImage
+          src={coverImage || "/lovable-uploads/quill_icon.png"}
+          alt={`Cover for ${bookTitle}`}
+          className="w-full h-full"
+          objectFit={coverImage ? "cover" : "contain"}
+          fallbackSrc="/lovable-uploads/quill_icon.png"
+          sizes="128px"
+        />
       </div>
       <div className="text-center md:text-left">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">{bookTitle}</h1>

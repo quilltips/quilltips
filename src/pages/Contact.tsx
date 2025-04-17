@@ -10,6 +10,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -62,7 +63,15 @@ const Contact = () => {
       
       <main className="container mx-auto px-4 py-8 md:py-16 lg:py-24 flex-grow">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6">Contact Us</h1>
+          <div className="flex items-center mb-6 gap-4">
+            <OptimizedImage
+              src="/lovable-uploads/book-icon.png"
+              alt="Book Icon"
+              className="w-12 h-12"
+              priority={true}
+            />
+            <h1 className="text-3xl md:text-4xl font-bold">Contact Us</h1>
+          </div>
           
           <div className="prose mb-8">
             <p className="text-base md:text-lg text-gray-700">
