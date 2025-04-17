@@ -1,4 +1,3 @@
-
 import Index from "@/pages/Index";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
@@ -24,6 +23,7 @@ import TipSuccessPage from "@/pages/TipSuccessPage";
 import UnsubscribePage from "@/pages/UnsubscribePage";
 import StripeHelp from "@/pages/StripeHelp";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import Pricing from "@/pages/Pricing";
 import { Navigate } from "react-router-dom";
 
 export const routes = [
@@ -38,7 +38,6 @@ export const routes = [
   { path: "/author/login", element: <AuthorLogin /> },
   { path: "/author/dashboard", element: <AuthorDashboard /> },
   { path: "/author/settings", element: <AuthorSettings /> },
-  // Redirect from the old create-qr page to book-qr-codes with the "new" tab
   { path: "/author/create-qr", element: <Navigate to="/author/book-qr-codes?tab=new" replace /> },
   { path: "/author/qr-design", element: <QRCodeDesign /> },
   { path: "/author/bank-account", element: <AuthorBankAccount /> },
@@ -62,5 +61,9 @@ export const routes = [
   {
     path: "/privacy",
     element: <PrivacyPolicy />,
+  },
+  {
+    path: "/pricing",
+    element: <Pricing />,
   },
 ];

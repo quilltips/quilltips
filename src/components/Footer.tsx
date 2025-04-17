@@ -16,12 +16,15 @@ export const Footer = () => {
             </Link>
           </div>
           
-          <nav className="flex flex-wrap justify-center gap-6">
+          <div className="grid grid-cols-2 gap-x-12 gap-y-2">
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Home
             </Link>
             <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               About
+            </Link>
+            <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Pricing
             </Link>
             <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               FAQ
@@ -32,10 +35,13 @@ export const Footer = () => {
             <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Terms
             </Link>
+            <Link to="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              How It Works
+            </Link>
             <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Privacy
             </Link>
-          </nav>
+          </div>
           
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
