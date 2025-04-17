@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { ImageMagick, MagickFormat } from 'https://deno.land/x/imagemagick_deno@0.0.25/mod.ts';
+import Sharp from 'https://deno.land/x/sharp@0.32.6/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,7 +8,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -32,35 +31,42 @@ serve(async (req) => {
       array[i] = binary.charCodeAt(i);
     }
 
-    // Process image with ImageMagick
-    let processedImage;
-    await ImageMagick.read(array, async (image) => {
-      console.log("Original image dimensions:", { width: image.width, height: image.height });
-      
-      // Resize image while maintaining aspect ratio
-      const width = maxWidth || 800;
-      const height = maxHeight || 1200;
-      image.resize(width, height);
+    // Initialize Sharp with the input buffer
+    const sharp = Sharp(array);
 
-      console.log("Resized image dimensions:", { width: image.width, height: image.height });
-
-      // Optimize image quality
-      if (type === 'cover') {
-        image.quality(85); // Good quality for book covers
-      } else if (type === 'avatar') {
-        image.quality(90); // Higher quality for avatars
-        // Make avatar square if it isn't already
-        const size = Math.min(width, height);
-        image.extent(size, size);
-      }
-
-      // Get processed image data
-      processedImage = await image.write(MagickFormat.Jpeg);
-      console.log("Image processing completed successfully");
+    // Get image metadata
+    const metadata = await sharp.metadata();
+    console.log("Original image dimensions:", { 
+      width: metadata.width, 
+      height: metadata.height,
+      format: metadata.format 
     });
 
+    // Process image with Sharp
+    let processedImage;
+    if (type === 'cover') {
+      processedImage = await sharp
+        .resize(maxWidth || 800, maxHeight || 1200, {
+          fit: 'inside',
+          withoutEnlargement: true
+        })
+        .jpeg({ quality: 85 })
+        .toBuffer();
+    } else if (type === 'avatar') {
+      const size = Math.min(maxWidth || 400, maxHeight || 400);
+      processedImage = await sharp
+        .resize(size, size, {
+          fit: 'cover',
+          position: 'center'
+        })
+        .jpeg({ quality: 90 })
+        .toBuffer();
+    }
+
+    console.log("Image processing completed successfully");
+
     // Convert processed image back to base64
-    const base64 = btoa(String.fromCharCode(...processedImage));
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(processedImage)));
     const processedDataUrl = `data:image/jpeg;base64,${base64}`;
 
     return new Response(
