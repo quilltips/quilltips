@@ -67,9 +67,8 @@ const FAQ = () => {
                 <AccordionItem value="how-use-as-author">
                   <AccordionTrigger>How can I use Quilltips as an author?</AccordionTrigger>
                   <AccordionContent>
-                    Authors can create a Quilltips account where they can set up Quilltips jars and download QR codes to 
-                    print on their books. Readers can leave tips and messages in an author's Quilltips jar. Quilltips jars 
-                    can also leverage an author's bio, website, or other social media.
+                    Authors can create a Quilltips account where they can set up Quilltips Jars and download QR codes to 
+                    print on their books. Readers can leave tips and messages in an author's Quilltips Jar. Authors can leverage their public profile to provide information about their bio, website, or other social media accounts to their readers.
                   </AccordionContent>
                 </AccordionItem>
                 
@@ -80,7 +79,7 @@ const FAQ = () => {
                     <ul className="list-disc pl-6 mt-2 space-y-1">
                       <li>A unique QR code that you can print on the cover of your next book for readers to scan.</li>
                       <li>A book-specific profile page on Quilltips where readers can leave you a tip and message.</li>
-                      <li>A link between your Quilltips jar and your chosen payment option, secured by Stripe.</li>
+                      <li>A link between your Quilltips Jar and your chosen payment option, secured by Stripe.</li>
                       <li>Data and insights directly from your readers to help you deepen engagement.</li>
                     </ul>
                     <p className="mt-2">In addition to the QR code cost, Quilltips charges a 5% fee on transactions. Our payment provider, Stripe, also charges a processing fee.</p>
@@ -111,9 +110,7 @@ const FAQ = () => {
                 <AccordionItem value="author-registration">
                   <AccordionTrigger>How can I register as an author?</AccordionTrigger>
                   <AccordionContent>
-                    Authors can register by clicking the "Create an account" button on our homepage. You'll need to create an 
-                    account and verify your identity. Once registered, you can create QR codes for your books and start 
-                    receiving support from your readers.
+                    Authors can register by clicking the "Create an account" button on our homepage. You'll need to create a Stripe Connect account and verify your identity with them. Once registered, you can create QR codes for your books and start earning tips from your readers.
                   </AccordionContent>
                 </AccordionItem>
                 
@@ -183,8 +180,7 @@ const FAQ = () => {
                   <AccordionTrigger>Is my payment information secure?</AccordionTrigger>
                   <AccordionContent>
                     Yes, all payments are processed securely through Stripe, a leading payment processor used by millions of 
-                    businesses worldwide. We never store your credit card information on our servers. All transactions are 
-                    encrypted and protected according to the highest industry standards.
+                    businesses worldwide. We never store your credit card information on our servers. 
                   </AccordionContent>
                 </AccordionItem>
                 

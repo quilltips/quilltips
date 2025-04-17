@@ -22,7 +22,7 @@ const PrivacyPolicy = () => {
               <li><strong>Account information:</strong> When authors sign up, we collect their name, email address, and other details needed to create a profile.</li>
               <li><strong>Payment information:</strong> We use Stripe Connect to handle payouts. We do not store full bank or card details — all payment processing is handled by Stripe.</li>
               <li><strong>Reader interactions:</strong> When a reader sends a tip or message, we collect the content of the message, the tip amount, and the time it was sent. If provided, we also collect the reader's email address.</li>
-              <li><strong>User-generated content:</strong> This includes book titles, cover images, profile pictures, bios, and any other content authors choose to upload.</li>
+              <li><strong>User-generated content:</strong> This includes book titles, cover images, ISBN numbers, profile pictures, bios, and any other content authors choose to upload.</li>
               <li><strong>Usage data:</strong> We may collect basic analytics (e.g. page views, clicks) to improve the platform.</li>
             </ul>
           </section>
@@ -33,7 +33,7 @@ const PrivacyPolicy = () => {
             <ul className="list-disc pl-6 space-y-2">
               <li>Deliver core Quilltips functionality (e.g. showing tips, sending email notifications)</li>
               <li>Process payments through Stripe</li>
-              <li>Notify authors when a reader leaves a message</li>
+              <li>Notify authors and readers regarding tips, messages, and likes.</li>
               <li>Improve the user experience and troubleshoot issues</li>
               <li>Send occasional service-related messages (e.g. onboarding reminders or updates)</li>
             </ul>
@@ -52,13 +52,14 @@ const PrivacyPolicy = () => {
               <li>Stripe – for payment processing</li>
               <li>Supabase – for data storage and user authentication</li>
               <li>Resend – for e-mail notifications</li>
+              <li>Lovable – for engineering improvements</li>
             </ul>
             <p className="mt-4">These services have their own privacy policies, which govern their handling of data.</p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">5. Email Notifications</h2>
-            <p>We send transactional emails to authors and readers when tips are sent, comments are posted, or onboarding steps need attention. Users can request to disable notifications by contacting us.</p>
+            <p>We send transactional emails to authors and readers when tips are sent, comments are posted, or onboarding steps need attention.</p>
           </section>
 
           <section className="mb-8">

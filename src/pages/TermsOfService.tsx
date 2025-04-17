@@ -20,27 +20,26 @@ const TermsOfService = () => {
             <ul>
               <li>Account information (name, email, profile details)</li>
               <li>Author-provided content (book information, QR codes)</li>
-              <li>Transaction data (tip amounts, messages)</li>
+              <li>Transaction data (tip amounts, likes, messages)</li>
               <li>Usage data (interactions, preferences)</li>
             </ul>
             <p>This information is used to:</p>
             <ul>
-              <li>Facilitate tips between readers and authors</li>
+              <li>Facilitate tips and messages between readers and authors</li>
               <li>Improve our services</li>
               <li>Provide customer support</li>
-              <li>Send important updates about our service</li>
+              <li>Send important updates</li>
             </ul>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">3. Payment Processing</h2>
-            <p>Payment processing is handled securely through Stripe. We:</p>
+            <p>Payment processing is handled securely through Stripe. <br></br>We:</p>
             <ul>
               <li>Never store complete credit card information</li>
-              <li>Process payments in compliance with PCI standards</li>
               <li>Maintain transaction records for legal and accounting purposes</li>
             </ul>
-            <p>Authors receive tips minus our processing fee and Stripe's standard payment processing fees.</p>
+            <p>Authors receive tips, minus our processing fee and Stripe's standard payment processing fees.</p>
           </section>
 
           <section className="mb-8">
@@ -49,7 +48,7 @@ const TermsOfService = () => {
             <ul>
               <li>Provide accurate information about themselves and their work</li>
               <li>Only create QR codes for books they have authored</li>
-              <li>Maintain appropriate communication with their readers</li>
+              <li>Communicate appropriately with their readers</li>
               <li>Not misuse the platform for fraudulent purposes</li>
             </ul>
           </section>
@@ -81,7 +80,7 @@ const TermsOfService = () => {
               <li>Data is encrypted in transit and at rest</li>
               <li>Access to personal information is strictly controlled</li>
               <li>We never sell your personal information to third parties</li>
-              <li>You can request your data or account deletion at any time</li>
+              <li>You can request account deletion at any time</li>
             </ul>
           </section>
 
