@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Globe, Twitter, Facebook, Instagram, Share2 } from "lucide-react";
@@ -30,6 +29,11 @@ const getSocialIcon = (label: string) => {
   if (lowerLabel.includes('instagram')) return <Instagram className="h-5 w-5 text-[#E1306C]" />;
   if (lowerLabel.includes('tiktok')) return <Share2 className="h-5 w-5 text-black" />;
   return <Globe className="h-5 w-5 text-gray-500" />;
+};
+
+const getValidURL = (url: string): string => {
+  if (!url) return '#';
+  return url.match(/^https?:\/\//i) ? url : `https://${url}`;
 };
 
 export const AuthorPublicProfileView = ({
@@ -87,7 +91,7 @@ export const AuthorPublicProfileView = ({
               {socialLinks.map((link, index) => (
                 <a 
                   key={index} 
-                  href={link.url} 
+                  href={getValidURL(link.url)}
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="flex items-center gap-2 text-[#718096] hover:text-[#2D3748] transition-colors group"

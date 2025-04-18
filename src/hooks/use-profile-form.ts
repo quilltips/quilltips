@@ -17,6 +17,16 @@ interface UseProfileFormProps {
   onChangeStatus?: (hasChanges: boolean) => void;
 }
 
+const ensureValidURL = (url: string): string => {
+  if (!url) return url;
+  
+  // If URL already has a protocol, return as is
+  if (url.match(/^https?:\/\//i)) return url;
+  
+  // Add https:// as default protocol
+  return `https://${url}`;
+};
+
 export function useProfileForm({
   profileId,
   initialName,
@@ -71,16 +81,15 @@ export function useProfileForm({
     setIsLoading(true);
 
     try {
-      // Filter out incomplete social links (missing both url and label)
-      const filteredLinks = socialLinks.filter(link => link.url.trim() !== '' || link.label.trim() !== '');
-      
-      // Ensure all links have at least a placeholder label if URL exists
-      const processedLinks = filteredLinks.map(link => ({
-        url: link.url.trim(),
-        label: link.label.trim() || (link.url ? new URL(link.url).hostname.replace(/^www\./, '') : 'Link')
-      }));
+      // Filter out incomplete social links and ensure valid URLs
+      const filteredLinks = socialLinks
+        .filter(link => link.url.trim() !== '' || link.label.trim() !== '')
+        .map(link => ({
+          url: ensureValidURL(link.url.trim()),
+          label: link.label.trim() || new URL(ensureValidURL(link.url.trim())).hostname.replace(/^www\./, '')
+        }));
 
-      const socialLinksJson: Json = processedLinks;
+      const socialLinksJson: Json = filteredLinks;
 
       // Update the main profile
       const { error: profileError } = await supabase
@@ -106,7 +115,6 @@ export function useProfileForm({
 
       if (publicProfileError) {
         console.warn("Failed to update public profile:", publicProfileError);
-        // Don't throw here as the main profile was updated successfully
       }
 
       toast({
@@ -114,10 +122,10 @@ export function useProfileForm({
         description: "Your profile has been successfully updated.",
       });
       
-      // After a successful save, update our "saved" state references to match current values
+      // After a successful save, update our "saved" state references
       setSavedName(name);
       setSavedBio(bio);
-      setSavedSocialLinks(processedLinks);
+      setSavedSocialLinks(filteredLinks);
       
       setHasChanges(false);
       
