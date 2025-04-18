@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { useImageProcessor } from "@/hooks/use-image-processor";
+import { AvatarCropModal } from "./AvatarCropModal";
 
 interface AvatarUploadProps {
   profileId: string;
@@ -19,16 +20,15 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(avatarUrl);
+  const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
+  const [showCropModal, setShowCropModal] = useState(false);
   const { toast } = useToast();
   const { processImage, isProcessing } = useImageProcessor();
 
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const validateFile = (file: File): boolean => {
     setError(null);
 
     if (!SUPPORTED_FORMATS.includes(file.type)) {
@@ -38,8 +38,7 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
         description: "Please upload a JPG, PNG, GIF, WebP or SVG image",
         variant: "destructive",
       });
-      e.target.value = '';
-      return;
+      return false;
     }
 
     if (file.size > MAX_FILE_SIZE) {
@@ -49,14 +48,34 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
         description: "Please upload an image smaller than 5MB",
         variant: "destructive",
       });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!validateFile(file)) {
       e.target.value = '';
       return;
     }
 
+    // Create URL for the crop modal
+    const imageUrl = URL.createObjectURL(file);
+    setCropImageUrl(imageUrl);
+    setShowCropModal(true);
+    e.target.value = '';
+  };
+
+  const handleCropComplete = async (croppedFile: File) => {
     setIsUploading(true);
+    setError(null);
 
     try {
-      const processedImage = await processImage(file, {
+      const processedImage = await processImage(croppedFile, {
         type: 'avatar',
         maxWidth: 400,
         maxHeight: 400
@@ -68,7 +87,7 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
 
       const response = await fetch(processedImage);
       const processedFile = await response.blob();
-      const optimizedFile = new File([processedFile], file.name, { type: 'image/jpeg' });
+      const optimizedFile = new File([processedFile], croppedFile.name, { type: 'image/jpeg' });
 
       const fileExt = 'jpg';
       const filePath = `${profileId}-${Date.now()}.${fileExt}`;
@@ -115,7 +134,10 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
       });
     } finally {
       setIsUploading(false);
-      e.target.value = '';
+      if (cropImageUrl) {
+        URL.revokeObjectURL(cropImageUrl);
+        setCropImageUrl(null);
+      }
     }
   };
 
@@ -171,7 +193,7 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
           <Input
             type="file"
             accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
-            onChange={handleAvatarUpload}
+            onChange={handleFileSelect}
             className="hidden"
             id="avatar-upload"
           />
@@ -210,6 +232,19 @@ export const AvatarUpload = ({ profileId, avatarUrl, name }: AvatarUploadProps) 
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
+      )}
+
+      {cropImageUrl && (
+        <AvatarCropModal
+          imageUrl={cropImageUrl}
+          isOpen={showCropModal}
+          onClose={() => {
+            setShowCropModal(false);
+            URL.revokeObjectURL(cropImageUrl);
+            setCropImageUrl(null);
+          }}
+          onCropComplete={handleCropComplete}
+        />
       )}
     </div>
   );
