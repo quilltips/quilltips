@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Loader2, Wallet, HelpCircle } from "lucide-react";
@@ -92,13 +91,6 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         {stripeAccountId ? "Manage Payment Settings" : "Connect Bank Account"}
         {stripeAccountId && <span className="text-xs text-muted-foreground">(Opens Stripe)</span>}
       </Button>
-      
-      <div className="flex items-center text-sm">
-        <HelpCircle className="h-4 w-4 mr-1" />
-        <Link to="/stripe-help" className="text-[#19363C] hover:text-[#19363C]/80 underline">
-          Need help with Stripe setup?
-        </Link>
-      </div>
     </div>
   );
 };
