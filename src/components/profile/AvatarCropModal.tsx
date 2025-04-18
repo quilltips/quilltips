@@ -5,6 +5,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
+interface Area {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 interface AvatarCropModalProps {
   imageUrl: string;
   isOpen: boolean;
@@ -22,7 +29,7 @@ export function AvatarCropModal({
 }: AvatarCropModalProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const onCropChange = useCallback((location: { x: number; y: number }) => {
@@ -33,8 +40,9 @@ export function AvatarCropModal({
     setZoom(zoom);
   }, []);
 
-  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
+  // Rename this function to handleCropComplete to avoid conflict with prop name
+  const handleCropComplete = useCallback((croppedArea: Area, cropPixels: Area) => {
+    setCroppedAreaPixels(cropPixels);
   }, []);
 
   const createImage = (url: string): Promise<HTMLImageElement> =>
@@ -47,7 +55,7 @@ export function AvatarCropModal({
 
   const getCroppedImg = async (
     imageSrc: string,
-    pixelCrop: any,
+    pixelCrop: Area,
   ): Promise<File> => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
@@ -115,7 +123,7 @@ export function AvatarCropModal({
             aspect={aspectRatio}
             onCropChange={onCropChange}
             onZoomChange={onZoomChange}
-            onCropComplete={onCropComplete}
+            onCropComplete={handleCropComplete}
           />
         </div>
 
