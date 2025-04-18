@@ -39,7 +39,7 @@ const TermsOfService = () => {
               <li>Never store complete credit card information</li>
               <li>Maintain transaction records for legal and accounting purposes</li>
             </ul>
-            <p>Authors receive tips, minus our processing fee and Stripe's standard payment processing fees.</p>
+            <p>Authors receive tips, minus our processing fee (currently 5% per transaction) and Stripe's standard payment processing fees.</p>
           </section>
 
           <section className="mb-8">
@@ -85,12 +85,27 @@ const TermsOfService = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">8. Changes to Terms</h2>
+            <h2 className="text-2xl font-semibold mb-4">8. Eligibility</h2>
+            <p>You must be at least 13 years old (or the minimum legal age in your country) to use Quilltips.</p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">9. Account termination</h2>
+            <p>We reserve the right to suspend or terminate accounts that violate these terms or pose a risk to the community or service integrity.</p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">10. Limitations of liability</h2>
+            <p>Quilltips is provided “as is” without warranties of any kind. We are not liable for any damages resulting from use of the platform, including lost earnings or data.</p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">11. Changes to Terms</h2>
             <p>We may update these terms from time to time. We will notify users of any significant changes via email or through the platform.</p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">9. Contact Us</h2>
+            <h2 className="text-2xl font-semibold mb-4">12. Contact Us</h2>
             <p>If you have any questions about these terms, please contact us through our contact page.</p>
           </section>
         </div>

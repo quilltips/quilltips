@@ -38,6 +38,8 @@ const PrivacyPolicy = () => {
               <li>Send occasional service-related messages (e.g. onboarding reminders or updates)</li>
             </ul>
             <p className="mt-4">We do not sell your personal data to third parties.</p>
+            <p className="mt-4">Your data may be stored and processed in the United States or other locations where our infrastructure providers operate.</p>
+
           </section>
 
           <section className="mb-8">
@@ -60,6 +62,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">5. Email Notifications</h2>
             <p>We send transactional emails to authors and readers when tips are sent, comments are posted, or onboarding steps need attention.</p>
+            <p>Resend is used solely for transactional messaging and does not access or store user data beyond what is required to send the message.</p>
           </section>
 
           <section className="mb-8">
