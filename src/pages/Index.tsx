@@ -95,7 +95,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-semibold">Promote Your Platform</h3>
                 <p className="text-muted-foreground">
-                  Link to your website, social media, and newsletter - all from one centralized place.
+                  Link to your website and socials - all from one centralized place.
                 </p>
               </div>
             </Card>
