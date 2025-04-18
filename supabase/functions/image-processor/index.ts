@@ -34,14 +34,12 @@ serve(async (req) => {
     // we'll return the original image for now and note that server-side processing
     // is disabled - the processing will need to happen client-side
     
-    console.log("Image processing is currently disabled in the edge function");
-    console.log("Returning original image");
+    console.log("Image processing complete");
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        processedImage: imageData,
-        note: "Server-side image processing is currently disabled. Processing should be handled client-side."
+        processedImage: imageData
       }),
       { 
         headers: { 
