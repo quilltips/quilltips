@@ -146,7 +146,7 @@ const Index = () => {
             <div>
               <h3 className="font-semibold text-2xl mb-4">Step 3. Build support</h3>
               <p className="text-muted-foreground">
-                Grow your e-mail list and understand your audience.
+                Grow your e-mail list and understand your audience with Quilltips' Data dashboard.
               </p>
             </div>
           </div>
