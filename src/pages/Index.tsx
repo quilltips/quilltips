@@ -6,28 +6,33 @@ import { Layout } from "@/components/Layout";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { OptimizedImage } from "@/components/ui/optimized-image";
+
 const Index = () => {
-  const {
-    user
-  } = useAuth();
-  const {
-    toast
-  } = useToast();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
+
   const handleCreateQRCode = () => {
     if (!user) {
-      // Redirect to login page instead of showing an error
       navigate("/author/login");
       return;
     }
     navigate("/author/create-qr");
   };
+
   return <Layout>
       <div className="container mx-auto px-4 pt-16 pb-12">
         {/* Hero Section */}
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-enter">
           <div className="space-y-4">
-            <img src="/lovable-uploads/logo_nav.png" alt="Quilltips" className="h-36 mx-auto" />
+            <OptimizedImage
+              src="/lovable-uploads/logo_nav.png"
+              alt="Quilltips"
+              className="h-36 mx-auto"
+              priority={true}
+              sizes="(max-width: 768px) 144px, 144px"
+            />
             <h1 className="font-playfair font-medium text-6xl text-[#19363C]">Quilltips</h1>
             <h2 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
               Helping authors get paid
@@ -48,11 +53,13 @@ const Index = () => {
             With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltips Jar, where readers can leave a tip and message!
           </p>
           <div className="flex justify-center mt-8 pt-10 pb-5">
-            <img 
-                src="/lovable-uploads/dashboard-tip-screenshot.png" 
-                alt="Author dashboard "
-                className="rounded-xl max-w-full bg-transparent"
-              />
+            <OptimizedImage 
+              src="/lovable-uploads/dashboard-tip-screenshot.png" 
+              alt="Author dashboard preview"
+              className="rounded-xl max-w-full"
+              sizes="(max-width: 768px) 100vw, 800px"
+              priority={true}
+            />
           </div>
         </div>
 
@@ -206,4 +213,5 @@ const Index = () => {
       </div>
     </Layout>;
 };
+
 export default Index;
