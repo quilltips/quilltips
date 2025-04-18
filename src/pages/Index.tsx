@@ -29,9 +29,12 @@ const Index = () => {
             <OptimizedImage
               src="/lovable-uploads/logo_nav.png"
               alt="Quilltips"
-              className="h-36 mx-auto"
+              width={144}
+              height={144}
+              className="mx-auto"
               priority={true}
-              sizes="(max-width: 768px) 144px, 144px"
+              sizes="144px"
+              objectFit="contain"
             />
             <h1 className="font-playfair font-medium text-6xl text-[#19363C]">Quilltips</h1>
             <h2 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">
@@ -56,9 +59,12 @@ const Index = () => {
             <OptimizedImage 
               src="/lovable-uploads/dashboard-tip-screenshot.png" 
               alt="Author dashboard preview"
-              className="rounded-xl max-w-full"
+              width={800}
+              height={450}
+              className="rounded-xl"
               sizes="(max-width: 768px) 100vw, 800px"
               priority={true}
+              objectFit="contain"
             />
           </div>
         </div>
