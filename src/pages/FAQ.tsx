@@ -133,7 +133,7 @@ const FAQ = () => {
                 <AccordionItem value="e-books">
                   <AccordionTrigger>Can I put QR codes in E-books or other materials?</AccordionTrigger>
                   <AccordionContent>
-                    Great question, and yes you can. Feel free to place your QR Code in your e-book or on other book-related marketing materials. Just note that the QR code links back to your specific book, so you can't use it as a general-purpose link. 
+                    Great question, and yes you can. Feel free to place your QR Code in your e-book or on other book-related marketing materials. Just note that the QR code links back to your specific book, so you can't use it as a general-purpose link. And, always make sure you test the QR code before distributing it widely. 
                   </AccordionContent>
                 </AccordionItem>
 
