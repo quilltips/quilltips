@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 import Stripe from "https://esm.sh/stripe@14.21.0?dts";
@@ -9,7 +8,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -24,6 +22,30 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
+
+    // Check rate limit first
+    const { data: rateLimit, error: rateLimitError } = await supabaseAdmin.rpc(
+      'check_tip_rate_limit',
+      { p_email: email }
+    );
+
+    if (rateLimitError) {
+      console.error('Error checking rate limit:', rateLimitError);
+      throw new Error('Failed to check rate limit');
+    }
+
+    if (!rateLimit) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded. Please try again later.',
+          code: 'RATE_LIMIT_EXCEEDED'
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 429
+        }
+      );
+    }
 
     // Get author's Stripe account ID
     const { data: authorProfile, error: profileError } = await supabaseAdmin
@@ -53,7 +75,7 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Stripe with the secret key
+    // Initialize Stripe with better error handling
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
     if (!stripeKey) {
       console.error('Missing STRIPE_SECRET_KEY');
@@ -206,7 +228,7 @@ serve(async (req) => {
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400
+        status: error.status || 400
       }
     );
   }

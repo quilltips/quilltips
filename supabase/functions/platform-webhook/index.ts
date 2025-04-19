@@ -1,4 +1,3 @@
-
 // supabase/functions/platform-webhook/index.ts
 export const config = {
   path: "/platform-webhook",
@@ -18,6 +17,23 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_URL") || '',
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ''
 );
+
+// Initialize Stripe at the top level with proper error handling
+let stripe: Stripe | null = null;
+try {
+  const Stripe = (await import('https://esm.sh/stripe@14.21.0')).default;
+  const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+  if (stripeSecretKey) {
+    stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2023-10-16',
+      httpClient: Stripe.createFetchHttpClient(),
+    });
+  } else {
+    console.error('❌ Missing STRIPE_SECRET_KEY');
+  }
+} catch (err) {
+  console.error("❌ Error initializing Stripe:", err);
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -53,6 +69,10 @@ serve(async (req) => {
   }
   
   try {
+    if (!stripe) {
+      throw new Error('Stripe not initialized');
+    }
+
     switch(event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
@@ -247,21 +267,6 @@ serve(async (req) => {
     });
   }
 });
-
-// Initialize Stripe for edge function webhook handling
-let stripe;
-try {
-  const Stripe = (await import('https://esm.sh/stripe@14.21.0')).default;
-  const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
-  if (stripeSecretKey) {
-    stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2023-10-16',
-      httpClient: Stripe.createFetchHttpClient(),
-    });
-  }
-} catch (err) {
-  console.error("❌ Error initializing Stripe:", err);
-}
 
 // Helper function to directly call the send-email-notification edge function
 async function sendEmailNotification(type, userId, data = {}) {
