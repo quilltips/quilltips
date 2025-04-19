@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 import Stripe from "https://esm.sh/stripe@14.21.0?dts";
@@ -23,10 +24,10 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    // Check rate limit first
+    // Check rate limit first - FIX: Changed parameter name to match function definition
     const { data: rateLimit, error: rateLimitError } = await supabaseAdmin.rpc(
       'check_tip_rate_limit',
-      { p_email: email }
+      { email: email } // Changed from p_email to email to match SQL function parameter
     );
 
     if (rateLimitError) {
