@@ -49,7 +49,7 @@ export const TipAmountSelector = ({
           />
           <Label
             htmlFor="amount-custom"
-            className="flex h-12 w-full items-center justify-center rounded-lg border-2 peer-data-[state=checked]:border-[#FFD166] hover:border-[#FFD166] cursor-pointer transition-colors"
+            className="flex h-12 w-full items-center justify-center rounded-lg border-2 peer-data-[state=checked]:border-[#FFD166] hover:border-[#FFD166] cursor-pointer transition-colors text-sm md:text-base"
           >
             Custom
           </Label>

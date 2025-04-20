@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, User, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
@@ -15,10 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const {
-    user,
-    isAuthor
-  } = useAuth();
+  const { user, isAuthor } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -29,9 +25,7 @@ export const Navigation = () => {
   const handleLogout = async () => {
     setIsLoading(true);
     try {
-      const {
-        error
-      } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
       if (error) throw error;
       toast({
         title: "Success",
@@ -91,7 +85,51 @@ export const Navigation = () => {
       <div className="md:hidden">
         <MobileSearchSheet />
       </div>
-      {user ? <UserDropdownMenu /> : <GuestMenu />}
+      {user ? (
+        <div className="hidden md:block">
+          <UserDropdownMenu />
+        </div>
+      ) : (
+        <GuestMenu />
+      )}
+    </div>
+  );
+
+  const MobileMenu = () => (
+    <div className="flex flex-col space-y-4">
+      {user ? (
+        <>
+          <Link to="/author/dashboard" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+            Dashboard
+          </Link>
+          <Link to="/author/tip-feed" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+            Tip feed
+          </Link>
+          <Link to="/author/book-qr-codes?tab=all" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+            Book QR codes
+          </Link>
+          <Link to="/author/data" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+            Data
+          </Link>
+          <Link to="/author/settings" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+            Settings
+          </Link>
+          <Link to={`/author/profile/${user?.id}`} className="px-4 py-2 hover:bg-accent/10 rounded-md">
+            Public profile
+          </Link>
+          <button
+            onClick={handleLogout}
+            disabled={isLoading}
+            className="px-4 py-2 text-left hover:bg-accent/10 rounded-md text-red-500"
+          >
+            {isLoading ? "Logging out..." : "Log out"}
+          </button>
+        </>
+      ) : (
+        <Link to="/author/login" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+          Log in
+        </Link>
+      )}
     </div>
   );
 
@@ -122,6 +160,7 @@ export const Navigation = () => {
             <SheetContent side="right" className="w-[80vw] sm:w-[385px]">
               <div className="flex flex-col gap-4 pt-8">
                 <NavLinks />
+                <MobileMenu />
               </div>
             </SheetContent>
           </Sheet>
