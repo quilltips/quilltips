@@ -4,12 +4,14 @@ import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { GuestMenu } from "./navigation/GuestMenu";
 import { SearchBar } from "./navigation/SearchBar";
 import { MobileSearchSheet } from "./navigation/MobileSearchSheet";
 import { useAuth } from "./auth/AuthProvider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
+
 
 export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -193,6 +195,10 @@ export const Navigation = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[80vw] sm:w-[385px]">
+              <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+              <SheetDescription className="sr-only">
+                Use this panel to navigate to different parts of the site.
+              </SheetDescription>
               <div className="flex flex-col gap-4 pt-8">
                 <NavLinks />
                 <MobileMenu />

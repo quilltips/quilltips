@@ -52,7 +52,6 @@ const QRCodeDetails = () => {
   }
 
   return (
-    <Layout>
       <main className="container mx-auto px-4 pt-8 pb-12 space-y-8">
         <div className="max-w-md mx-auto space-y-8">
           {/* Book details card with horizontal layout */}
@@ -134,7 +133,6 @@ const QRCodeDetails = () => {
           bookTitle={qrCode.book_title}
         />
       </main>
-    </Layout>
   );
 };
 
