@@ -1,11 +1,6 @@
-
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-
 const Pricing = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navigation />
+    <div className="flex-grow">
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-semibold text-center mb-12">Simple, Transparent Pricing</h1>
@@ -39,7 +34,6 @@ const Pricing = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

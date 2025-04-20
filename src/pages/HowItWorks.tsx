@@ -1,4 +1,3 @@
-
 import { Layout } from "@/components/Layout";
 import { Link } from "react-router-dom";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";

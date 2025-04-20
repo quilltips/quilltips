@@ -1,4 +1,3 @@
-
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -58,9 +57,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navigation />
-      
+    <div className="flex-grow">
       <main className="container mx-auto px-4 py-8 md:py-16 lg:py-24 flex-grow">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center mb-6 gap-4">
@@ -149,8 +146,6 @@ const Contact = () => {
           </form>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 };
