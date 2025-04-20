@@ -1,5 +1,5 @@
+
 import { useState } from "react";
-import { Layout } from "@/components/Layout";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,24 +14,24 @@ const AuthorDataPage = () => {
   const { user } = useAuth();
 
   // Fetch author profile
-  const {
-    data: profile,
-    isLoading,
-    error
-  } = useQuery({
+  const { data: profile, isLoading, error } = useQuery({
     queryKey: ['author-profile', user?.id],
     queryFn: async () => {
       if (!user) throw new Error('Not authenticated');
-      const {
-        data: profileData,
-        error: profileError
-      } = await supabase.from('profiles').select('*').eq('id', user.id).eq('role', 'author').maybeSingle();
+      
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .eq('role', 'author')
+        .maybeSingle();
+
       if (profileError) throw profileError;
       if (!profileData) throw new Error('Profile not found');
+
       return profileData;
     },
-    enabled: !!user,
-    // Only run query if user is logged in
+    enabled: !!user, // Only run query if user is logged in
     retry: false,
     meta: {
       errorHandler: (error: Error) => {
@@ -47,27 +47,29 @@ const AuthorDataPage = () => {
   });
 
   if (isLoading) {
-    return <Layout>
-        <div className="container mx-auto px-4 pt-24">
-          <LoadingSpinner />
-        </div>
-      </Layout>;
+    return (
+      <div className="container mx-auto px-4 pt-24">
+        <LoadingSpinner />
+      </div>
+    );
   }
-  if (error || !profile) return null;
-  return <Layout>
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-          <div className="max-w-6xl mx-auto space-y-8">
-            <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">Quilltips Data Dashboard</h1>
-              <p className="text-[#4A5568] text-lg">Learn more about your readers</p>
-            </div>
 
-            <AuthorDataDashboard authorId={profile.id} />
+  if (error || !profile) return null;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">Quilltips Data Dashboard</h1>
+            <p className="text-[#4A5568] text-lg">Learn more about your readers</p>
           </div>
+
+          <AuthorDataDashboard authorId={profile.id} />
         </div>
       </div>
-    </Layout>;
+    </div>
+  );
 };
 
 export default AuthorDataPage;

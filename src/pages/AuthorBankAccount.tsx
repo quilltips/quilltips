@@ -1,5 +1,4 @@
 
-import { Layout } from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -111,85 +110,81 @@ const AuthorBankAccount = () => {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="min-h-screen">
-          <main className="container mx-auto px-4 pt-24 pb-12">
-            <div className="text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-            </div>
-          </main>
-        </div>
-      </Layout>
+      <div className="min-h-screen">
+        <main className="container mx-auto px-4 pt-24 pb-12">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+          </div>
+        </main>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen">
-        <main className="container mx-auto px-4 pt-24 pb-12">
-          <Card className="p-6 max-w-md mx-auto">
-            <div className="space-y-6">
-              <div className="space-y-2 text-center">
-                <h2 className="text-2xl font-semibold">Connect Your Bank Account</h2>
-                <p className="text-muted-foreground">
-                  Set up your payment details to start receiving tips from your readers
+    <div className="min-h-screen">
+      <main className="container mx-auto px-4 pt-24 pb-12">
+        <Card className="p-6 max-w-md mx-auto">
+          <div className="space-y-6">
+            <div className="space-y-2 text-center">
+              <h2 className="text-2xl font-semibold">Connect Your Bank Account</h2>
+              <p className="text-muted-foreground">
+                Set up your payment details to start receiving tips from your readers
+              </p>
+            </div>
+
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                You'll need to provide some basic information to verify your identity and connect your bank account. This typically takes 5-10 minutes.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-4">
+              <Button
+                className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium"
+                onClick={connectBankAccount}
+                disabled={isConnecting}
+              >
+                {isConnecting ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Wallet className="mr-2 h-4 w-4" />
+                )}
+                Connect Bank Account
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
+                onClick={skipForNow}
+              >
+                Skip for now
+              </Button>
+            </div>
+            
+            {/* Stripe explanation section */}
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h3 className="text-lg font-medium text-[#19363C] mb-3">How payments work with Quilltips</h3>
+              <div className="space-y-3 text-sm text-gray-600">
+                <p>
+                  Quilltips uses Stripe as its payments partner. Authors who create accounts with Quilltips use 
+                  Stripe to enable their QR codes to pay out to their bank account.
+                </p>
+                <p>
+                  To get set up, Stripe needs to collect some basic information from you. This page will redirect 
+                  you to the Stripe onboarding flow, which should take less than 5 minutes to complete. 
+                  You will be asked to link a bank account.
+                </p>
+                <p>
+                  If you have any questions, don't hesitate to reach out to Quilltips. Once your account is set up, 
+                  you will be able to receive tips from your readers!
                 </p>
               </div>
-
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertDescription>
-                  You'll need to provide some basic information to verify your identity and connect your bank account. This typically takes 5-10 minutes.
-                </AlertDescription>
-              </Alert>
-
-              <div className="space-y-4">
-                <Button
-                  className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium"
-                  onClick={connectBankAccount}
-                  disabled={isConnecting}
-                >
-                  {isConnecting ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Wallet className="mr-2 h-4 w-4" />
-                  )}
-                  Connect Bank Account
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="w-full hover:bg-[#FFD166]/10 hover:text-[#2D3748] hover:border-[#FFD166]"
-                  onClick={skipForNow}
-                >
-                  Skip for now
-                </Button>
-              </div>
-              
-              {/* Stripe explanation section */}
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <h3 className="text-lg font-medium text-[#19363C] mb-3">How payments work with Quilltips</h3>
-                <div className="space-y-3 text-sm text-gray-600">
-                  <p>
-                    Quilltips uses Stripe as its payments partner. Authors who create accounts with Quilltips use 
-                    Stripe to enable their QR codes to pay out to their bank account.
-                  </p>
-                  <p>
-                    To get set up, Stripe needs to collect some basic information from you. This page will redirect 
-                    you to the Stripe onboarding flow, which should take less than 5 minutes to complete. 
-                    You will be asked to link a bank account.
-                  </p>
-                  <p>
-                    If you have any questions, don't hesitate to reach out to Quilltips. Once your account is set up, 
-                    you will be able to receive tips from your readers!
-                  </p>
-                </div>
-              </div>
             </div>
-          </Card>
-        </main>
-      </div>
-    </Layout>
+          </div>
+        </Card>
+      </main>
+    </div>
   );
 };
 

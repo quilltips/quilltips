@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { CreateQRCode } from "@/components/CreateQRCode";
 import { useToast } from "@/hooks/use-toast";
-import { Layout } from "@/components/Layout";
 import { HowQRCodesWork } from "@/components/qr/HowQRCodesWork";
 
 const CreateQRPage = () => {
@@ -54,29 +53,25 @@ const CreateQRPage = () => {
 
   if (!profile) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 pt-24 pb-12">
-          <div className="text-center">Loading...</div>
-        </div>
-      </Layout>
+      <div className="container mx-auto px-4 pt-24 pb-12">
+        <div className="text-center">Loading...</div>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <h1 className="text-3xl text-center font-bold mb-6 text-[#19363C]">Create a new Quilltips Jar</h1>
-        <div className="max-w-2xl mx-auto">
-         
-         <div className="mt-6">
-          <CreateQRCode authorId={profile.id} />
-          </div> 
-          
-          {/* Add How QR Codes Work section */}
-          <HowQRCodesWork />
-        </div>
-      </main>
-    </Layout>
+    <main className="container mx-auto px-4 pt-24 pb-12">
+      <h1 className="text-3xl text-center font-bold mb-6 text-[#19363C]">Create a new Quilltips Jar</h1>
+      <div className="max-w-2xl mx-auto">
+       
+       <div className="mt-6">
+        <CreateQRCode authorId={profile.id} />
+        </div> 
+        
+        {/* Add How QR Codes Work section */}
+        <HowQRCodesWork />
+      </div>
+    </main>
   );
 };
 

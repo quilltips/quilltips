@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { Layout } from "@/components/Layout";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AuthorDashboardContent } from "@/components/dashboard/AuthorDashboardContent";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -73,49 +72,45 @@ const AuthorDashboard = () => {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 pt-24">
-          <LoadingSpinner />
-        </div>
-      </Layout>
+      <div className="container mx-auto px-4 pt-24">
+        <LoadingSpinner />
+      </div>
     );
   }
 
   if (error || !profile) return null;
 
   return (
-    <Layout>
-      <div className="min-h-screen">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-          <div className="max-w-6xl mx-auto space-y-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <div className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">
-                  Welcome to Quilltips{authorFirstName ? `, ${authorFirstName}` : ''}
-                </h1>
-                <p className="text-[#4A5568] text-lg">Helping authors get paid</p>
-              </div>
-              
-              {hasStripeAccount && stripeSetupComplete && (
-                <StripeOnboardingStatus className="text-[#2D3748] mt-2 sm:mt-0" />
-              )}
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div className="space-y-2">
+              <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">
+                Welcome to Quilltips{authorFirstName ? `, ${authorFirstName}` : ''}
+              </h1>
+              <p className="text-[#4A5568] text-lg">Helping authors get paid</p>
             </div>
-
-            {shouldShowBanner && (
-              <Banner 
-                onClose={() => setShow(false)} 
-                hasStripeAccount={hasStripeAccount}
-                stripeSetupComplete={stripeSetupComplete}
-                profileId={profile.id}
-                stripeAccountId={profile.stripe_account_id}
-              />
+            
+            {hasStripeAccount && stripeSetupComplete && (
+              <StripeOnboardingStatus className="text-[#2D3748] mt-2 sm:mt-0" />
             )}
-
-            <AuthorDashboardContent authorId={profile.id} />
           </div>
+
+          {shouldShowBanner && (
+            <Banner 
+              onClose={() => setShow(false)} 
+              hasStripeAccount={hasStripeAccount}
+              stripeSetupComplete={stripeSetupComplete}
+              profileId={profile.id}
+              stripeAccountId={profile.stripe_account_id}
+            />
+          )}
+
+          <AuthorDashboardContent authorId={profile.id} />
         </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 

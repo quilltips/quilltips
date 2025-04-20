@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Layout } from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
@@ -71,70 +70,66 @@ const BookQRCodesPage = () => {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 pt-24">
-          <LoadingSpinner />
-        </div>
-      </Layout>
+      <div className="container mx-auto px-4 pt-24">
+        <LoadingSpinner />
+      </div>
     );
   }
 
   if (error || !profile) return null;
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-              <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Quilltips Jars</h1>
-              <Button 
-                onClick={() => handleTabChange('new')} 
-                className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium md:hidden"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                New QR Code
-              </Button>
-            </div>
-
-            <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-8">
-              <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0 h-auto">
-                <TabsTrigger 
-                  value="all" 
-                  className="rounded-none border-b-2 border-transparent px-4 py-2 text-muted-foreground data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
-                >
-                  All Quilltips Jars
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="new" 
-                  className="rounded-none border-b-2 border-transparent px-4 py-2 text-muted-foreground data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
-                >
-                  New Quilltips Jar
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="all" className="mt-6">
-                <QRCodesList authorId={profile.id} />
-              </TabsContent>
-              <TabsContent value="new" className="mt-6">
-                <div className="max-w-2xl mx-auto">
-                  <div className="text-center mb-8">
-                    <QrCode className="h-12 w-12 mx-auto mb-4 text-[#2D3748]" />
-                    <h3 className="text-2xl font-medium mb-2">Create a new Quilltips Jar</h3>
-                    <p className="text-muted-foreground mb-6">
-                      Set up your virtual tip jar for an upcoming book.
-                    </p>
-                  </div>
-                  
-                  <CreateQRCode authorId={profile.id} />
-                  
-                  <HowQRCodesWork />
-                </div>
-              </TabsContent>
-            </Tabs>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Quilltips Jars</h1>
+            <Button 
+              onClick={() => handleTabChange('new')} 
+              className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium md:hidden"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New QR Code
+            </Button>
           </div>
+
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-8">
+            <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0 h-auto">
+              <TabsTrigger 
+                value="all" 
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-muted-foreground data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
+              >
+                All Quilltips Jars
+              </TabsTrigger>
+              <TabsTrigger 
+                value="new" 
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-muted-foreground data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
+              >
+                New Quilltips Jar
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="all" className="mt-6">
+              <QRCodesList authorId={profile.id} />
+            </TabsContent>
+            <TabsContent value="new" className="mt-6">
+              <div className="max-w-2xl mx-auto">
+                <div className="text-center mb-8">
+                  <QrCode className="h-12 w-12 mx-auto mb-4 text-[#2D3748]" />
+                  <h3 className="text-2xl font-medium mb-2">Create a new Quilltips Jar</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Set up your virtual tip jar for an upcoming book.
+                  </p>
+                </div>
+                
+                <CreateQRCode authorId={profile.id} />
+                
+                <HowQRCodesWork />
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 

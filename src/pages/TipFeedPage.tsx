@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Layout } from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
@@ -49,36 +48,32 @@ const TipFeedPage = () => {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 pt-24">
-          <LoadingSpinner />
-        </div>
-      </Layout>
+      <div className="container mx-auto px-4 pt-24">
+        <LoadingSpinner />
+      </div>
     );
   }
 
   if (error || !profile) return null;
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Tip Feed</h1>
-            </div>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Tip Feed</h1>
+          </div>
 
-            <div className="bg-white border border-black rounded-xl p-6 shadow-sm">
-              <TipHistory 
-                authorId={profile.id} 
-                isDashboard={false} 
-                customTitle="Your Tip Activity"
-              />
-            </div>
+          <div className="bg-white border border-black rounded-xl p-6 shadow-sm">
+            <TipHistory 
+              authorId={profile.id} 
+              isDashboard={false} 
+              customTitle="Your Tip Activity"
+            />
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 

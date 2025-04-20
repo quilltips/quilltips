@@ -4,7 +4,6 @@ import { useNavigate, useBeforeUnload } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfileSettings } from "@/components/ProfileSettings";
 import { useToast } from "@/hooks/use-toast";
-import { Layout } from "@/components/Layout";
 import { UnsavedChangesDialog } from "@/components/profile/UnsavedChangesDialog";
 import { usePreventNavigation } from "@/hooks/use-prevent-navigation";
 
@@ -100,25 +99,21 @@ const AuthorSettings = () => {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="text-center pt-24">Loading...</div>
-      </Layout>
+      <div className="text-center pt-24">Loading...</div>
     );
   }
 
   if (!profile) return null;
 
   return (
-    <Layout>
-      <div className="min-h-screen">
-        <div className="container mx-auto px-4 pt-24 pb-12">
-          <h1 className="text-3xl font-playfair text-center mb-12">Edit profile</h1>
-          <div className="max-w-2xl mx-auto">
-            <ProfileSettings 
-              profile={profile}
-              onChangeStatus={setHasUnsavedChanges}
-            />
-          </div>
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 pt-24 pb-12">
+        <h1 className="text-3xl font-playfair text-center mb-12">Edit profile</h1>
+        <div className="max-w-2xl mx-auto">
+          <ProfileSettings 
+            profile={profile}
+            onChangeStatus={setHasUnsavedChanges}
+          />
         </div>
       </div>
 
@@ -127,7 +122,7 @@ const AuthorSettings = () => {
         onCancel={handleCancelNavigation}
         onConfirm={handleConfirmNavigation}
       />
-    </Layout>
+    </div>
   );
 };
 

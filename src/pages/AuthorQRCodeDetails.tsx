@@ -1,6 +1,5 @@
 
 import { Link } from "react-router-dom";
-import { Layout } from "@/components/Layout";
 import { ArrowLeft } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
@@ -11,43 +10,37 @@ const AuthorQRCodeDetails = () => {
 
   if (qrLoading) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 pt-24">
-          <LoadingSpinner />
-        </div>
-      </Layout>
+      <div className="container mx-auto px-4 pt-24">
+        <LoadingSpinner />
+      </div>
     );
   }
 
   if (!qrCode) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 pt-24">
-          <h1 className="text-2xl font-bold text-red-500">QR Code not found</h1>
-        </div>
-      </Layout>
+      <div className="container mx-auto px-4 pt-24">
+        <h1 className="text-2xl font-bold text-red-500">QR Code not found</h1>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 pt-24 pb-12">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <Link 
-            to="/author/dashboard" 
-            className="inline-flex items-center text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Link>
+    <div className="container mx-auto px-4 pt-24 pb-12">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <Link 
+          to="/author/dashboard" 
+          className="inline-flex items-center text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Link>
 
-          <AuthorQRCodeDetailsSection 
-            qrCode={qrCode} 
-            qrCodeRef={qrCodeRef}
-          />
-        </div>
+        <AuthorQRCodeDetailsSection 
+          qrCode={qrCode} 
+          qrCodeRef={qrCodeRef}
+        />
       </div>
-    </Layout>
+    </div>
   );
 };
 

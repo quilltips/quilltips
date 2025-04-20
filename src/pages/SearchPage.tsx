@@ -1,13 +1,8 @@
 
 import { Search } from "@/components/Search";
-import { Layout } from "@/components/Layout";
 
 const SearchPage = () => {
-  return (
-    <Layout>
-      <Search />
-    </Layout>
-  );
+  return <Search />;
 };
 
 export default SearchPage;
