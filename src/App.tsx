@@ -1,3 +1,4 @@
+
 // src/App.tsx
 
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -27,6 +28,21 @@ function App() {
           }
 
           const Component = route.component;
+          
+          // Index page doesn't need Layout since it's included directly
+          if (route.path === "/") {
+            return (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={
+                  <Layout>
+                    <Component />
+                  </Layout>
+                }
+              />
+            );
+          }
 
           return (
             <Route
