@@ -1,3 +1,5 @@
+// src/routes/routes.tsx
+
 import Index from "@/pages/Index";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
@@ -27,43 +29,33 @@ import Pricing from "@/pages/Pricing";
 import { Navigate } from "react-router-dom";
 
 export const routes = [
-  { path: "/", element: <Index /> },
-  { path: "/about", element: <About /> },
-  { path: "/faq", element: <FAQ /> },
-  { path: "/contact", element: <Contact /> },
-  { path: "/terms", element: <TermsOfService /> },
-  { path: "/search", element: <SearchPage /> },
-  { path: "/profile/:id", element: <PublicProfilePage /> },
-  { path: "/author/register", element: <AuthorRegister /> },
-  { path: "/author/login", element: <AuthorLogin /> },
-  { path: "/author/dashboard", element: <AuthorDashboard /> },
-  { path: "/author/settings", element: <AuthorSettings /> },
+  { path: "/", component: Index },
+  { path: "/about", component: About },
+  { path: "/faq", component: FAQ },
+  { path: "/contact", component: Contact },
+  { path: "/terms", component: TermsOfService },
+  { path: "/search", component: SearchPage },
+  { path: "/profile/:id", component: PublicProfilePage },
+  { path: "/author/register", component: AuthorRegister },
+  { path: "/author/login", component: AuthorLogin },
+  { path: "/author/dashboard", component: AuthorDashboard },
+  { path: "/author/settings", component: AuthorSettings },
+  { path: "/author/qr-design", component: QRCodeDesign },
+  { path: "/author/bank-account", component: AuthorBankAccount },
+  { path: "/author/profile/:id", component: AuthorPublicProfile },
+  { path: "/author/qr/:id", component: AuthorQRCodeDetails },
+  { path: "/author/book-qr-codes", component: BookQRCodesPage },
+  { path: "/author/tip-feed", component: TipFeedPage },
+  { path: "/author/data", component: AuthorDataPage },
+  { path: "/how-it-works", component: HowItWorks },
+  { path: "/qr-summary", component: QRCodeSummary },
+  { path: "/qr/:id", component: QRCodeDetails },
+  { path: "/tip-success", component: TipSuccessPage },
+  { path: "/unsubscribe", component: UnsubscribePage },
+  { path: "/stripe-help", component: StripeHelp },
+  { path: "/privacy", component: PrivacyPolicy },
+  { path: "/pricing", component: Pricing },
+
+  // Redirects (still using JSX for Navigate)
   { path: "/author/create-qr", element: <Navigate to="/author/book-qr-codes?tab=new" replace /> },
-  { path: "/author/qr-design", element: <QRCodeDesign /> },
-  { path: "/author/bank-account", element: <AuthorBankAccount /> },
-  { path: "/author/profile/:id", element: <AuthorPublicProfile /> },
-  { path: "/author/qr/:id", element: <AuthorQRCodeDetails /> },
-  { path: "/author/book-qr-codes", element: <BookQRCodesPage /> },
-  { path: "/author/tip-feed", element: <TipFeedPage /> },
-  { path: "/author/data", element: <AuthorDataPage /> },
-  { path: "/how-it-works", element: <HowItWorks /> },
-  { path: "/qr-summary", element: <QRCodeSummary /> },
-  { path: "/qr/:id", element: <QRCodeDetails /> },
-  { path: "/tip-success", element: <TipSuccessPage /> },
-  {
-    path: "/unsubscribe",
-    element: <UnsubscribePage />,
-  },
-  {
-    path: "/stripe-help",
-    element: <StripeHelp />,
-  },
-  {
-    path: "/privacy",
-    element: <PrivacyPolicy />,
-  },
-  {
-    path: "/pricing",
-    element: <Pricing />,
-  },
 ];
