@@ -95,30 +95,61 @@ export const Navigation = () => {
     </div>
   );
 
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   const MobileMenu = () => (
     <div className="flex flex-col space-y-4">
       {user ? (
         <>
-          <Link to="/author/dashboard" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+          <Link 
+            to="/author/dashboard" 
+            className="px-4 py-2 hover:bg-accent/10 rounded-md"
+            onClick={closeMobileMenu}
+          >
             Dashboard
           </Link>
-          <Link to="/author/tip-feed" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+          <Link 
+            to="/author/tip-feed" 
+            className="px-4 py-2 hover:bg-accent/10 rounded-md"
+            onClick={closeMobileMenu}
+          >
             Tip feed
           </Link>
-          <Link to="/author/book-qr-codes?tab=all" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+          <Link 
+            to="/author/book-qr-codes?tab=all" 
+            className="px-4 py-2 hover:bg-accent/10 rounded-md"
+            onClick={closeMobileMenu}
+          >
             Book QR codes
           </Link>
-          <Link to="/author/data" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+          <Link 
+            to="/author/data" 
+            className="px-4 py-2 hover:bg-accent/10 rounded-md"
+            onClick={closeMobileMenu}
+          >
             Data
           </Link>
-          <Link to="/author/settings" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+          <Link 
+            to="/author/settings" 
+            className="px-4 py-2 hover:bg-accent/10 rounded-md"
+            onClick={closeMobileMenu}
+          >
             Settings
           </Link>
-          <Link to={`/author/profile/${user?.id}`} className="px-4 py-2 hover:bg-accent/10 rounded-md">
+          <Link 
+            to={`/author/profile/${user?.id}`} 
+            className="px-4 py-2 hover:bg-accent/10 rounded-md"
+            onClick={closeMobileMenu}
+          >
             Public profile
           </Link>
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              closeMobileMenu();
+              handleLogout();
+            }}
             disabled={isLoading}
             className="px-4 py-2 text-left hover:bg-accent/10 rounded-md text-red-500"
           >
@@ -126,7 +157,11 @@ export const Navigation = () => {
           </button>
         </>
       ) : (
-        <Link to="/author/login" className="px-4 py-2 hover:bg-accent/10 rounded-md">
+        <Link 
+          to="/author/login" 
+          className="px-4 py-2 hover:bg-accent/10 rounded-md"
+          onClick={closeMobileMenu}
+        >
           Log in
         </Link>
       )}

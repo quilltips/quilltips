@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -60,7 +59,6 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Define supported image formats and max file size
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -77,10 +75,8 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
   };
 
   const validateImageFile = (file: File): boolean => {
-    // Reset previous error
     setError(null);
 
-    // Check file type
     if (!SUPPORTED_FORMATS.includes(file.type)) {
       setError(`Unsupported file type: ${file.type}. Please upload a JPG, PNG, GIF, WebP or SVG image.`);
       toast({
@@ -91,7 +87,6 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
       return false;
     }
 
-    // Check file size
     if (file.size > MAX_FILE_SIZE) {
       setError(`File size too large: ${(file.size / (1024 * 1024)).toFixed(2)}MB. Maximum size is 5MB.`);
       toast({
@@ -126,7 +121,6 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
     setSelectedFileName(null);
     setSelectedFile(null);
     onAvatarSelected(null);
-    // Reset the file input
     const fileInput = document.getElementById('avatar-upload') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
   };
