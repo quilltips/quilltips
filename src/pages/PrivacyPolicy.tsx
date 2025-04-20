@@ -1,11 +1,9 @@
-
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="prose prose-slate max-w-4xl mx-auto">
           <h1 className="text-3xl font-semibold mb-8">Privacy Policy</h1>
@@ -95,7 +93,6 @@ const PrivacyPolicy = () => {
           </section>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
