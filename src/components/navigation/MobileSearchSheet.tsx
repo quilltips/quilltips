@@ -1,4 +1,3 @@
-
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,8 +7,10 @@ import { Badge } from "@/components/ui/badge"
 import { Book, User } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Input } from "@/components/ui/input"
+import { useState } from "react"
 
 export const MobileSearchSheet = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const {
     query,
     results,
@@ -19,8 +20,24 @@ export const MobileSearchSheet = () => {
     navigateToSearchPage,
   } = useSearch('', 'quick');
 
+  const closeSheet = () => {
+    setIsOpen(false);
+  };
+
+  const handleKeyDownWithClose = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const shouldClose = handleKeyDown(e);
+    if (shouldClose) {
+      closeSheet();
+    }
+  };
+
+  const handleViewAllResults = () => {
+    navigateToSearchPage();
+    closeSheet();
+  };
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
           <Search className="h-5 w-5" />
@@ -31,7 +48,7 @@ export const MobileSearchSheet = () => {
           <Input
             value={query}
             onChange={handleSearch}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleKeyDownWithClose}
             placeholder="Search books or authors..."
             className="w-full"
             autoFocus
@@ -47,6 +64,7 @@ export const MobileSearchSheet = () => {
                     key={author.id}
                     to={`/profile/${author.id}`}
                     className="block p-4 hover:bg-accent rounded-lg"
+                    onClick={closeSheet}
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <User className="h-3 w-3" />
@@ -71,6 +89,7 @@ export const MobileSearchSheet = () => {
                     key={book.id}
                     to={`/qr/${book.id}`}
                     className="block p-4 hover:bg-accent rounded-lg"
+                    onClick={closeSheet}
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <Book className="h-3 w-3" />
@@ -117,7 +136,7 @@ export const MobileSearchSheet = () => {
           
           {query.trim() && (
             <Button 
-              onClick={navigateToSearchPage}
+              onClick={handleViewAllResults}
               className="w-full"
               variant="secondary"
             >
