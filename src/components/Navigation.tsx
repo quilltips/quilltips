@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, User, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
@@ -114,8 +115,8 @@ export const Navigation = () => {
         <div className="md:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-accent/10">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="hover:bg-accent/10 p-3">
+                <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[80vw] sm:w-[385px]">
