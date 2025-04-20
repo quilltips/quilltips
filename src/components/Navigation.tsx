@@ -1,27 +1,30 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, User, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { GuestMenu } from "./navigation/GuestMenu";
 import { SearchBar } from "./navigation/SearchBar";
+import { MobileSearchSheet } from "./navigation/MobileSearchSheet";
 import { useAuth } from "./auth/AuthProvider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const {
     user,
     isAuthor
   } = useAuth();
   const navigate = useNavigate();
-  const {
-    toast
-  } = useToast();
-  
+  const { toast } = useToast();
+
+  useEffect(() => {
+    return () => setIsMobileMenuOpen(false);
+  }, []);
+
   const handleLogout = async () => {
     setIsLoading(true);
     try {
@@ -45,7 +48,7 @@ export const Navigation = () => {
       setIsLoading(false);
     }
   };
-  
+
   const UserDropdownMenu = () => <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-1 text-sm font-medium">
@@ -78,16 +81,28 @@ export const Navigation = () => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>;
-    
-  const NavLinks = () => <div className="flex items-center gap-4">
-      <SearchBar />
+
+  const NavLinks = () => (
+    <div className="flex items-center gap-4">
+      <div className="hidden md:block">
+        <SearchBar />
+      </div>
+      <div className="md:hidden">
+        <MobileSearchSheet />
+      </div>
       {user ? <UserDropdownMenu /> : <GuestMenu />}
-    </div>;
-    
-  return <nav className="fixed top-0 w-full bg-background z-50">
+    </div>
+  );
+
+  return (
+    <nav className="fixed top-0 w-full bg-background z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link to={isAuthor ? "/author/dashboard" : "/"} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <Link 
+            to={isAuthor ? "/author/dashboard" : "/"} 
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
             <img src="/lovable-uploads/qt_logo_text.png" alt="Quilltips Logo" className="h-7 w-auto" />
           </Link>
         </div>
@@ -97,7 +112,7 @@ export const Navigation = () => {
         </div>
 
         <div className="md:hidden">
-          <Sheet>
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="hover:bg-accent/10">
                 <Menu className="h-5 w-5" />
@@ -111,5 +126,6 @@ export const Navigation = () => {
           </Sheet>
         </div>
       </div>
-    </nav>;
+    </nav>
+  );
 };
