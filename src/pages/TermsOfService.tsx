@@ -34,10 +34,10 @@ const TermsOfService = () => {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">3. Payment Processing</h2>
-            <p>Payment processing is handled securely through Stripe. <br></br>We:</p>
+            <p>Payment processing is handled securely through Stripe. <br></br></p>
             <ul>
-              <li>Never store complete credit card information</li>
-              <li>Maintain transaction records for legal and accounting purposes</li>
+              <li>We never store complete credit card information</li>
+              <li>We maintain transaction records for legal and accounting purposes</li>
             </ul>
             <p>Authors receive tips, minus our processing fee (currently 5% per transaction) and Stripe's standard payment processing fees.</p>
           </section>
