@@ -155,7 +155,7 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
           className="flex items-center gap-2"
         >
           <Download className="h-4 w-4" />
-          Download
+          Download All Data
         </Button>
       </div>
       
