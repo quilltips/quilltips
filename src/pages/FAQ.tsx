@@ -83,6 +83,14 @@ const FAQ = () => {
                   <p className="mt-2">In addition to the QR code cost, Quilltips charges a 5% fee on transactions. Our payment provider, Stripe, also charges a processing fee.</p>
                 </AccordionContent>
               </AccordionItem>
+
+              <AccordionItem value="add-qr-to-book">
+                <AccordionTrigger>Do I need a separate Quilltips Jar for each book?</AccordionTrigger>
+                <AccordionContent>
+                  Yes, each Quilltips Jar corresponds to a specific book and links to the individual book page in your public profile so that readers will know what they are tipping for. 
+                </AccordionContent>
+              </AccordionItem>
+              
               
               <AccordionItem value="add-qr-to-book">
                 <AccordionTrigger>I've created my QR code - how should I add it to my book?</AccordionTrigger>
