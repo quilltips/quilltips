@@ -1,4 +1,3 @@
-
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
@@ -57,6 +56,12 @@ export const ProfileForm = ({
     // This will trigger the useEffect in useProfileForm to set hasChanges to false
   };
 
+  // New handler to enforce the 1,000 char limit for bio
+  const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value.slice(0, 1000);
+    setBio(val);
+  };
+
   return (
     <form onSubmit={handleSubmit} className={`space-y-6 ${hasChanges ? 'relative' : ''}`}>
       <UnsavedChangesIndicator show={hasChanges} />
@@ -75,11 +80,15 @@ export const ProfileForm = ({
         <Label className="text-base font-medium">Bio</Label>
         <Textarea
           value={bio}
-          onChange={(e) => setBio(e.target.value)}
+          onChange={handleBioChange}
           placeholder="Tell readers about yourself"
           rows={4}
           className={hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}
+          maxLength={1000}
         />
+        <div className="text-xs text-right text-muted-foreground">
+          {bio.length}/1000
+        </div>
       </div>
 
       <div className="space-y-2">

@@ -57,6 +57,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [newUrl, setNewUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [bioValue, setBioValue] = useState("");
   const { toast } = useToast();
 
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
@@ -134,6 +135,11 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
       e.preventDefault();
       addSocialLink();
     }
+  };
+
+  const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value.slice(0, 1000);
+    setBioValue(val);
   };
 
   return (
@@ -235,7 +241,13 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
           placeholder="Tell readers a bit about yourself"
           className="hover-lift text-left min-h-[120px] resize-none"
           disabled={isLoading}
+          value={bioValue}
+          onChange={handleBioChange}
+          maxLength={1000}
         />
+        <div className="text-xs text-right text-muted-foreground">
+          {bioValue.length}/1000
+        </div>
       </div>
 
       <div className="space-y-2">

@@ -72,10 +72,10 @@ export const AuthorPublicProfileView = ({
           </p>
         )}
         
-        {/* Bio Section - Moved up from About section but without the button */}
+        {/* Bio Section - now left-justified within centered container */}
         {bio && (
-          <div className="mt-2 mb-6 max-w-md">
-            <p className="text-[#718096]">{bio}</p>
+          <div className="mt-2 mb-6 max-w-md mx-auto text-left">
+            <p className="text-[#718096] whitespace-pre-line">{bio}</p>
           </div>
         )}
       </div>
