@@ -1,4 +1,3 @@
-
 import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
@@ -31,7 +30,7 @@ const PublicProfilePage = () => {
   useEffect(() => {
     const qrId = searchParams.get('qr');
     const autoOpenTip = searchParams.get('autoOpenTip');
-    
+
     if (qrId && autoOpenTip === 'true') {
       const fetchQRCode = async () => {
         try {
@@ -40,7 +39,7 @@ const PublicProfilePage = () => {
             .select('id, book_title')
             .eq('id', qrId)
             .single();
-            
+
           if (error) throw error;
           if (qrCode) {
             setSelectedQRCode({
@@ -56,7 +55,7 @@ const PublicProfilePage = () => {
           });
         }
       };
-      
+
       fetchQRCode();
     }
   }, [searchParams, toast]);
@@ -64,7 +63,7 @@ const PublicProfilePage = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 pt-8 flex items-center justify-center min-h-[50vh]">
+        <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex items-center justify-center min-h-[50vh]">
           <LoadingSpinner />
         </div>
       </Layout>
@@ -74,7 +73,7 @@ const PublicProfilePage = () => {
   if (error || !author) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 pt-8 text-center">
+        <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 text-center">
           <h1 className="text-2xl font-semibold text-red-500">
             {error instanceof Error ? error.message : 'Author not found'}
           </h1>
@@ -84,8 +83,8 @@ const PublicProfilePage = () => {
   }
 
   return (
-  
-      <main className="container mx-auto px-4 py-8 max-w-3xl">
+    <Layout>
+      <main className="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AuthorProfileHeader author={author} />
         <AuthorProfileContent 
           authorId={author.id} 
@@ -101,7 +100,7 @@ const PublicProfilePage = () => {
           />
         )}
       </main>
-
+    </Layout>
   );
 };
 

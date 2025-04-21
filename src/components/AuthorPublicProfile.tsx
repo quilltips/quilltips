@@ -74,7 +74,7 @@ export const AuthorPublicProfileView = ({
         
         {/* Bio Section - now left-justified within centered container */}
         {bio && (
-          <div className="mt-2 mb-6 max-w-md mx-auto text-left px-3">
+          <div className="mt-2 mb-6 max-w-xl mx-auto text-left px-3">
             <p className="text-[#718096] whitespace-pre-line">{bio}</p>
           </div>
         )}
