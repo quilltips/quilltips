@@ -84,7 +84,7 @@ const PublicProfilePage = () => {
   }
 
   return (
-    <Layout>
+  
       <main className="container mx-auto px-4 py-8 max-w-3xl">
         <AuthorProfileHeader author={author} />
         <AuthorProfileContent 
@@ -101,7 +101,7 @@ const PublicProfilePage = () => {
           />
         )}
       </main>
-    </Layout>
+
   );
 };
 
