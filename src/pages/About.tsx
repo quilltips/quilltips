@@ -5,8 +5,13 @@ const About = () => {
   return (
     <main className="container mx-auto px-4 py-24 flex-grow">
       <div className="max-w-3xl mx-auto prose">
-        <h1 className="text-4xl font-bold mb-8 text-[#19363C]">About Quilltips</h1>
-        
+      
+        <h1 className="text-center text-4xl font-bold mb-8 text-[#19363C]">About Quilltips</h1>
+        <img 
+            src="public/lovable-uploads/QT_about_image.png" 
+            className="rounded my-8 max-w-sm w-full h-auto mx-auto"
+          />
+
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">A way to say "thanks" to all the great authors out there</h2>
           <p>
@@ -33,23 +38,6 @@ const About = () => {
         
         </section>
           
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4">How does it work?</h2>
-          <p className="font-medium">Authors:</p>
-          <ul className="list-disc pl-5 mb-4">
-            <li>Create a Quilltips account and link your bank account with Stripe.</li>
-            <li>Purchase a Quilltips Jar, accessible through a downloadable QR code.</li>
-            <li>Work with your publisher or designer to get the QR code on your next book - we recommend placing it somewhere on the book jacket or on the About the Author page and keeping it larger than 1 inch by 1 inch.</li>
-            <li>Readers scan the QR code to open the book's Quilltips Jar, where they can leave a tip and message.</li>
-            <li>Authors can comment on tips and send messages directly to their readers (if they choose to do so), and can use the data gleaned from these interactions. </li>
-            <li>Quilltips collects a one-time fee of $35 for each Quilltips Jar created, and takes a 5% fee per transaction. Stripe  charges a separate fee to process payments.</li>
-          </ul>
-        
-          <p></p>
-          <p className="mt-4">
-            Publishers can also use Quilltips to get insights into the authors they work with and their readers.
-          </p>
-        </section>
           
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">For Publishers</h2>
