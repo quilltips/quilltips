@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, User, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
@@ -10,8 +11,6 @@ import { SearchBar } from "./navigation/SearchBar";
 import { MobileSearchSheet } from "./navigation/MobileSearchSheet";
 import { useAuth } from "./auth/AuthProvider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
-
 
 export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -79,28 +78,27 @@ export const Navigation = () => {
       </DropdownMenuContent>
     </DropdownMenu>;
 
-  const NavLinks = () => (
-    <div className="flex items-center gap-4">
-      <div className="hidden md:block">
-        <SearchBar />
-      </div>
-      <div className="md:hidden">
-        <MobileSearchSheet />
-      </div>
-      {user ? (
-        <div className="hidden md:block">
-          <UserDropdownMenu />
-        </div>
-      ) : (
-        <GuestMenu />
-      )}
-    </div>
-  );
-
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
 
+  // Single Guest Log In Button for mobile menu (used in MobileMenu below, not both places)
+  const MobileGuestMenu = () => (
+    <Link 
+      to="/author/login" 
+      className="px-4 py-2 hover:bg-accent/10 rounded-md"
+      onClick={closeMobileMenu}
+    >
+      Log in
+    </Link>
+  );
+
+  // Pass this callback to child for after navigation (ex: from mobile search, or mobile nav links)
+  const handleMobileNavigate = () => {
+    closeMobileMenu();
+  };
+
+  // Refined, only one Log in button ensured for unauthenticated users
   const MobileMenu = () => (
     <div className="flex flex-col space-y-4">
       {user ? (
@@ -159,13 +157,29 @@ export const Navigation = () => {
           </button>
         </>
       ) : (
-        <Link 
-          to="/author/login" 
-          className="px-4 py-2 hover:bg-accent/10 rounded-md"
-          onClick={closeMobileMenu}
-        >
-          Log in
-        </Link>
+        <MobileGuestMenu />
+      )}
+    </div>
+  );
+
+  const NavLinks = () => (
+    <div className="flex items-center gap-4">
+      <div className="hidden md:block">
+        <SearchBar />
+      </div>
+      <div className="md:hidden">
+        {/* Pass handleMobileNavigate so search sheet can close the mobile sheet after navigation */}
+        <MobileSearchSheet onNavigate={handleMobileNavigate} />
+      </div>
+      {user ? (
+        <div className="hidden md:block">
+          <UserDropdownMenu />
+        </div>
+      ) : (
+        // Only show GuestMenu on desktop (since mobile nav already covers unauth flow)
+        <div className="hidden md:block">
+          <GuestMenu />
+        </div>
       )}
     </div>
   );
@@ -200,7 +214,9 @@ export const Navigation = () => {
                 Use this panel to navigate to different parts of the site.
               </SheetDescription>
               <div className="flex flex-col gap-4 pt-8">
+                {/* NavLinks includes mobile search bar with onNavigate to control closing sheet */}
                 <NavLinks />
+                {/* Only one "Log in" via this menu for unauth */}
                 <MobileMenu />
               </div>
             </SheetContent>
@@ -210,3 +226,5 @@ export const Navigation = () => {
     </nav>
   );
 };
+
+// File is getting long – consider splitting components for maintainability!

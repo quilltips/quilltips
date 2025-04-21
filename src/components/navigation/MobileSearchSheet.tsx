@@ -1,151 +1,105 @@
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useSearch } from "@/hooks/use-search"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Badge } from "@/components/ui/badge"
-import { Book, User } from "lucide-react"
-import { Link } from "react-router-dom"
-import { Input } from "@/components/ui/input"
-import { useState } from "react"
 
-export const MobileSearchSheet = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const {
-    query,
-    results,
-    isLoading,
-    handleSearch,
-    handleKeyDown,
-    navigateToSearchPage,
-  } = useSearch('', 'quick');
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Search } from "lucide-react";
 
-  const closeSheet = () => {
-    setIsOpen(false);
-  };
+// Accept new onNavigate prop for closing mobile nav
+interface MobileSearchSheetProps {
+  onNavigate?: () => void;
+}
 
-  const handleKeyDownWithClose = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const shouldClose = handleKeyDown(e);
-    if (shouldClose) {
-      closeSheet();
+// placeholder for search result type
+interface SearchResult {
+  id: string;
+  type: "book" | "author";
+  name: string;
+}
+
+export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const navigate = useNavigate();
+
+  // Simulate search results (replace with real search logic if hooked up)
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    // Simulated search logic.
+    if (e.target.value.length > 1) {
+      setResults([
+        { id: "book-1", type: "book", name: "The Great Gatsby" },
+        { id: "author-1", type: "author", name: "F. Scott Fitzgerald" },
+      ]);
+    } else {
+      setResults([]);
     }
   };
 
-  const handleViewAllResults = () => {
-    navigateToSearchPage();
-    closeSheet();
+  // Navigate to the route, close both the sheet and mobile nav/nav menu when present
+  const handleResultClick = (result: SearchResult) => {
+    setOpen(false);
+    if (onNavigate) onNavigate();
+    if (result.type === "book") {
+      navigate(`/book/${result.id}`);
+    } else {
+      navigate(`/author/profile/${result.id}`);
+    }
+    setSearch('');
+  };
+
+  // Handle pressing Enter in the search bar
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (results.length > 0) {
+      handleResultClick(results[0]);
+    }
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-accent/10 p-2"
+          aria-label="Open search"
+        >
           <Search className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="top" className="h-[80vh] w-full p-0">
-        <div className="p-4 space-y-4">
-          <Input
-            value={query}
-            onChange={handleSearch}
-            onKeyDown={handleKeyDownWithClose}
-            placeholder="Search books or authors..."
-            className="w-full"
+      <SheetContent side="top" className="!p-0 max-w-full">
+        <form onSubmit={handleSubmit} className="p-4 bg-background">
+          <input
+            value={search}
+            onChange={handleInputChange}
+            placeholder="Search books or authors"
+            className="w-full px-3 py-2 border rounded"
             autoFocus
           />
-          
-          <ScrollArea className="h-[calc(80vh-8rem)]">
-            {isLoading ? (
-              <div className="p-4 text-center text-muted-foreground">Searching...</div>
-            ) : (
-              <div className="space-y-2">
-                {results?.authors?.filter(author => author && author.id).map((author) => (
-                  <Link
-                    key={author.id}
-                    to={`/profile/${author.id}`}
-                    className="block p-4 hover:bg-accent rounded-lg"
-                    onClick={closeSheet}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <User className="h-3 w-3" />
-                      <Badge variant="secondary" className="text-xs py-0 px-1.5">Author</Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs">
-                        {author.name ? author.name.charAt(0).toUpperCase() : 'A'}
-                      </div>
-                      <div>
-                        <p className="font-medium">{author.name || "Anonymous Author"}</p>
-                        <p className="text-sm text-muted-foreground truncate max-w-[250px]">
-                          {author.bio ? (author.bio.length > 60 ? author.bio.substring(0, 60) + '...' : author.bio) : "No bio available"}
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-                
-                {results?.books?.filter(book => book && book.id && book.author).map((book) => (
-                  <Link
-                    key={book.id}
-                    to={`/qr/${book.id}`}
-                    className="block p-4 hover:bg-accent rounded-lg"
-                    onClick={closeSheet}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <Book className="h-3 w-3" />
-                      <Badge variant="default" className="text-xs py-0 px-1.5 bg-[#19363C] text-white">Book</Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-12 h-16 bg-muted rounded flex items-center justify-center flex-shrink-0">
-                        <img 
-                          src="/lovable-uploads/quill_icon.png" 
-                          alt="Book cover" 
-                          className="h-6 w-6 object-contain"
-                        />
-                      </div>
-                      <div>
-                        <p className="font-medium">{book.book_title}</p>
-                        <p className="text-sm text-muted-foreground">
-                          By <Link 
-                              to={`/profile/${book.author?.id}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="hover:underline"
-                            >
-                              {book.author?.name || "Anonymous Author"}
-                            </Link>
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-                
-                {query.trim() && !isLoading && !results?.authors?.length && !results?.books?.length && (
-                  <div className="p-4 text-center text-muted-foreground">
-                    No results found for "{query}"
-                  </div>
-                )}
-                
-                {!query.trim() && (
-                  <div className="p-4 text-center text-muted-foreground">
-                    Type to search...
-                  </div>
-                )}
-              </div>
-            )}
-          </ScrollArea>
-          
-          {query.trim() && (
-            <Button 
-              onClick={handleViewAllResults}
-              className="w-full"
-              variant="secondary"
-            >
-              <Search className="h-4 w-4 mr-2" />
-              View all results for "{query}"
-            </Button>
-          )}
-        </div>
+        </form>
+        {results.length > 0 && (
+          <ul className="p-4 space-y-2">
+            {results.map((result) => (
+              <li key={result.id}>
+                <button
+                  className="w-full text-left px-3 py-2 rounded hover:bg-accent/20"
+                  onClick={() => handleResultClick(result)}
+                  type="button"
+                >
+                  {result.type === "book" ? "📖" : "🖊️"} {result.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {results.length === 0 && search.length > 1 && (
+          <div className="px-4 pb-4 text-muted-foreground">
+            No results found.
+          </div>
+        )}
       </SheetContent>
     </Sheet>
-  )
+  );
 }
