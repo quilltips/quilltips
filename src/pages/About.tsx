@@ -8,7 +8,7 @@ const About = () => {
       
         <h1 className="text-center text-4xl font-bold mb-8 text-[#19363C]">About Quilltips</h1>
         <img 
-            src="public/lovable-uploads/QT_about_image.png" 
+            src="/lovable-uploads/QT_about_image.png" 
             className="rounded my-8 max-w-sm w-full h-auto mx-auto"
           />
 
