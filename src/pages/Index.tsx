@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, Share, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
@@ -22,9 +21,9 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 pt-16 pb-12">
+    <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 pt-16 pb-12">
       {/* Hero Section */}
-      <div className="max-w-4xl mx-auto text-center space-y-8 animate-enter">
+      <div className="mx-auto w-full max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl text-center space-y-8 animate-enter">
         <div className="space-y-4">
           <OptimizedImage
             src="/lovable-uploads/logo_nav.png"
@@ -50,7 +49,7 @@ const Index = () => {
       </div>
 
       {/* Connecting Authors Section */}
-      <div className="max-w-4xl mx-auto mt-24 text-center space-y-6">
+      <div className="mx-auto w-full mt-24 max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl text-center space-y-6 px-0 lg:px-8">
         <h2 className="text-4xl font-playfair font-medium">What is Quilltips?</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltips Jar, where readers can leave a tip and message!
@@ -61,7 +60,7 @@ const Index = () => {
             alt="Author dashboard preview"
             width={800}
             height={450}
-            className="rounded-xl"
+            className="rounded-xl w-full max-w-3xl"
             sizes="(max-width: 768px) 100vw, 800px"
             priority={true}
             objectFit="contain"
@@ -70,7 +69,7 @@ const Index = () => {
       </div>
 
       {/* Value Proposition Section - NEW */}
-      <div className="max-w-4xl mx-auto mt-24">
+      <div className="mx-auto w-full mt-24 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl px-0 lg:px-8">
         <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Do Authors Love Quilltips?</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -116,7 +115,7 @@ const Index = () => {
       </div>
 
       {/* How it works Section - Redesigned with staggered layout */}
-      <div className="max-w-3xl mx-auto mt-24">
+      <div className="mx-auto w-full mt-24 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl px-0 lg:px-8">
         <h2 className="text-4xl font-playfair font-medium text-center mb-20">How Does It Work?</h2>
 
         {/* Step 1 - Right aligned with QR code icon */}
@@ -175,7 +174,7 @@ const Index = () => {
       </div>
 
       {/* Why Quilltips Section */}
-      <div className="max-w-4xl mx-auto mt-24">
+      <div className="mx-auto w-full mt-24 max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl px-0 lg:px-8">
         <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Quilltips?</h2>
         <div className="grid md:grid-cols-1 gap-8 items-center">
           <div className="text-lg text-muted-foreground space-y-4 text-left">
@@ -205,7 +204,7 @@ const Index = () => {
       </div>
 
       {/* Get Started Section */}
-      <div className="max-w-4xl mx-auto mt-24 text-center space-y-8 animate-enter py-[75px]">
+      <div className="mx-auto w-full mt-24 text-center space-y-8 animate-enter py-[75px] max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl px-0 lg:px-8">
         <div className="space-y-4">
           <h2 className="text-4xl font-playfair font-medium">Ready to get started?</h2>
           <h3 className="text-muted-foreground mx-[62px] px-[4px] text-xl py-[24px]">Create an account to connect with readers and earn tips!</h3>
