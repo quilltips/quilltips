@@ -105,9 +105,14 @@ export const Search = () => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const handled = originalHandleKeyDown(e);
-    if (handled) {
-      collapseSidebar();
+
+    if (e.key === "Enter" && query.trim()) {
+      setTimeout(() => {
+        collapseSidebar();
+        navigate(`/search?q=${encodeURIComponent(query)}`);
+      }, 100);
     }
+
     return handled;
   };
 

@@ -16,10 +16,10 @@ interface MobileSearchSheetProps {
 export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
   const {
     query,
-    setQuery,
     results,
     isLoading,
     handleSearch,
@@ -35,18 +35,39 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
     }
   }, [open]);
 
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+    
+        if (onNavigate) onNavigate();
+        setOpen(false);
+        navigate(`/search?q=${encodeURIComponent(query)}`);
+      }
+    };
+    
+
+    form.addEventListener("keydown", handleKey);
+    return () => form.removeEventListener("keydown", handleKey);
+  }, [query, results, navigate, onNavigate]);
+
   const handleResultClick = (authorId: string) => {
     if (onNavigate) onNavigate();
     setOpen(false);
     navigate(`/author/profile/${authorId}`);
   };
-
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (results?.authors?.length > 0) {
-      handleResultClick(results.authors[0].id);
-    }
+  
+    if (onNavigate) onNavigate();
+    setOpen(false);
+    navigate(`/search?q=${encodeURIComponent(query)}`);
   };
+  
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -61,7 +82,7 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
         </Button>
       </SheetTrigger>
       <SheetContent side="top" className="!p-0 max-w-full">
-        <form onSubmit={handleSubmit} className="p-4 bg-background">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-4 bg-background">
           <Input
             ref={inputRef}
             value={query}
