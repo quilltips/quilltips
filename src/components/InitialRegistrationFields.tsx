@@ -1,4 +1,3 @@
-
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
@@ -21,7 +20,7 @@ export const InitialRegistrationFields = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!termsAccepted) {
       toast({
         title: "Agreement required",
@@ -30,7 +29,7 @@ export const InitialRegistrationFields = ({
       });
       return;
     }
-    
+
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
@@ -46,47 +45,43 @@ export const InitialRegistrationFields = ({
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Enter your email</Label>
-          <Input 
-            id="email" 
-            name="email" 
-            type="email" 
-            placeholder="your@email.com" 
-            required 
-            className="hover-lift" 
-            disabled={isLoading} 
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="your@email.com"
+            required
+            className="hover-lift"
+            disabled={isLoading}
           />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input 
-            id="password" 
-            name="password" 
-            type="password" 
-            placeholder="Create a secure password" 
-            required 
-            minLength={8} 
-            className="hover-lift" 
-            disabled={isLoading} 
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Create a secure password"
+            required
+            minLength={8}
+            className="hover-lift"
+            disabled={isLoading}
           />
         </div>
       </div>
 
-      <div className="flex items-start space-x-2">
-        <Checkbox 
-          id="terms" 
+      <div className="flex items-start gap-3">
+        <Checkbox
           checked={termsAccepted}
           onCheckedChange={(checked) => setTermsAccepted(checked === true)}
           disabled={isLoading}
           className="mt-1"
         />
-        <Label 
-          htmlFor="terms" 
-          className="text-sm font-normal leading-tight cursor-pointer"
-        >
+        <div className="text-sm font-normal leading-tight">
           I agree to the{" "}
-          <Link 
-            to="/terms" 
+          <Link
+            to="/terms"
             className="text-[#2D3748] hover:underline"
             target="_blank"
             rel="noopener noreferrer"
@@ -94,20 +89,20 @@ export const InitialRegistrationFields = ({
             Terms of Service
           </Link>{" "}
           and{" "}
-          <Link 
-            to="/privacy" 
+          <Link
+            to="/privacy"
             className="text-[#2D3748] hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >
             Privacy Policy
           </Link>
-        </Label>
+        </div>
       </div>
 
-      <Button 
-        type="submit" 
-        disabled={isLoading} 
+      <Button
+        type="submit"
+        disabled={isLoading}
         className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
       >
         Next
