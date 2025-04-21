@@ -1,5 +1,5 @@
 import { memo, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Search as SearchIcon, Loader2 } from "lucide-react";
@@ -18,7 +18,7 @@ interface SearchResult {
   };
 }
 
-const SearchResultItem = memo(({ result }: { result: SearchResult }) => {
+const SearchResultItem = memo(({ result, onNavigate }: { result: SearchResult, onNavigate?: () => void }) => {
   if (!result || !result.author) {
     return null;
   }
@@ -28,6 +28,7 @@ const SearchResultItem = memo(({ result }: { result: SearchResult }) => {
       key={result.id} 
       to={`/qr/${result.id}`}
       className="block transition-transform hover:scale-102"
+      onClick={onNavigate}
     >
       <Card className="p-6 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-sm">
         <div className="flex items-start gap-4">
@@ -53,13 +54,9 @@ const SearchResultItem = memo(({ result }: { result: SearchResult }) => {
               <Badge variant="default" className="text-sm bg-[#19363C] text-white">Book</Badge>
             </div>
             <h3 className="text-lg font-semibold">{result.book_title}</h3>
-            <Link 
-              to={`/profile/${result.author.id}`}
-              className="text-sm text-muted-foreground hover:text-primary"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <p className="text-sm text-muted-foreground">
               by {result.author.name || 'Anonymous Author'}
-            </Link>
+            </p>
             {result.publisher && (
               <p className="text-sm text-muted-foreground">
                 Published by {result.publisher}
@@ -77,13 +74,14 @@ SearchResultItem.displayName = 'SearchResultItem';
 export const Search = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
-  
+  const navigate = useNavigate();
+
   const {
     query,
     results,
     isLoading,
     handleSearch,
-    handleKeyDown
+    handleKeyDown: originalHandleKeyDown
   } = useSearch(initialQuery, 'full');
 
   useEffect(() => {
@@ -92,6 +90,26 @@ export const Search = () => {
       (searchInput as HTMLInputElement).focus();
     }
   }, []);
+
+  const collapseSidebar = () => {
+    const sidebar = document.querySelector('[data-radix-sheet-content]');
+    if (sidebar) {
+      (sidebar as HTMLElement).style.display = 'none';
+    }
+  };
+
+  const handleResultClick = (path: string) => {
+    collapseSidebar();
+    navigate(path);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handled = originalHandleKeyDown(e);
+    if (handled) {
+      collapseSidebar();
+    }
+    return handled;
+  };
 
   return (
     <div className="container mx-auto px-4 pt-24 pb-12">
@@ -120,7 +138,7 @@ export const Search = () => {
         {results?.books && results.books.length > 0 && (
           <div className="space-y-4 animate-slideUp">
             {results.books.map((result) => (
-              result ? <SearchResultItem key={result.id} result={result} /> : null
+              result ? <SearchResultItem key={result.id} result={result} onNavigate={() => handleResultClick(`/qr/${result.id}`)} /> : null
             ))}
           </div>
         )}

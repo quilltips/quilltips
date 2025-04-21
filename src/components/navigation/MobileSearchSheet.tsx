@@ -1,59 +1,50 @@
-
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useSearch } from "@/hooks/use-search";
+import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Search, User } from "lucide-react";
 
-// Accept new onNavigate prop for closing mobile nav
 interface MobileSearchSheetProps {
   onNavigate?: () => void;
 }
 
-// placeholder for search result type
-interface SearchResult {
-  id: string;
-  type: "book" | "author";
-  name: string;
-}
-
 export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const {
+    query,
+    setQuery,
+    results,
+    isLoading,
+    handleSearch,
+    handleKeyDown,
+    navigateToSearchPage,
+  } = useSearch("", "quick");
 
-  // Simulate search results (replace with real search logic if hooked up)
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    // Simulated search logic.
-    if (e.target.value.length > 1) {
-      setResults([
-        { id: "book-1", type: "book", name: "The Great Gatsby" },
-        { id: "author-1", type: "author", name: "F. Scott Fitzgerald" },
-      ]);
-    } else {
-      setResults([]);
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 10);
     }
-  };
+  }, [open]);
 
-  // Navigate to the route, close both the sheet and mobile nav/nav menu when present
-  const handleResultClick = (result: SearchResult) => {
-    setOpen(false);
+  const handleResultClick = (authorId: string) => {
     if (onNavigate) onNavigate();
-    if (result.type === "book") {
-      navigate(`/book/${result.id}`);
-    } else {
-      navigate(`/author/profile/${result.id}`);
-    }
-    setSearch('');
+    setOpen(false);
+    navigate(`/author/profile/${authorId}`);
   };
 
-  // Handle pressing Enter in the search bar
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (results.length > 0) {
-      handleResultClick(results[0]);
+    if (results?.authors?.length > 0) {
+      handleResultClick(results.authors[0].id);
     }
   };
 
@@ -71,34 +62,62 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
       </SheetTrigger>
       <SheetContent side="top" className="!p-0 max-w-full">
         <form onSubmit={handleSubmit} className="p-4 bg-background">
-          <input
-            value={search}
-            onChange={handleInputChange}
-            placeholder="Search books or authors"
+          <Input
+            ref={inputRef}
+            value={query}
+            onChange={handleSearch}
+            onKeyDown={handleKeyDown}
+            placeholder="Search authors or books"
             className="w-full px-3 py-2 border rounded"
             autoFocus
           />
         </form>
-        {results.length > 0 && (
-          <ul className="p-4 space-y-2">
-            {results.map((result) => (
-              <li key={result.id}>
+        <ScrollArea className="p-2 max-h-[65vh]">
+          {isLoading ? (
+            <div className="px-4 pb-4 text-muted-foreground">Searching...</div>
+          ) : (
+            <>
+              {results?.authors?.map((author) => (
                 <button
-                  className="w-full text-left px-3 py-2 rounded hover:bg-accent/20"
-                  onClick={() => handleResultClick(result)}
+                  key={author.id}
+                  className="w-full text-left px-4 py-2 rounded hover:bg-accent/20 flex items-center gap-2"
+                  onClick={() => handleResultClick(author.id)}
                   type="button"
                 >
-                  {result.type === "book" ? "📖" : "🖊️"} {result.name}
+                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs">
+                    {author.name ? author.name.charAt(0).toUpperCase() : 'A'}
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <div className="font-medium text-sm truncate">{author.name || "Anonymous Author"}</div>
+                    <div className="text-xs text-muted-foreground truncate max-w-[260px]">
+                      {author.bio ? (author.bio.length > 60 ? author.bio.substring(0, 60) + '...' : author.bio) : "No bio available"}
+                    </div>
+                  </div>
                 </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        {results.length === 0 && search.length > 1 && (
-          <div className="px-4 pb-4 text-muted-foreground">
-            No results found.
-          </div>
-        )}
+              ))}
+              {query.trim() && !isLoading && !results?.authors?.length && (
+                <div className="px-4 pb-4 text-muted-foreground">
+                  No results found for "{query}"
+                </div>
+              )}
+              {query.trim() && results?.authors?.length > 0 && (
+                <div className="pt-3 px-4">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-center text-xs text-blue-600 hover:underline"
+                    onClick={() => {
+                      setOpen(false);
+                      if (onNavigate) onNavigate();
+                      navigateToSearchPage();
+                    }}
+                  >
+                    View all results for "{query}"
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </ScrollArea>
       </SheetContent>
     </Sheet>
   );
