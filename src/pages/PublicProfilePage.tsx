@@ -83,7 +83,7 @@ const PublicProfilePage = () => {
   }
 
   return (
-    <Layout>
+ 
       <main className="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AuthorProfileHeader author={author} />
         <AuthorProfileContent 
@@ -100,7 +100,7 @@ const PublicProfilePage = () => {
           />
         )}
       </main>
-    </Layout>
+
   );
 };
 
