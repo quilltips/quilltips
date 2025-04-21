@@ -1,4 +1,3 @@
-
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
@@ -45,13 +44,19 @@ export const ProfileForm = ({
 
   // Handler for the Cancel button to reset form values
   const handleCancel = () => {
+    // Reset form values to initial values
     setName(initialName);
     setBio(initialBio);
+    
+    // Reset social links to initial state
+    // We need to create a deep copy to avoid reference issues
     const initialLinksCopy = JSON.parse(JSON.stringify(initialSocialLinks));
     setSocialLinks(initialLinksCopy);
+    
+    // This will trigger the useEffect in useProfileForm to set hasChanges to false
   };
 
-  // Enforce the 1,000 char limit for bio here
+  // New handler to enforce the 1,000 char limit for bio
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value.slice(0, 1000);
     setBio(val);
