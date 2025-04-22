@@ -3,7 +3,7 @@ import { Layout } from "@/components/Layout";
 
 const StripeHelp = () => {
   return (
-    <Layout>
+
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <h1 className="text-3xl md:text-4xl font-playfair font-medium mb-8">
           Get set up with Stripe to receive payments through Quilltips
@@ -79,7 +79,7 @@ const StripeHelp = () => {
           </section>
         </div>
       </div>
-    </Layout>
+
   );
 };
 
