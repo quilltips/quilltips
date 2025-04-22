@@ -34,12 +34,11 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     bookTitle: qrCode.book_title
   });
 
-  // This ref will be attached to the container Card—that includes the full styled card (QR code, instructions, etc.)
-  const styledCardRef = useRef<HTMLDivElement>(null);
+  // Reference to the displayed/canvas QR for SVG downloads
+  const visibleQRCodeRef = qrCodeRef || useRef<HTMLDivElement>(null);
 
-  // Here's how we share the card for preview and download
-  // - The download options below will use this ref instead of inner QR code/hires QR code
-  // - No need for highResRef; we'll scale the card for high-res PNG
+  // High-res QR frame for PNG download (hidden, 1024x1024)
+  const highResRef = useRef<HTMLDivElement>(null);
 
   const handleDownloadSVG = async () => {
     if (!isPaid) {
@@ -50,14 +49,13 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       });
       return;
     }
-    if (!styledCardRef.current) return;
+    // Download the visible QRCode frame, not the stats card!
+    if (!visibleQRCodeRef.current) return;
     try {
-      const svgDataUrl = await toSvg(styledCardRef.current, { 
+      const svgDataUrl = await toSvg(visibleQRCodeRef.current, { 
         cacheBust: true,
         backgroundColor: "#fff",
-        style: {
-          borderRadius: '12px',
-        }
+        style: { borderRadius: '12px' }
       });
       const link = document.createElement('a');
       link.href = svgDataUrl;
@@ -66,10 +64,10 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error generating SVG from styled card:', error);
+      console.error('Error generating SVG from styled QR:', error);
       toast({
         title: "SVG Download Error",
-        description: "Failed to generate SVG file for this card.",
+        description: "Failed to generate SVG file for this QR code.",
         variant: "destructive"
       });
     }
@@ -84,22 +82,15 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       });
       return;
     }
-    const cardNode = styledCardRef.current;
-    if (!cardNode) return;
-    // We'll temporarily scale the card using CSS for high-res PNG (double or 4x for higher clarity)
-    const originalStyle = cardNode.getAttribute("style") || "";
-    const scale = 1024 / cardNode.offsetWidth;
-    cardNode.style.transform = `scale(${scale})`;
-    cardNode.style.transformOrigin = "top left";
-    cardNode.style.background = "#fff"; // ensure white background
-    cardNode.style.borderRadius = "12px";
+    // Use the hidden, high-res QR frame for PNG
+    if (!highResRef.current) return;
     try {
-      const pngDataUrl = await toPng(cardNode, { 
+      const pngDataUrl = await toPng(highResRef.current, { 
         cacheBust: true,
         width: 1024,
-        height: cardNode.offsetHeight * scale,
+        height: 1024,
         backgroundColor: "#fff",
-        style: { borderRadius: '12px' }
+        style: { borderRadius: '32px' }
       });
       const link = document.createElement('a');
       link.href = pngDataUrl;
@@ -111,33 +102,41 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       console.error('Error generating PNG QR code image:', error);
       toast({
         title: "PNG Download Error",
-        description: "Failed to generate PNG file for this card.",
+        description: "Failed to generate PNG file for this QR code.",
         variant: "destructive"
       });
-    } finally {
-      // Clean up the scaling
-      cardNode.setAttribute("style", originalStyle);
     }
   };
 
   return (
-    <Card ref={styledCardRef} className="p-6 space-y-6 bg-white" style={{ borderRadius: 12, background: "#fff" }}>
+    <Card className="p-6 space-y-6 bg-white" style={{ borderRadius: 12, background: "#fff" }}>
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">QR Code</h2>
         <div className="bg-white rounded-lg shadow-sm flex justify-center">
+          {/* This is the visible QR frame (for display & SVG download) */}
           <StyledQRCode
-            ref={qrCodeRef}
+            ref={visibleQRCodeRef}
             value={`${window.location.origin}/qr/${qrCode.id}`}
             size={200}
             showBranding={true}
             isPaid={isPaid}
           />
         </div>
-        {/* Download options now use the entire card, not an inner hi-res QR */}
         <QRCodeDownloadOptions 
           onDownloadSVG={handleDownloadSVG}
           onDownloadPNG={handleDownloadPNG}
           disabled={!isPaid}
+          // Hidden, high-res QR code canvas for PNG (offscreen)
+          hiddenHighResCanvas={
+            <StyledQRCode
+              ref={highResRef}
+              value={`${window.location.origin}/qr/${qrCode.id}`}
+              size={1024}
+              highRes={true}
+              showBranding={true}
+              isPaid={isPaid}
+            />
+          }
         />
         {!isPaid && (
           <div className="space-y-2">
