@@ -139,6 +139,16 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Message for Readers */}
+      <div className="mx-auto w-full max-w-4xl lg:max-w-6xl mt-24 px-4 text-center">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto bg-white/50 rounded-2xl p-8 border border-[#FFD166]/20">
+          <h2 className="text-4xl font-playfair font-medium mb-6">For Readers</h2>
+          <p className="text-lg text-muted-foreground">
+            Readers can use Quilltips quickly and easily—just scan the QR code on your book or search for it on Quilltips.co, add a message, and send a tip! No accounts or sign-up required.
+          </p>
+        </div>
+      </div>
+
       {/* Why Quilltips Story */}
       <div className="mx-auto w-full max-w-5xl mt-24 px-4">
         <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Quilltips?</h2>
