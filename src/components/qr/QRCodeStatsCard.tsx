@@ -28,14 +28,18 @@ interface QRCodeStatsCardProps {
 
 export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => {
   const { toast } = useToast();
-  const isPaid = qrCode.is_paid !== false; // Consider it paid unless explicitly set to false
+  const isPaid = qrCode.is_paid !== false;
   const { isCheckingOut, handleCheckout } = useQRCheckout({
     qrCodeId: qrCode.id,
     bookTitle: qrCode.book_title
   });
-  const highResRef = useRef<HTMLDivElement>(null);
 
-  console.log("QRCodeStatsCard isPaid:", isPaid, "is_paid value:", qrCode.is_paid); // Debug log
+  // This ref will be attached to the container Card—that includes the full styled card (QR code, instructions, etc.)
+  const styledCardRef = useRef<HTMLDivElement>(null);
+
+  // Here's how we share the card for preview and download
+  // - The download options below will use this ref instead of inner QR code/hires QR code
+  // - No need for highResRef; we'll scale the card for high-res PNG
 
   const handleDownloadSVG = async () => {
     if (!isPaid) {
@@ -46,18 +50,15 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       });
       return;
     }
-    
-    if (!qrCodeRef?.current) return;
-
+    if (!styledCardRef.current) return;
     try {
-      const svgDataUrl = await toSvg(qrCodeRef.current, { 
+      const svgDataUrl = await toSvg(styledCardRef.current, { 
         cacheBust: true,
-        backgroundColor: null,
+        backgroundColor: "#fff",
         style: {
-          borderRadius: '8px',
+          borderRadius: '12px',
         }
       });
-      
       const link = document.createElement('a');
       link.href = svgDataUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
@@ -65,7 +66,12 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error generating SVG QR code image:', error);
+      console.error('Error generating SVG from styled card:', error);
+      toast({
+        title: "SVG Download Error",
+        description: "Failed to generate SVG file for this card.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -78,17 +84,23 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       });
       return;
     }
-    
-    if (!highResRef.current) return;
-
+    const cardNode = styledCardRef.current;
+    if (!cardNode) return;
+    // We'll temporarily scale the card using CSS for high-res PNG (double or 4x for higher clarity)
+    const originalStyle = cardNode.getAttribute("style") || "";
+    const scale = 1024 / cardNode.offsetWidth;
+    cardNode.style.transform = `scale(${scale})`;
+    cardNode.style.transformOrigin = "top left";
+    cardNode.style.background = "#fff"; // ensure white background
+    cardNode.style.borderRadius = "12px";
     try {
-      const pngDataUrl = await toPng(highResRef.current, { 
+      const pngDataUrl = await toPng(cardNode, { 
         cacheBust: true,
-        pixelRatio: 1,
-        backgroundColor: null,
-        style: { borderRadius: '8px' }
+        width: 1024,
+        height: cardNode.offsetHeight * scale,
+        backgroundColor: "#fff",
+        style: { borderRadius: '12px' }
       });
-      
       const link = document.createElement('a');
       link.href = pngDataUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
@@ -97,11 +109,19 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error generating PNG QR code image:', error);
+      toast({
+        title: "PNG Download Error",
+        description: "Failed to generate PNG file for this card.",
+        variant: "destructive"
+      });
+    } finally {
+      // Clean up the scaling
+      cardNode.setAttribute("style", originalStyle);
     }
   };
 
   return (
-    <Card className="p-6 space-y-6">
+    <Card ref={styledCardRef} className="p-6 space-y-6 bg-white" style={{ borderRadius: 12, background: "#fff" }}>
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">QR Code</h2>
         <div className="bg-white rounded-lg shadow-sm flex justify-center">
@@ -113,21 +133,12 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             isPaid={isPaid}
           />
         </div>
+        {/* Download options now use the entire card, not an inner hi-res QR */}
         <QRCodeDownloadOptions 
           onDownloadSVG={handleDownloadSVG}
           onDownloadPNG={handleDownloadPNG}
           disabled={!isPaid}
-          hiddenHighResCanvas={
-            <StyledQRCode
-              ref={highResRef}
-              value={`${window.location.origin}/qr/${qrCode.id}`}
-              size={1024}
-              highRes={true}
-              showBranding={false}
-            />
-          }
         />
-        
         {!isPaid && (
           <div className="space-y-2">
             <p className="text-sm text-center text-orange-500">
