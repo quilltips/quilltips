@@ -1,6 +1,7 @@
+
 import { format } from "date-fns";
 import { Card } from "../ui/card";
-import { RefObject } from "react";
+import { RefObject, useRef } from "react";
 import { StyledQRCode } from "./StyledQRCode";
 import { QRCodeDownloadOptions } from "./QRCodeDownloadOptions";
 import { toPng, toSvg } from "html-to-image";
