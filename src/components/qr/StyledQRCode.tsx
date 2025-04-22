@@ -1,3 +1,4 @@
+
 import { QRCodeCanvas } from "qrcode.react";
 import { Card } from "@/components/ui/card";
 import { forwardRef } from "react";
@@ -10,7 +11,6 @@ interface StyledQRCodeProps {
   className?: string;
   blurred?: boolean;
   isPaid?: boolean;
-  highRes?: boolean;
 }
 
 export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
@@ -21,25 +21,8 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   className = "",
   blurred = false,
   isPaid = true,
-  highRes = false,
 }, ref) => {
   const shouldBlur = isPaid === false || blurred;
-
-  if (highRes) {
-    return (
-      <div ref={ref} style={{ width: 1024, height: 1024, background: "#fff" }}>
-        <QRCodeCanvas
-          value={value}
-          size={1024}
-          level="H"
-          includeMargin
-          bgColor="#ffffff"
-          fgColor="#000000"
-          style={{ width: "1024px", height: "1024px", display: "block" }}
-        />
-      </div>
-    );
-  }
 
   return (
     <Card
@@ -48,6 +31,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
     >
       <div className="flex flex-col items-center gap-2">
         <div className="relative rounded-lg p-2">
+          {/* QR Code */}
           <QRCodeCanvas
             value={value}
             size={size}
@@ -58,6 +42,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
             className="mx-auto rounded"
           />
 
+          {/* Logo overlay */}
           {showBranding && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-white rounded-full p-1.5 w-[18%] h-[18%] flex items-center justify-center">
@@ -70,6 +55,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
             </div>
           )}
 
+          {/* Blurred overlay for unpurchased QR codes */}
           {shouldBlur && (
             <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center rounded-lg">
               <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center rounded-lg">
@@ -81,6 +67,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           )}
         </div>
 
+        {/* Branding text */}
         {showBranding && (
           <div className="font-playfair text-center text-sm leading-normal text-muted-foreground px-1 max-w-[200px]">
             <div>
