@@ -51,22 +51,31 @@ const Index = () => {
       {/* What is Quilltips */}
       <div className="mx-auto w-full max-w-6xl mt-24 text-center space-y-6">
         <h2 className="text-4xl font-playfair font-medium">What is Quilltips?</h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-4xl mx-auto pb-10">
           With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltips Jar, where readers can leave a tip and message!
         </p>
-        <div className="flex justify-center mt-8 pt-10 pb-5">
-          <OptimizedImage 
-            src="/lovable-uploads/dashboard-tip-screenshot.png" 
-            alt="Author dashboard preview"
-            width={800}
-            height={450}
-            className="rounded-xl w-full max-w-3xl"
-            sizes="(max-width: 768px) 100vw, 800px"
-            priority={true}
-            objectFit="contain"
-          />
         </div>
-      </div>
+
+        <div className="flex flex-col md:flex-row justify-center items-start gap-4 mt-5 px-2">
+          {/* Author Dashboard */}
+          <div className="max-w-3xl w-full rounded-xl shadow-lg hover:shadow-2xl transition-all bg-white p-3">
+            <img
+              src="/lovable-uploads/screenshots/QT_dashboard.png"
+              alt="Author dashboard view"
+              className="w-full rounded-lg object-contain"
+            />
+          </div>
+
+          {/* Reader Crumble View */}
+          <div className="max-w-lg w-full rounded-xl shadow-lg hover:shadow-2xl transition-all bg-white p-3">
+            <img
+              src="/lovable-uploads/screenshots/crumble_screenshot.png"
+              alt="Reader tip jar view"
+              className="w-full rounded-lg object-contain"
+            />
+          </div>
+        </div>
+
 
       {/* Value Props */}
       <div className="mx-auto w-full max-w-7xl mt-24 px-4">
@@ -141,11 +150,18 @@ const Index = () => {
 
       {/* Message for Readers */}
       <div className="mx-auto w-full max-w-4xl lg:max-w-6xl mt-24 px-4 text-center">
-        <div className="max-w-3xl lg:max-w-4xl mx-auto bg-white/50 rounded-2xl p-8 border border-[#FFD166]/20">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto rounded-2xl p-8">
           <h2 className="text-4xl font-playfair font-medium mb-6">For Readers</h2>
-          <p className="text-lg text-muted-foreground">
-            Readers can use Quilltips quickly and easily—just scan the QR code on your book or search for it on Quilltips.co, add a message, and send a tip! No accounts or sign-up required.
+          <p className="text-lg text-muted-foreground mb-8">
+            Readers can use Quilltips quickly and easily—just scan the QR code on your book or search for it on Quilltips, add a message, and send a tip! No accounts or sign-up required.
           </p>
+          <div className="flex justify-center">
+            <img
+              src="/lovable-uploads/reader_quilltips.png"
+              alt="Reader scanning a QR code to tip an author"
+              className="max-w-md w-full rounded-xl shadow-md"
+            />
+          </div>
         </div>
       </div>
 
