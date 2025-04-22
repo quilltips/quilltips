@@ -27,7 +27,7 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   return (
     <Card
       ref={ref}
-      className={`w-[240px] h-[340px] bg-white px-4 py-3 rounded-xl border border-black flex flex-col items-center justify-start ${className}`}
+      className={`w-[240px] h-[340px] bg-white px-4 py-3 rounded-xl border border-gray flex flex-col items-center justify-start ${className}`}
     >
       <div className="flex flex-col items-center gap-2">
         <div className="relative rounded-lg p-2">

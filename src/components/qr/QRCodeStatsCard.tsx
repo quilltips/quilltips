@@ -105,7 +105,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     <Card className="p-6 space-y-6">
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">QR Code</h2>
-        <div className="bg-white rounded-lg shadow-sm flex justify-center">
+        <div className="bg-gray rounded-lg shadow-sm flex justify-center">
           <StyledQRCode
             ref={qrCodeRef}
             value={`${window.location.origin}/qr/${qrCode.id}`}
