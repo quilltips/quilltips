@@ -62,7 +62,7 @@ const HowItWorks = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden order-2 flex justify-center items-center p-6">
+          <div className="bg-white rounded-xl overflow-hidden order-2 flex justify-center items-center p-6">
             <StyledQRCode 
               value="https://quilltips.com/example" 
               size={180} 
