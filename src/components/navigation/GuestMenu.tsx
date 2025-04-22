@@ -9,9 +9,9 @@ export const GuestMenu = () => {
       <Link to="/author/login">
         <Button 
           variant="ghost" 
-          className="text-sm font-medium hover:bg-accent/10"
+          className="text-sm font-medium hover:bg-accent/50"
         >
-          Log in
+          Author Login
         </Button>
       </Link>
     </div>

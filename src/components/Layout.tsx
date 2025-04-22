@@ -38,7 +38,7 @@ export const Layout = ({ children }: LayoutProps) => {
   }, [location.pathname, cleanup]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navigation />
       <main className="flex-grow pt-16">
         {children}
