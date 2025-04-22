@@ -98,7 +98,7 @@ export const SearchBar = () => {
                         <Badge variant="secondary" className="text-xs py-0 px-1.5">Author</Badge>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs">
+                        <div className="w-6 h-6 rounded-full bg-[#19363C] text-[#FFD166] flex items-center justify-center text-xs">
                           {author.name ? author.name.charAt(0).toUpperCase() : 'A'}
                         </div>
                         <div>
@@ -122,7 +122,7 @@ export const SearchBar = () => {
                         <Badge variant="default" className="text-xs py-0 px-1.5 bg-[#19363C] text-white">Book</Badge>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-10 bg-muted rounded flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-10 rounded flex items-center justify-center flex-shrink-0">
                           <img 
                             src="/lovable-uploads/quill_icon.png" 
                             alt="Book cover" 

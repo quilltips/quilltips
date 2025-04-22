@@ -4,10 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { useSearch } from "@/hooks/use-search";
-import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Search, User } from "lucide-react";
+import { Search, User, Book } from "lucide-react";
 
 interface MobileSearchSheetProps {
   onNavigate?: () => void;
@@ -42,32 +41,30 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         e.preventDefault();
-    
+
         if (onNavigate) onNavigate();
         setOpen(false);
         navigate(`/search?q=${encodeURIComponent(query)}`);
       }
     };
-    
 
     form.addEventListener("keydown", handleKey);
     return () => form.removeEventListener("keydown", handleKey);
   }, [query, results, navigate, onNavigate]);
 
-  const handleResultClick = (authorId: string) => {
+  const handleResultClick = (path: string) => {
     if (onNavigate) onNavigate();
     setOpen(false);
-    navigate(`/author/profile/${authorId}`);
+    navigate(path);
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     if (onNavigate) onNavigate();
     setOpen(false);
     navigate(`/search?q=${encodeURIComponent(query)}`);
   };
-  
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -100,9 +97,9 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
             <>
               {results?.authors?.map((author) => (
                 <button
-                  key={author.id}
+                  key={`author-${author.id}`}
                   className="w-full text-left px-4 py-2 rounded hover:bg-accent/20 flex items-center gap-2"
-                  onClick={() => handleResultClick(author.id)}
+                  onClick={() => handleResultClick(`/author/profile/${author.id}`)}
                   type="button"
                 >
                   <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs">
@@ -116,12 +113,30 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
                   </div>
                 </button>
               ))}
-              {query.trim() && !isLoading && !results?.authors?.length && (
+              {results?.books?.map((book) => (
+                <button
+                  key={`book-${book.id}`}
+                  className="w-full text-left px-4 py-2 rounded hover:bg-accent/20 flex items-center gap-2"
+                  onClick={() => handleResultClick(`/qr/${book.id}`)}
+                  type="button"
+                >
+                  <div className="w-6 h-6 rounded bg-muted flex items-center justify-center">
+                    <Book className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <div className="font-medium text-sm truncate">{book.book_title}</div>
+                    <div className="text-xs text-muted-foreground truncate max-w-[260px]">
+                      By {book.author?.name || "Anonymous Author"}
+                    </div>
+                  </div>
+                </button>
+              ))}
+              {query.trim() && !isLoading && !results?.authors?.length && !results?.books?.length && (
                 <div className="px-4 pb-4 text-muted-foreground">
                   No results found for "{query}"
                 </div>
               )}
-              {query.trim() && results?.authors?.length > 0 && (
+              {query.trim() && (results?.authors?.length || results?.books?.length) && (
                 <div className="pt-3 px-4">
                   <Button
                     variant="ghost"
