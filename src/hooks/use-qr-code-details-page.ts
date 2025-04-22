@@ -41,6 +41,7 @@ export const qrCodeQueryKeys = {
 export const useQRCodeDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const qrCodeRef = useRef<HTMLDivElement>(null);
+  const highResRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
@@ -217,19 +218,17 @@ export const useQRCodeDetailsPage = () => {
   };
 
   const handleDownloadPNG = async () => {
-    if (!qrCodeRef.current) {
+    const refToUse = highResRef.current || qrCodeRef.current;
+    if (!refToUse) {
       console.error('QR code element not found');
       return;
     }
-
     try {
-      const pngDataUrl = await toPng(qrCodeRef.current, { 
+      const pngDataUrl = await toPng(refToUse, { 
         cacheBust: true,
-        pixelRatio: 3,
+        pixelRatio: refToUse === highResRef.current ? 1 : 3,
         backgroundColor: null,
-        style: {
-          borderRadius: '8px',
-        }
+        style: { borderRadius: '8px' }
       });
       
       const link = document.createElement('a');
@@ -250,6 +249,7 @@ export const useQRCodeDetailsPage = () => {
     handleDownloadSVG,
     handleDownloadPNG,
     qrCodeRef,
+    highResRef,
     updateCoverImage,
     imageRefreshKey,
     refreshImage,

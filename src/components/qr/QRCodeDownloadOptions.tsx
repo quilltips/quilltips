@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Download, Info } from "lucide-react";
 import { 
@@ -20,13 +19,15 @@ interface QRCodeDownloadOptionsProps {
   onDownloadPNG: () => void;
   className?: string;
   disabled?: boolean;
+  hiddenHighResCanvas?: React.ReactNode;
 }
 
 export const QRCodeDownloadOptions = ({
   onDownloadSVG,
   onDownloadPNG,
   className,
-  disabled = false
+  disabled = false,
+  hiddenHighResCanvas
 }: QRCodeDownloadOptionsProps) => {
   const tooltipContent = disabled
     ? "Purchase this QR code to enable downloads"
@@ -71,6 +72,7 @@ export const QRCodeDownloadOptions = ({
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+      {hiddenHighResCanvas ? <div style={{ position: "absolute", left: -9999, top: -9999 }}>{hiddenHighResCanvas}</div> : null}
     </div>
   );
 };

@@ -76,7 +76,6 @@ const Index = () => {
           </div>
         </div>
 
-
       {/* Value Props */}
       <div className="mx-auto w-full max-w-7xl mt-24 px-4">
         <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Do Authors Love Quilltips?</h2>
@@ -148,7 +147,7 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Message for Readers */}
+      {/* For Readers Section */}
       <div className="mx-auto w-full max-w-4xl lg:max-w-6xl mt-24 px-4 text-center">
         <div className="max-w-3xl lg:max-w-4xl mx-auto rounded-2xl p-8">
           <h2 className="text-4xl font-playfair font-medium mb-6">For Readers</h2>

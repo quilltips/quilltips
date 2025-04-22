@@ -1,4 +1,3 @@
-
 import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { RefObject } from "react";
@@ -33,7 +32,8 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     qrCodeId: qrCode.id,
     bookTitle: qrCode.book_title
   });
-  
+  const highResRef = useRef<HTMLDivElement>(null);
+
   console.log("QRCodeStatsCard isPaid:", isPaid, "is_paid value:", qrCode.is_paid); // Debug log
 
   const handleDownloadSVG = async () => {
@@ -78,16 +78,14 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       return;
     }
     
-    if (!qrCodeRef?.current) return;
+    if (!highResRef.current) return;
 
     try {
-      const pngDataUrl = await toPng(qrCodeRef.current, { 
+      const pngDataUrl = await toPng(highResRef.current, { 
         cacheBust: true,
-        pixelRatio: 3,
+        pixelRatio: 1,
         backgroundColor: null,
-        style: {
-          borderRadius: '8px',
-        }
+        style: { borderRadius: '8px' }
       });
       
       const link = document.createElement('a');
@@ -118,6 +116,15 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
           onDownloadSVG={handleDownloadSVG}
           onDownloadPNG={handleDownloadPNG}
           disabled={!isPaid}
+          hiddenHighResCanvas={
+            <StyledQRCode
+              ref={highResRef}
+              value={`${window.location.origin}/qr/${qrCode.id}`}
+              size={1024}
+              highRes={true}
+              showBranding={false}
+            />
+          }
         />
         
         {!isPaid && (

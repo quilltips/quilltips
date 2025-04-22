@@ -17,6 +17,7 @@ const QRCodeSummary = () => {
   const qrCodeId = searchParams.get('qr_code');
   const sessionId = searchParams.get('session_id'); // Stripe checkout session ID
   const qrCodeRef = useRef<HTMLDivElement>(null);
+  const highResRef = useRef<HTMLDivElement>(null); // New: for 1024x1024 QR
   const { toast } = useToast();
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'pending' | 'complete'>('idle');
 
@@ -116,6 +117,34 @@ const QRCodeSummary = () => {
   const isPaid = qrCode.is_paid === true;
   const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
+  const handleDownloadPNG = async () => {
+    if (!isPaid) {
+      toast({
+        title: "QR Code not purchased",
+        description: "You need to purchase this QR code before you can download it.",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (!highResRef.current) return;
+    try {
+      const pngDataUrl = await toPng(highResRef.current, { 
+        cacheBust: true,
+        pixelRatio: 1, // already 1024x1024
+        backgroundColor: null,
+        style: { borderRadius: '8px' },
+      });
+      const link = document.createElement('a');
+      link.href = pngDataUrl;
+      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating PNG QR code image:', error);
+    }
+  };
+
   const handleDownloadSVG = async () => {
     if (!isPaid) {
       toast({
@@ -145,39 +174,6 @@ const QRCodeSummary = () => {
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error generating SVG QR code image:', error);
-    }
-  };
-
-  const handleDownloadPNG = async () => {
-    if (!isPaid) {
-      toast({
-        title: "QR Code not purchased",
-        description: "You need to purchase this QR code before you can download it.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (!qrCodeRef.current) return;
-
-    try {
-      const pngDataUrl = await toPng(qrCodeRef.current, { 
-        cacheBust: true,
-        pixelRatio: 3,
-        backgroundColor: null,
-        style: {
-          borderRadius: '8px',
-        }
-      });
-      
-      const link = document.createElement('a');
-      link.href = pngDataUrl;
-      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error('Error generating PNG QR code image:', error);
     }
   };
 
@@ -252,6 +248,15 @@ const QRCodeSummary = () => {
                       onDownloadSVG={handleDownloadSVG}
                       onDownloadPNG={handleDownloadPNG}
                       disabled={!isPaid}
+                      hiddenHighResCanvas={
+                        <StyledQRCode
+                          ref={highResRef}
+                          value={qrValue}
+                          size={1024}
+                          highRes={true}
+                          showBranding={false}
+                        />
+                      }
                     />
                     <Button 
                       variant="outline" 
