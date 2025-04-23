@@ -38,6 +38,9 @@ export const Footer = () => {
               <Link to="/pricing" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Pricing
               </Link>
+              <Link to="/stripe-help" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Stripe Help
+              </Link>
               <Link to="/contact" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </Link>
