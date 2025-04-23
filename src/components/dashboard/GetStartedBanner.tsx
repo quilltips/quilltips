@@ -1,4 +1,3 @@
-
 import { X, HelpCircle, AlertTriangle } from "lucide-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +22,9 @@ export const Banner = ({
 }: BannerProps) => {
   const navigate = useNavigate();
 
+  const showMissingStripe = !hasStripeAccount;
+  const showIncompleteStripe = hasStripeAccount && !stripeSetupComplete;
+
   return (
     <div className="bg-[#FFF9E6] rounded-xl p-6 relative">
       <button 
@@ -32,20 +34,26 @@ export const Banner = ({
       >
         <X size={20} />
       </button>
-      
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-[#2D3748] mb-1">Get started</h2>
-      </div>
-      
-      {hasStripeAccount && !stripeSetupComplete && (
+
+   
+      {showMissingStripe && (
         <Alert className="mb-4 bg-amber-50 border-amber-200">
           <AlertTriangle className="h-4 w-4 text-amber-500" />
           <AlertDescription className="text-amber-700">
-            Your Stripe account setup is incomplete. Please complete your account setup to receive payments.
+            You haven’t started setting up your Stripe account. You’ll need to do this before your Quilltips Jars are live.
           </AlertDescription>
         </Alert>
       )}
-      
+
+      {showIncompleteStripe && (
+        <Alert className="mb-4 bg-amber-50 border-amber-200">
+          <AlertTriangle className="h-4 w-4 text-amber-500" />
+          <AlertDescription className="text-amber-700">
+            Your Stripe account setup is incomplete. Please complete setup to begin receiving tips.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-4">
         {profileId && (
           <>
