@@ -35,7 +35,7 @@ export const AuthorProfileContent = ({
       
       {/* Tip Guidance Text */}
       <p className="text-sm text-[#718096] text-center mt-4">
-        To send a tip, simply select a book from the Book section above and click the "Leave a tip!" button!
+        To send a tip, simply select a book from the Books section above and click the "Leave a tip!" button!
       </p>
     </div>;
 };
