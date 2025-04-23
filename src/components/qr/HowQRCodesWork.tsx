@@ -20,7 +20,7 @@ export const HowQRCodesWork = () => {
         
         <p>
           Work with the publisher or designer to get the QR code printed on the book. We recommend printing the QR code 
-          directly on the front or back cover or on the About the Author page. <strong>QR codes should be a minimum of 1 inch by 1 inch to ensure scannability.</strong> 
+          directly on the front or back cover or on the About the Author page. <strong>QR codes should be a minimum of 1 inch by 1 inch to ensure scannability, which translates to 300x300 pixels at standard print resolution (300 PPI).</strong> 
         </p>
         
         <p>

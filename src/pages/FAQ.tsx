@@ -95,7 +95,7 @@ const FAQ = () => {
               <AccordionItem value="add-qr-to-book">
                 <AccordionTrigger>I've created my QR code - how should I add it to my book?</AccordionTrigger>
                 <AccordionContent>
-                  Great job! After purchasing your QR code, you can download it in PNG or SVG format and share it with your publisher or cover designer if necessary. We recommend adding the QR code to your book jacket (front or back cover) or to your About the Author page. To ensure scan-ability, the QR code should be no less than 1 inch by 1 inch in size. After you've added it to your book, the rest is up to us and your readers!
+                  Great job! After purchasing your QR code, you can download it in PNG or SVG format and share it with your publisher or cover designer if necessary. We recommend adding the QR code to your book jacket (front or back cover) or to your About the Author page. To ensure scan-ability, the QR code should be no less than 1 inch by 1 inch in size, which translates to 300x300 pixels at standard print resolution (300 PPI). After you've added it to your book, the rest is up to us and your readers!
                 </AccordionContent>
               </AccordionItem>
               
