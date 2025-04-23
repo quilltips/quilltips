@@ -11,7 +11,7 @@ export const TipStats = ({ totalAmount, averageTip, totalTips }: TipStatsProps) 
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-6 bg-[#19363C] text-white">
-        <div className="space-y-6">
+        <div className="space-y-6 md:min-h-[165px]">
           <h2 className="text-2xl font-playfair">Tips</h2>
           
           <div className="grid grid-cols-3 gap-4">

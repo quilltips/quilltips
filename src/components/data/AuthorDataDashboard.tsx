@@ -65,8 +65,9 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
           ...qr,
           tipCount: bookTipCounts[qr.id] || 0
         }))
+        .filter(book => book.tipCount > 0) // ✅ Only include tipped books
         .sort((a, b) => b.tipCount - a.tipCount)
-        .slice(0, 3);
+        .slice(0, 5);
       
       // Get reader information
       const readerMap: Record<string, ReaderInfo> = {};

@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 
 interface TopBooksProps {
@@ -11,11 +10,11 @@ interface TopBooksProps {
 
 export const TopBooks = ({ topBooks }: TopBooksProps) => {
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-6 bg-[#19363C] text-white">
+    <Card className="overflow-hidden min-h-[220px]">
+      <CardContent className="p-6 bg-[#19363C] text-white flex flex-col justify-between h-full">
         <div className="space-y-6">
           <h2 className="text-2xl font-playfair">Top books</h2>
-          
+
           <div className="space-y-4">
             {topBooks.length > 0 ? (
               topBooks.map((book) => (
@@ -33,6 +32,10 @@ export const TopBooks = ({ topBooks }: TopBooksProps) => {
             )}
           </div>
         </div>
+
+        <p className="text-sm text-white/70 pt-6">
+          Most-tipped books from your Quilltips
+        </p>
       </CardContent>
     </Card>
   );
