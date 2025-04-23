@@ -24,7 +24,7 @@ export const TipAmountSelector = ({
       <RadioGroup 
         value={amount}
         onValueChange={onAmountChange}
-        className="grid grid-cols-5 gap-3"
+        className="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 gap-3"
       >
         {predefinedAmounts.map((value) => (
           <div key={value} className="flex items-center">
@@ -47,12 +47,13 @@ export const TipAmountSelector = ({
             id="amount-custom"
             className="peer sr-only"
           />
-          <Label
+         <Label
             htmlFor="amount-custom"
-            className="flex h-12 w-full items-center justify-center rounded-lg border-2 peer-data-[state=checked]:border-[#FFD166] hover:border-[#FFD166] cursor-pointer transition-colors text-sm md:text-base"
+            className="flex h-12 w-full items-center justify-center rounded-lg border-2 peer-data-[state=checked]:border-[#FFD166] hover:border-[#FFD166] cursor-pointer transition-colors text-sm md:text-base px-2"
           >
             Custom
           </Label>
+
         </div>
       </RadioGroup>
       {amount === 'custom' && (
