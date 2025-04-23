@@ -109,44 +109,52 @@ const Index = () => {
 
       {/* How It Works */}
       <div className="mx-auto w-full max-w-6xl mt-24 px-4">
-        <h2 className="text-4xl font-playfair font-medium text-center mb-20">How Does It Work?</h2>
-        {[{
-          icon: <QrCode className="w-20 h-20 text-[#FFD166]" />,
-          title: "Step 1. Create your Quilltips Jar",
-          text: "Create a virtual tip jar, accessible through a QR code. Download the code to print on the cover or inside the jacket of your next book. Link your bank account with Stripe.",
-          reverse: true
-        }, {
-          icon: <Users className="w-20 h-20 text-[#FFD166]" />,
-          title: "Step 2. Meet your readers",
-          text: "Readers scan the QR code to open your virtual tip jar and leave tips and messages. From your profile, readers can find links to your website and social media accounts.",
-          reverse: false
-        }, {
-          icon: <BookOpen className="w-20 h-20 text-[#FFD166]" />,
-          title: "Step 3. Build support",
-          text: "Grow your e-mail list and understand your audience with Quilltips' Data dashboard.",
-          reverse: true
-        }].map(({ icon, title, text, reverse }, idx) => (
-          <div key={idx} className={`grid md:grid-cols-2 gap-10 items-center mb-24 ${reverse ? 'md:flex-row-reverse' : ''}`}>
-            <div className={`flex justify-center ${reverse ? 'order-last' : ''}`}>
-              <div className="w-48 h-48 bg-[#19363C] rounded-full flex items-center justify-center">
-                {icon}
+          <h2 className="text-4xl font-playfair font-medium text-center mb-20">How Does It Work?</h2>
+
+          {[{
+            icon: <QrCode className="w-16 h-16 md:w-20 md:h-20 text-[#FFD166]" />,
+            title: "Step 1. Create your Quilltips Jar",
+            text: "Create a virtual tip jar, accessible through a QR code. Download the code to print on the cover or inside the jacket of your next book. Link your bank account with Stripe.",
+            reverse: false
+          }, {
+            icon: <Users className="w-16 h-16 md:w-20 md:h-20 text-[#FFD166]" />,
+            title: "Step 2. Meet your readers",
+            text: "Readers scan the QR code to open your virtual tip jar and leave tips and messages. From your profile, readers can find links to your website and social media accounts.",
+            reverse: true
+          }, {
+            icon: <BookOpen className="w-16 h-16 md:w-20 md:h-20 text-[#FFD166]" />,
+            title: "Step 3. Build support",
+            text: "Grow your e-mail list and understand your audience with Quilltips' Data dashboard.",
+            reverse: false
+          }].map(({ icon, title, text, reverse }, idx) => (
+            <div
+              key={idx}
+              className={`flex flex-col-reverse md:flex-row ${reverse ? "md:flex-row-reverse" : ""} items-center gap-10 mb-24`}
+            >
+              {/* Text */}
+              <div className="text-center md:text-left max-w-lg">
+                <h3 className="font-semibold text-2xl mb-4">{title}</h3>
+                <p className="text-muted-foreground">{text}</p>
+              </div>
+
+              {/* Icon */}
+              <div className="flex justify-center md:justify-start">
+                <div className="w-32 h-32 md:w-48 md:h-48 bg-[#19363C] rounded-full flex items-center justify-center">
+                 {icon}
+                </div>
+
               </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-2xl mb-4">{title}</h3>
-              <p className="text-muted-foreground">{text}</p>
-            </div>
-          </div>
-        ))}
+          ))}
 
-        <div className="flex justify-center mt-12">
-          <RouterLink to="/how-it-works">
-            <Button variant="outline" className="rounded-full px-10">
-              Learn more
-            </Button>
-          </RouterLink>
+          <div className="flex justify-center mt-12">
+            <RouterLink to="/how-it-works">
+              <Button variant="outline" className="rounded-full px-10">
+                Learn more
+              </Button>
+            </RouterLink>
+          </div>
         </div>
-      </div>
 
       {/* Message for Readers */}
       <div className="mx-auto w-full max-w-4xl lg:max-w-6xl mt-24 px-4 text-center">
