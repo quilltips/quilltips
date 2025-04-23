@@ -118,7 +118,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
               <div className="flex-1 space-y-1">
                 <div>
                   <p className="font-medium text-sm leading-snug">
-                    {readerFirstName} sent ${tip.amount} for
+                    {readerFirstName} sent a tip for
                     {tip.book_title ? ` "${tip.book_title}"` : " a book"}
                   </p>
                   {tip.message && (

@@ -82,7 +82,7 @@ export const AuthorPublicProfileView = ({
 
       {/* Links Section - Changed title from "Connect with" to "Links" */}
       {socialLinks.length > 0 && (
-        <Card className="mb-8 border border-black shadow-sm rounded-lg overflow-hidden" prominent>
+        <Card className="mb-8 border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden" prominent>
           <CardHeader>
             <CardTitle className="text-xl text-[#2D3748]">Links</CardTitle>
           </CardHeader>

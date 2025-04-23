@@ -196,7 +196,7 @@ const QRCodeSummary = () => {
   };
 
   return (
-    <Layout>
+
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-4xl mx-auto">
           <Link 
@@ -271,10 +271,7 @@ const QRCodeSummary = () => {
 
                   <p className="text-sm text-center text-muted-foreground">
                     Does your publisher need access to info about this book in Quilltips?{' '}
-                    <button className="text-[#9b87f5] hover:underline">
-                      Send an invite
-                    </button>{' '}
-                    to your publisher to claim this book.
+                   Use the "Share" button above to forward your QR code to your publisher.
                   </p>
                 </div>
               </div>
@@ -282,7 +279,7 @@ const QRCodeSummary = () => {
           </Card>
         </div>
       </main>
-    </Layout>
+
   );
 };
 
