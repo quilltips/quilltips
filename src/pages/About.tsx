@@ -1,18 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 const About = () => {
   return (
     <main className="container mx-auto px-4 py-24 flex-grow">
       <div className="max-w-3xl mx-auto prose">
       
-        <h1 className="text-center text-4xl font-bold mb-8 text-[#19363C]">About Quilltips</h1>
-        <img 
-            src="/lovable-uploads/QT_about_image.png" 
-            className="rounded my-8 max-w-sm w-full h-auto mx-auto"
-          />
+        <h1 className="text-center text-5xl font-bold mb-10 text-[#19363C]">About Quilltips</h1>
+    
+        <OptimizedImage
+          src="/lovable-uploads/QT_about_image.png"
+          alt="Quilltips book landscape"
+          className="w-full max-w-md rounded-xl shadow-md mx-auto"
+          priority={true}
+          sizes="(max-width: 768px) 100vw, 600px"
+          objectFit="cover"
+        />
 
-        <section className="mb-12">
+
+        <section className="mb-12 mt-20">
           <h2 className="text-2xl font-semibold mb-4">A way to say "thanks" to all the great authors out there</h2>
           <p>
             Quilltips was founded to give readers a way to say thanks to the authors of books they love and to help bring those author-reader connections to life by allowing readers to easiliy send tips and message to authors. With royalties on new books hovering around 10% for published authors, and royalties on used books and library copies 0%, authors receive only a minute share of the value they create with their stories despite their books circulating for decades after the first sale.
