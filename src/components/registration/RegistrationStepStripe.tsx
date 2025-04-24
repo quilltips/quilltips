@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { ArrowRight, Wallet, Info } from "lucide-react";
+import { ArrowRight, Wallet, Info, Loader2 } from "lucide-react"; // Added Loader2 import
 import { Alert, AlertDescription } from "../ui/alert";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
