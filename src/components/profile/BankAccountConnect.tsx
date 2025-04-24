@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
-import { Loader2, Wallet, HelpCircle } from "lucide-react";
+import { Loader2, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 interface BankAccountConnectProps {
   profileId: string;
@@ -84,12 +85,19 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         className="w-full sm:w-auto flex items-center gap-2"
       >
         {isConnecting ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Connecting to Stripe...</span>
+          </>
         ) : (
-          <Wallet className="mr-2 h-4 w-4" />
+          <>
+            <Wallet className="h-4 w-4" />
+            <span>
+              {stripeAccountId ? "Manage Payment Settings" : "Connect Bank Account"}
+              {stripeAccountId && <span className="text-xs text-muted-foreground ml-1">(Opens Stripe)</span>}
+            </span>
+          </>
         )}
-        {stripeAccountId ? "Manage Payment Settings" : "Connect Bank Account"}
-        {stripeAccountId && <span className="text-xs text-muted-foreground">(Opens Stripe)</span>}
       </Button>
     </div>
   );

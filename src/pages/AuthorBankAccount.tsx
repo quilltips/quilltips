@@ -146,11 +146,16 @@ const AuthorBankAccount = () => {
                 disabled={isConnecting}
               >
                 {isConnecting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <span>Connecting to Stripe...</span>
+                  </>
                 ) : (
-                  <Wallet className="mr-2 h-4 w-4" />
+                  <>
+                    <Wallet className="mr-2 h-4 w-4" />
+                    <span>Connect Bank Account</span>
+                  </>
                 )}
-                Connect Bank Account
               </Button>
 
               <Button
