@@ -412,10 +412,10 @@ export type Database = {
         Args: {
           author_id: string
           book_title: string
-          template?: string
-          publisher?: string
-          isbn?: string
-          cover_image?: string
+          template: string
+          publisher: string
+          isbn: string
+          cover_image: string
         }
         Returns: string
       }
@@ -432,14 +432,7 @@ export type Database = {
       }
       get_public_profile_by_name: {
         Args: { profile_name: string }
-        Returns: {
-          avatar_url: string | null
-          bio: string | null
-          created_at: string | null
-          id: string
-          name: string | null
-          social_links: Json | null
-        }[]
+        Returns: Record<string, unknown>
       }
       has_email_been_sent: {
         Args: { user_id: string; email_type: string }
