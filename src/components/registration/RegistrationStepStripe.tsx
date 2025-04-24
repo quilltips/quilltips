@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
@@ -101,8 +100,17 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
           disabled={isLoading}
           className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
         >
-          <Wallet className="mr-2 h-4 w-4" />
-          Set up payments now
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <span>Connecting to Stripe...</span>
+            </>
+          ) : (
+            <>
+              <Wallet className="mr-2 h-4 w-4" />
+              <span>Set up payments now</span>
+            </>
+          )}
         </Button>
 
         <div className="relative">
