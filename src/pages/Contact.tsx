@@ -62,9 +62,9 @@ const Contact = () => {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center mb-6 gap-4">
             <OptimizedImage
-              src="/lovable-uploads/book-icon.png"
+              src="/lovable-uploads/logo_nav.png"
               alt="Book Icon"
-              className="w-12 h-12"
+              className="w-10 h-10"
               priority={true}
             />
             <h1 className="text-3xl md:text-4xl font-bold">Contact Us</h1>
