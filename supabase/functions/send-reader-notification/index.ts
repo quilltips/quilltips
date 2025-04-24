@@ -1,4 +1,3 @@
-
 // supabase/functions/send-reader-notification/index.ts
 console.log("📧 Reader notification edge function initialized");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
@@ -35,22 +34,25 @@ serve(async (req) => {
 
     // Generate or retrieve unsubscribe token
     const unsubscribeToken = await getOrCreateUnsubscribeToken(data.tipId);
+    console.log(`📧 Generated unsubscribe token for tip ${data.tipId}: ${unsubscribeToken}`);
     
     // Generate email content based on notification type
     const emailContent = generateEmailContent(type, data, unsubscribeToken);
-
+    
     // Send email via Resend
+    const emailHtml = generateEmailHtml({
+      header: emailContent.header,
+      message: emailContent.mainMessage,
+      additionalContent: emailContent.additionalContent,
+      unsubscribeToken: unsubscribeToken,
+      tipId: data.tipId
+    });
+
     const emailResponse = await resend.emails.send({
       from: "Quilltips <notifications@quilltips.co>",
       to: readerEmail,
       subject: emailContent.subject,
-      html: generateEmailHtml({
-        header: emailContent.header,
-        message: emailContent.mainMessage,
-        additionalContent: emailContent.additionalContent,
-        unsubscribeToken: unsubscribeToken,
-        tipId: data.tipId
-      })
+      html: emailHtml
     });
 
     console.log(`✅ Email sent successfully for ${type} notification to ${readerEmail}`);
@@ -174,8 +176,10 @@ function generateEmailHtml({
   unsubscribeToken: string;
   tipId: string;
 }): string {
-  const unsubscribeUrl = `https://quilltips.app/unsubscribe?token=${unsubscribeToken}&tipId=${tipId}`;
-  
+  const siteUrl = Deno.env.get("SITE_URL") || "https://quilltips.co";
+  const unsubscribeUrl = `${siteUrl}/unsubscribe?token=${unsubscribeToken}&tipId=${tipId}`;
+  console.log(`📧 Generated unsubscribe URL: ${unsubscribeUrl}`);
+
   return `
     <!DOCTYPE html>
     <html>
