@@ -87,7 +87,8 @@ export const ProfileForm = ({
           maxLength={1000}
         />
         <div className="text-xs text-right text-muted-foreground">
-          {bio.length}/1000
+        {(bio?.length || 0)}/1000
+
         </div>
       </div>
 

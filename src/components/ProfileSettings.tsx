@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AvatarUpload } from "./profile/AvatarUpload";
 import { ProfileForm } from "./profile/ProfileForm";
@@ -14,11 +13,11 @@ interface SocialLink {
 interface ProfileSettingsProps {
   profile: {
     id: string;
-    name: string;
-    bio: string;
+    name?: string | null;
+    bio?: string | null;
     avatar_url?: string | null;
     stripe_account_id?: string | null;
-    social_links?: SocialLink[];
+    social_links?: SocialLink[] | null;
   };
   onChangeStatus?: (hasChanges: boolean) => void;
 }
@@ -28,7 +27,6 @@ export const ProfileSettings = ({ profile, onChangeStatus }: ProfileSettingsProp
 
   const handleFormChangesStatus = (hasChanges: boolean) => {
     setHasFormChanges(hasChanges);
-    // Propagate the change status up to the parent component
     if (onChangeStatus) {
       onChangeStatus(hasChanges);
     }
@@ -38,15 +36,15 @@ export const ProfileSettings = ({ profile, onChangeStatus }: ProfileSettingsProp
     <div className="space-y-8">
       <AvatarUpload
         profileId={profile.id}
-        avatarUrl={profile.avatar_url}
-        name={profile.name}
+        avatarUrl={profile.avatar_url ?? null}
+        name={profile.name ?? ""}
       />
 
       <ProfileForm
         profileId={profile.id}
-        initialName={profile.name}
-        initialBio={profile.bio}
-        initialSocialLinks={profile.social_links}
+        initialName={profile.name ?? ""}
+        initialBio={profile.bio ?? ""}
+        initialSocialLinks={profile.social_links ?? []}
         onChangeStatus={handleFormChangesStatus}
       />
 
@@ -55,7 +53,7 @@ export const ProfileSettings = ({ profile, onChangeStatus }: ProfileSettingsProp
       <div className="mt-8 space-y-6">
         <BankAccountConnect
           profileId={profile.id}
-          stripeAccountId={profile.stripe_account_id}
+          stripeAccountId={profile.stripe_account_id ?? null}
         />
 
         <div className="pt-4 border-t border-gray-100">
