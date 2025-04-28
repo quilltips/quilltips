@@ -2,7 +2,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { AuthorPublicTipFeed } from "@/components/tips/AuthorPublicTipFeed";
-import { AlertCircle } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 interface AuthorProfileContentProps {
   authorId: string;
@@ -32,12 +32,17 @@ export const AuthorProfileContent = ({
           </CardContent>
         </Card>
       ) : (
-        <Card className="border border-amber-200 bg-amber-50/50 shadow-sm rounded-lg overflow-hidden p-4">
+        <Card className="border border-[#FFD166]/30 bg-amber-50/30 shadow-sm rounded-lg overflow-hidden p-6">
           <div className="flex items-center gap-3">
-            <AlertCircle size={20} className="text-amber-500 flex-shrink-0" />
-            <p className="text-amber-700 text-sm">
-              This author is still setting up their payment account. Check back soon to leave tips!
-            </p>
+            <BookOpen size={24} className="text-[#FFD166] flex-shrink-0" />
+            <div>
+              <p className="text-[#19363C] font-medium">
+                This author hasn't added any books yet
+              </p>
+              <p className="text-sm text-[#19363C]/70 mt-1">
+                Check back later for updates!
+              </p>
+            </div>
           </div>
         </Card>
       )}
