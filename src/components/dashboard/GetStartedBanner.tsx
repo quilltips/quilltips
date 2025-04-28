@@ -1,3 +1,4 @@
+
 import { X, HelpCircle, AlertTriangle } from "lucide-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +30,7 @@ export const Banner = ({
     <div className="bg-[#FFF9E6] rounded-xl p-6 relative">
       <button 
         onClick={onClose}
-        className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+        className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
         aria-label="Close"
       >
         <X size={20} />
@@ -40,7 +41,7 @@ export const Banner = ({
         <Alert className="mb-4 bg-amber-50 border-amber-200">
           <AlertTriangle className="h-4 w-4 text-amber-500" />
           <AlertDescription className="text-amber-700">
-            You haven’t started setting up your Stripe account. You’ll need to do this before your Quilltips Jars are live.
+            You haven't started setting up your Stripe account. You'll need to do this before your Quilltips Jars are live.
           </AlertDescription>
         </Alert>
       )}
