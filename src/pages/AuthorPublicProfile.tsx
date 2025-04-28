@@ -1,3 +1,4 @@
+
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
@@ -14,8 +15,52 @@ const AuthorPublicProfile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedQRCode, setSelectedQRCode] = useState<{ id: string; bookTitle: string } | null>(null);
+  const [stripeSetupInfo, setStripeSetupInfo] = useState<{ 
+    hasStripeAccount: boolean; 
+    stripeSetupComplete: boolean 
+  }>({
+    hasStripeAccount: false,
+    stripeSetupComplete: false
+  });
 
   const { data: author, isLoading, error } = usePublicProfile(id);
+
+  // Fetch the author's Stripe setup info
+  useEffect(() => {
+    const fetchStripeSetupInfo = async () => {
+      if (!author?.id) return;
+      
+      try {
+        // Use RPC to safely fetch stripe setup information without exposing all profile data
+        const { data, error } = await supabase.rpc('get_public_profile_by_id', { 
+          profile_id: author.id 
+        });
+
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          // Fetch the stripe setup info from profiles table using RPC
+          const { data: stripeData, error: stripeError } = await supabase
+            .from('profiles')
+            .select('stripe_account_id, stripe_setup_complete')
+            .eq('id', author.id)
+            .single();
+          
+          if (stripeError) throw stripeError;
+          
+          setStripeSetupInfo({
+            hasStripeAccount: !!stripeData?.stripe_account_id,
+            stripeSetupComplete: !!stripeData?.stripe_setup_complete
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching stripe setup info:", err);
+        // Don't show an error to the user, just default to not showing books
+      }
+    };
+    
+    fetchStripeSetupInfo();
+  }, [author]);
 
   useEffect(() => {
     if (error) {
@@ -84,7 +129,9 @@ const AuthorPublicProfile = () => {
       <AuthorProfileHeader author={author} />
       <AuthorProfileContent 
         authorId={author.id} 
-        authorName={author.name || 'Anonymous Author'} 
+        authorName={author.name || 'Anonymous Author'}
+        hasStripeAccount={stripeSetupInfo.hasStripeAccount}
+        stripeSetupComplete={stripeSetupInfo.stripeSetupComplete}
       />
 
       {selectedQRCode && (
