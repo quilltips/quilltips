@@ -50,18 +50,31 @@ export const AuthorPublicProfileView = ({
   return <>
       {/* Author Header Section */}
       <div className="flex flex-col items-center text-center mb-8">
-        <Dialog>
-          <DialogTrigger asChild>
-            <button className="w-28 h-28 mb-4 rounded-full overflow-hidden border-2 border-[#f1f1f1] shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FFD166] focus:ring-offset-2">
+      <Dialog>
+        <DialogTrigger asChild>
+          <button className="w-28 h-28 mb-4 rounded-full overflow-hidden border-2 border-[#f1f1f1] shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FFD166] focus:ring-offset-2">
+            {imageUrl && imageUrl !== "/placeholder.svg" ? (
               <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
-            </button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-lg">
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-[#19363C] text-[#FFD166] text-4xl font-semibold uppercase">
+                {firstName.charAt(0)}
+              </div>
+            )}
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-lg">
+          {imageUrl && imageUrl !== "/placeholder.svg" ? (
             <div className="aspect-square w-full overflow-hidden rounded-lg">
               <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
             </div>
-          </DialogContent>
-        </Dialog>
+          ) : (
+            <div className="aspect-square w-full flex items-center justify-center rounded-lg bg-[#19363C] text-white text-6xl font-semibold uppercase">
+              {firstName.charAt(0)}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
         
         <h1 className="text-2xl font-semibold text-[#2D3748] mb-2">{name}</h1>
         

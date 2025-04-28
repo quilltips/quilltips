@@ -16,7 +16,7 @@ export const AuthorProfileHeader = ({ author }: AuthorProfileHeaderProps) => {
     <AuthorPublicProfileView
       name={author.name || 'Anonymous Author'}
       bio={author.bio || 'No bio available'}
-      imageUrl={author.avatar_url || "/placeholder.svg"}
+      imageUrl={author.avatar_url || undefined }
       authorId={author.id}
       socialLinks={author.social_links || []}
       joinedDate={joinedYear}
