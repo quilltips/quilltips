@@ -15,7 +15,7 @@ interface StyledQRCodeProps {
 
 export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   value,
-  size = 180,
+  size = 1000,
   title,
   showBranding = true,
   className = "",
