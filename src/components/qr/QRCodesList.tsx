@@ -1,20 +1,32 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, QrCode, HelpCircle } from "lucide-react";
+import { Loader2, QrCode, HelpCircle, LockKeyhole } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeItem } from "./QRCodeItem";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useState } from "react";
 
 interface QRCodesListProps {
   authorId: string;
+  stripeSetupComplete?: boolean;
+  hasStripeAccount?: boolean;
 }
 
-export const QRCodesList = ({ authorId }: QRCodesListProps) => {
+export const QRCodesList = ({ 
+  authorId,
+  stripeSetupComplete = true,
+  hasStripeAccount = true 
+}: QRCodesListProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  
+  const stripeIncomplete = !hasStripeAccount || !stripeSetupComplete;
   
   const {
     data: qrCodes,
@@ -50,6 +62,15 @@ export const QRCodesList = ({ authorId }: QRCodesListProps) => {
     }
   });
 
+  const handlePopoverOpenChange = (open: boolean) => {
+    setIsPopoverOpen(open);
+    
+    // Auto-close the popover after 3s on mobile
+    if (open && window.innerWidth < 768) {
+      setTimeout(() => setIsPopoverOpen(false), 3000);
+    }
+  };
+
   if (isLoading) {
     return <div className="flex justify-center items-center py-8">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -84,12 +105,48 @@ export const QRCodesList = ({ authorId }: QRCodesListProps) => {
 
   return (
     <div className="space-y-4">
-      {qrCodes.map(qrCode => (
-        <QRCodeItem 
-          key={qrCode.id} 
-          qrCode={qrCode} 
-        />
-      ))}
+      {stripeIncomplete && (
+        <div className="flex items-center gap-2 mb-4 p-4 bg-amber-50/50 rounded-lg border border-amber-200">
+          {/* For desktop, use tooltip */}
+          <div className="hidden sm:block">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <LockKeyhole size={20} className="text-amber-500 flex-shrink-0" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[300px] bg-white p-3 text-sm">
+                  <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          
+          {/* For mobile, use popover with click */}
+          <div className="sm:hidden">
+            <Popover open={isPopoverOpen} onOpenChange={handlePopoverOpenChange}>
+              <PopoverTrigger asChild>
+                <LockKeyhole size={20} className="text-amber-500 flex-shrink-0 cursor-pointer" />
+              </PopoverTrigger>
+              <PopoverContent className="w-screen max-w-[250px] bg-white p-3 text-sm">
+                <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+              </PopoverContent>
+            </Popover>
+          </div>
+          
+          <div className="text-amber-700 text-sm">
+            Your Quilltips Jars won't be active for readers until you complete your Stripe account setup.
+          </div>
+        </div>
+      )}
+      
+      <div className={stripeIncomplete ? 'opacity-75' : ''}>
+        {qrCodes.map(qrCode => (
+          <QRCodeItem 
+            key={qrCode.id} 
+            qrCode={qrCode} 
+          />
+        ))}
+      </div>
     </div>
   );
 };

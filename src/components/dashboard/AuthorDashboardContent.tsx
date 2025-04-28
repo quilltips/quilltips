@@ -5,9 +5,15 @@ import { TipStatsCard } from "@/components/dashboard/TipStatsCard";
 
 interface AuthorDashboardContentProps {
   authorId: string;
+  stripeSetupComplete?: boolean;
+  hasStripeAccount?: boolean;
 }
 
-export const AuthorDashboardContent = ({ authorId }: AuthorDashboardContentProps) => {
+export const AuthorDashboardContent = ({ 
+  authorId, 
+  stripeSetupComplete = true,
+  hasStripeAccount = true 
+}: AuthorDashboardContentProps) => {
   return (
     <div className="space-y-6">
       {/* Tip Stats Card */}
@@ -27,7 +33,11 @@ export const AuthorDashboardContent = ({ authorId }: AuthorDashboardContentProps
         </div>
         
         <div className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
-          <AuthorQRCodesList authorId={authorId} />
+          <AuthorQRCodesList 
+            authorId={authorId}
+            stripeSetupComplete={stripeSetupComplete}
+            hasStripeAccount={hasStripeAccount}
+          />
         </div>
       </div>
     </div>

@@ -67,6 +67,10 @@ const BookQRCodesPage = () => {
     setActiveTab(value);
     navigate(`/author/book-qr-codes?tab=${value}`, { replace: true });
   };
+  
+  // Check if Stripe account is complete
+  const hasStripeAccount = !!profile?.stripe_account_id;
+  const stripeSetupComplete = !!profile?.stripe_setup_complete;
 
   if (isLoading) {
     return (
@@ -109,7 +113,11 @@ const BookQRCodesPage = () => {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="all" className="mt-6">
-              <QRCodesList authorId={profile.id} />
+              <QRCodesList 
+                authorId={profile.id}
+                stripeSetupComplete={stripeSetupComplete}
+                hasStripeAccount={hasStripeAccount}
+              />
             </TabsContent>
             <TabsContent value="new" className="mt-6">
               <div className="max-w-2xl mx-auto">

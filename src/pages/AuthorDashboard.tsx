@@ -107,7 +107,11 @@ const AuthorDashboard = () => {
             />
           )}
 
-          <AuthorDashboardContent authorId={profile.id} />
+          <AuthorDashboardContent 
+            authorId={profile.id} 
+            stripeSetupComplete={stripeSetupComplete}
+            hasStripeAccount={hasStripeAccount}
+          />
         </div>
       </div>
     </div>

@@ -2,23 +2,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
-import { ChevronDown, Loader2, Plus, HelpCircle, ArrowRight } from "lucide-react";
+import { ChevronDown, Loader2, Plus, HelpCircle, ArrowRight, LockKeyhole } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { QRCodeCard } from "./qr/QRCodeCard";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface AuthorQRCodesListProps {
   authorId: string;
+  stripeSetupComplete?: boolean;
+  hasStripeAccount?: boolean;
 }
 
 export const AuthorQRCodesList = ({
-  authorId
+  authorId,
+  stripeSetupComplete = true,
+  hasStripeAccount = true
 }: AuthorQRCodesListProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showAll, setShowAll] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  
+  const stripeIncomplete = !hasStripeAccount || !stripeSetupComplete;
   
   const {
     data: qrCodes,
@@ -68,10 +77,52 @@ export const AuthorQRCodesList = ({
 
   const displayedQRCodes = showAll ? qrCodes : qrCodes?.slice(0, 5);
 
+  const handlePopoverOpenChange = (open: boolean) => {
+    setIsPopoverOpen(open);
+    
+    // Auto-close the popover after 3s on mobile
+    if (open && window.innerWidth < 768) {
+      setTimeout(() => setIsPopoverOpen(false), 3000);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-lg font-medium text-[#2D3748]">Quilltips Jars</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-medium text-[#2D3748]">Quilltips Jars</h2>
+          
+          {stripeIncomplete && (
+            <div className="relative">
+              {/* For desktop, use tooltip */}
+              <div className="hidden sm:block">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <LockKeyhole size={18} className="text-amber-500 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-[250px] bg-white p-3 text-sm">
+                      <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              {/* For mobile, use popover with click */}
+              <div className="sm:hidden">
+                <Popover open={isPopoverOpen} onOpenChange={handlePopoverOpenChange}>
+                  <PopoverTrigger asChild>
+                    <LockKeyhole size={18} className="text-amber-500 cursor-pointer" />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-screen max-w-[250px] bg-white p-3 text-sm">
+                    <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          )}
+        </div>
+        
         {qrCodes && qrCodes.length > 0 && (
           <Button 
             variant="ghost" 
@@ -111,7 +162,7 @@ export const AuthorQRCodesList = ({
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="space-y-2">
+          <div className={`space-y-2 ${stripeIncomplete ? 'opacity-75' : ''}`}>
             {displayedQRCodes?.map(qr => (
               <QRCodeCard 
                 key={qr.id} 
