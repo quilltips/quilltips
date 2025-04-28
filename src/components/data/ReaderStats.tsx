@@ -29,7 +29,7 @@ export const ReaderStats = ({ readerInfo }: ReaderStatsProps) => {
               ))}
             </div>
           ) : (
-            <div className="text-center text-white/70 py-8">
+            <div className="text-center text-white/70 py-12">
               No reader data available yet
             </div>
           )}
