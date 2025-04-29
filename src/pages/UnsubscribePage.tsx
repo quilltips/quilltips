@@ -65,7 +65,7 @@ const UnsubscribePage = () => {
   }, [token, tipId]);
 
   return (
-    <Layout>
+
       <div className="container max-w-2xl mx-auto px-4 pt-16 pb-20 text-center">
         <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
           {isLoading ? (
@@ -98,7 +98,7 @@ const UnsubscribePage = () => {
           )}
         </div>
       </div>
-    </Layout>
+
   );
 };
 

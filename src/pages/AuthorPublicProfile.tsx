@@ -1,4 +1,3 @@
-
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
@@ -31,7 +30,6 @@ const AuthorPublicProfile = () => {
       if (!author?.id) return;
       
       try {
-        // Use RPC to safely fetch stripe setup information without exposing all profile data
         const { data, error } = await supabase.rpc('get_public_profile_by_id', { 
           profile_id: author.id 
         });
@@ -39,7 +37,6 @@ const AuthorPublicProfile = () => {
         if (error) throw error;
         
         if (data && data.length > 0) {
-          // Fetch the stripe setup info from profiles table using RPC
           const { data: stripeData, error: stripeError } = await supabase
             .from('profiles')
             .select('stripe_account_id, stripe_setup_complete')
@@ -55,7 +52,7 @@ const AuthorPublicProfile = () => {
         }
       } catch (err) {
         console.error("Error fetching stripe setup info:", err);
-        // Don't show an error to the user, just default to not showing books
+        // No need to toast user for stripe info errors
       }
     };
     
@@ -125,7 +122,7 @@ const AuthorPublicProfile = () => {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-3xl">
+    <>
       <AuthorProfileHeader author={author} />
       <AuthorProfileContent 
         authorId={author.id} 
@@ -133,7 +130,6 @@ const AuthorPublicProfile = () => {
         hasStripeAccount={stripeSetupInfo.hasStripeAccount}
         stripeSetupComplete={stripeSetupInfo.stripeSetupComplete}
       />
-
       {selectedQRCode && (
         <QRCodeDialog
           isOpen={!!selectedQRCode}
@@ -142,7 +138,7 @@ const AuthorPublicProfile = () => {
           authorId={author.id}
         />
       )}
-    </main>
+    </>
   );
 };
 
