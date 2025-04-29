@@ -1,7 +1,6 @@
-
 import { format } from "date-fns";
 import { Card } from "../ui/card";
-import { RefObject } from "react";
+import { RefObject, useRef } from "react";
 import { StyledQRCode } from "./StyledQRCode";
 import { QRCodeDownloadOptions } from "./QRCodeDownloadOptions";
 import { toPng, toSvg } from "html-to-image";
@@ -23,18 +22,18 @@ interface QRCodeStatsCardProps {
     book_title: string;
     is_paid?: boolean;
   } & QRCodeStats;
-  qrCodeRef?: RefObject<HTMLDivElement>;
+  qrCodeRef?: RefObject<HTMLDivElement>; // This is still the screen preview ref (optional)
 }
 
 export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => {
   const { toast } = useToast();
-  const isPaid = qrCode.is_paid !== false; // Consider it paid unless explicitly set to false
+  const isPaid = qrCode.is_paid !== false;
   const { isCheckingOut, handleCheckout } = useQRCheckout({
     qrCodeId: qrCode.id,
     bookTitle: qrCode.book_title
   });
-  
-  console.log("QRCodeStatsCard isPaid:", isPaid, "is_paid value:", qrCode.is_paid); // Debug log
+
+  const downloadRef = useRef<HTMLDivElement>(null); // 🔥 Hidden download QR Code
 
   const handleDownloadSVG = async () => {
     if (!isPaid) {
@@ -45,18 +44,15 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       });
       return;
     }
-    
-    if (!qrCodeRef?.current) return;
+
+    if (!qrCodeRef?.current) return; // Still using visible ref for SVG
 
     try {
-      const svgDataUrl = await toSvg(qrCodeRef.current, { 
+      const svgDataUrl = await toSvg(qrCodeRef.current, {
         cacheBust: true,
         backgroundColor: null,
-        style: {
-          borderRadius: '8px',
-        }
       });
-      
+
       const link = document.createElement('a');
       link.href = svgDataUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
@@ -77,19 +73,16 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       });
       return;
     }
-    
-    if (!qrCodeRef?.current) return;
+
+    if (!downloadRef?.current) return; // 🔥 Now snapshot the hidden high-res ref
 
     try {
-      const pngDataUrl = await toPng(qrCodeRef.current, { 
+      const pngDataUrl = await toPng(downloadRef.current, {
         cacheBust: true,
-        pixelRatio: 3,
+        pixelRatio: 1, // Use natural resolution of hidden card
         backgroundColor: null,
-        style: {
-          borderRadius: '8px',
-        }
       });
-      
+
       const link = document.createElement('a');
       link.href = pngDataUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
@@ -105,27 +98,41 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     <Card className="p-6 space-y-6">
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">QR Code</h2>
+
+        {/* Visible screen QR code */}
         <div className="bg-gray rounded-lg shadow-sm flex justify-center">
           <StyledQRCode
             ref={qrCodeRef}
             value={`${window.location.origin}/qr/${qrCode.id}`}
-            size={200}
             showBranding={true}
             isPaid={isPaid}
+            variant="screen"
           />
         </div>
-        <QRCodeDownloadOptions 
+
+        {/* Hidden high-res QR code for download */}
+        <div style={{ position: 'absolute', left: '-9999px', top: '0' }}>
+          <StyledQRCode
+            ref={downloadRef}
+            value={`${window.location.origin}/qr/${qrCode.id}`}
+            showBranding={true}
+            isPaid={isPaid}
+            variant="download"
+          />
+        </div>
+
+        <QRCodeDownloadOptions
           onDownloadSVG={handleDownloadSVG}
           onDownloadPNG={handleDownloadPNG}
           disabled={!isPaid}
         />
-        
+
         {!isPaid && (
           <div className="space-y-2">
             <p className="text-sm text-center text-orange-500">
               This QR code hasn't been purchased yet. Please complete your purchase to download.
             </p>
-            <Button 
+            <Button
               onClick={handleCheckout}
               disabled={isCheckingOut}
               className="w-full bg-[#FFD166] hover:bg-[#FFD166]/80 text-[#19363C]"

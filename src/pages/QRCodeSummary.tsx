@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Share2, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
-import { useRef } from "react";
 import { toPng, toSvg } from "html-to-image";
 import { QRCodeDownloadOptions } from "@/components/qr/QRCodeDownloadOptions";
 import { useToast } from "@/hooks/use-toast";
@@ -15,8 +14,9 @@ import { useToast } from "@/hooks/use-toast";
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
   const qrCodeId = searchParams.get('qr_code');
-  const sessionId = searchParams.get('session_id'); // Stripe checkout session ID
-  const qrCodeRef = useRef<HTMLDivElement>(null);
+  const sessionId = searchParams.get('session_id');
+  const screenRef = useRef<HTMLDivElement>(null); // Screen version
+  const downloadRef = useRef<HTMLDivElement>(null); // Hidden download version
   const { toast } = useToast();
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'pending' | 'complete'>('idle');
 
@@ -125,16 +125,13 @@ const QRCodeSummary = () => {
       });
       return;
     }
-    
-    if (!qrCodeRef.current) return;
+
+    if (!screenRef.current) return;
 
     try {
-      const svgDataUrl = await toSvg(qrCodeRef.current, { 
+      const svgDataUrl = await toSvg(screenRef.current, { 
         cacheBust: true,
         backgroundColor: null,
-        style: {
-          borderRadius: '8px',
-        }
       });
       
       const link = document.createElement('a');
@@ -157,17 +154,14 @@ const QRCodeSummary = () => {
       });
       return;
     }
-    
-    if (!qrCodeRef.current) return;
+
+    if (!downloadRef.current) return;
 
     try {
-      const pngDataUrl = await toPng(qrCodeRef.current, { 
+      const pngDataUrl = await toPng(downloadRef.current, { 
         cacheBust: true,
-        pixelRatio: 3,
+        pixelRatio: 1, // use natural high-res size
         backgroundColor: null,
-        style: {
-          borderRadius: '8px',
-        }
       });
       
       const link = document.createElement('a');
@@ -196,90 +190,100 @@ const QRCodeSummary = () => {
   };
 
   return (
+    <main className="container mx-auto px-4 pt-24 pb-12">
+      <div className="max-w-4xl mx-auto">
+        <Link 
+          to="/author/dashboard" 
+          className="inline-flex items-center text-[#19363C] hover:text-[#19363C]/80 mb-8"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Return to Dashboard
+        </Link>
 
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <div className="max-w-4xl mx-auto">
-          <Link 
-            to="/author/dashboard" 
-            className="inline-flex items-center text-[#19363C] hover:text-[#19363C]/80 mb-8"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Return to Dashboard
-          </Link>
-
-          <Card className="overflow-hidden">
-            <CardContent className="p-8">
-              <div className="grid md:grid-cols-2 gap-12">
-                <div className="space-y-6">
-                  <h1 className="text-3xl font-bold text-[#403E43]">
-                    Your Quilltips Jar is ready
-                  </h1>
-                  <div className="flex items-center gap-8">
-                    <img 
-                      src="/lovable-uploads/quill_icon.png" 
-                      alt="Quill Icon" 
-                      className="h-16 w-16"
-                    />
-                    <div className="text-2xl text-[#403E43]">+</div>
-                    <img 
-                      src="/lovable-uploads/book_icon.png" 
-                      alt="Book Icon" 
-                      className="h-16 w-16 object-contain"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <h2 className="text-lg font-medium">QR Code</h2>
-                    <p className="text-sm text-muted-foreground">
-                      {qrCode.book_title}
-                    </p>
-                  </div>
-
-                  <div>
-                    <StyledQRCode 
-                      ref={qrCodeRef}
-                      value={qrValue}
-                      size={200}
-                      showBranding={true}
-                      isPaid={isPaid}
-                    />
-                  </div>
-
-                  <div className="space-y-3">
-                    <QRCodeDownloadOptions 
-                      onDownloadSVG={handleDownloadSVG}
-                      onDownloadPNG={handleDownloadPNG}
-                      disabled={!isPaid}
-                    />
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={handleShare}
-                    >
-                      <Share2 className="mr-2 h-4 w-4" />
-                      Share QR Code
-                    </Button>
-                  </div>
-
-                  {!isPaid && (
-                    <p className="text-sm text-center text-orange-500">
-                      This QR code hasn't been purchased yet. Please complete your purchase to download.
-                    </p>
-                  )}
-
-                  <p className="text-sm text-center text-muted-foreground">
-                    Does your publisher need access to info about this book in Quilltips?{' '}
-                   Use the "Share" button above to forward your QR code to your publisher.
-                  </p>
+        <Card className="overflow-hidden">
+          <CardContent className="p-8">
+            <div className="grid md:grid-cols-2 gap-12">
+              <div className="space-y-6">
+                <h1 className="text-3xl font-bold text-[#403E43]">
+                  Your Quilltips Jar is ready
+                </h1>
+                <div className="flex items-center gap-8">
+                  <img 
+                    src="/lovable-uploads/quill_icon.png" 
+                    alt="Quill Icon" 
+                    className="h-16 w-16"
+                  />
+                  <div className="text-2xl text-[#403E43]">+</div>
+                  <img 
+                    src="/lovable-uploads/book_icon.png" 
+                    alt="Book Icon" 
+                    className="h-16 w-16 object-contain"
+                  />
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
 
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h2 className="text-lg font-medium">QR Code</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {qrCode.book_title}
+                  </p>
+                </div>
+
+                {/* Visible screen QR code */}
+                <div>
+                  <StyledQRCode
+                    ref={screenRef}
+                    value={qrValue}
+                    showBranding={true}
+                    isPaid={isPaid}
+                    variant="screen"
+                  />
+                </div>
+
+                {/* Hidden download QR code */}
+                <div style={{ position: 'absolute', left: '-9999px', top: '0' }}>
+                  <StyledQRCode
+                    ref={downloadRef}
+                    value={qrValue}
+                    showBranding={true}
+                    isPaid={isPaid}
+                    variant="download"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <QRCodeDownloadOptions 
+                    onDownloadSVG={handleDownloadSVG}
+                    onDownloadPNG={handleDownloadPNG}
+                    disabled={!isPaid}
+                  />
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={handleShare}
+                  >
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Share QR Code
+                  </Button>
+                </div>
+
+                {!isPaid && (
+                  <p className="text-sm text-center text-orange-500">
+                    This QR code hasn't been purchased yet. Please complete your purchase to download.
+                  </p>
+                )}
+
+                <p className="text-sm text-center text-muted-foreground">
+                  Does your publisher need access to info about this book in Quilltips?{' '}
+                  Use the "Share" button above to forward your QR code to your publisher.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
   );
 };
 
