@@ -1,6 +1,7 @@
+
 import { QRCodeSVG } from "qrcode.react";
 import ReactDOMServer from "react-dom/server";
-import quillLogo from "@/assets/quill_icon.png"; // ✅ Adjust path if needed
+import quillLogo from "@/assets/quill_icon.png"; // Adjust path if needed
 
 export async function generateBrandedQRCodeSVG({
   url,
@@ -24,6 +25,7 @@ export async function generateBrandedQRCodeSVG({
       height="800"
       viewBox="0 0 600 800"
       xmlns="http://www.w3.org/2000/svg"
+      style={{background: "white"}} // Explicitly set background color for compatibility
     >
       <rect
         x="0"
@@ -90,6 +92,7 @@ export async function generateBrandedQRCodeSVG({
     </svg>
   );
 
+  // Create a proper SVG blob with correct content type
   const blob = new Blob([svgMarkup], { type: "image/svg+xml" });
   return URL.createObjectURL(blob);
 }

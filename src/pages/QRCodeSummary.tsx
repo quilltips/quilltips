@@ -165,7 +165,7 @@ const QRCodeSummary = () => {
       const pngDataUrl = await toPng(downloadRef.current, { 
         cacheBust: true,
         pixelRatio: 1,
-        backgroundColor: null,
+        backgroundColor: "white",
       });
       
       const link = document.createElement('a');

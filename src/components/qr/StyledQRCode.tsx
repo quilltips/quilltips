@@ -1,3 +1,4 @@
+
 import { QRCodeCanvas } from "qrcode.react";
 import { Card } from "@/components/ui/card";
 import { forwardRef } from "react";
@@ -10,6 +11,7 @@ interface StyledQRCodeProps {
   blurred?: boolean;
   isPaid?: boolean;
   variant?: "screen" | "download"; // NEW: differentiate screen vs download
+  size?: number; // Add size prop
 }
 
 export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
@@ -20,14 +22,15 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
   blurred = false,
   isPaid = true,
   variant = "screen", // default to screen
+  size, // Add size prop
 }, ref) => {
   const shouldBlur = isPaid === false || blurred;
   const isDownload = variant === "download";
 
-  // Dynamic sizing based on variant
-  const cardWidth = isDownload ? 1200 : 240;
-  const cardHeight = isDownload ? 1500 : 320;
-  const qrSize = isDownload ? 980 : 180;
+  // Dynamic sizing based on variant or explicit size
+  const qrSize = size || (isDownload ? 980 : 180);
+  const cardWidth = isDownload ? 1200 : (size ? size + 60 : 240);
+  const cardHeight = isDownload ? 1500 : (size ? size + 140 : 320);
   const cardPaddingX = isDownload ? 8 : 3;
   const cardPaddingY = isDownload ? 5 : 2;
   const textFontSize = isDownload ? "text-7xl" : "text-sm";
