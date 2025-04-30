@@ -46,7 +46,7 @@ const QRCodeDesign = () => {
          
            {/* Centered Book Cover Image with placeholder fallback */}
            <div className="flex flex-col items-center justify-center">
-            <div className="w-[150px] h-[180px] bg-transparent rounded-md flex items-center justify-center overflow-hidden">
+           <div className="w-[150px] aspect-[2/3] bg-transparent rounded-md flex items-center justify-center overflow-hidden">
               {qrCodeData.cover_image ? (
                 <img
                   src={qrCodeData.cover_image}

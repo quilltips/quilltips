@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -12,17 +11,19 @@ import { qrCodeQueryKeys } from "@/hooks/use-qr-code-details-page";
 import { useImageProcessor } from "@/hooks/use-image-processor";
 
 interface BookCoverUploadProps {
-  qrCodeId: string;
-  coverImage?: string | null;
+  qrCodeId?: string; // ✅ Now optional
   bookTitle: string;
+  coverImage?: string | null;
   updateCoverImage?: (imageUrl: string) => Promise<any>;
+  onUploadSuccess?: (imageUrl: string) => void; // ✅ New callback for QR creation
 }
 
 export const BookCoverUpload = ({
   qrCodeId,
-  coverImage,
   bookTitle,
-  updateCoverImage
+  coverImage,
+  updateCoverImage,
+  onUploadSuccess
 }: BookCoverUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +32,7 @@ export const BookCoverUpload = ({
   const { processImage, isProcessing } = useImageProcessor();
 
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
   const BUCKET_NAME = 'covers';
 
   const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +42,7 @@ export const BookCoverUpload = ({
     setError(null);
 
     if (!SUPPORTED_FORMATS.includes(file.type)) {
-      setError(`Unsupported file type: ${file.type}. Please upload a JPG, PNG, GIF, WebP or SVG image.`);
+      setError(`Unsupported file type: ${file.type}`);
       toast({
         title: "Invalid file type",
         description: "Please upload a JPG, PNG, GIF, WebP or SVG image",
@@ -52,7 +53,7 @@ export const BookCoverUpload = ({
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      setError(`File size too large: ${(file.size / (1024 * 1024)).toFixed(2)}MB. Maximum size is 10MB.`);
+      setError(`File size too large`);
       toast({
         title: "File too large",
         description: "Please upload an image smaller than 10MB",
@@ -65,24 +66,19 @@ export const BookCoverUpload = ({
     setIsUploading(true);
 
     try {
-      // Process image before upload
       const processedImage = await processImage(file, {
         type: 'cover',
         maxWidth: 800,
         maxHeight: 1200
       });
 
-      if (!processedImage) {
-        throw new Error('Failed to process image');
-      }
+      if (!processedImage) throw new Error('Failed to process image');
 
-      // Convert base64 back to file
       const response = await fetch(processedImage);
       const processedFile = await response.blob();
       const optimizedFile = new File([processedFile], file.name, { type: 'image/jpeg' });
 
-      const fileExt = 'jpg'; // We're converting everything to JPEG
-      const filePath = `${qrCodeId}-${Date.now()}.${fileExt}`;
+      const filePath = `${(qrCodeId || 'temp')}-${Date.now()}.jpg`;
 
       const { error: uploadError, data } = await supabase.storage
         .from(BUCKET_NAME)
@@ -94,30 +90,35 @@ export const BookCoverUpload = ({
         .from(BUCKET_NAME)
         .getPublicUrl(filePath);
 
-      if (updateCoverImage) {
-        await updateCoverImage(publicUrl);
-      } else {
-        const { error: updateError } = await supabase
-          .from('qr_codes')
-          .update({ cover_image: publicUrl })
-          .eq('id', qrCodeId);
+      if (qrCodeId && !onUploadSuccess) {
+        // Existing QR flow: update Supabase directly
+        if (updateCoverImage) {
+          await updateCoverImage(publicUrl);
+        } else {
+          const { error: updateError } = await supabase
+            .from('qr_codes')
+            .update({ cover_image: publicUrl })
+            .eq('id', qrCodeId);
+          if (updateError) throw updateError;
 
-        if (updateError) throw updateError;
-        
-        queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+          queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+        }
+      } else if (onUploadSuccess) {
+        // Creation flow: send image URL back to parent
+        onUploadSuccess(publicUrl);
       }
 
       toast({
         title: "Success",
-        description: "Book cover image has been updated successfully.",
+        description: "Book cover image has been uploaded.",
       });
     } catch (error: any) {
-      console.error("Error uploading cover image:", error);
-      setError(error.message || "Failed to upload cover image");
+      console.error("Upload error:", error);
+      setError(error.message || "Failed to upload image");
       toast({
         title: "Upload Error",
-        description: error.message || "Failed to upload cover image",
-        variant: "destructive",
+        description: error.message || "Something went wrong",
+        variant: "destructive"
       });
     } finally {
       setIsUploading(false);
@@ -157,11 +158,11 @@ export const BookCoverUpload = ({
             </Button>
           </TooltipTrigger>
           <TooltipContent side="left">
-            <p>Change book cover image</p>
+            <p>Upload book cover</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      
+
       {error && (
         <Alert variant="destructive" className="mt-4">
           <AlertCircle className="h-4 w-4" />

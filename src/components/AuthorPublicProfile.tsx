@@ -47,55 +47,53 @@ export const AuthorPublicProfileView = ({
   const [showTipDialog, setShowTipDialog] = useState(false);
   const firstName = getFirstName(name);
   
-  return <>
+  return (
+    <div className="max-w-5xl mx-auto px-4 space-y-8">
       {/* Author Header Section */}
-      <div className="flex flex-col items-center text-center mb-8">
-      <Dialog>
-        <DialogTrigger asChild>
-          <button className="w-28 h-28 mb-4 rounded-full overflow-hidden border-2 border-[#f1f1f1] shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FFD166] focus:ring-offset-2">
+      <div className="flex flex-col items-center text-center">
+        <Dialog>
+          <DialogTrigger asChild>
+            <button className="w-28 h-28 mb-4 rounded-full overflow-hidden border-2 border-[#f1f1f1] shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FFD166] focus:ring-offset-2">
+              {imageUrl && imageUrl !== "/placeholder.svg" ? (
+                <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-[#19363C] text-[#FFD166] text-4xl font-semibold uppercase">
+                  {firstName.charAt(0)}
+                </div>
+              )}
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-lg">
             {imageUrl && imageUrl !== "/placeholder.svg" ? (
-              <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+              <div className="aspect-square w-full overflow-hidden rounded-lg">
+                <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+              </div>
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-[#19363C] text-[#FFD166] text-4xl font-semibold uppercase">
+              <div className="aspect-square w-full flex items-center justify-center rounded-lg bg-[#19363C] text-white text-6xl font-semibold uppercase">
                 {firstName.charAt(0)}
               </div>
             )}
-          </button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-lg">
-          {imageUrl && imageUrl !== "/placeholder.svg" ? (
-            <div className="aspect-square w-full overflow-hidden rounded-lg">
-              <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
-            </div>
-          ) : (
-            <div className="aspect-square w-full flex items-center justify-center rounded-lg bg-[#19363C] text-white text-6xl font-semibold uppercase">
-              {firstName.charAt(0)}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-        
+          </DialogContent>
+        </Dialog>
+  
         <h1 className="text-2xl font-semibold text-[#2D3748] mb-2">{name}</h1>
-        
-        {/* Joined date */}
+  
         {joinedDate && (
           <p className="text-sm text-[#718096] mb-4">
             joined in {joinedDate}
           </p>
         )}
-        
-        {/* Bio Section - now left-justified within centered container */}
+  
         {bio && (
-          <div className="mt-2 mb-6 max-w-xl mx-auto text-left px-3">
+          <div className="mt-2 mb-6 max-w-3xl mx-auto text-left px-3">
             <p className="text-[#718096] whitespace-pre-line">{bio}</p>
           </div>
         )}
       </div>
-
-      {/* Links Section - Changed title from "Connect with" to "Links" */}
+  
+      {/* Links Section */}
       {socialLinks.length > 0 && (
-        <Card className="mb-8 border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden" prominent>
+        <Card className="mb-8 border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden">
           <CardHeader>
             <CardTitle className="text-xl text-[#2D3748]">Links</CardTitle>
           </CardHeader>
@@ -117,7 +115,7 @@ export const AuthorPublicProfileView = ({
           </CardContent>
         </Card>
       )}
-
+  
       <Dialog open={showTipDialog} onOpenChange={setShowTipDialog}>
         <DialogContent>
           <DialogHeader>
@@ -126,5 +124,7 @@ export const AuthorPublicProfileView = ({
           <TipForm authorId={authorId} onSuccess={() => setShowTipDialog(false)} />
         </DialogContent>
       </Dialog>
-    </>;
+    </div>
+  );
+  
 };
