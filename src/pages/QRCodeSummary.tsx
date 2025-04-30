@@ -7,16 +7,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Share2, ArrowLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StyledQRCode } from "@/components/qr/StyledQRCode";
-import { toPng, toSvg } from "html-to-image";
+import { toPng } from "html-to-image";
 import { QRCodeDownloadOptions } from "@/components/qr/QRCodeDownloadOptions";
 import { useToast } from "@/hooks/use-toast";
+import { generateBrandedQRCodeSVG } from "@/components/qr/generateBrandedQRCodeSVG"; // ✅ New import
 
 const QRCodeSummary = () => {
   const [searchParams] = useSearchParams();
   const qrCodeId = searchParams.get('qr_code');
   const sessionId = searchParams.get('session_id');
-  const screenRef = useRef<HTMLDivElement>(null); // Screen version
-  const downloadRef = useRef<HTMLDivElement>(null); // Hidden download version
+  const screenRef = useRef<HTMLDivElement>(null);
+  const downloadRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'pending' | 'complete'>('idle');
 
@@ -126,22 +127,25 @@ const QRCodeSummary = () => {
       return;
     }
 
-    if (!screenRef.current) return;
-
     try {
-      const svgDataUrl = await toSvg(screenRef.current, { 
-        cacheBust: true,
-        backgroundColor: null,
+      const svgUrl = await generateBrandedQRCodeSVG({
+        url: qrValue,
+        bookTitle: qrCode.book_title
       });
-      
+
       const link = document.createElement('a');
-      link.href = svgDataUrl;
+      link.href = svgUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error generating SVG QR code image:', error);
+      console.error('Error generating SVG QR code:', error);
+      toast({
+        title: "SVG Download Failed",
+        description: "Something went wrong generating your SVG.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -160,7 +164,7 @@ const QRCodeSummary = () => {
     try {
       const pngDataUrl = await toPng(downloadRef.current, { 
         cacheBust: true,
-        pixelRatio: 1, // use natural high-res size
+        pixelRatio: 1,
         backgroundColor: null,
       });
       

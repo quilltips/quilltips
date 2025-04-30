@@ -3,11 +3,12 @@ import { Card } from "../ui/card";
 import { RefObject, useRef } from "react";
 import { StyledQRCode } from "./StyledQRCode";
 import { QRCodeDownloadOptions } from "./QRCodeDownloadOptions";
-import { toPng, toSvg } from "html-to-image";
+import { toPng } from "html-to-image";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "../ui/button";
 import { useQRCheckout } from "@/hooks/use-qr-checkout";
 import { ShoppingCart } from "lucide-react";
+import { generateBrandedQRCodeSVG } from "./generateBrandedQRCodeSVG";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -22,7 +23,7 @@ interface QRCodeStatsCardProps {
     book_title: string;
     is_paid?: boolean;
   } & QRCodeStats;
-  qrCodeRef?: RefObject<HTMLDivElement>; // This is still the screen preview ref (optional)
+  qrCodeRef?: RefObject<HTMLDivElement>;
 }
 
 export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => {
@@ -33,7 +34,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     bookTitle: qrCode.book_title
   });
 
-  const downloadRef = useRef<HTMLDivElement>(null); // 🔥 Hidden download QR Code
+  const downloadRef = useRef<HTMLDivElement>(null);
 
   const handleDownloadSVG = async () => {
     if (!isPaid) {
@@ -45,22 +46,25 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       return;
     }
 
-    if (!qrCodeRef?.current) return; // Still using visible ref for SVG
-
     try {
-      const svgDataUrl = await toSvg(qrCodeRef.current, {
-        cacheBust: true,
-        backgroundColor: null,
+      const svgUrl = await generateBrandedQRCodeSVG({
+        url: `${window.location.origin}/qr/${qrCode.id}`,
+        bookTitle: qrCode.book_title
       });
 
-      const link = document.createElement('a');
-      link.href = svgDataUrl;
-      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.svg`;
+      const link = document.createElement("a");
+      link.href = svgUrl;
+      link.download = `quilltips-qr-${qrCode?.book_title || "download"}.svg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error generating SVG QR code image:', error);
+      console.error("Error generating SVG QR code:", error);
+      toast({
+        title: "SVG Download Failed",
+        description: "Something went wrong generating your SVG.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -74,23 +78,23 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       return;
     }
 
-    if (!downloadRef?.current) return; // 🔥 Now snapshot the hidden high-res ref
+    if (!downloadRef?.current) return;
 
     try {
       const pngDataUrl = await toPng(downloadRef.current, {
         cacheBust: true,
-        pixelRatio: 1, // Use natural resolution of hidden card
-        backgroundColor: null,
+        pixelRatio: 1,
+        backgroundColor: null
       });
 
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = pngDataUrl;
-      link.download = `quilltips-qr-${qrCode?.book_title || 'download'}.png`;
+      link.download = `quilltips-qr-${qrCode?.book_title || "download"}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error generating PNG QR code image:', error);
+      console.error("Error generating PNG QR code image:", error);
     }
   };
 
@@ -110,8 +114,8 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
           />
         </div>
 
-        {/* Hidden high-res QR code for download */}
-        <div style={{ position: 'absolute', left: '-9999px', top: '0' }}>
+        {/* Hidden download QR code */}
+        <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
           <StyledQRCode
             ref={downloadRef}
             value={`${window.location.origin}/qr/${qrCode.id}`}
@@ -152,18 +156,18 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
           </div>
           <div className="p-4 bg-muted rounded-lg">
             <p className="text-sm text-muted-foreground">Total Amount</p>
-            <p className="text-2xl font-bold">${qrCode.total_amount?.toFixed(2) || '0.00'}</p>
+            <p className="text-2xl font-bold">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 bg-muted rounded-lg">
             <p className="text-sm text-muted-foreground">Average Tip</p>
-            <p className="text-2xl font-bold">${qrCode.average_tip?.toFixed(2) || '0.00'}</p>
+            <p className="text-2xl font-bold">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
           </div>
           <div className="p-4 bg-muted rounded-lg">
             <p className="text-sm text-muted-foreground">Last Tip</p>
             <p className="text-2xl font-bold">
-              {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), 'MMM d') : '-'}
+              {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
             </p>
           </div>
         </div>
