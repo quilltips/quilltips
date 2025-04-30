@@ -9,8 +9,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, AlertCircle } from "lucide-react";
+import { CalendarIcon, AlertCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useImageProcessor } from "@/hooks/use-image-processor";
 
 interface CreateQRCodeProps {
   authorId: string;
@@ -28,6 +29,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const imgRef = useRef<HTMLImageElement>(null);
+  const { processImage, isProcessing } = useImageProcessor();
   
   // Use a consistent bucket name throughout the application
   const BUCKET_NAME = 'covers';
@@ -103,7 +105,23 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
 
       let coverImageUrl = null;
       if (coverImage) {
-        const fileExt = coverImage.name.split('.').pop();
+        // Process image before uploading using the imageProcessor
+        const processedImage = await processImage(coverImage, {
+          type: 'cover',
+          maxWidth: 800,
+          maxHeight: 1200
+        });
+
+        if (!processedImage) {
+          throw new Error('Failed to process cover image');
+        }
+
+        // Convert base64 back to file for upload
+        const response = await fetch(processedImage);
+        const processedFile = await response.blob();
+        const optimizedFile = new File([processedFile], coverImage.name.replace(/\.[^/.]+$/, ".jpg"), { type: 'image/jpeg' });
+
+        const fileExt = 'jpg'; // We're converting everything to JPEG
         const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
         console.log("Uploading to bucket:", BUCKET_NAME);
@@ -111,7 +129,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         // Use the consistent bucket name ('covers')
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from(BUCKET_NAME)
-          .upload(filePath, coverImage);
+          .upload(filePath, optimizedFile);
 
         if (uploadError) {
           console.error("Upload error:", uploadError);
@@ -248,11 +266,18 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             accept="image/jpeg, image/png, image/webp"
             onChange={handleImageChange}
             className="text-left"
+            disabled={isProcessing}
           />
           {imageError && (
             <div className="flex items-center text-red-500 text-xs mt-1">
               <AlertCircle className="h-3 w-3 mr-1" />
               {imageError}
+            </div>
+          )}
+          {isProcessing && (
+            <div className="flex items-center text-amber-500 text-xs mt-1">
+              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+              Processing image...
             </div>
           )}
           {imagePreviewUrl && !imageError && (
@@ -272,10 +297,17 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         
         <Button 
           type="submit" 
-          disabled={isLoading || !!imageError} 
+          disabled={isLoading || isProcessing || !!imageError} 
           className="w-full text-center bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] py-5 h-auto font-medium"
         >
-          {isLoading ? "Processing..." : "Configure QR Code"}
+          {(isLoading || isProcessing) ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            "Configure QR Code"
+          )}
         </Button>
       </form>
     </Card>
