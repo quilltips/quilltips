@@ -37,6 +37,7 @@ export const QRCodePreview = ({
             <div className="w-full max-w-[240px] mx-auto">
               <StyledQRCode
                 value={qrCodePreview}
+                size={180}
                 showBranding={true}
                 blurred={!isPaid}
                 isPaid={isPaid}

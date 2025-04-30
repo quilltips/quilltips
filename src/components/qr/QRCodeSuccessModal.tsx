@@ -41,7 +41,7 @@ export const QRCodeSuccessModal = ({
     try {
       const svgDataUrl = await toSvg(qrCodeRef.current, { 
         cacheBust: true,
-        backgroundColor: "white", // Explicitly set white background
+        backgroundColor: null,
         style: {
           borderRadius: '8px',
         }
@@ -65,7 +65,7 @@ export const QRCodeSuccessModal = ({
       const pngDataUrl = await toPng(qrCodeRef.current, { 
         cacheBust: true,
         pixelRatio: 3,
-        backgroundColor: "white", // Explicitly set white background
+        backgroundColor: null,
         style: {
           borderRadius: '8px',
         }
@@ -141,6 +141,7 @@ export const QRCodeSuccessModal = ({
                 <StyledQRCode
                   ref={qrCodeRef}
                   value={qrValue}
+                  size={200}
                   showBranding={true}
                 />
               </div>

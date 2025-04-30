@@ -1,4 +1,3 @@
-
 import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { RefObject, useRef } from "react";
@@ -85,7 +84,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       const pngDataUrl = await toPng(downloadRef.current, {
         cacheBust: true,
         pixelRatio: 1,
-        backgroundColor: "white"
+        backgroundColor: null
       });
 
       const link = document.createElement("a");
