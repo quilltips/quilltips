@@ -1,6 +1,7 @@
 import { QRCodeSVG } from "qrcode.react";
 import ReactDOMServer from "react-dom/server";
-import quillLogo from "@/assets/quill_icon.png"; // ✅ Adjust path if needed
+import quillLogo from "@/assets/quill_icon.png";
+import { fontBase64 } from "@/fonts/playfairFontBase64";
 
 export async function generateBrandedQRCodeSVG({
   url,
@@ -9,7 +10,7 @@ export async function generateBrandedQRCodeSVG({
   url: string;
   bookTitle?: string;
 }): Promise<string> {
-  // Convert imported logo into base64 string
+  // Convert logo to base64 for embedding
   const base64Logo = await fetch(quillLogo)
     .then(res => res.blob())
     .then(blob => new Promise<string>((resolve) => {
@@ -25,17 +26,32 @@ export async function generateBrandedQRCodeSVG({
       viewBox="0 0 600 800"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <style>
+        {`
+          @font-face {
+            font-family: 'Playfair Embedded';
+            src: url(data:font/ttf;base64,${fontBase64}) format('truetype');
+          }
+          .playfair {
+            font-family: 'Playfair Embedded', serif;
+            fill: black;
+          }
+        `}
+      </style>
+
+      {/* Card background */}
       <rect
         x="0"
         y="0"
         width="600"
-        height="800"
+        height="790"
         rx="48"
         fill="white"
         stroke="#CCCCCC"
         strokeWidth="2"
       />
 
+      {/* QR Code (450x450) */}
       <g transform="translate(75, 75)">
         <QRCodeSVG
           value={url}
@@ -45,7 +61,9 @@ export async function generateBrandedQRCodeSVG({
           fgColor="#000000"
           bgColor="#ffffff"
         />
+        {/* White circle behind logo */}
         <circle cx="225" cy="225" r="55" fill="white" />
+        {/* Logo image */}
         <image
           href={base64Logo}
           x="180"
@@ -56,34 +74,32 @@ export async function generateBrandedQRCodeSVG({
         />
       </g>
 
+      {/* Branded text using embedded font */}
       <text
         x="300"
-        y="590"
+        y="600"
         textAnchor="middle"
-        fill="rgb(25, 54, 60)"
         fontSize="40"
-        fontFamily="'Playfair', serif"
+        className="playfair"
       >
         Love this book? Tip &
       </text>
       <text
         x="300"
-        y="640"
+        y="655"
         textAnchor="middle"
-        fill="rgb(25, 54, 60)"
         fontSize="40"
-        fontFamily="'Playfair', serif"
+        className="playfair"
       >
         message the author
       </text>
       <text
         x="300"
-        y="690"
+        y="710"
         textAnchor="middle"
-        fill="rgb(25, 54, 60)"
         fontSize="40"
         fontWeight="bold"
-        fontFamily="'Playfair', serif"
+        className="playfair"
       >
         with Quilltips!
       </text>
