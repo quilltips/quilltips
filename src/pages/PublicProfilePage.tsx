@@ -98,28 +98,28 @@ const PublicProfilePage = () => {
 
   if (isLoading) {
     return (
-      <Layout>
+      
         <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex items-center justify-center min-h-[50vh]">
           <LoadingSpinner />
         </div>
-      </Layout>
+      
     );
   }
 
   if (error || !author) {
     return (
-      <Layout>
+      
         <div className="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 text-center">
           <h1 className="text-2xl font-semibold text-red-500">
             {error instanceof Error ? error.message : 'Author not found'}
           </h1>
         </div>
-      </Layout>
+      
     );
   }
 
   return (
-    <Layout>
+    
       <main className="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AuthorProfileHeader author={author} />
         <AuthorProfileContent 
@@ -138,7 +138,7 @@ const PublicProfilePage = () => {
           />
         )}
       </main>
-    </Layout>
+    
   );
 };
 
