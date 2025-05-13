@@ -4,6 +4,7 @@ import { StyledQRCode } from "@/components/qr/StyledQRCode";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import backCoverExample from "@/assets/back_cover_example.png";
 
 const HowItWorks = () => {
   const { user } = useAuth();
@@ -81,21 +82,36 @@ const HowItWorks = () => {
       </div>
         
         <div className="space-y-6 pt-10 pb-8">
-          <h2 className="text-2xl md:text-3xl font-playfair font-medium text-center mb-6">How do QR codes work?</h2>
+          <h2 className="text-2xl md:text-4xl font-playfair font-medium text-center mb-10">How do QR codes work?</h2>
           
-          <div className="space-y-4">
-            <p className="text-lg">
-              A QR code is like a barcode that readers can scan to open your virtual Quilltips Jar. Any author can create a QR code for a book using Quilltips. After you purchase the QR code, we generate a virtual Quilltips Jar associated with the QR code where readers can leave a tip and a message about the book. 
-            </p>
-            
-            <p className="text-lg">
-              Work with the publisher or designer to get the QR code printed on the book. We recommend printing the QR code directly on the cover or on the About the Author page. <strong>QR codes should be a minimum of 1 inch by 1 inch, which translates to 300x300 pixels at standard print resolution (300 PPI).</strong>
-            </p>
-            
-            <p className="text-lg">
-              You'll be able to access and download valuable reader information across all your Quilltips Jars.
-            </p>
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+              {/* Left: Image */}
+              <div className="flex justify-center">
+              <img 
+                src={backCoverExample}
+                alt="Back cover QR code example"
+                className="max-w-full w-[300px] rounded-lg border border-gray-200 shadow-sm"
+              />
+            </div>
+
+            {/* Right: Text Content */}
+            <div className="space-y-4">
+              <p className="text-lg">
+                A QR code is like a barcode that readers can scan to open your virtual Quilltips Jar. Any author can create a QR code for a book using Quilltips. After you purchase the QR code, we generate a virtual Quilltips Jar associated with the QR code where readers can leave a tip and a message about the book. 
+              </p>
+
+              <p className="text-lg">
+                Work with the publisher or designer to get the QR code printed on the book. We recommend printing the QR code directly on the cover or on the About the Author page. <strong>QR codes should be a minimum of 1 inch by 1 inch, which translates to 300x300 pixels at standard print resolution (300 PPI).</strong>
+              </p>
+
+              <p className="text-lg">
+                You'll be able to access and download valuable reader information across all your Quilltips Jars.
+              </p>
+            </div>
+
+          
           </div>
+
         </div>
       </div>
       
