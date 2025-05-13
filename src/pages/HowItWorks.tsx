@@ -70,6 +70,15 @@ const HowItWorks = () => {
             />
           </div>
         </div>
+
+        <div className="mt-12 flex justify-center">
+        <Button 
+          onClick={handleCreateQRCode}
+          className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] py-4 px-8 rounded-full font-medium text-lg"
+        >
+          Create a QR code
+        </Button>
+      </div>
         
         <div className="space-y-6 pt-10 pb-8">
           <h2 className="text-2xl md:text-3xl font-playfair font-medium text-center mb-6">How do QR codes work?</h2>
@@ -98,10 +107,10 @@ const HowItWorks = () => {
         />
       </div>
       
-      <div className="mt-12 flex justify-center">
+      <div className="mt-14 flex justify-center">
         <Button 
           onClick={handleCreateQRCode}
-          className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] py-4 px-8 rounded-full font-medium text-lg"
+          className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] py-8 px-11 rounded-full font-medium text-2xl"
         >
           Create a QR code
         </Button>
