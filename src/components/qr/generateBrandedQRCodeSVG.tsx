@@ -10,7 +10,6 @@ export async function generateBrandedQRCodeSVG({
   url: string;
   bookTitle?: string;
 }): Promise<string> {
-  // Convert logo to base64 for embedding
   const base64Logo = await fetch(quillLogo)
     .then(res => res.blob())
     .then(blob => new Promise<string>((resolve) => {
@@ -33,9 +32,8 @@ export async function generateBrandedQRCodeSVG({
             src: url(data:font/ttf;base64,${fontBase64}) format('truetype');
           }
           .playfair {
-            font-family: 'Playfair Embedded', serif;
+            font-family: 'Playfair Embedded', Georgia, 'Times New Roman', serif;
             fill: black;
-          }
         `}
       </style>
 
@@ -74,7 +72,7 @@ export async function generateBrandedQRCodeSVG({
         />
       </g>
 
-      {/* Branded text using embedded font */}
+      {/* Branded text using embedded + fallback fonts */}
       <text
         x="300"
         y="600"
