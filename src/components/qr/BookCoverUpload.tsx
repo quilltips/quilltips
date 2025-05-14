@@ -1,8 +1,9 @@
+
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Loader2, AlertCircle, Edit } from "lucide-react";
+import { Loader2, AlertCircle, ImagePlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -11,11 +12,11 @@ import { qrCodeQueryKeys } from "@/hooks/use-qr-code-details-page";
 import { useImageProcessor } from "@/hooks/use-image-processor";
 
 interface BookCoverUploadProps {
-  qrCodeId?: string; // ✅ Now optional
+  qrCodeId?: string;
   bookTitle: string;
   coverImage?: string | null;
   updateCoverImage?: (imageUrl: string) => Promise<any>;
-  onUploadSuccess?: (imageUrl: string) => void; // ✅ New callback for QR creation
+  onUploadSuccess?: (imageUrl: string) => void;
 }
 
 export const BookCoverUpload = ({
@@ -151,8 +152,8 @@ export const BookCoverUpload = ({
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
-                  <Edit className="h-3.5 w-3.5 mr-1" />
-                  <span>Edit</span>
+                  <ImagePlus className="h-3.5 w-3.5 mr-1" />
+                  <span>Upload</span>
                 </>
               )}
             </Button>

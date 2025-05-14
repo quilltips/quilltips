@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -8,7 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, AlertCircle, Loader2 } from "lucide-react";
+import { CalendarIcon, AlertCircle, Loader2, ImagePlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BookCoverUpload } from "./qr/BookCoverUpload";
 
@@ -137,13 +138,20 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Cover Image (Optional)</label>
-          <div className="relative aspect-[2/3] max-w-[150px] border rounded overflow-hidden">
-            <img
-              src={coverImageUrl || "/lovable-uploads/quill_icon.png"}
-              alt="Book cover preview"
-              className="w-full h-full object-cover"
-              onError={() => setImageError("Could not load preview")}
-            />
+          <div className="relative aspect-[2/3] max-w-[150px] border rounded overflow-hidden bg-gray-50">
+            {coverImageUrl ? (
+              <img
+                src={coverImageUrl}
+                alt="Book cover preview"
+                className="w-full h-full object-cover"
+                onError={() => setImageError("Could not load preview")}
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
+                <ImagePlus className="h-10 w-10 text-gray-400 mb-2" />
+                <p className="text-xs text-gray-500">Upload your book cover</p>
+              </div>
+            )}
             <BookCoverUpload
               bookTitle={bookTitle || "book"}
               onUploadSuccess={(url) => {
