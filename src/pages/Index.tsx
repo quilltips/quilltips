@@ -6,6 +6,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { Meta } from "@/components/Meta"; 
 
 const Index = () => {
   const { user } = useAuth();
@@ -21,6 +22,13 @@ const Index = () => {
   };
 
   return (
+    <>
+    <Meta
+      title="Quilltips – Instantly Tip Your Favorite Authors"
+      description="Quilltips lets readers support authors by scanning a QR code on their book and sending a tip with a personal message."
+      url="https://quilltips.co"
+    />
+
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
       {/* Hero Section */}
       <div className="mx-auto w-full max-w-5xl text-center space-y-8 animate-enter">
@@ -208,6 +216,7 @@ const Index = () => {
         </RouterLink>
       </div>
     </div>
+    </>
   );
 };
 

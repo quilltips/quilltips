@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { Meta } from "@/components/Meta"; 
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -57,6 +58,13 @@ const Contact = () => {
   };
 
   return (
+    <>
+    <Meta
+      title="Contact Quilltips – We're Here to Help"
+      description="Need help setting up your account, uploading book covers, or creating QR codes? Reach out anytime."
+      url="https://quilltips.co/contact"
+    />
+
     <div className="flex-grow">
       <main className="container mx-auto px-4 py-8 md:py-16 lg:py-24 flex-grow">
         <div className="max-w-2xl mx-auto">
@@ -147,6 +155,7 @@ const Contact = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 

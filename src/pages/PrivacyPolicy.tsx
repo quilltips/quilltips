@@ -1,8 +1,17 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { Meta } from "@/components/Meta"; 
+
 
 const PrivacyPolicy = () => {
   return (
+    <>
+    <Meta
+      title="Privacy Policy – Quilltips"
+      description="Your privacy is important to us. Learn how Quilltips handles your data and protects your information."
+      url="https://quilltips.co/privacy"
+    />
+
     <div className="min-h-screen flex flex-col">
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="prose prose-slate max-w-4xl mx-auto">
@@ -94,6 +103,7 @@ const PrivacyPolicy = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 

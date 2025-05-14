@@ -6,9 +6,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Meta } from "@/components/Meta"; 
 
 const FAQ = () => {
   return (
+    <>
+    <Meta
+      title="Frequently Asked Questions – Quilltips"
+      description="Got questions about how tipping, QR codes, or author payouts work? Check out our FAQ for quick answers."
+      url="https://quilltips.co/faq"
+    />
+
     <div className="container mx-auto px-4 py-8 md:py-16 flex-grow">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center font-playfair">Frequently Asked Questions</h1>
@@ -211,6 +219,7 @@ const FAQ = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

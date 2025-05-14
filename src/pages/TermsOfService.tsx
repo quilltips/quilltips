@@ -1,8 +1,17 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { Meta } from "@/components/Meta"; 
+
 
 const TermsOfService = () => {
   return (
+    <>
+        <Meta
+      title="Terms of Service – Quilltips"
+      description="Review the terms and conditions for using Quilltips as an author or reader."
+      url="https://quilltips.co/terms"
+    />
+
     <div className="min-h-screen flex flex-col">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
@@ -112,6 +121,7 @@ const TermsOfService = () => {
       </main>
 
     </div>
+    </>
   );
 };
 

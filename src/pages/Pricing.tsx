@@ -1,5 +1,14 @@
+import { Meta } from "@/components/Meta"; 
+
 const Pricing = () => {
   return (
+    <>
+    <Meta
+      title="Quilltips Pricing – Always Free for Readers"
+      description="Quilltips is free for readers. Authors pay a small transaction fee to collect tips through our Stripe-powered system."
+      url="https://quilltips.co/pricing"
+    />
+
     <div className="flex-grow">
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="max-w-3xl mx-auto">
@@ -35,6 +44,7 @@ const Pricing = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 

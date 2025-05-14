@@ -1,12 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { Meta } from "@/components/Meta"; // 👈 Add this import
 
 const About = () => {
   return (
+    <>
+    <Meta
+      title="About Quilltips – Built to Support Authors"
+      description="Quilltips helps authors earn more by connecting them directly with readers who want to show appreciation with a tip."
+      url="https://quilltips.co/about"
+    />
+
     <main className="container mx-auto px-4 py-24 flex-grow">
       <div className="max-w-3xl mx-auto prose">
-      
+
         <h1 className="text-center text-5xl font-bold mb-10 text-[#19363C]">About Quilltips</h1>
     
         <OptimizedImage
@@ -62,6 +70,7 @@ const About = () => {
         </section>
       </div>
     </main>
+    </>
   );
 };
 

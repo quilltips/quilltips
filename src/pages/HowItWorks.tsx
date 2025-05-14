@@ -5,6 +5,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import backCoverExample from "@/assets/back_cover_example.png";
+import { Meta } from "@/components/Meta"; 
 
 const HowItWorks = () => {
   const { user } = useAuth();
@@ -19,6 +20,13 @@ const HowItWorks = () => {
   };
   
   return (
+    <>
+    <Meta
+      title="How Quilltips Works – Scan, Tip, Support"
+      description="Quilltips lets authors print QR codes in their books so readers can scan and send tips with a message in seconds."
+      url="https://quilltips.co/how-it-works"
+    />
+
     <main className="container mx-auto px-4 py-8 md:py-16 max-w-4xl">
       <h1 className="text-3xl md:text-4xl font-playfair font-medium text-center mb-12">How Quilltips Works</h1>
       
@@ -132,6 +140,7 @@ const HowItWorks = () => {
         </Button>
       </div>
     </main>
+    </>
   );
 };
 
