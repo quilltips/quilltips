@@ -82,7 +82,7 @@ const HowItWorks = () => {
       </div>
         
         <div className="space-y-6 pt-10 pb-8">
-          <h2 className="text-2xl md:text-4xl font-playfair font-medium text-center mb-10">How do QR codes work?</h2>
+          <h2 className="text-2xl md:text-4xl font-playfair font-medium text-center mb-12">How do QR codes work?</h2>
           
           <div className="grid md:grid-cols-2 gap-10 items-center">
               {/* Left: Image */}
