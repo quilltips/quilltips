@@ -106,6 +106,15 @@ const PublicProfilePage = () => {
         title={`${author.name} – Author on Quilltips`}
         description={`Support ${author.name} by tipping them for their work.`}
         url={`https://quilltips.co/profile/${id}`}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: author.name,
+          url: `https://quilltips.co/profile/${id}`,
+          description: author.bio || "Author on Quilltips"
+        }}
+
+
       />
 
       <script type="application/ld+json">

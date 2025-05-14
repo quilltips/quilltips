@@ -6,9 +6,10 @@ type MetaProps = {
   description?: string;
   url?: string;
   image?: string;
+  jsonLd?: Record<string, any>; 
 };
 
-export const Meta = ({ title, description, url, image }: MetaProps) => {
+export const Meta = ({ title, description, url, image, jsonLd }: MetaProps) => {
   return (
     <Helmet>
       <title>{title}</title>
@@ -22,6 +23,13 @@ export const Meta = ({ title, description, url, image }: MetaProps) => {
       <meta name="twitter:title" content={title} />
       {description && <meta name="twitter:description" content={description} />}
       {image && <meta name="twitter:image" content={image} />}
+
+         {/* 👇 Inject JSON-LD directly into the head */}
+      {jsonLd && (
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
+      )}
     </Helmet>
   );
 };
