@@ -102,7 +102,7 @@ const Index = () => {
             title: "Promote Your Platform",
             text: "Link to your website and socials - all from one centralized place."
           }].map(({ icon, title, text }, idx) => (
-            <Card key={idx} className="bg-white p-8 hover:shadow-md transition-all duration-200 border border-[#FFD166]/20 hover:-translate-y-1">
+            <Card key={idx} className="bg-white p-8 transition-all duration-200 border border-[#FFD166]/20">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="w-16 h-16 bg-[#FFD166] rounded-full flex items-center justify-center mb-2">
                   {icon}
