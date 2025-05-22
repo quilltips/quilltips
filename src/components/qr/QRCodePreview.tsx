@@ -12,6 +12,7 @@ interface QRCodePreviewProps {
   isCheckingOut: boolean;
   showButtons?: boolean;
   isPaid?: boolean;
+  size?: "small" | "normal";  // New size prop
 }
 
 export const QRCodePreview = ({
@@ -22,23 +23,30 @@ export const QRCodePreview = ({
   isCheckingOut,
   showButtons = true,
   isPaid = false,
+  size = "normal",  // Default to normal size
 }: QRCodePreviewProps) => {
+  // Determine QR code size based on the size prop
+  const qrCodeSize = size === "small" ? 80 : 180;
+  const isSmall = size === "small";
+
   return (
     <Card className={`overflow-hidden ${!showButtons ? 'bg-transparent border-0 shadow-none' : ''}`}>
-      <CardContent className={`p-6 flex flex-col items-center justify-center min-h-[200px] ${!showButtons ? 'p-0' : ''}`}>
+      <CardContent className={`flex flex-col items-center justify-center ${!showButtons ? 'p-0' : 'p-6'} ${isSmall ? 'min-h-0' : 'min-h-[200px]'}`}>
         {isGenerating ? (
           <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className={showButtons ? 'text-gray-700' : 'text-white'}>Generating your QR code...</p>
+            <Loader2 className={`animate-spin text-primary ${isSmall ? 'h-4 w-4' : 'h-8 w-8'}`} />
+            <p className={`${showButtons ? 'text-gray-700' : 'text-white'} ${isSmall ? 'text-xs' : ''}`}>
+              {isSmall ? 'Loading...' : 'Generating your QR code...'}
+            </p>
           </div>
         ) : qrCodePreview ? (
           <div className="flex flex-col items-center gap-6">
-            {/* QR Code Preview - using the same size as the download version */}
-            <div className="w-full max-w-[240px] mx-auto">
+            {/* QR Code Preview with dynamic size */}
+            <div className={`w-full ${isSmall ? 'max-w-[100px]' : 'max-w-[240px]'} mx-auto`}>
               <StyledQRCode
                 value={qrCodePreview}
-                size={180}
-                showBranding={true}
+                size={qrCodeSize}
+                showBranding={!isSmall}  // Hide branding text for small QRs
                 blurred={!isPaid}
                 isPaid={isPaid}
                 title="QR Code Preview"
@@ -77,7 +85,9 @@ export const QRCodePreview = ({
             )}
           </div>
         ) : (
-          <p className={showButtons ? 'text-muted-foreground' : 'text-white/80'}>Failed to generate QR code preview</p>
+          <p className={`${showButtons ? 'text-muted-foreground' : 'text-white/80'} ${isSmall ? 'text-xs' : ''}`}>
+            Failed to generate QR code preview
+          </p>
         )}
       </CardContent>
     </Card>

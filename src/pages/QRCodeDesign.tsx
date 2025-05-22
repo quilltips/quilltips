@@ -2,7 +2,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { useQRCodeGeneration } from "@/hooks/use-qr-code-generation";
-import { useQRCheckout } from "@/hooks/use-qr-checkout";
+import { useQRCodeCheckout } from "@/hooks/use-qr-checkout";
 import { QRCodePreview } from "@/components/qr/QRCodePreview";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -50,24 +50,49 @@ const QRCodeDesign = () => {
             <div>
               <Card className="overflow-hidden bg-[#19363C] text-white p-6 rounded-lg">
                 <div className="mb-8">
-                  <h2 className="text-xl font-bold mb-6">{qrCodeData.book_title}</h2>
+                  <h2 className="text-xl font-bold mb-4">{qrCodeData.book_title}</h2>
                   
-                  {/* QR code preview - Now in the top position again */}
-                  <div className="mb-6">
-                    <QRCodePreview
-                      isGenerating={isGenerating}
-                      qrCodePreview={qrCodePreview}
-                      onCheckout={handleCheckout}
-                      onCancel={handleCancel}
-                      isCheckingOut={isCheckingOut}
-                      showButtons={false}
-                      isPaid={isPaid}
-                    />
+                  {/* Top section: QR code preview and book details side by side */}
+                  <div className="flex flex-row gap-4 mb-6">
+                    {/* Small QR code preview on the left */}
+                    <div className="flex-shrink-0" style={{ width: "100px" }}>
+                      <QRCodePreview
+                        isGenerating={isGenerating}
+                        qrCodePreview={qrCodePreview}
+                        onCheckout={handleCheckout}
+                        onCancel={handleCancel}
+                        isCheckingOut={isCheckingOut}
+                        showButtons={false}
+                        isPaid={isPaid}
+                        size="small"
+                      />
+                    </div>
+                    
+                    {/* Book details on the right */}
+                    <div className="flex-1 space-y-2">
+                      {qrCodeData.publisher && (
+                        <p className="text-sm">
+                          <span className="font-medium">Publisher:</span> {qrCodeData.publisher}
+                        </p>
+                      )}
+                      
+                      {formattedReleaseDate && (
+                        <p className="text-sm">
+                          <span className="font-medium">Release Date:</span> {formattedReleaseDate}
+                        </p>
+                      )}
+                      
+                      {qrCodeData.isbn && (
+                        <p className="text-sm">
+                          <span className="font-medium">ISBN:</span> {qrCodeData.isbn}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   
-                  {/* Book cover image */}
-                  <div className="flex justify-center mb-6">
-                    <div className="w-[200px] aspect-[2/3] bg-gray-200 rounded overflow-hidden">
+                  {/* Centered book cover image below */}
+                  <div className="flex justify-center">
+                    <div className="w-[240px] aspect-[2/3] bg-gray-200 rounded overflow-hidden">
                       {qrCodeData.cover_image ? (
                         <img
                           src={qrCodeData.cover_image}
@@ -84,27 +109,6 @@ const QRCodeDesign = () => {
                         </div>
                       )}
                     </div>
-                  </div>
-                  
-                  {/* Book details */}
-                  <div className="space-y-2">
-                    {qrCodeData.publisher && (
-                      <p className="text-sm">
-                        <span className="font-medium">Publisher:</span> {qrCodeData.publisher}
-                      </p>
-                    )}
-                    
-                    {formattedReleaseDate && (
-                      <p className="text-sm">
-                        <span className="font-medium">Release Date:</span> {formattedReleaseDate}
-                      </p>
-                    )}
-                    
-                    {qrCodeData.isbn && (
-                      <p className="text-sm">
-                        <span className="font-medium">ISBN:</span> {qrCodeData.isbn}
-                      </p>
-                    )}
                   </div>
                 </div>
               </Card>
