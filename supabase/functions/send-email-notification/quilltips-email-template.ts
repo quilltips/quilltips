@@ -115,7 +115,7 @@ export const generateEmailHtml = ({
             ` : ''}
 
             <p class="paragraph">
-              or visit <a href="https://quilltips.app">quilltips.app</a>
+              or visit <a href="https://quilltips.co">quilltips.co</a>
             </p>
 
             <hr class="hr">

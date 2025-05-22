@@ -123,7 +123,7 @@ function generateEmailContent(type, userName, data, userId) {
         `,
         cta: {
           text: "Go to Dashboard",
-          url: "https://quilltips.app/author/dashboard"
+          url: "https://quilltipa.co/author/dashboard"
         }
       };
     case 'qr_code_purchased':
@@ -133,7 +133,7 @@ function generateEmailContent(type, userName, data, userId) {
         mainMessage: `Hello ${userName}, your QR code for "${data.bookTitle || 'your book'}" has been successfully purchased and is now ready to use.`,
         cta: {
           text: "View Your QR Codes",
-          url: "https://quilltips.app/author/book-qr-codes"
+          url: "https://quilltips.co/author/book-qr-codes"
         }
       };
     case 'tip_received':
@@ -147,7 +147,7 @@ function generateEmailContent(type, userName, data, userId) {
         `,
         cta: {
           text: "View Tip Details",
-          url: "https://quilltips.app/author/tip-feed"
+          url: "https://quilltips.co/author/tip-feed"
         }
       };
     case 'stripe_setup_incomplete':
@@ -157,7 +157,7 @@ function generateEmailContent(type, userName, data, userId) {
         mainMessage: `Hello ${userName}, we noticed that your Stripe payment setup is incomplete. To start receiving tips from your readers, please complete your payment setup.`,
         cta: {
           text: "Complete Setup Now",
-          url: "https://quilltips.app/author/bank-account"
+          url: "https://quilltips.co/author/bank-account"
         }
       };
     case 'stripe_setup_complete':
@@ -171,7 +171,7 @@ function generateEmailContent(type, userName, data, userId) {
         `,
         cta: {
           text: "Create QR Code",
-          url: "https://quilltips.app/author/create-qr"
+          url: "https://quilltips.co/author/create-qr"
         }
       };
     case 'stripe_setup_reminder_day1':
@@ -190,7 +190,7 @@ function generateEmailContent(type, userName, data, userId) {
         `,
         cta: {
           text: "Complete Your Setup",
-          url: "https://quilltips.app/author/bank-account"
+          url: "https://quilltips.co/author/bank-account"
         }
       };
     case 'stripe_setup_reminder_day3':
@@ -210,7 +210,7 @@ function generateEmailContent(type, userName, data, userId) {
         `,
         cta: {
           text: "Connect Your Bank Account",
-          url: "https://quilltips.app/author/bank-account"
+          url: "https://quilltips.co/author/bank-account"
         }
       };
     case 'test_email':
