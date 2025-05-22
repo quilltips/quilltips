@@ -34,6 +34,7 @@ export const QRCodeDetailCard = ({ qrCode }: QRCodeDetailCardProps) => {
   return (
     <Card className="overflow-hidden shadow-sm">
       <CardHeader className="bg-gray-50">
+        <h3 className="text-xl font-bold mb-4">{qrCode.book_title}</h3>
         <QRCodeBookDetails book={bookDetails} />
       </CardHeader>
       <CardContent className="flex justify-center p-6">

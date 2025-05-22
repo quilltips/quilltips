@@ -43,8 +43,6 @@ const QRCodeDesign = () => {
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12">
-        <h1 className="text-3xl font-bold text-center mb-8 text-[#19363C]">New QR Code</h1>
-        
         <div className="max-w-5xl mx-auto">
           {/* Two column layout */}
           <div className="grid md:grid-cols-2 gap-8">
@@ -52,7 +50,7 @@ const QRCodeDesign = () => {
             <div>
               <Card className="overflow-hidden bg-[#19363C] text-white p-6 rounded-lg">
                 <div className="mb-4">
-                  <h2 className="text-xl font-bold mb-6">Book Details</h2>
+                  <h2 className="text-xl font-bold mb-6">{qrCodeData.book_title}</h2>
                   
                   <div className="flex gap-6">
                     {/* Book cover image */}
@@ -143,13 +141,8 @@ const QRCodeDesign = () => {
                   </div>
                   
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex justify-between items-center mb-3">
+                    <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-700">QR Code</span>
-                      <span className="font-bold">$35.00</span>
-                    </div>
-                    
-                    <div className="border-t border-gray-200 pt-3 flex justify-between">
-                      <span className="font-medium">Total</span>
                       <span className="font-bold">$35.00</span>
                     </div>
                   </div>
