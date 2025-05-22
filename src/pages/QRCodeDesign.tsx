@@ -2,7 +2,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { useQRCodeGeneration } from "@/hooks/use-qr-code-generation";
-import { useQRCodeCheckout } from "@/hooks/use-qr-checkout";
+import { useQRCheckout } from "@/hooks/use-qr-checkout";
 import { QRCodePreview } from "@/components/qr/QRCodePreview";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
