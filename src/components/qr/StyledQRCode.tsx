@@ -2,6 +2,7 @@
 import { QRCodeCanvas } from "qrcode.react";
 import { Card } from "@/components/ui/card";
 import { forwardRef } from "react";
+import { Button } from "../ui/button";
 
 interface StyledQRCodeProps {
   value: string;
@@ -87,11 +88,13 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
 
           {/* Blurred overlay for unpurchased QR codes */}
           {shouldBlur && (
-            <div className="absolute inset-0 backdrop-blur-md bg-white/30 flex flex-col items-center justify-center rounded-lg">
-              <div className="absolute inset-0 backdrop-blur-sm bg-white/30 flex flex-col items-center justify-center rounded-lg">
-                <div className={`text-center text-gray-700 font-medium px-2 ${textFontSize}`}>
-                  {isSmall ? "Locked" : "Purchase to unlock your QR code"}
+            <div className="absolute inset-0 bg-white/10 flex flex-col items-center justify-center rounded-lg">
+              <div className="absolute inset-0 backdrop-blur-sm bg-white/10 flex flex-col items-center justify-center rounded-lg">
+                <button className="border border-gray rounded-full bg-white">
+                <div className={`text-center text-black font-medium px-2 ${textFontSize}`}>
+                 Purchase to unlock your QR code
                 </div>
+                </button>
               </div>
             </div>
           )}

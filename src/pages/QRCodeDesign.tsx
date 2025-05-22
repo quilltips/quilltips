@@ -50,7 +50,7 @@ const QRCodeDesign = () => {
             <div>
               <Card className="overflow-hidden bg-[#19363C] text-white p-6 rounded-lg">
                 <div className="mb-8">
-                  <h2 className="text-xl font-bold mb-4">{qrCodeData.book_title}</h2>
+                  <h2 className="text-2xl font-bold mb-6">{qrCodeData.book_title}</h2>
                   
                   {/* Top section: QR code preview and book details side by side */}
                   <div className="flex flex-row gap-4 mb-6">
