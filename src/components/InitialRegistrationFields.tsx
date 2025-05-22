@@ -51,7 +51,7 @@ export const InitialRegistrationFields = ({
             type="email"
             placeholder="your@email.com"
             required
-            className="hover-lift"
+            className=""
             disabled={isLoading}
           />
         </div>
@@ -65,7 +65,7 @@ export const InitialRegistrationFields = ({
             placeholder="Create a secure password"
             required
             minLength={8}
-            className="hover-lift"
+            className=" "
             disabled={isLoading}
           />
         </div>
@@ -105,13 +105,13 @@ export const InitialRegistrationFields = ({
         disabled={isLoading}
         className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
       >
-        Next
+        Create an account
       </Button>
 
       <div className="text-center">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm">
           Already signed up?{" "}
-          <Link to="/author/login" className="text-[#2D3748] hover:underline">
+          <Link to="/author/login" className="text-[#2D3748] font-bold hover:underline">
             Log in here
           </Link>
         </p>

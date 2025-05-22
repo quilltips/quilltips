@@ -65,7 +65,7 @@ export const SearchBar = () => {
                 onChange={handleSearch}
                 onKeyDown={handleInputKeyDown}
                 placeholder="Search authors or books..."
-                className="pl-10 hover-lift rounded-full"
+                className="pl-10 rounded-full"
                 aria-label="Search authors or books"
                 role="searchbox"
                 autoComplete="off"

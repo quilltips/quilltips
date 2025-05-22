@@ -29,12 +29,12 @@ export const LoginForm = ({ isLoading, error, onSubmit, onResetClick }: LoginFor
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" required disabled={isLoading} className="hover-lift bg-white/50" />
+          <Input id="email" name="email" type="email" required disabled={isLoading} className=" bg-white/50" />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" required disabled={isLoading} className="hover-lift bg-white/50" />
+          <Input id="password" name="password" type="password" required disabled={isLoading} className=" bg-white/50" />
         </div>
       </div>
 

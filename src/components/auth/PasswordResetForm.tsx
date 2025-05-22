@@ -45,7 +45,7 @@ export const PasswordResetForm = ({
             onChange={e => setEmail(e.target.value)} 
             required 
             disabled={isLoading} 
-            className="hover-lift bg-white/50" 
+            className=" bg-white/50" 
             placeholder="Enter your email" 
           />
         </div>

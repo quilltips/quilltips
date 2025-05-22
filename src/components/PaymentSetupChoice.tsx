@@ -80,7 +80,7 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
         <div className="space-y-4">
           <Button
             onClick={handleSetupPayments}
-            className="w-full justify-center hover-lift"
+            className="w-full justify-center "
             size="lg"
             disabled={isLoading}
           >

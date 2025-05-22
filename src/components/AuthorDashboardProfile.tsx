@@ -52,7 +52,7 @@ export const AuthorDashboardProfile = ({
           {socialLinks.map((link, index) => {
           const IconComponent = getSocialIcon(link.label);
           return <a key={index} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-block">
-                <Button variant="outline" size="sm" className="hover-lift bg-white border-[#FEC6A1] hover:bg-[#FEC6A1]/10 text-[#2D3748] text-xs">
+                <Button variant="outline" size="sm" className=" bg-white border-[#FEC6A1] hover:bg-[#FEC6A1]/10 text-[#2D3748] text-xs">
                   <IconComponent className="h-3 w-3 mr-1.5" />
                   {link.label}
                 </Button>

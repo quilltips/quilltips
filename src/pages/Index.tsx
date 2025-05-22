@@ -44,7 +44,7 @@ const Index = () => {
             objectFit="contain"
           />
           <h1 className="font-playfair font-medium text-6xl text-[#19363C]">Quilltips</h1>
-          <h2 className="text-muted-foreground text-xl py-6 px-4">
+          <h2 className=" text-xl py-6 px-4">
             Helping authors get paid
           </h2>
         </div>
@@ -59,7 +59,7 @@ const Index = () => {
       {/* What is Quilltips */}
       <div className="mx-auto w-full max-w-6xl mt-24 text-center space-y-6">
         <h2 className="text-4xl font-playfair font-medium">What is Quilltips?</h2>
-        <p className="text-lg text-muted-foreground max-w-4xl mx-auto pb-10">
+        <p className="font-lato text-lg max-w-4xl mx-auto pb-10">
           With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltips Jar, where readers can leave a tip and message!
         </p>
         </div>
@@ -108,7 +108,7 @@ const Index = () => {
                   {icon}
                 </div>
                 <h3 className="text-xl font-semibold">{title}</h3>
-                <p className="text-muted-foreground">{text}</p>
+                <p className="">{text}</p>
               </div>
             </Card>
           ))}
@@ -142,7 +142,7 @@ const Index = () => {
               {/* Text */}
               <div className="text-center md:text-left max-w-lg">
                 <h3 className="font-semibold text-2xl mb-4">{title}</h3>
-                <p className="text-muted-foreground">{text}</p>
+                <p className="">{text}</p>
               </div>
 
               {/* Icon */}
@@ -157,7 +157,7 @@ const Index = () => {
 
           <div className="flex justify-center mt-12">
             <RouterLink to="/how-it-works">
-              <Button variant="outline" className="rounded-full px-10">
+              <Button variant="secondary" className="rounded-full px-10">
                 Learn more
               </Button>
             </RouterLink>
@@ -168,7 +168,7 @@ const Index = () => {
       <div className="mx-auto w-full max-w-4xl lg:max-w-6xl mt-24 px-4 text-center">
         <div className="max-w-3xl lg:max-w-4xl mx-auto rounded-2xl p-8">
           <h2 className="text-4xl font-playfair font-medium mb-6">For Readers</h2>
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg mb-8">
             Readers can use Quilltips quickly and easily—just scan the QR code on your book or search for it on Quilltips, add a message, and send a tip! No accounts or sign-up required.
           </p>
           <div className="flex justify-center">
@@ -184,7 +184,7 @@ const Index = () => {
       {/* Why Quilltips Story */}
       <div className="mx-auto w-full max-w-5xl mt-24 px-4">
         <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Quilltips?</h2>
-        <div className="text-lg text-muted-foreground space-y-4 text-left max-w-3xl mx-auto">
+        <div className="text-lg space-y-4 text-left max-w-3xl mx-auto">
           <p>Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on used books and reused library copies are nonexistent.</p>
           <p>As the demand for used books grows, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accessible way. Most readers would be happy to directly support their favorite authors, if only there was a way to do it!</p>
           <p>This is the idea that hatched Quilltips, a platform that supports fair author compensation and connects authors directly with their audience.</p>
@@ -193,9 +193,8 @@ const Index = () => {
 
         <div className="flex justify-center mt-8">
           <RouterLink to="/about">
-            <Button variant="outline" className="rounded-full px-10 flex items-center gap-2">
+            <Button variant="secondary" className="rounded-full px-10 flex items-center gap-2">
               Learn more about us
-              <ChevronRight className="h-4 w-4" />
             </Button>
           </RouterLink>
         </div>

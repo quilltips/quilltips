@@ -76,17 +76,17 @@ export const AuthorPublicProfileView = ({
           </DialogContent>
         </Dialog>
   
-        <h1 className="text-2xl font-semibold text-[#2D3748] mb-2">{name}</h1>
+        <h1 className="text-3xl font-semibold text-[#2D3748] mb-3">{name}</h1>
   
         {joinedDate && (
-          <p className="text-sm text-[#718096] mb-4">
+          <p className="text-sm text-[#718096] mb-6">
             joined in {joinedDate}
           </p>
         )}
   
         {bio && (
-          <div className="mt-2 mb-6 max-w-3xl mx-auto text-left px-3">
-            <p className="text-[#718096] whitespace-pre-line">{bio}</p>
+          <div className="mt-2 mb-6 max-w-5xl mx-auto text-left px-3">
+            <p className=" whitespace-pre-line">{bio}</p>
           </div>
         )}
       </div>

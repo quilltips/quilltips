@@ -17,6 +17,7 @@ function App() {
   }, [location.pathname]);
 
   return (
+    <div className="font-lato text-[#33333]">
     <AuthProvider>
       <Routes>
         {routes.map((route) => {
@@ -59,6 +60,7 @@ function App() {
       </Routes>
       <Toaster />
     </AuthProvider>
+    </div>
   );
 }
 

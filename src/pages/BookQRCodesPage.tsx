@@ -121,10 +121,10 @@ const BookQRCodesPage = () => {
             </TabsContent>
             <TabsContent value="new" className="mt-6">
               <div className="max-w-2xl mx-auto">
-                <div className="text-center mb-8">
-                  <QrCode className="h-12 w-12 mx-auto mb-4 text-[#2D3748]" />
-                  <h3 className="text-2xl font-medium mb-2">Create a new Quilltips Jar</h3>
-                  <p className="text-muted-foreground mb-6">
+                <div className="text-center mb-8 mt-10">
+                  <QrCode className="h-14 w-14 mx-auto mb-6 text-[#19363c]" />
+                  <h3 className="text-3xl font-bold mb-2">Create a new Quilltips Jar</h3>
+                  <p className="">
                     Set up your virtual tip jar for an upcoming book.
                   </p>
                 </div>

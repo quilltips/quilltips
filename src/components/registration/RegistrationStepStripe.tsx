@@ -81,20 +81,14 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold text-[#2D3748]">Set Up Payments</h2>
-        <p className="text-muted-foreground">
+      <div className="space-y-6">
+        <h2 className="text-3xl font-semibold text-[#2D3748]">Connect a payment option</h2>
+        <p className="">
           Connect your bank account to start receiving tips from your readers
         </p>
       </div>
 
-      <Alert>
-        <Info className="h-4 w-4" />
-        <AlertDescription>
-          You'll need to provide some basic information to verify your identity and connect your bank account. This typically takes 5-10 minutes.
-        </AlertDescription>
-      </Alert>
-
+      
       <div className="space-y-4">
         <Button
           onClick={handleSetupPayments}
@@ -114,28 +108,25 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
           )}
         </Button>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              or
-            </span>
-          </div>
-        </div>
+        <Alert className="border-transparent">
+        
+        <AlertDescription>
+          You'll need to provide some basic information to verify your identity and connect your bank account. This typically takes 5-10 minutes.
+        </AlertDescription>
+      </Alert>
 
+      
         <Button
           variant="outline"
           onClick={handleSkip}
-          className="w-full"
+          className="w-full border-transparent underline hover:bg-transparent hover:shadow-none"
         >
           Skip for now
-          <ArrowRight className="ml-2 h-4 w-4" />
+          
         </Button>
 
         <p className="text-sm text-center text-muted-foreground">
-          You can always set up payments later from your dashboard
+          You'll need to add a payment option later to get paid
         </p>
       </div>
 

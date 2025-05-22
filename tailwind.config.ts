@@ -31,7 +31,7 @@ export default {
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#FFD166",
+          DEFAULT: "white",
           light: "#FFE199",
           dark: "#FFC033",
           foreground: "#19363C",
@@ -60,6 +60,7 @@ export default {
       fontFamily: {
         'playfair': ['Playfair Display', 'serif'],
         'work-sans': ['Work Sans', 'sans-serif'],
+        'lato': ['Lato', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",

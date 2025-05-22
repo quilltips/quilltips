@@ -145,64 +145,36 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
   return (
     <div className="space-y-6 text-left">
       <div className="flex flex-col items-center space-y-4">
-        <div className="relative">
-          <Avatar className="w-24 h-24 border-2 border-gray-200">
-            <AvatarImage src={avatarPreview || undefined} alt="Profile picture" className="object-cover" />
-            <AvatarFallback>
-              <Camera className="w-8 h-8 text-muted-foreground" />
-            </AvatarFallback>
-          </Avatar>
-          
-          {avatarPreview && (
-            <div className="absolute -top-2 -right-2 flex gap-1">
-              <Button 
-                type="button" 
-                variant="destructive" 
-                size="icon" 
-                className="h-6 w-6 rounded-full" 
-                onClick={handleRemoveAvatar}
-                disabled={isLoading}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-          )}
-        </div>
-        
-        <div className="space-y-2 text-center">
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={handleAvatarSelect}
-            className="hidden"
-            id="avatar-upload"
-            disabled={isLoading}
-          />
-          <button
-            type="button"
-            onClick={() => document.getElementById('avatar-upload')?.click()}
-            disabled={isLoading}
-            className="text-sm text-[#2D3748] hover:underline flex items-center justify-center gap-1"
-          >
+        <label htmlFor="avatar-upload" className="flex flex-col items-center gap-2 cursor-pointer group">
+          <div className="relative">
+            <Avatar className="w-24 h-24 transition">
+              <AvatarImage src={avatarPreview || undefined} alt="Profile picture" className="object-cover" />
+              <AvatarFallback>
+                <Camera className="w-8 h-8 text-[#2D3748]" />
+              </AvatarFallback>
+            </Avatar>
+            {avatarPreview && (
+              <div className="absolute -top-2 -right-2 flex gap-1">
+                <Button type="button" variant="destructive" size="icon" className="h-6 w-6 rounded-full" onClick={handleRemoveAvatar} disabled={isLoading}>
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </div>
+          <span className="text-sm text-[#2D3748] group-hover:underline flex items-center justify-center gap-1">
             {avatarPreview ? (
-              <>
-                <Edit className="h-3.5 w-3.5" /> Change photo
-              </>
+              <><Edit className="h-3.5 w-3.5" /> Change photo</>
             ) : (
               <>Add a photo</>
             )}
-          </button>
-          {selectedFileName && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Selected: {truncateFilename(selectedFileName)}
-            </p>
-          )}
-          {error && (
-            <p className="text-xs text-destructive mt-1">
-              {error}
-            </p>
-          )}
-        </div>
+          </span>
+        </label>
+
+        <Input type="file" accept="image/*" onChange={handleAvatarSelect} className="hidden" id="avatar-upload" disabled={isLoading} />
+
+        {error && (
+          <p className="text-xs text-destructive mt-1">{error}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -228,7 +200,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
           name="name"
           placeholder="Your name as it appears on your books"
           required
-          className="hover-lift text-left"
+          className="text-left"
           disabled={isLoading}
         />
       </div>
@@ -239,7 +211,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
           id="bio"
           name="bio"
           placeholder="Tell readers a bit about yourself"
-          className="hover-lift text-left min-h-[120px] resize-none"
+          className=" text-left min-h-[120px] resize-none"
           disabled={isLoading}
           value={bioValue}
           onChange={handleBioChange}
@@ -271,7 +243,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             type="button"
             onClick={addSocialLink}
             disabled={isLoading || !newUrl.trim()}
-            className="shrink-0 bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] px-3 py-2 flex items-center justify-center"
+            className="shrink-0 bg-[#ffd166] hover:bg-[#FFD166]/80 text-[#33333] px-3 py-2 flex items-center justify-center hover:shadow-none"
           >
             <Plus className="h-4 w-4" />
           </Button>

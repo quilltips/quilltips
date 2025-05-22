@@ -78,51 +78,43 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   };
 
   return (
-    <Card className="p-6 shadow-md bg-white">
+    <Card className="p-6 shadow-none bg-transparent">
       <form onSubmit={handleSubmit} className="space-y-5 text-left">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Book Title*</label>
+          <label className="text-sm font-medium">Enter the book title</label>
           <Input
             value={bookTitle}
             onChange={(e) => setBookTitle(e.target.value)}
-            placeholder="Enter your book's title"
+            placeholder=""
             required
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Publisher*</label>
+          <label className="text-sm font-medium">Enter the publisher</label>
           <Input
             value={publisher}
             onChange={(e) => setPublisher(e.target.value)}
-            placeholder="Enter the publisher's name"
+            placeholder=""
             required
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">ISBN*</label>
-          <Input
-            value={isbn}
-            onChange={(e) => setIsbn(e.target.value)}
-            placeholder="Enter ISBN number"
-            required
-          />
-        </div>
+       
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Release Date</label>
+          <label className="text-sm font-medium">Enter the publication or release Date (optional)</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal",
+                  "w-full justify-start text-left font-normal hover:bg-transparent hover:shadow-none",
                   !releaseDate && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {releaseDate ? format(releaseDate, "PPP") : <span>Pick a date</span>}
+                {releaseDate ? format(releaseDate, "PPP") : <span></span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -137,8 +129,18 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Cover Image (Optional)</label>
-          <div className="relative aspect-[2/3] max-w-[150px] border rounded overflow-hidden bg-gray-50">
+          <label className="text-sm font-medium">Enter the ISBN</label>
+          <Input
+            value={isbn}
+            onChange={(e) => setIsbn(e.target.value)}
+            placeholder="Enter ISBN number"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Cover Image (optional)</label>
+          <div className="relative aspect-[2/3] max-w-[150px] border rounded-2xl overflow-hidden bg-white">
             {coverImageUrl ? (
               <img
                 src={coverImageUrl}
@@ -182,7 +184,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
               Processing...
             </>
           ) : (
-            "Configure QR Code"
+            "Next"
           )}
         </Button>
       </form>

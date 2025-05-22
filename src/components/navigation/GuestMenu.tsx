@@ -41,7 +41,7 @@ export const GuestMenu = () => {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent hover:text-[#FFD166]">About</NavigationMenuTrigger>
+            <NavigationMenuTrigger className="data-[active]:bg-transparent data-[state=open]:bg-transparent hover:bg-transparent focus:bg-transparent hover:underline">About</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid w-[180px] gap-1 p-2 md:w-[220px]">
                 <Link to="/about" onClick={() => document.activeElement instanceof HTMLElement && document.activeElement.blur()}>
@@ -68,7 +68,7 @@ export const GuestMenu = () => {
       <Link to="/author/login">
         <Button 
           variant="ghost" 
-          className="text-sm font-medium hover:bg-accent/50"
+          className="text-sm font-medium hover:underline"
         >
           Author Login
         </Button>
