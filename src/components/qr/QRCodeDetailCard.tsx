@@ -19,7 +19,6 @@ interface QRCodeDetailCardProps {
   };
 }
 
-// This component is being kept for backward compatibility but is no longer used in QRCodeDetails
 export const QRCodeDetailCard = ({ qrCode }: QRCodeDetailCardProps) => {
   const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
 
@@ -33,12 +32,15 @@ export const QRCodeDetailCard = ({ qrCode }: QRCodeDetailCardProps) => {
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="overflow-hidden shadow-sm">
+      <CardHeader className="bg-gray-50">
         <QRCodeBookDetails book={bookDetails} />
       </CardHeader>
-      <CardContent>
-        <QRCodeDisplay value={qrValue} />
+      <CardContent className="flex justify-center p-6">
+        <QRCodeDisplay 
+          value={qrValue}
+          className="max-w-[240px] mx-auto" 
+        />
       </CardContent>
     </Card>
   );
