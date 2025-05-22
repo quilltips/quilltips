@@ -52,7 +52,20 @@ const QRCodeDesign = () => {
                 <div className="mb-8">
                   <h2 className="text-xl font-bold mb-6">{qrCodeData.book_title}</h2>
                   
-                  {/* Book cover image - Now more prominent */}
+                  {/* QR code preview - Now in the top position again */}
+                  <div className="mb-6">
+                    <QRCodePreview
+                      isGenerating={isGenerating}
+                      qrCodePreview={qrCodePreview}
+                      onCheckout={handleCheckout}
+                      onCancel={handleCancel}
+                      isCheckingOut={isCheckingOut}
+                      showButtons={false}
+                      isPaid={isPaid}
+                    />
+                  </div>
+                  
+                  {/* Book cover image */}
                   <div className="flex justify-center mb-6">
                     <div className="w-[200px] aspect-[2/3] bg-gray-200 rounded overflow-hidden">
                       {qrCodeData.cover_image ? (
@@ -93,19 +106,6 @@ const QRCodeDesign = () => {
                       </p>
                     )}
                   </div>
-                </div>
-                
-                {/* QR code preview - Now less prominent */}
-                <div className="mt-4">
-                  <QRCodePreview
-                    isGenerating={isGenerating}
-                    qrCodePreview={qrCodePreview}
-                    onCheckout={handleCheckout}
-                    onCancel={handleCancel}
-                    isCheckingOut={isCheckingOut}
-                    showButtons={false}
-                    isPaid={isPaid}
-                  />
                 </div>
               </Card>
             </div>
