@@ -19,7 +19,8 @@ interface QRCodeBookDetailsProps {
 export const QRCodeBookDetails = ({ book }: QRCodeBookDetailsProps) => {
   return (
     <div className="flex flex-col md:flex-row gap-8">
-      <div className="w-full md:w-1/6 aspect-[2/3] relative rounded-lg overflow-hidden">
+      {/* Book cover now displayed first and more prominently */}
+      <div className="w-full md:w-1/4 aspect-[2/3] relative rounded-lg overflow-hidden">
         <OptimizedImage
           src={book.cover_image || "/lovable-uploads/quill_icon.png"}
           alt={book.title}
@@ -32,8 +33,7 @@ export const QRCodeBookDetails = ({ book }: QRCodeBookDetailsProps) => {
 
       <div className="flex-1 space-y-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">{book.title}</h1>
-          <p className="text-lg text-muted-foreground mt-2">
+          <p className="text-lg text-muted-foreground">
             by {book.author?.name || 'Unknown Author'}
           </p>
         </div>
