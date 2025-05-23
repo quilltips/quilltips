@@ -31,11 +31,11 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
 
   // Dynamic sizing based on variant and size
   const cardWidth = isDownload ? 1200 : (isSmall ? size * 1.2 : 240);
-  const cardHeight = isDownload ? 1500 : (isSmall ? size * 1.6 : 320);
+  const cardHeight = isDownload ? 1500 : (isSmall ? size * 1.7 : 320);
   const qrSize = isDownload ? 980 : size; // Use the size prop directly
   const cardPaddingX = isDownload ? 8 : (isSmall ? 1 : 3);
   const cardPaddingY = isDownload ? 5 : (isSmall ? 1 : 2);
-  const textFontSize = isDownload ? "text-7xl" : isSmall ? "text-[8px]" : "text-sm";
+  const textFontSize = isDownload ? "text-7xl" : isSmall ? "text-[6px]" : "text-sm";
   const brandingMaxWidth = isDownload ? "max-w-[750px]" : isSmall ? "max-w-[80px]" : "max-w-[150px]";
   const qrPadding = isDownload ? 4 : (isSmall ? 0.5 : 2);
   const logoPadding = isDownload ? "p-6" : isSmall ? "p-0.5" : "p-1.5";
@@ -90,19 +90,19 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
           {shouldBlur && (
             <div className="absolute inset-0 bg-white/10 flex flex-col items-center justify-center rounded-lg">
               <div className="absolute inset-0 backdrop-blur-sm bg-white/10 flex flex-col items-center justify-center rounded-lg">
-                <button className="border border-gray rounded-full bg-white">
-                <div className={`text-center text-black font-medium px-2 ${textFontSize}`}>
+                <div className=" w-full bg-[#19363c]/80">
+                <p className={`text-center text-[10px] font-bold text-white px-2 py-2 ${textFontSize}`}>
                  Purchase to unlock your QR code
+                </p>
                 </div>
-                </button>
               </div>
             </div>
           )}
         </div>
 
         {/* Branding text - only show for normal sized QR codes */}
-        {showBranding && !isSmall && (
-          <div className={`font-playfair text-center leading-normal text-muted-foreground px-1 ${brandingMaxWidth} mt-2 ${textFontSize}`}>
+        {showBranding && (
+          <div className={`font-playfair text-center text-black leading-normal px-1 ${brandingMaxWidth} mt-2 ${textFontSize}`}>
             <div>
               Love this book? Tip & message the author with <span className="font-bold">Quilltips</span>!
             </div>

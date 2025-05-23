@@ -46,7 +46,6 @@ export const QRCodePreview = ({
               <StyledQRCode
                 value={qrCodePreview}
                 size={qrCodeSize}
-                showBranding={!isSmall}  // Hide branding text for small QRs
                 blurred={!isPaid}
                 isPaid={isPaid}
                 title="QR Code Preview"
