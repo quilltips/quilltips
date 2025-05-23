@@ -7,6 +7,7 @@ import { QRCodePreview } from "@/components/qr/QRCodePreview";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Card } from "@/components/ui/card";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 const QRCodeDesign = () => {
   const location = useLocation();
@@ -46,68 +47,73 @@ const QRCodeDesign = () => {
         <div className="max-w-5xl mx-auto">
           {/* Two column layout */}
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Left Column - Book Details */}
+            {/* Left Column - Book Details in landscape format */}
             <div>
               <Card className="overflow-hidden bg-[#19363C] text-white p-6 rounded-lg">
-                <div className="mb-8">
+                <div className="flex flex-col h-full">
+                  {/* Top section: title */}
                   <h2 className="text-2xl font-bold mb-6">{qrCodeData.book_title}</h2>
                   
-                  {/* Top section: QR code preview and book details side by side */}
-                  <div className="flex flex-row gap-4 mb-6">
-                    {/* Small QR code preview on the left */}
-                    <div className="flex-shrink-0" style={{ width: "100px" }}>
-                      <QRCodePreview
-                        isGenerating={isGenerating}
-                        qrCodePreview={qrCodePreview}
-                        onCheckout={handleCheckout}
-                        onCancel={handleCancel}
-                        isCheckingOut={isCheckingOut}
-                        showButtons={false}
-                        isPaid={isPaid}
-                        size="small"
-                      />
+                  {/* Main content: landscape layout with QR code + details on left, cover image on right */}
+                  <div className="flex flex-row gap-6 flex-grow">
+                    {/* Section #1: Left side with QR code and details */}
+                    <div className="flex-1 flex flex-col space-y-4">
+                      {/* QR code preview at the top */}
+                      <div className="mb-2 w-full max-w-[150px]">
+                        <QRCodePreview
+                          isGenerating={isGenerating}
+                          qrCodePreview={qrCodePreview}
+                          onCheckout={handleCheckout}
+                          onCancel={handleCancel}
+                          isCheckingOut={isCheckingOut}
+                          showButtons={false}
+                          isPaid={isPaid}
+                          size="small"
+                        />
+                      </div>
+                      
+                      {/* Book details below QR code */}
+                      <div className="space-y-2">
+                        {qrCodeData.publisher && (
+                          <p className="text-sm">
+                            <span className="font-medium">Publisher:</span> {qrCodeData.publisher}
+                          </p>
+                        )}
+                        
+                        {formattedReleaseDate && (
+                          <p className="text-sm">
+                            <span className="font-medium">Release Date:</span> {formattedReleaseDate}
+                          </p>
+                        )}
+                        
+                        {qrCodeData.isbn && (
+                          <p className="text-sm">
+                            <span className="font-medium">ISBN:</span> {qrCodeData.isbn}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     
-                    {/* Book details on the right */}
-                    <div className="flex-1 space-y-2">
-                      {qrCodeData.publisher && (
-                        <p className="text-sm">
-                          <span className="font-medium">Publisher:</span> {qrCodeData.publisher}
-                        </p>
-                      )}
-                      
-                      {formattedReleaseDate && (
-                        <p className="text-sm">
-                          <span className="font-medium">Release Date:</span> {formattedReleaseDate}
-                        </p>
-                      )}
-                      
-                      {qrCodeData.isbn && (
-                        <p className="text-sm">
-                          <span className="font-medium">ISBN:</span> {qrCodeData.isbn}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Centered book cover image below */}
-                  <div className="flex justify-center">
-                    <div className="w-[240px] aspect-[2/3] bg-gray-200 rounded overflow-hidden">
-                      {qrCodeData.cover_image ? (
-                        <img
-                          src={qrCodeData.cover_image}
-                          alt={`Cover for ${qrCodeData.book_title}`}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-300">
-                          <img
-                            src="/lovable-uploads/quill_icon.png"
-                            alt="Quilltips Logo"
-                            className="w-12 h-12 object-contain opacity-90"
+                    {/* Section #2: Right side with book cover */}
+                    <div className="flex-1 flex justify-center items-center">
+                      <div className="h-full aspect-[2/3] max-w-[200px] bg-gray-200 rounded overflow-hidden">
+                        {qrCodeData.cover_image ? (
+                          <OptimizedImage
+                            src={qrCodeData.cover_image}
+                            alt={`Cover for ${qrCodeData.book_title}`}
+                            className="w-full h-full"
+                            objectFit="cover"
                           />
-                        </div>
-                      )}
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                            <img
+                              src="/lovable-uploads/quill_icon.png"
+                              alt="Quilltips Logo"
+                              className="w-12 h-12 object-contain opacity-90"
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
