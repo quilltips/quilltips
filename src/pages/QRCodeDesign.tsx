@@ -52,12 +52,13 @@ const QRCodeDesign = () => {
               <Card className="overflow-hidden bg-[#19363C] text-white p-6 rounded-lg">
                 <div className="flex flex-col h-full">
                   {/* Top section: title */}
-                  <h2 className="text-2xl font-bold mb-6">{qrCodeData.book_title}</h2>
+              
                   
                   {/* Main content: landscape layout with QR code + details on left, cover image on right */}
                   <div className="flex flex-row gap-6 flex-grow">
                     {/* Section #1: Left side with QR code and details */}
                     <div className="flex-1 flex flex-col space-y-4">
+                    <h2 className="text-2xl font-bold mb-6">{qrCodeData.book_title}</h2>
                       {/* QR code preview at the top */}
                       <div className="mb-2 w-full max-w-[150px]">
                         <QRCodePreview
@@ -96,7 +97,7 @@ const QRCodeDesign = () => {
                     
                     {/* Section #2: Right side with book cover */}
                     <div className="flex-1 flex justify-center items-center">
-                      <div className="h-full aspect-[2/3] max-w-[200px] bg-gray-200 rounded overflow-hidden">
+                      <div className="h-full aspect-[2/3] max-w-[200px] bg-transparent rounded overflow-hidden">
                         {qrCodeData.cover_image ? (
                           <OptimizedImage
                             src={qrCodeData.cover_image}
