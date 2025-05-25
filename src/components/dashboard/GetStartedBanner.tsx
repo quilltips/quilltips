@@ -1,5 +1,5 @@
 
-import { X, HelpCircle } from "lucide-react";
+import { X, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -27,7 +27,7 @@ export const Banner = ({
   const showIncompleteStripe = hasStripeAccount && !stripeSetupComplete;
 
   return (
-    <div className="bg-[#FFF9E6] rounded-xl p-6 relative">
+    <div className="bg-[#FFF9E6] rounded-2xl p-6 relative">
       <button 
         onClick={onClose}
         className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
@@ -36,20 +36,20 @@ export const Banner = ({
         <X size={20} />
       </button>
 
+      <div className="text-xl md:text-2xl ">
+        <h1 className="font-playfair font-bold">Get started</h1>
+      </div>
    
       {showMissingStripe && (
-        <Alert className="mb-4 bg-amber-50 border-amber-200">
-          <HelpCircle className="h-4 w-4 text-amber-500" />
-          <AlertDescription className="text-amber-700">
+        <div className="mb-7 bg-[#FFF7E5] border-none mt-6 text-sm">
             You haven't started setting up your Stripe account. You'll need to do this before your Quilltips Jars are live.
-          </AlertDescription>
-        </Alert>
+        </div>
       )}
 
       {showIncompleteStripe && (
-        <Alert className="mb-4 bg-amber-50 border-amber-200">
-          <HelpCircle className="h-4 w-4 text-amber-500" />
-          <AlertDescription className="text-amber-700">
+        <Alert className="mb-4 mt-3 border-none text-red-500 bg-[#FFF7E5] ">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="">
             Your Stripe account setup is incomplete. Please complete setup to begin receiving tips.
           </AlertDescription>
         </Alert>
@@ -64,8 +64,8 @@ export const Banner = ({
             />
             <Button 
               onClick={() => navigate('/stripe-help')}
-              variant="outline" 
-              className="w-full sm:w-auto px-6 py-2 h-auto border-[#2D3748] text-[#2D3748] hover:bg-[#2D3748]/5 font-medium text-base"
+              variant="default" 
+              className="bg-[transparent]  text-[#2D3748] border border-[#333333] hover:bg-[transparent] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]"
             >
               Help with Stripe
             </Button>
@@ -74,19 +74,12 @@ export const Banner = ({
         
         <Button 
           onClick={() => navigate('/author/settings')}
-          variant="outline" 
-          className="w-full sm:w-auto px-6 py-2 h-auto border-[#2D3748] text-[#2D3748] hover:bg-[#2D3748]/5 font-medium text-base"
+          variant="default" 
+          className="bg-[transparent]  text-[#2D3748] border border-[#333333] hover:bg-[transparent] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]"
         >
           Edit profile
         </Button>
 
-        <Button 
-          onClick={() => navigate('/how-it-works')}
-          variant="outline" 
-          className="w-full sm:w-auto px-6 py-2 h-auto border-[#2D3748] text-[#2D3748] hover:bg-[#2D3748]/5 font-medium text-base"
-        >
-          How do Quilltips Jars work?
-        </Button>
       </div>
     </div>
   );

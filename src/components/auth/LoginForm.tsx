@@ -52,9 +52,9 @@ export const LoginForm = ({ isLoading, error, onSubmit, onResetClick }: LoginFor
         </button>
         
         <div className="pt-4 border-t">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm ">
             Don't have an account?{" "}
-            <Link to="/author/register" className="text-[#2D3748] hover:underline font-medium">
+            <Link to="/author/register" className="text-[#2D3748] hover:underline font-bold">
               Register as Author
             </Link>
           </p>

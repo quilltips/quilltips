@@ -49,7 +49,7 @@ export const InitialRegistrationFields = ({
             id="email"
             name="email"
             type="email"
-            placeholder="your@email.com"
+            placeholder=""
             required
             className=""
             disabled={isLoading}
@@ -57,12 +57,12 @@ export const InitialRegistrationFields = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Enter a password</Label>
           <Input
             id="password"
             name="password"
             type="password"
-            placeholder="Create a secure password"
+            placeholder=""
             required
             minLength={8}
             className=" "

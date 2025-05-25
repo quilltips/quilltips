@@ -79,10 +79,10 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
     <div className="space-y-3">
       <Button
         type="button"
-        variant="outline"
+ 
         onClick={handleConnect}
         disabled={isConnecting}
-        className="w-full sm:w-auto flex items-center gap-2"
+        className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]"
       >
         {isConnecting ? (
           <>
@@ -93,7 +93,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
           <>
             <Wallet className="h-4 w-4" />
             <span>
-              {stripeAccountId ? "Manage Payment Settings" : "Connect Bank Account"}
+              {stripeAccountId ? "Manage Payment Settings" : "Connect bank account"}
               {stripeAccountId && <span className="text-xs ml-1">(Opens Stripe)</span>}
             </span>
           </>

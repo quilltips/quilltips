@@ -87,10 +87,10 @@ const BookQRCodesPage = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Quilltips Jars</h1>
+            <h1 className="text-3xl font-playfair font-medium ">Quilltips Jars</h1>
             <Button 
               onClick={() => handleTabChange('new')} 
-              className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] font-medium md:hidden"
+              className="bg-[#FFD166] hover:bg-[#FFD166]/90  font-medium md:hidden"
             >
               <Plus className="h-4 w-4 mr-2" />
               New QR Code
@@ -101,7 +101,7 @@ const BookQRCodesPage = () => {
             <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0 h-auto">
               <TabsTrigger 
                 value="all" 
-                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#2D3748] data-[state=active]:font-medium bg-transparent"
               >
                 All Quilltips Jars
               </TabsTrigger>

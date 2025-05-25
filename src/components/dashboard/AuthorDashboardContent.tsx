@@ -23,7 +23,7 @@ export const AuthorDashboardContent = ({
       
       {/* Grid layout for Tip feed and QR codes */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="border border-[#19363C]/50 rounded-xl p-4 bg-white">
+        <div className="border border-[#333333] rounded-xl p-4 bg-transparent">
           <TipHistory 
             authorId={authorId} 
             limit={5} 
@@ -32,7 +32,7 @@ export const AuthorDashboardContent = ({
           />
         </div>
         
-        <div className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
+        <div className="border border-[#333333] rounded-xl p-4 bg-transparent shadow-sm">
           <AuthorQRCodesList 
             authorId={authorId}
             stripeSetupComplete={stripeSetupComplete}

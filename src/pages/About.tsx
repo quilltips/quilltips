@@ -44,7 +44,7 @@ const About = () => {
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-4">Connecting Authors with Their Readers</h2>
           <p>
-            The upshot of putting powerful QR codes on physical books and adding a platform behind it is that those books are now a live window between the reader and author and a tool for readers to voice support and appreciation. They can also give authors a view into the when, where, and why of their reader base. Authors can use Quilltips QR codes to convert their offline book into a long-lived digitally enabled asset. 
+            The upshot of putting powerful QR codes on physical books and adding a platform behind it is that those books are now a live window between the reader and author and a tool for readers to voice support and appreciation. They can also give authors a view into the when, where, and why of their reader base. Authors can use Quilltips QR codes to convert their offline book into a digital asset. 
           </p>
           <br></br>
           <p>

@@ -86,7 +86,7 @@ const AuthorDashboard = () => {
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl font-playfair font-medium text-[#2D3748]">
+              <h1 className="text-3xl md:text-4xl font-playfair font-bold text-[#333333]">
                 Welcome to Quilltips{authorFirstName ? `, ${authorFirstName}` : ''}
               </h1>
               <p className="text-[#4A5568] text-lg">Helping authors get paid</p>

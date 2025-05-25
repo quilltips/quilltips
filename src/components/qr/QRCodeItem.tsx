@@ -24,10 +24,10 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
 
   return (
     <Card 
-      className="overflow-hidden border border-gray-200 hover:border-gray-300 transition-all cursor-pointer"
+      className="overflow-hidden hover:bg-white transition-all cursor-pointer"
       onClick={handleClick}
     >
-      <div className="p-3 flex items-center gap-2">
+      <div className="p-4 flex items-center gap-3">
         <div className="flex-shrink-0 w-10 h-10 rounded-md flex items-center justify-center overflow-hidden">
           <OptimizedImage
             src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
