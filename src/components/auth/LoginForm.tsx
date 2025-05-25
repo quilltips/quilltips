@@ -17,7 +17,7 @@ export const LoginForm = ({ isLoading, error, onSubmit, onResetClick }: LoginFor
     <form onSubmit={onSubmit} className="space-y-6 p-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold text-[#2D3748]">Author Login</h2>
-        <p className="text-muted-foreground">
+        <p className="">
           Welcome back! Sign in to manage your profile and tips
         </p>
       </div>
@@ -38,7 +38,7 @@ export const LoginForm = ({ isLoading, error, onSubmit, onResetClick }: LoginFor
         </div>
       </div>
 
-      <Button type="submit" disabled={isLoading} className="w-full text-[#2D3748] bg-[#ffd166]">
+      <Button type="submit" disabled={isLoading} className="w-full text-[#2D3748] hover:bg-[#FFD166] bg-[#ffd166]">
         {isLoading ? "Signing in..." : "Sign In"}
       </Button>
 
