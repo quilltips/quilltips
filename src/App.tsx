@@ -17,7 +17,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <div className="font-lato text-[#33333]">
+    <div className="font-lato text-[#333333]">
     <AuthProvider>
       <Routes>
         {routes.map((route) => {

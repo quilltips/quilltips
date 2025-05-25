@@ -86,7 +86,7 @@ export const ProfileForm = ({
           className={hasChanges ? "border-amber-300 bg-amber-50/30 focus-visible:ring-amber-200" : ""}
           maxLength={1000}
         />
-        <div className="text-xs text-right text-muted-foreground">
+        <div className="text-xs text-right">
         {(bio?.length || 0)}/1000
 
         </div>

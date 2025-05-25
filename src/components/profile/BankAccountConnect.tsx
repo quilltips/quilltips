@@ -94,7 +94,7 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
             <Wallet className="h-4 w-4" />
             <span>
               {stripeAccountId ? "Manage Payment Settings" : "Connect Bank Account"}
-              {stripeAccountId && <span className="text-xs text-muted-foreground ml-1">(Opens Stripe)</span>}
+              {stripeAccountId && <span className="text-xs ml-1">(Opens Stripe)</span>}
             </span>
           </>
         )}

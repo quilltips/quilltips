@@ -50,7 +50,7 @@ export const BookCard = ({
         <div className="p-3 space-y-1">
           <div>
             <h3 className="font-semibold text-xs group-hover:text-primary transition-colors line-clamp-2">{title}</h3>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs ">
               by{" "}
               <Link 
                 to={`/profile/${authorId}`} 
@@ -63,7 +63,7 @@ export const BookCard = ({
           </div>
 
           {(publisher || isbn || releaseDate) && (
-            <div className="space-y-0.5 text-xs text-muted-foreground">
+            <div className="space-y-0.5 text-xs ">
               {publisher && <p className="truncate text-[10px]">Publisher: {publisher}</p>}
               {isbn && <p className="truncate text-[10px]">ISBN: {isbn}</p>}
               {releaseDate && (

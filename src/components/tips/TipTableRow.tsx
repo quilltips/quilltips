@@ -86,7 +86,7 @@ export const TipTableRow = ({
             
             <TipMessagePreview message={tip.message} />
             
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs ">
               {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
             </p>
           </div>

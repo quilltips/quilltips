@@ -110,7 +110,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                 variant="outline"
                 className={cn(
                   "w-full justify-start text-left font-normal hover:bg-transparent hover:shadow-none",
-                  !releaseDate && "text-muted-foreground"
+                  !releaseDate && ""
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -168,7 +168,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
               {imageError}
             </p>
           )}
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs ">
             Recommended size: 600×900 pixels. Max: 10MB.
           </p>
         </div>

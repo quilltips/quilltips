@@ -127,7 +127,7 @@ const AuthorBankAccount = () => {
           <div className="space-y-6">
             <div className="space-y-2 text-center">
               <h2 className="text-2xl font-semibold">Connect Your Bank Account</h2>
-              <p className="text-muted-foreground">
+              <p className="">
                 Set up your payment details to start receiving tips from your readers
               </p>
             </div>

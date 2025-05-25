@@ -125,7 +125,7 @@ const HowItWorks = () => {
       
       <div className="mt-16 text-center">
         <img 
-          src="/lovable-uploads/how-quilltips-works.png" 
+          src="/lovable-uploads/how-quilltips-works.webp" 
           alt="How Quilltips Works" 
           className="mx-auto max-w-full h-auto rounded-sm max-w-1xl"
         />

@@ -101,13 +101,13 @@ const BookQRCodesPage = () => {
             <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0 h-auto">
               <TabsTrigger 
                 value="all" 
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-muted-foreground data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
               >
                 All Quilltips Jars
               </TabsTrigger>
               <TabsTrigger 
                 value="new" 
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-muted-foreground data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
               >
                 New Quilltips Jar
               </TabsTrigger>

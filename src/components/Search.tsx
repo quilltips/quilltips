@@ -54,11 +54,11 @@ const SearchResultItem = memo(({ result, onNavigate }: { result: SearchResult, o
               <Badge variant="default" className="text-sm bg-[#19363C] text-white">Book</Badge>
             </div>
             <h3 className="text-lg font-semibold">{result.book_title}</h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm ">
               by {result.author.name || 'Anonymous Author'}
             </p>
             {result.publisher && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm ">
                 Published by {result.publisher}
               </p>
             )}
@@ -121,7 +121,7 @@ export const Search = () => {
       <div className="space-y-6 max-w-2xl mx-auto animate-fadeIn">
         <Card className="p-6 shadow-lg bg-white/80 backdrop-blur-sm">
           <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 " />
             <Input
               type="search"
               value={query}
@@ -149,7 +149,7 @@ export const Search = () => {
         )}
 
         {query && (!results?.books?.length) && !isLoading && (
-          <Card className="p-6 text-center text-muted-foreground animate-fadeIn bg-white/80 backdrop-blur-sm">
+          <Card className="p-6 text-center animate-fadeIn bg-white/80 backdrop-blur-sm">
             No results found for "{query}"
           </Card>
         )}

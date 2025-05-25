@@ -7,7 +7,7 @@ export const TipMessagePreview = ({ message }: TipMessagePreviewProps) => {
   if (!message) return null;
   
   return (
-    <p className="text-muted-foreground">
+    <p className="">
       "{message}"
     </p>
   );

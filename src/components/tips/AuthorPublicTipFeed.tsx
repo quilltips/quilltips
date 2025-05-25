@@ -122,7 +122,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
                     {tip.book_title ? ` "${tip.book_title}"` : " a book"}
                   </p>
                   {tip.message && (
-                    <p className="text-sm text-muted-foreground leading-tight">"{tip.message}"</p>
+                    <p className="text-sm leading-tight">"{tip.message}"</p>
                   )}
                 </div>
 
@@ -137,7 +137,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
                       })
                     }
                   />
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs">
                     {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
                   </span>
                 </div>

@@ -29,7 +29,7 @@ const AuthorQRCodeDetails = () => {
       <div className="max-w-4xl mx-auto space-y-8">
         <Link 
           to="/author/dashboard" 
-          className="inline-flex items-center text-muted-foreground hover:text-foreground"
+          className="inline-flex items-center hover:text-foreground"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Dashboard

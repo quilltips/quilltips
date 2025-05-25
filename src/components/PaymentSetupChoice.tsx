@@ -65,7 +65,7 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
       <div className="space-y-6">
         <div className="space-y-2 text-center">
           <h2 className="text-2xl font-medium">Connect a bank account</h2>
-          <p className="text-muted-foreground">
+          <p className="">
             Set up Stripe to receive tips from your readers
           </p>
         </div>
@@ -93,7 +93,7 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-background px-2 ">
                 or
               </span>
             </div>
@@ -109,7 +109,7 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
 
-          <p className="text-sm text-center text-muted-foreground">
+          <p className="text-sm text-center ">
             You can always set up payments later from your dashboard
           </p>
         </div>

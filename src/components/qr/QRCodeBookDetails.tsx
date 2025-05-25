@@ -33,14 +33,14 @@ export const QRCodeBookDetails = ({ book }: QRCodeBookDetailsProps) => {
 
       <div className="flex-1 space-y-4">
         <div>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg ">
             by {book.author?.name || 'Unknown Author'}
           </p>
         </div>
 
         {book.author?.bio && (
           <div className="prose prose-sm max-w-none">
-            <p className="text-muted-foreground">{book.author.bio}</p>
+            <p className="">{book.author.bio}</p>
           </div>
         )}
 

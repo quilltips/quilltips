@@ -53,7 +53,7 @@ export const SearchBar = () => {
       <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
         <div className="relative">
           <Search 
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10 cursor-pointer" 
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 z-10 cursor-pointer" 
             onClick={handleSearchIconClick}
           />
 
@@ -82,7 +82,7 @@ export const SearchBar = () => {
         >
           <Card className="divide-y max-h-[60vh]">
             {isLoading ? (
-              <div className="p-4 text-center text-muted-foreground">Searching...</div>
+              <div className="p-4 text-center">Searching...</div>
             ) : (
               <>
                 <ScrollArea className="max-h-[50vh]">
@@ -103,7 +103,7 @@ export const SearchBar = () => {
                         </div>
                         <div>
                           <p className="font-medium text-sm truncate">{author.name || "Anonymous Author"}</p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[300px]">
+                          <p className="text-xs truncate max-w-[300px]">
                             {author.bio ? (author.bio.length > 60 ? author.bio.substring(0, 60) + '...' : author.bio) : "No bio available"}
                           </p>
                         </div>
@@ -131,7 +131,7 @@ export const SearchBar = () => {
                         </div>
                         <div>
                           <p className="font-medium text-sm truncate">{book.book_title}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs ">
                             By <Link 
                                 to={`/profile/${book.author?.id}`}
                                 onClick={(e) => {
@@ -148,12 +148,12 @@ export const SearchBar = () => {
                     </Link>
                   ))}
                   {query.trim() && !isLoading && !results?.authors?.length && !results?.books?.length && (
-                    <div className="p-4 text-center text-muted-foreground">
+                    <div className="p-4 text-center">
                       No results found for "{query}"
                     </div>
                   )}
                   {!query.trim() && (
-                    <div className="p-4 text-center text-muted-foreground">
+                    <div className="p-4 text-center ">
                       Type to search...
                     </div>
                   )}

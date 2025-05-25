@@ -11,15 +11,15 @@ const StripeHelp = () => {
         
         <div className="space-y-6 text-gray-600">
         <section className="space-y-4 pb-8">
-            <h2 className="text-2xl font-playfair text-[#19363C]">*IMPORTANT*</h2>
+            <h2 className="text-2xl font-playfair ">*IMPORTANT*</h2>
             <p>
               Stripe is required by law to verify user identity. Please make sure to fill out all identify verification requirements  during Stripe onboarding to ensure proper account setup. If this is missed the first time, no biggie. You will see a prompt in your author dashboard to complete Stripe setup which will bring you back into their onboarding. 
             </p>
-            <img src="/lovable-uploads/Stripe_onboarding_example.png" alt="Stripe onboarding example" />
+            <img src="/lovable-uploads/Stripe_onboarding_example.webp" alt="Stripe onboarding example" />
 
           </section>
           <section className="space-y-4">
-            <h2 className="text-2xl font-playfair text-[#19363C]">What to expect during Stripe Connect setup</h2>
+            <h2 className="text-2xl font-playfair ">What to expect during Stripe Connect setup</h2>
             <p>
               To receive payments through Quilltips, you'll need to connect a Stripe account. Here's what you
               can expect during the setup process:
@@ -33,7 +33,7 @@ const StripeHelp = () => {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-playfair text-[#19363C]">Required Information</h2>
+            <h2 className="text-2xl font-playfair ">Required Information</h2>
             <p>Please have the following information ready:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Legal name</li>
@@ -44,14 +44,14 @@ const StripeHelp = () => {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-playfair text-[#19363C]">Payouts & Ongoing</h2>
+            <h2 className="text-2xl font-playfair ">Payouts & Ongoing</h2>
             <p>After Stripe onboarding is complete, authors will be able to view, edit, and configure their payment info by going to Settings -- Manage Payment Settings in Quilltips, or using the Express dashboard link provided by Stripe.</p>
             <p>Payouts for tips typically occur on a rolling basis - please allow several business days for Stripe to process transactions.</p>
             <p>Authors will be able to see details on payouts including Quilltips' and Stripe's fees in their Stripe Express dashboard. Of course, authors will also be able to monitor tip activity through their Quilltips dashboard.</p>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-playfair text-[#19363C]">Security & Privacy</h2>
+            <h2 className="text-2xl font-playfair ">Security & Privacy</h2>
             <p>
               Stripe is a trusted payment processor used by millions of businesses worldwide. All sensitive
               information is handled directly by Stripe's secure platform, and Quilltips never has access
@@ -60,7 +60,7 @@ const StripeHelp = () => {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-playfair text-[#19363C]">Definitions</h2>
+            <h2 className="text-2xl font-playfair ">Definitions</h2>
             <p>
               Stripe Connect - This is Stripe's name for the account type and platform used by marketplace participants (which is what authors are classified as in Quilltips).
             </p>
@@ -70,7 +70,7 @@ const StripeHelp = () => {
           </section>
 
           <section className="mt-8 p-6 bg-[#19363C]/5 rounded-lg">
-            <h2 className="text-xl font-playfair text-[#19363C] mb-4">Need Help?</h2>
+            <h2 className="text-xl font-playfair mb-4">Need Help?</h2>
             <p>
               If you have any questions about the Stripe setup process or encounter any issues,
               please don't hesitate to contact our support team. We're here to help ensure you

@@ -92,7 +92,7 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
         </form>
         <ScrollArea className="p-2 max-h-[65vh]">
           {isLoading ? (
-            <div className="px-4 pb-4 text-muted-foreground">Searching...</div>
+            <div className="px-4 pb-4 ">Searching...</div>
           ) : (
             <>
               {results?.authors?.map((author) => (
@@ -107,7 +107,7 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
                   </div>
                   <div className="flex flex-col items-start">
                     <div className="font-medium text-sm truncate">{author.name || "Anonymous Author"}</div>
-                    <div className="text-xs text-muted-foreground truncate max-w-[260px]">
+                    <div className="text-xs truncate max-w-[260px]">
                       {author.bio ? (author.bio.length > 60 ? author.bio.substring(0, 60) + '...' : author.bio) : "No bio available"}
                     </div>
                   </div>
@@ -121,18 +121,18 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
                   type="button"
                 >
                   <div className="w-6 h-6 rounded bg-muted flex items-center justify-center">
-                    <Book className="h-4 w-4 text-muted-foreground" />
+                    <Book className="h-4 w-4" />
                   </div>
                   <div className="flex flex-col items-start">
                     <div className="font-medium text-sm truncate">{book.book_title}</div>
-                    <div className="text-xs text-muted-foreground truncate max-w-[260px]">
+                    <div className="text-xs  truncate max-w-[260px]">
                       By {book.author?.name || "Anonymous Author"}
                     </div>
                   </div>
                 </button>
               ))}
               {query.trim() && !isLoading && !results?.authors?.length && !results?.books?.length && (
-                <div className="px-4 pb-4 text-muted-foreground">
+                <div className="px-4 pb-4">
                   No results found for "{query}"
                 </div>
               )}

@@ -151,21 +151,21 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground">Total Tips</p>
+            <p className="text-sm ">Total Tips</p>
             <p className="text-2xl font-bold">{qrCode.total_tips || 0}</p>
           </div>
           <div className="p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground">Total Amount</p>
+            <p className="text-sm ">Total Amount</p>
             <p className="text-2xl font-bold">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground">Average Tip</p>
+            <p className="text-sm ">Average Tip</p>
             <p className="text-2xl font-bold">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
           </div>
           <div className="p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground">Last Tip</p>
+            <p className="text-sm ">Last Tip</p>
             <p className="text-2xl font-bold">
               {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
             </p>

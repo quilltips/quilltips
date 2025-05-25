@@ -111,7 +111,7 @@ export const EmailTestButton = ({ profileId }: EmailTestButtonProps) => {
           Test Welcome Email
         </Button>
       </div>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs ">
         This will send test emails to your registered email address to verify the email notification system.
       </p>
     </div>

@@ -28,7 +28,7 @@ const ListItem = React.forwardRef<
         {...props}
       >
         <div className="text-sm font-medium leading-none">{title}</div>
-        {children && <p className="line-clamp-2 text-xs mt-1 leading-snug text-muted-foreground">{children}</p>}
+        {children && <p className="line-clamp-2 text-xs mt-1 leading-snug ">{children}</p>}
       </a>
     </li>
   );

@@ -41,7 +41,7 @@ export const TipStatsCard = ({ authorId }: TipStatsCardProps) => {
     return (
       <Card className="overflow-hidden h-full">
         <CardContent className="p-6 flex justify-center items-center h-full">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <Loader2 className="h-8 w-8 animate-spin " />
         </CardContent>
       </Card>
     );

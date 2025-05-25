@@ -40,7 +40,7 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
     return (
       <Card>
         <CardContent className="p-6">
-          <p className="text-center text-muted-foreground">
+          <p className="text-center ">
             No books available yet.
           </p>
         </CardContent>
@@ -77,7 +77,7 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
 
                 <div className="flex-1">
                   <h3 className="font-medium text-base text-[#19363C] leading-tight">{qrCode.book_title}</h3>
-                  <p className="text-sm text-muted-foreground">by {authorName}</p>
+                  <p className="text-sm ">by {authorName}</p>
                 </div>
               </div>
             </CardContent>

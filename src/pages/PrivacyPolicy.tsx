@@ -18,7 +18,7 @@ const PrivacyPolicy = () => {
           <h1 className="text-3xl font-semibold mb-8">Privacy Policy</h1>
           
           <section className="mb-8">
-            <p className="text-muted-foreground mb-4">Effective date: April 15, 2025</p>
+            <p className="mb-4">Effective date: April 15, 2025</p>
             <p>Quilltips LLC ("we," "our," or "us") provides a platform that allows authors to receive tips and messages from readers using QR codes placed in books. This privacy policy explains how we collect, use, and protect your personal information when you use our services.</p>
           </section>
 

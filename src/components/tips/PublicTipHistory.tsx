@@ -121,9 +121,9 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
                     {tip.book_title ? ` for "${tip.book_title}"!` : "!"}
                   </p>
                   {tip.message && (
-                    <p className="text-muted-foreground">"{tip.message}"</p>
+                    <p className="">"{tip.message}"</p>
                   )}
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm ">
                     {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
                   </p>
                 </div>

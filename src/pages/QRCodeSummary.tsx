@@ -229,7 +229,7 @@ const QRCodeSummary = () => {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <h2 className="text-lg font-medium">QR Code</h2>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm ">
                     {qrCode.book_title}
                   </p>
                 </div>
@@ -278,7 +278,7 @@ const QRCodeSummary = () => {
                   </p>
                 )}
 
-                <p className="text-sm text-center text-muted-foreground">
+                <p className="text-sm text-center">
                   Does your publisher need access to info about this book in Quilltips?{' '}
                   Use the "Share" button above to forward your QR code to your publisher.
                 </p>

@@ -46,21 +46,21 @@ export const AuthorQRCodeStats = ({ authorId }: AuthorQRCodeStatsProps) => {
   return (
     <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
       <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
-        <div className="text-sm font-medium text-muted-foreground mb-2">Total Tips</div>
+        <div className="text-sm font-medium mb-2">Total Tips</div>
         <div className="text-2xl font-bold">
           {stats?.totalTips || 0}
         </div>
       </div>
 
       <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
-        <div className="text-sm font-medium text-muted-foreground mb-2">Total Value</div>
+        <div className="text-sm font-medium mb-2">Total Value</div>
         <div className="text-2xl font-bold">
           ${stats?.totalAmount.toFixed(2) || '0.00'}
         </div>
       </div>
 
       <div className="bg-white/50 backdrop-blur-sm rounded-lg p-4">
-        <div className="text-sm font-medium text-muted-foreground mb-2">Last Tip Received</div>
+        <div className="text-sm font-medium mb-2">Last Tip Received</div>
         <div className="text-2xl font-bold">
           {stats?.lastTipDate ? format(new Date(stats.lastTipDate), 'MMM d, yyyy') : 'No tips yet'}
         </div>

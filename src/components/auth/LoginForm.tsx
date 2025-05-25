@@ -46,7 +46,7 @@ export const LoginForm = ({ isLoading, error, onSubmit, onResetClick }: LoginFor
         <button 
           type="button" 
           onClick={onResetClick} 
-          className="text-sm text-muted-foreground hover:text-[#2D3748]"
+          className="text-sm hover:text-[#2D3748]"
         >
           Forgot password?
         </button>

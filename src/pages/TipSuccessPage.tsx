@@ -5,6 +5,7 @@ import { CheckCircle } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 const TipSuccessPage = () => {
   const [searchParams] = useSearchParams();
@@ -57,18 +58,19 @@ const TipSuccessPage = () => {
   return (
     
       <div className="container max-w-2xl mx-auto px-4 pt-16 pb-20 text-center">
-        <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
-          <div className="flex justify-center mb-6">
-            <div className="rounded-full bg-[#FFD166]/10 p-3">
+        <div className="bg-transparent rounded-xl shadow-none p-8 md:p-12">
+          <div className="flex justify-center mb-5">
+            <div className="rounded-full p-3">
               <CheckCircle className="h-12 w-12 text-[#FFD166]" />
             </div>
           </div>
           
-          <h1 className="text-3xl font-bold mb-4 text-gray-800">
-            Thank you for your tip{readerName ? `, ${readerName}` : ''}!
+          <h1 className="text-3xl font-bold mb-4 ">
+       
+            Amazing tip{readerName ? `, ${readerName}` : ''}!
           </h1>
           
-          <p className="text-lg mb-8 text-gray-600">
+          <p className="text-lg mb-8 ">
             {isLoading ? (
               "Your tip has been sent successfully."
             ) : (
@@ -82,7 +84,7 @@ const TipSuccessPage = () => {
           {authorId && (
             <Button 
               asChild 
-              className="bg-[#19363C] hover:bg-[#19363C]/90 text-white px-8 py-6 h-auto text-lg font-medium rounded-full"
+              className="bg-[#FFD166] hover:bg-[#19363C]/90 text-[#333333] px-7 py-3 h-auto  font-medium rounded-full"
             >
               <Link to={`/profile/${authorId}`}>
                 Return to Author Profile

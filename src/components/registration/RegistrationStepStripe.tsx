@@ -125,7 +125,7 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
           
         </Button>
 
-        <p className="text-sm text-center text-muted-foreground">
+        <p className="text-sm text-center ">
           You'll need to add a payment option later to get paid
         </p>
       </div>

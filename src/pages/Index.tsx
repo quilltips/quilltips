@@ -34,7 +34,7 @@ const Index = () => {
       <div className="mx-auto w-full max-w-5xl text-center space-y-8 animate-enter">
         <div className="space-y-4">
           <OptimizedImage
-            src="/lovable-uploads/logo_nav.png"
+            src="/lovable-uploads/logo_nav.webp"
             alt="Quilltips"
             width={144}
             height={144}
@@ -68,7 +68,7 @@ const Index = () => {
           {/* Author Dashboard */}
           <div className="max-w-3xl w-full rounded-xl shadow-lg hover:shadow-2xl transition-all bg-[#19363C] p-2">
             <img
-              src="/lovable-uploads/screenshots/QT_dashboard.png"
+              src="/lovable-uploads/screenshots/QT_dashboard.webp"
               alt="Author dashboard view"
               className="w-full rounded-lg object-contain"
             />
@@ -77,7 +77,7 @@ const Index = () => {
           {/* Reader Crumble View */}
           <div className="max-w-lg w-full rounded-xl shadow-lg hover:shadow-2xl transition-all bg-[#FFD166] p-2">
             <img
-              src="/lovable-uploads/screenshots/crumble_screenshot.png"
+              src="/lovable-uploads/screenshots/crumble_screenshot.webp"
               alt="Reader tip jar view"
               className="w-full rounded-lg object-contain"
             />
@@ -173,7 +173,7 @@ const Index = () => {
           </p>
           <div className="flex justify-center">
             <img
-              src="/lovable-uploads/reader_quilltips.png"
+              src="/lovable-uploads/reader_quilltips.webp"
               alt="Reader scanning a QR code to tip an author"
               className="max-w-md w-full rounded-xl shadow-md"
             />
@@ -204,7 +204,7 @@ const Index = () => {
       <div className="mx-auto w-full max-w-5xl mt-24 text-center space-y-8 animate-enter py-[75px] px-4">
         <div className="space-y-4">
           <h2 className="text-4xl font-playfair font-medium">Ready to get started?</h2>
-          <h3 className="text-muted-foreground text-xl py-[24px]">
+          <h3 className="text-xl py-[24px]">
             Create an account to connect with readers and earn tips!
           </h3>
         </div>

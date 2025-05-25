@@ -26,7 +26,7 @@ export const PasswordResetForm = ({
     <div className="space-y-6 p-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold text-[#2D3748]">Reset Password</h2>
-        <p className="text-muted-foreground">
+        <p className="">
           Enter your email to receive a password reset link
         </p>
       </div>
@@ -59,7 +59,7 @@ export const PasswordResetForm = ({
         <button 
           type="button" 
           onClick={onBack} 
-          className="text-sm text-muted-foreground hover:text-[#2D3748] w-full text-center"
+          className="text-sm hover:text-[#2D3748] w-full text-center"
         >
           Back to login
         </button>

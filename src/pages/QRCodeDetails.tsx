@@ -69,7 +69,7 @@ const QRCodeDetails = () => {
             </div>
             <div className="space-y-1 pt-2">
               <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
-              <p className="text-muted-foreground">
+              <p className="">
                 by <Link 
                     to={`/profile/${qrCode.author_id}`}
                     className="hover:underline hover:text-primary transition-colors"
@@ -79,7 +79,7 @@ const QRCodeDetails = () => {
               </p>
               
               {/* Added publisher and release date info */}
-              <div className="mt-2 text-sm text-muted-foreground">
+              <div className="mt-2 text-sm">
                 {qrCode.publisher && (
                   <p>Publisher: {qrCode.publisher}</p>
                 )}
@@ -94,7 +94,7 @@ const QRCodeDetails = () => {
           {!showTipForm && (
             <Button 
               onClick={() => setShowTipForm(true)} 
-              className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full py-6"
+              className="w-full bg-[#FFD166] hover:bg-[#FFD166]/80 hover:shadow text-secondary-foreground rounded-full py-6"
             >
               Leave a tip!
             </Button>

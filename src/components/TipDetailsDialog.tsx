@@ -174,7 +174,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
               />
               <div>
                 <p className="font-medium text-sm">{tip.reader_name || "Anonymous Reader"}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs ">
                   {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
                 </p>
               </div>
@@ -183,13 +183,13 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
             {/* Tip details */}
             <div className="space-y-3 text-sm">
               <div>
-                <p className="text-muted-foreground">Amount</p>
+                <p className="">Amount</p>
                 <p className="text-lg font-medium">${tip.amount}</p>
               </div>
 
               {tip.book_title && (
                 <div>
-                  <p className="text-muted-foreground">Book</p>
+                  <p className="">Book</p>
                   <p className="text-lg italic font-medium">{tip.book_title}</p>
                 </div>
               )}
@@ -197,7 +197,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
               {tip.message && (
                 <div className="bg-muted/50 p-4 rounded-lg space-y-2">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold uppercase text-muted-foreground tracking-wide">Message</p>
+                    <p className="text-sm font-semibold uppercase tracking-wide">Message</p>
                   </div>
                   <p className="text-base text-foreground leading-relaxed">{tip.message}</p>
                 </div>
@@ -207,7 +207,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
             {/* Comments */}
             <div className="space-y-3">
               <div className="flex items-center gap-1">
-                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                <MessageSquare className="h-4 w-4 " />
                 <h3 className="font-medium text-sm">Comments ({comments.length})</h3>
               </div>
 
@@ -243,7 +243,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                         <p className="font-medium text-xs">
                           {comment.profiles?.name || "Author"}
                         </p>
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-[10px] ">
                           {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                         </p>
                       </div>

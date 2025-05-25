@@ -61,7 +61,7 @@ export const QRCodePublisherInvite = ({
           >
             {isSending ? "Sending..." : "Send Invite"}
           </Button>
-          <p className="text-sm text-center text-muted-foreground">
+          <p className="text-sm text-center">
             Not ready? Don't worry, you can do this at any time from the saved QR
             code.
           </p>
