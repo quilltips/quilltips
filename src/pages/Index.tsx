@@ -43,7 +43,7 @@ const Index = () => {
             sizes="144px"
             objectFit="contain"
           />
-          <h1 className="font-playfair font-medium text-6xl text-[#19363C]">Quilltips</h1>
+          <h1 className="font-playfair font-bold text-6xl text-[#19363C]">Quilltips</h1>
           <h2 className=" text-xl py-6 px-4">
             Helping authors get paid
           </h2>
