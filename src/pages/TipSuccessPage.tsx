@@ -72,12 +72,9 @@ const TipSuccessPage = () => {
           
           <p className="text-lg mb-8 ">
             {isLoading ? (
-              "Your tip has been sent successfully."
+              "Thanks for tipping! The author will be excited to see your tip in their inbox!"
             ) : (
-              <>
-                Your tip of ${amount || "5"} has been sent to {authorName || "the author"}.
-                {" "}Thank you for supporting their work!
-              </>
+              `Thanks for tipping! ${authorName || "The author"} will be excited to see your tip in their inbox!`
             )}
           </p>
           
