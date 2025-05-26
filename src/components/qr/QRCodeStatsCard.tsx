@@ -132,7 +132,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             <div className="grid grid-cols-2 gap-12 ">
               {/* QR Code */}
               <div className="space-y-4">
-                <div className="bg-gray rounded-lg shadow-sm flex justify-center p-6">
+                <div className="bg-gray rounded-lg shadow-sm flex justify-center pb-6 px-2 ml-2">
                   <StyledQRCode
                     ref={qrCodeRef}
                     value={`${window.location.origin}/qr/${qrCode.id}`}
@@ -144,7 +144,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
               </div>
 
               {/* Book Cover with Upload */}
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <div className="aspect-[2/3] rounded-lg overflow-hidden relative">
                   <OptimizedImage
                     key={imageRefreshKey}
@@ -191,23 +191,23 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       </div>
 
       {/* Right side - Stats and Actions */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Individual Tip Statistics Tiles */}
         <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <Card className="p-6 bg-[#19363C] text-white">
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="p-5 bg-[#19363C] text-white">
               <p className="text-sm text-white/80 mb-2">Total Tips</p>
               <p className="text-3xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
             </Card>
-            <Card className="p-6 bg-[#19363C] text-white">
+            <Card className="p-5 bg-[#19363C] text-white">
               <p className="text-sm text-white/80 mb-2">Total Amount</p>
               <p className="text-3xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
             </Card>
-            <Card className="p-6 bg-[#19363C] text-white">
+            <Card className="p-5 bg-[#19363C] text-white">
               <p className="text-sm text-white/80 mb-2">Average Tip</p>
               <p className="text-3xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
             </Card>
-            <Card className="p-6 bg-[#19363C] text-white">
+            <Card className="p-5 bg-[#19363C] text-white">
               <p className="text-sm text-white/80 mb-2">Last Tip</p>
               <p className="text-3xl font-bold text-[#FFD166]">
                 {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
