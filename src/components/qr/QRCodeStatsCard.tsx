@@ -1,4 +1,3 @@
-
 import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { RefObject, useRef } from "react";
@@ -195,34 +194,30 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
       {/* Right side - Stats and Actions */}
       <div className="space-y-6">
-        {/* Tip Statistics with Data Dashboard styling */}
-        <Card className="p-6 bg-[#19363C] text-white">
-          <h3 className="text-lg font-semibold mb-4">Statistics</h3>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-[#19363C] rounded-lg">
-                <p className="text-sm text-white/80">Total Tips</p>
-                <p className="text-2xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
-              </div>
-              <div className="p-4 bg-[#19363C] rounded-lg">
-                <p className="text-sm text-white/80">Total Amount</p>
-                <p className="text-2xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-[#19363C] rounded-lg">
-                <p className="text-sm text-white/80">Average Tip</p>
-                <p className="text-2xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
-              </div>
-              <div className="p-4 bg-[#19363C] rounded-lg">
-                <p className="text-sm text-white/80">Last Tip</p>
-                <p className="text-2xl font-bold text-[#FFD166]">
-                  {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
-                </p>
-              </div>
-            </div>
+        {/* Individual Tip Statistics Tiles */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Statistics</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <Card className="p-4 bg-[#19363C] text-white">
+              <p className="text-sm text-white/80">Total Tips</p>
+              <p className="text-2xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
+            </Card>
+            <Card className="p-4 bg-[#19363C] text-white">
+              <p className="text-sm text-white/80">Total Amount</p>
+              <p className="text-2xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
+            </Card>
+            <Card className="p-4 bg-[#19363C] text-white">
+              <p className="text-sm text-white/80">Average Tip</p>
+              <p className="text-2xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
+            </Card>
+            <Card className="p-4 bg-[#19363C] text-white">
+              <p className="text-sm text-white/80">Last Tip</p>
+              <p className="text-2xl font-bold text-[#FFD166]">
+                {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
+              </p>
+            </Card>
           </div>
-        </Card>
+        </div>
 
         {/* Actions */}
         <Card className="p-6">
