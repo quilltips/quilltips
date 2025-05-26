@@ -128,10 +128,10 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         <Card className="p-6 border-2" style={{ borderColor: '#333333' }}>
           <div className="space-y-6">
             {/* QR Code and Book Cover */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-8">
               {/* QR Code */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">QR Code</h3>
+               
                 <div className="bg-gray rounded-lg shadow-sm flex justify-center">
                   <StyledQRCode
                     ref={qrCodeRef}
@@ -145,7 +145,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
               {/* Book Cover with Upload */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Book Cover</h3>
+            
                 <div className="aspect-[2/3] rounded-lg overflow-hidden relative">
                   <OptimizedImage
                     key={imageRefreshKey}
