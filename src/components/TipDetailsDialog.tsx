@@ -16,6 +16,7 @@ import { ScrollArea } from './ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { TipReaderAvatar } from './tips/TipReaderAvatar';
 import { AuthorCommentAvatar } from './tips/AuthorCommentAvatar';
+import { TipMessagePreview } from './tips/TipMessagePreview';
 
 interface TipDetailsDialogProps {
   isOpen: boolean;
@@ -166,51 +167,36 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
 
         <ScrollArea className="max-h-[calc(90vh-4rem)]">
           <div className="p-4 space-y-6">
-            {/* Reader info */}
-            <div className="flex items-center gap-2">
-              <TipReaderAvatar 
-                readerName={tip.reader_name} 
-                className="h-8 w-8" 
-              />
-              <div>
-                <p className="font-medium text-sm">{tip.reader_name || "Anonymous Reader"}</p>
-                <p className="text-xs ">
-                  {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
-                </p>
+            {/* Tip content that matches TipTableRow */}
+            <div className="flex gap-3 font-bold">
+              <TipReaderAvatar readerName={tip.reader_name} className="h-8 w-8" />
+
+              <div className="flex-1 space-y-2">
+                <div className="space-y-1">
+                  <p className="text-md">
+                    <span className="">{firstName}</span>
+                    {" sent "}
+                    <span className="">${tip.amount}</span>
+                    {tip.book_title && (
+                      <> for <span className="italic">{tip.book_title}</span></>
+                    )}
+                  </p>
+                  
+                  <TipMessagePreview message={tip.message} />
+                </div>
+                
+                <div className="flex justify-end">
+                  <p className="text-sm font-medium">
+                    {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Tip details */}
-            <div className="space-y-3 text-sm">
-              <div>
-                <p className="">Amount</p>
-                <p className="text-lg font-medium">${tip.amount}</p>
-              </div>
+            <div className="border-b py-3 border-gray-300"></div>
 
-              {tip.book_title && (
-                <div>
-                  <p className="">Book</p>
-                  <p className="text-lg italic font-medium">{tip.book_title}</p>
-                </div>
-              )}
-
-              {tip.message && (
-                <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold uppercase tracking-wide">Message</p>
-                  </div>
-                  <p className="text-base text-foreground leading-relaxed">{tip.message}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Comments */}
+            {/* Comments section */}
             <div className="space-y-3">
-              <div className="flex items-center gap-1">
-                <MessageSquare className="h-4 w-4 " />
-                <h3 className="font-medium text-sm">Comments ({comments.length})</h3>
-              </div>
-
               {user && (
                 <div className="flex gap-2">
                   <Textarea
@@ -222,13 +208,18 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                   <Button 
                     onClick={handleSubmitComment}
                     disabled={!newComment.trim() || isSubmitting}
-                    className="self-start"
+                    className="self-start bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
                     size="sm"
                   >
                     Post
                   </Button>
                 </div>
               )}
+
+              <div className="flex items-center gap-1">
+                <MessageSquare className="h-4 w-4" />
+                <h3 className="font-medium text-sm">Comments ({comments.length})</h3>
+              </div>
 
               <div className="space-y-3">
                 {comments.map((comment) => (
@@ -243,7 +234,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                         <p className="font-medium text-xs">
                           {comment.profiles?.name || "Author"}
                         </p>
-                        <p className="text-[10px] ">
+                        <p className="text-[10px]">
                           {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                         </p>
                       </div>

@@ -88,51 +88,37 @@ export const AuthorQRCodesList = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xl font-medium text-[#2D3748]">Quilltips Jars</h2>
-          
-          {stripeIncomplete && (
-            <div className="relative">
-              {/* For desktop, use tooltip */}
-              <div className="hidden sm:block">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <LockKeyhole size={18} className="text-amber-500 cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-[250px] bg-white p-3 text-sm">
-                      <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              
-              {/* For mobile, use popover with click */}
-              <div className="sm:hidden">
-                <Popover open={isPopoverOpen} onOpenChange={handlePopoverOpenChange}>
-                  <PopoverTrigger asChild>
-                    <LockKeyhole size={18} className="text-amber-500 cursor-pointer" />
-                  </PopoverTrigger>
-                  <PopoverContent className="w-screen max-w-[250px] bg-white p-3 text-sm">
-                    <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-          )}
-        </div>
+      <div className="flex items-center gap-2 mb-3">
+        <h2 className="text-xl font-medium text-[#2D3748]">Quilltips Jars</h2>
         
-        {qrCodes && qrCodes.length > 0 && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate('/author/book-qr-codes?tab=all')}
-            className="text-[#718096] hover:text-[#2D3748] text-xs h-auto py-1 px-2"
-          >
-            See all 
-            <ArrowRight className="ml-1 h-3 w-3" />
-          </Button>
+        {stripeIncomplete && (
+          <div className="relative">
+            {/* For desktop, use tooltip */}
+            <div className="hidden sm:block">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <LockKeyhole size={18} className="text-amber-500 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[250px] bg-white p-3 text-sm">
+                    <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            
+            {/* For mobile, use popover with click */}
+            <div className="sm:hidden">
+              <Popover open={isPopoverOpen} onOpenChange={handlePopoverOpenChange}>
+                <PopoverTrigger asChild>
+                  <LockKeyhole size={18} className="text-amber-500 cursor-pointer" />
+                </PopoverTrigger>
+                <PopoverContent className="w-screen max-w-[250px] bg-white p-3 text-sm">
+                  <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
         )}
       </div>
 
@@ -191,7 +177,19 @@ export const AuthorQRCodesList = ({
             New QR code
           </Button>
           
-      
+          {qrCodes && qrCodes.length > 0 && (
+            <div className="relative">
+              <div className="h-12 bg-gradient-to-b from-transparent to-white/80 absolute bottom-0 left-0 right-0"></div>
+              <div className="flex justify-center mt-4">
+                <Link to="/author/book-qr-codes?tab=all" className="inline-flex items-center text-sm text-[#718096] hover:text-[#2D3748]">
+                  <Button variant="ghost" className="flex items-center gap-1">
+                    See all 
+                    <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

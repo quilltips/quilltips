@@ -43,14 +43,9 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
             {qrCode.book_title}
           </h3>
           
-          {(qrCode.publisher || qrCode.isbn) && (
+          {qrCode.publisher && (
             <div className="mt-0.5 text-xs text-[#718096]">
-              {qrCode.publisher && (
-                <p className="truncate">Publisher: {qrCode.publisher}</p>
-              )}
-              {qrCode.isbn && (
-                <p className="truncate">ISBN: {qrCode.isbn}</p>
-              )}
+              <p className="truncate">Publisher: {qrCode.publisher}</p>
             </div>
           )}
         </div>
