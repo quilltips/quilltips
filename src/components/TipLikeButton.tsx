@@ -85,17 +85,19 @@ export const TipLikeButton = ({
     <Button 
       variant="outline" 
       size="sm"
-      className={`flex items-center gap-1 border-[#19363C] text-[#19363C] transition-all ${
-        liked ? 'bg-[#19363C]/5 cursor-default' : 'hover:bg-[#19363C]/10'
+      className={`group flex items-center gap-1 border-none bg-transparent text-[#19363C] transition-all ${
+        liked ? 'bg-transparent cursor-default border-none hover:shadow-none' : 'hover:bg-[#333333]/30  hover:shadow-none '
       } ${className}`}
       onClick={handleLike}
       disabled={isLoading || liked}
+      
     >
       <ThumbsUp 
         size={16}
-        className={`transition-all stroke-[#19363C] ${
-          liked ? 'fill-[#FFD166]' : 'fill-none'
+        className={`transition-all stroke-[#333333] ${
+          liked ? 'border-[#333333] stroke-[#333333]' : ' '
         }`}
+        strokeWidth={liked ? 3 : 1}
       />
       <span className="text-sm font-medium">{count}</span>
     </Button>

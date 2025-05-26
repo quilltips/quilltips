@@ -16,7 +16,7 @@ export const PublicTipCommentButton = ({
   };
 
   const iconClass = commentCount > 0
-    ? "stroke-[#19363C] fill-[#19363C]/80"
+    ? "stroke-[#19363C] fill-none"
     : "stroke-[#19363C] fill-none";
 
   return (
@@ -26,7 +26,9 @@ export const PublicTipCommentButton = ({
       onClick={handleClick}
       className="flex items-center gap-1"
     >
-      <MessageCircle className={`h-4 w-4 ${iconClass}`} />
+      <MessageCircle className={`h-4 w-4 ${iconClass}`}
+      strokeWidth={commentCount > 0 ? 3 : 1}
+      />
       <span>{commentCount}</span>
     </Button>
   );

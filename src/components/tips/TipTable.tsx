@@ -28,7 +28,7 @@ export const TipTable = ({
 
   return (
     <div className="space-y-4">
-      <div className="space-y-3">
+      <div className="space-y-5">
         {displayTips.map((tip) => (
           <TipTableRow
             key={tip.id}
@@ -51,6 +51,8 @@ export const TipTable = ({
           {showAll ? 'Show Less' : `Show ${tips.length - limit} More`}
         </Button>
       )}
+    
     </div>
+    
   );
 };

@@ -70,15 +70,15 @@ export const TipTableRow = ({
       className="group cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors"
       onClick={() => onSelectTip(tip)}
     >
-      <div className="flex gap-3">
+      <div className="flex gap-3 font-bold">
         <TipReaderAvatar readerName={tip.reader_name} className="h-8 w-8" />
 
-        <div className="flex-1 space-y-1">
-          <div className="space-y-0.5">
-            <p className="text-sm">
-              <span className="font-medium">{firstName}</span>
+        <div className="flex-1 space-y-2">
+          <div className="space-y-1">
+            <p className="text-md">
+              <span className="">{firstName}</span>
               {" sent "}
-              <span className="font-medium">${tip.amount}</span>
+              <span className="">${tip.amount}</span>
               {tip.book_title && (
                 <> for <span className="italic">{tip.book_title}</span></>
               )}
@@ -86,11 +86,10 @@ export const TipTableRow = ({
             
             <TipMessagePreview message={tip.message} />
             
-            <p className="text-xs ">
-              {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
-            </p>
+           
+            
           </div>
-
+          <div className="flex justify-between items-center ">
           {user && (
             <div onClick={(e) => e.stopPropagation()} className="mt-1">
               <TipInteractionButtons
@@ -108,8 +107,15 @@ export const TipTableRow = ({
               />
             </div>
           )}
+           <p className="text-sm font-medium ">
+              {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
+            </p>
+            </div>
+
         </div>
       </div>
+      <div className="border-b py-3 border-gray-300"></div>
+
     </div>
   );
 };

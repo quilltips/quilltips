@@ -90,7 +90,7 @@ export const AuthorQRCodesList = ({
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-medium text-[#2D3748]">Quilltips Jars</h2>
+          <h2 className="text-xl font-medium text-[#2D3748]">Quilltips Jars</h2>
           
           {stripeIncomplete && (
             <div className="relative">
