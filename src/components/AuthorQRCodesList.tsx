@@ -191,15 +191,7 @@ export const AuthorQRCodesList = ({
             New QR code
           </Button>
           
-          <div className="flex justify-center">
-            <Link 
-              to="/how-it-works" 
-              className="text-xs text-[#718096] hover:text-[#2D3748] flex items-center gap-1 underline"
-            >
-              <HelpCircle size={12} />
-              How does it work?
-            </Link>
-          </div>
+      
         </div>
       )}
     </div>
