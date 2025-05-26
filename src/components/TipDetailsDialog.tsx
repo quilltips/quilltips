@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -182,13 +181,12 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                     )}
                   </p>
                   
-                  <TipMessagePreview message={tip.message} />
-                </div>
-                
-                <div className="flex justify-end">
-                  <p className="text-sm font-medium">
-                    {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
-                  </p>
+                  <div className="flex justify-between items-start gap-2">
+                    <TipMessagePreview message={tip.message} />
+                    <p className="text-sm font-medium flex-shrink-0">
+                      {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -198,17 +196,17 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
             {/* Comments section */}
             <div className="space-y-3">
               {user && (
-                <div className="flex gap-2">
+                <div className="space-y-2">
                   <Textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Write a comment..."
-                    className="flex-1 text-sm min-h-[60px]"
+                    className="w-full text-sm min-h-[60px]"
                   />
                   <Button 
                     onClick={handleSubmitComment}
                     disabled={!newComment.trim() || isSubmitting}
-                    className="self-start bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+                    className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
                     size="sm"
                   >
                     Post

@@ -44,7 +44,7 @@ export const QRCodeDownloadOptions = ({
             Download QR Code
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent align="center" className="w-full min-w-[var(--radix-dropdown-menu-trigger-width)]">
           <DropdownMenuItem onClick={onDownloadSVG}>
             <div className="flex flex-col">
               <span className="font-medium">SVG Format</span>
