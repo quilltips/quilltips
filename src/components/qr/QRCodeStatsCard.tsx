@@ -1,3 +1,4 @@
+
 import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { RefObject, useRef } from "react";
@@ -121,18 +122,18 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
+    <div className="grid xl:grid-cols-2 gap-8 max-w-7xl mx-auto">
       {/* Left side - QR Code, Book Cover, and Book Details */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* QR Code, Book Cover, and Book Details Container */}
-        <Card className="p-6 border-2" style={{ borderColor: '#333333' }}>
-          <div className="space-y-6">
+        <Card className="p-8 border-2" style={{ borderColor: '#333333' }}>
+          <div className="space-y-8">
             {/* QR Code and Book Cover */}
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-12">
               {/* QR Code */}
-              <div className="space-y-4">
-               
-                <div className="bg-gray rounded-lg shadow-sm flex justify-center">
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-center">QR Code</h3>
+                <div className="bg-gray rounded-lg shadow-sm flex justify-center p-6">
                   <StyledQRCode
                     ref={qrCodeRef}
                     value={`${window.location.origin}/qr/${qrCode.id}`}
@@ -144,8 +145,8 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
               </div>
 
               {/* Book Cover with Upload */}
-              <div className="space-y-4">
-            
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-center">Book Cover</h3>
                 <div className="aspect-[2/3] rounded-lg overflow-hidden relative">
                   <OptimizedImage
                     key={imageRefreshKey}
@@ -166,22 +167,21 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             </div>
 
             {/* Book Details */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Book Details</h3>
-              <div className="space-y-2">
-                <p className="text-lg font-medium">{qrCode.book_title}</p>
+            <div className="space-y-4 pt-4">
+              <div className="space-y-3">
+                <p className="text-xl font-bold">{qrCode.book_title}</p>
                 {qrCode.publisher && (
-                  <p className="text-sm">
+                  <p className="text-base">
                     <span className="font-medium">Publisher:</span> {qrCode.publisher}
                   </p>
                 )}
                 {qrCode.isbn && (
-                  <p className="text-sm">
+                  <p className="text-base">
                     <span className="font-medium">ISBN:</span> {qrCode.isbn}
                   </p>
                 )}
                 {qrCode.release_date && (
-                  <p className="text-sm">
+                  <p className="text-base">
                     <span className="font-medium">Release Date:</span>{' '}
                     {format(new Date(qrCode.release_date), 'PPP')}
                   </p>
@@ -193,26 +193,26 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       </div>
 
       {/* Right side - Stats and Actions */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Individual Tip Statistics Tiles */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Statistics</h3>
+        <div className="space-y-6">
+          <h3 className="text-xl font-semibold">Statistics</h3>
           <div className="grid grid-cols-2 gap-4">
-            <Card className="p-4 bg-[#19363C] text-white">
-              <p className="text-sm text-white/80">Total Tips</p>
-              <p className="text-2xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
+            <Card className="p-6 bg-[#19363C] text-white">
+              <p className="text-sm text-white/80 mb-2">Total Tips</p>
+              <p className="text-3xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
             </Card>
-            <Card className="p-4 bg-[#19363C] text-white">
-              <p className="text-sm text-white/80">Total Amount</p>
-              <p className="text-2xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
+            <Card className="p-6 bg-[#19363C] text-white">
+              <p className="text-sm text-white/80 mb-2">Total Amount</p>
+              <p className="text-3xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
             </Card>
-            <Card className="p-4 bg-[#19363C] text-white">
-              <p className="text-sm text-white/80">Average Tip</p>
-              <p className="text-2xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
+            <Card className="p-6 bg-[#19363C] text-white">
+              <p className="text-sm text-white/80 mb-2">Average Tip</p>
+              <p className="text-3xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
             </Card>
-            <Card className="p-4 bg-[#19363C] text-white">
-              <p className="text-sm text-white/80">Last Tip</p>
-              <p className="text-2xl font-bold text-[#FFD166]">
+            <Card className="p-6 bg-[#19363C] text-white">
+              <p className="text-sm text-white/80 mb-2">Last Tip</p>
+              <p className="text-3xl font-bold text-[#FFD166]">
                 {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
               </p>
             </Card>
@@ -220,8 +220,8 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         </div>
 
         {/* Actions */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Actions</h3>
+        <Card className="p-8">
+          <h3 className="text-xl font-semibold mb-6">Actions</h3>
           <div className="space-y-4">
             {/* Hidden download QR code */}
             <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
