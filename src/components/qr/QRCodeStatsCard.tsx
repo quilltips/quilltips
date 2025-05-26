@@ -122,17 +122,16 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
   };
 
   return (
-    <div className="grid xl:grid-cols-2 gap-8 max-w-7xl mx-auto">
+    <div className="grid xl:grid-cols-2 gap-7 mx-auto">
       {/* Left side - QR Code, Book Cover, and Book Details */}
-      <div className="space-y-8">
+      <div className="">
         {/* QR Code, Book Cover, and Book Details Container */}
         <Card className="p-8 border-2" style={{ borderColor: '#333333' }}>
           <div className="space-y-8">
             {/* QR Code and Book Cover */}
-            <div className="grid grid-cols-2 gap-12">
+            <div className="grid grid-cols-2 gap-12 ">
               {/* QR Code */}
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-center">QR Code</h3>
+              <div className="space-y-4">
                 <div className="bg-gray rounded-lg shadow-sm flex justify-center p-6">
                   <StyledQRCode
                     ref={qrCodeRef}
@@ -146,7 +145,6 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
               {/* Book Cover with Upload */}
               <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-center">Book Cover</h3>
                 <div className="aspect-[2/3] rounded-lg overflow-hidden relative">
                   <OptimizedImage
                     key={imageRefreshKey}
@@ -167,22 +165,22 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             </div>
 
             {/* Book Details */}
-            <div className="space-y-4 pt-4">
-              <div className="space-y-3">
-                <p className="text-xl font-bold">{qrCode.book_title}</p>
+            <div className="space-y-2 pt-2">
+              <div className="space-y-2">
+                <p className="text-lg font-bold">{qrCode.book_title}</p>
                 {qrCode.publisher && (
                   <p className="text-base">
-                    <span className="font-medium">Publisher:</span> {qrCode.publisher}
+                    <span className="font-sm">Publisher:</span> {qrCode.publisher}
                   </p>
                 )}
                 {qrCode.isbn && (
                   <p className="text-base">
-                    <span className="font-medium">ISBN:</span> {qrCode.isbn}
+                    <span className="font-sm">ISBN:</span> {qrCode.isbn}
                   </p>
                 )}
                 {qrCode.release_date && (
                   <p className="text-base">
-                    <span className="font-medium">Release Date:</span>{' '}
+                    <span className="font-sm">Release Date:</span>{' '}
                     {format(new Date(qrCode.release_date), 'PPP')}
                   </p>
                 )}
@@ -196,7 +194,6 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       <div className="space-y-8">
         {/* Individual Tip Statistics Tiles */}
         <div className="space-y-6">
-          <h3 className="text-xl font-semibold">Statistics</h3>
           <div className="grid grid-cols-2 gap-4">
             <Card className="p-6 bg-[#19363C] text-white">
               <p className="text-sm text-white/80 mb-2">Total Tips</p>
@@ -221,7 +218,6 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
         {/* Actions */}
         <Card className="p-8">
-          <h3 className="text-xl font-semibold mb-6">Actions</h3>
           <div className="space-y-4">
             {/* Hidden download QR code */}
             <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
