@@ -1,3 +1,4 @@
+
 import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { RefObject, useRef } from "react";
@@ -10,6 +11,8 @@ import { useQRCheckout } from "@/hooks/use-qr-checkout";
 import { ShoppingCart, Share2 } from "lucide-react";
 import { generateBrandedQRCodeSVG } from "./generateBrandedQRCodeSVG";
 import { OptimizedImage } from "../ui/optimized-image";
+import { BookCoverUpload } from "./BookCoverUpload";
+import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -38,6 +41,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     qrCodeId: qrCode.id,
     bookTitle: qrCode.book_title
   });
+  const { updateCoverImage, imageRefreshKey } = useQRCodeDetailsPage();
 
   const downloadRef = useRef<HTMLDivElement>(null);
 
@@ -119,90 +123,100 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
   return (
     <div className="grid lg:grid-cols-2 gap-8">
-      {/* Left side - QR Code and Book Details */}
+      {/* Left side - QR Code, Book Cover, and Book Details */}
       <div className="space-y-6">
-        {/* QR Code and Book Cover Container */}
+        {/* QR Code, Book Cover, and Book Details Container */}
         <Card className="p-6 border-2" style={{ borderColor: '#333333' }}>
-          <div className="grid grid-cols-2 gap-6">
-            {/* QR Code */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">QR Code</h3>
-              <div className="bg-gray rounded-lg shadow-sm flex justify-center">
-                <StyledQRCode
-                  ref={qrCodeRef}
-                  value={`${window.location.origin}/qr/${qrCode.id}`}
-                  showBranding={true}
-                  isPaid={isPaid}
-                  variant="screen"
-                />
+          <div className="space-y-6">
+            {/* QR Code and Book Cover */}
+            <div className="grid grid-cols-2 gap-6">
+              {/* QR Code */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">QR Code</h3>
+                <div className="bg-gray rounded-lg shadow-sm flex justify-center">
+                  <StyledQRCode
+                    ref={qrCodeRef}
+                    value={`${window.location.origin}/qr/${qrCode.id}`}
+                    showBranding={true}
+                    isPaid={isPaid}
+                    variant="screen"
+                  />
+                </div>
+              </div>
+
+              {/* Book Cover with Upload */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Book Cover</h3>
+                <div className="aspect-[2/3] rounded-lg overflow-hidden relative">
+                  <OptimizedImage
+                    key={imageRefreshKey}
+                    src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
+                    alt={qrCode.book_title}
+                    className="w-full h-full"
+                    objectFit={qrCode.cover_image ? "cover" : "contain"}
+                    fallbackSrc="/lovable-uploads/quill_icon.png"
+                  />
+                  <BookCoverUpload 
+                    qrCodeId={qrCode.id}
+                    coverImage={qrCode.cover_image}
+                    bookTitle={qrCode.book_title}
+                    updateCoverImage={updateCoverImage}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Book Cover */}
+            {/* Book Details */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Book Cover</h3>
-              <div className="aspect-[2/3] rounded-lg overflow-hidden">
-                <OptimizedImage
-                  src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
-                  alt={qrCode.book_title}
-                  className="w-full h-full"
-                  objectFit={qrCode.cover_image ? "cover" : "contain"}
-                  fallbackSrc="/lovable-uploads/quill_icon.png"
-                />
+              <h3 className="text-lg font-semibold">Book Details</h3>
+              <div className="space-y-2">
+                <p className="text-lg font-medium">{qrCode.book_title}</p>
+                {qrCode.publisher && (
+                  <p className="text-sm">
+                    <span className="font-medium">Publisher:</span> {qrCode.publisher}
+                  </p>
+                )}
+                {qrCode.isbn && (
+                  <p className="text-sm">
+                    <span className="font-medium">ISBN:</span> {qrCode.isbn}
+                  </p>
+                )}
+                {qrCode.release_date && (
+                  <p className="text-sm">
+                    <span className="font-medium">Release Date:</span>{' '}
+                    {format(new Date(qrCode.release_date), 'PPP')}
+                  </p>
+                )}
               </div>
             </div>
-          </div>
-        </Card>
-
-        {/* Book Details */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Book Details</h3>
-          <div className="space-y-2">
-            <p className="text-lg font-medium">{qrCode.book_title}</p>
-            {qrCode.publisher && (
-              <p className="text-sm">
-                <span className="font-medium">Publisher:</span> {qrCode.publisher}
-              </p>
-            )}
-            {qrCode.isbn && (
-              <p className="text-sm">
-                <span className="font-medium">ISBN:</span> {qrCode.isbn}
-              </p>
-            )}
-            {qrCode.release_date && (
-              <p className="text-sm">
-                <span className="font-medium">Release Date:</span>{' '}
-                {format(new Date(qrCode.release_date), 'PPP')}
-              </p>
-            )}
           </div>
         </Card>
       </div>
 
       {/* Right side - Stats and Actions */}
       <div className="space-y-6">
-        {/* Tip Statistics */}
-        <Card className="p-6">
+        {/* Tip Statistics with Data Dashboard styling */}
+        <Card className="p-6 bg-[#19363C] text-white">
           <h3 className="text-lg font-semibold mb-4">Statistics</h3>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm">Total Tips</p>
-                <p className="text-2xl font-bold">{qrCode.total_tips || 0}</p>
+              <div className="p-4 bg-[#19363C] rounded-lg">
+                <p className="text-sm text-white/80">Total Tips</p>
+                <p className="text-2xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
               </div>
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm">Total Amount</p>
-                <p className="text-2xl font-bold">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
+              <div className="p-4 bg-[#19363C] rounded-lg">
+                <p className="text-sm text-white/80">Total Amount</p>
+                <p className="text-2xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm">Average Tip</p>
-                <p className="text-2xl font-bold">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
+              <div className="p-4 bg-[#19363C] rounded-lg">
+                <p className="text-sm text-white/80">Average Tip</p>
+                <p className="text-2xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
               </div>
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm">Last Tip</p>
-                <p className="text-2xl font-bold">
+              <div className="p-4 bg-[#19363C] rounded-lg">
+                <p className="text-sm text-white/80">Last Tip</p>
+                <p className="text-2xl font-bold text-[#FFD166]">
                   {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
                 </p>
               </div>
