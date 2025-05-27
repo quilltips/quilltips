@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -151,12 +150,14 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
   return (
     <div className="space-y-8">
       <div className="flex justify-end">
-        <Button 
+        <Button
           onClick={handleDownload}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 text-sm font-medium text-[#333333] hover:underline bg-transparent hover:bg-transparent border-none shadow-none p-0"
         >
-          <Download className="h-4 w-4" />
           Download All Data
+          <div className="bg-[#FFD166] hover:bg-transparent rounded-lg p-1">
+            <Download className="h-4 w-4 text-white" />
+          </div>
         </Button>
       </div>
       
@@ -183,4 +184,3 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
     </div>
   );
 };
-
