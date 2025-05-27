@@ -122,23 +122,24 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
   };
 
   return (
-    <div className="grid xl:grid-cols-2 gap-7 mx-auto">
+    <div className="grid xl:grid-cols-[3fr_2fr] gap-7 mx-auto">
       {/* Left side - QR Code, Book Cover, and Book Details */}
       <div className="">
         {/* QR Code, Book Cover, and Book Details Container */}
         <Card className="p-8 border-2" style={{ borderColor: '#333333' }}>
           <div className="space-y-8">
             {/* QR Code and Book Cover */}
-            <div className="grid grid-cols-2 gap-12 ">
+            <div className="grid grid-cols-2 gap-8">
               {/* QR Code */}
               <div className="space-y-4">
-                <div className="bg-gray rounded-lg shadow-sm flex justify-center pb-6 px-2 ml-2">
+                <div className="bg-gray rounded-lg shadow-sm flex justify-center p-4">
                   <StyledQRCode
                     ref={qrCodeRef}
                     value={`${window.location.origin}/qr/${qrCode.id}`}
                     showBranding={true}
                     isPaid={isPaid}
                     variant="screen"
+                    size={200}
                   />
                 </div>
               </div>
