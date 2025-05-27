@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -165,7 +166,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
         </DialogHeader>
 
         <ScrollArea className="max-h-[calc(90vh-4rem)]">
-          <div className="p-4 space-y-6">
+          <div className="p-6 space-y-8">
             {/* Tip content that matches TipTableRow */}
             <div className="flex gap-3 font-bold">
               <TipReaderAvatar readerName={tip.reader_name} className="h-8 w-8" />
@@ -191,53 +192,52 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
               </div>
             </div>
 
-            <div className="border-b py-3 border-gray-300"></div>
+            <div className="border-b py-4 border-gray-300"></div>
 
-            {/* Comments section */}
-            <div className="space-y-3">
+            {/* Comments section with improved spacing */}
+            <div className="space-y-6">
               {user && (
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <Textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Write a comment..."
-                    className="w-full text-sm min-h-[60px]"
+                    className="w-full text-sm min-h-[80px]"
                   />
                   <Button 
                     onClick={handleSubmitComment}
                     disabled={!newComment.trim() || isSubmitting}
                     className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
-                    size="sm"
                   >
-                    Post
+                    Post Comment
                   </Button>
                 </div>
               )}
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4" />
                 <h3 className="font-medium text-sm">Comments ({comments.length})</h3>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {comments.map((comment) => (
-                  <div key={comment.id} className="bg-muted/50 p-3 rounded-lg space-y-2">
-                    <div className="flex items-center gap-2">
+                  <div key={comment.id} className="bg-muted/50 p-4 rounded-lg space-y-3">
+                    <div className="flex items-center gap-3">
                       <AuthorCommentAvatar 
                         authorName={comment.profiles?.name} 
                         avatarUrl={comment.profiles?.avatar_url}
-                        className="h-6 w-6" 
+                        className="h-7 w-7" 
                       />
                       <div>
-                        <p className="font-medium text-xs">
+                        <p className="font-medium text-sm">
                           {comment.profiles?.name || "Author"}
                         </p>
-                        <p className="text-[10px]">
+                        <p className="text-xs text-muted-foreground">
                           {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                         </p>
                       </div>
                     </div>
-                    <p className="text-sm pl-8">{comment.content}</p>
+                    <p className="text-sm pl-10 leading-relaxed">{comment.content}</p>
                   </div>
                 ))}
               </div>

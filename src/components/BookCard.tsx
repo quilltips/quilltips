@@ -74,18 +74,16 @@ export const BookCard = ({
         </div>
       </Link>
 
-      <div className="p-2">
+      <div className="p-2 flex gap-2">
         <Button 
           onClick={(e) => {
-            e.preventDefault(); // Prevent navigation when clicking the button
+            e.preventDefault();
             setShowTipDialog(true);
           }} 
-          className="w-full"
-          variant="secondary"
+          className="flex-1 bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C]"
           size="sm"
         >
-          <span className="text-xs">Send Tip</span>
-          <CreditCard className="ml-1 h-3 w-3" />
+          <span className="text-xs">Leave a tip</span>
         </Button>
       </div>
 

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Download, Info } from "lucide-react";
+import { Download } from "lucide-react";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -8,12 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
 
 interface QRCodeDownloadOptionsProps {
   onDownloadSVG: () => void;
@@ -28,10 +22,6 @@ export const QRCodeDownloadOptions = ({
   className,
   disabled = false
 }: QRCodeDownloadOptionsProps) => {
-  const tooltipContent = disabled
-    ? "Purchase this QR code to enable downloads"
-    : "SVG is perfect for print and keeps your QR code crisp at any size. PNG works well for digital use and is widely compatible.";
-    
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <DropdownMenu>
@@ -59,18 +49,6 @@ export const QRCodeDownloadOptions = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <Info className="h-5 w-5 text-muted-foreground" />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent className="max-w-xs">
-            <p>{tooltipContent}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
     </div>
   );
 };
