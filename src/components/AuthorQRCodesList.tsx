@@ -1,8 +1,7 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
-import { Loader2, Plus, HelpCircle, LockKeyhole } from "lucide-react";
+import { Loader2, Plus, HelpCircle, LockKeyhole, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { QRCodeCard } from "./qr/QRCodeCard";
 import { useState } from "react";
@@ -159,18 +158,13 @@ export const AuthorQRCodesList = ({
           </div>
           
           {qrCodes && qrCodes.length > 0 && (
-            <div className="relative">
-              <div className="h-12 bg-gradient-to-b from-transparent to-white/80 absolute bottom-0 left-0 right-0"></div>
-              <div className="flex justify-center mt-4">
-                <Link to="/author/book-qr-codes?tab=all" className="inline-flex items-center text-sm text-[#718096] hover:text-[#2D3748]">
-                  <Button variant="ghost" className="flex items-center gap-1">
-                    See all 
-                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </Button>
-                </Link>
-              </div>
+            <div className="flex justify-center mt-4">
+              <Link to="/author/book-qr-codes?tab=all" className="inline-flex items-center text-sm text-[#718096] hover:text-[#2D3748]">
+                <Button variant="ghost" className="flex items-center gap-1">
+                  See all 
+                  <ChevronRight className="h-3 w-3" />
+                </Button>
+              </Link>
             </div>
           )}
           
