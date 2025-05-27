@@ -40,7 +40,7 @@ export const QRCodeTipForm = ({
   return (
     <Card className="mt-8">
       <CardContent className="pt-6">
-        <h2 className="text-2xl font-bold text-center mb-6">
+        <h2 className="text-2xl font-bold text-left mb-6">
           Send {authorFirstName} a tip!
         </h2>
         <form onSubmit={onSubmit} className="space-y-8">
@@ -48,6 +48,7 @@ export const QRCodeTipForm = ({
             name={name}
             message={message}
             email={email}
+            authorFirstName={authorFirstName}
             onNameChange={onNameChange}
             onMessageChange={onMessageChange}
             onEmailChange={onEmailChange}

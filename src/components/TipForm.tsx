@@ -33,7 +33,7 @@ export const TipForm = ({ authorId, authorName, bookTitle, qrCodeId }: TipFormPr
   return (
     <Card className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-center">
+        <h2 className="text-2xl font-bold text-left">
           Send {authorFirstName} a tip!
         </h2>
         
@@ -41,6 +41,7 @@ export const TipForm = ({ authorId, authorName, bookTitle, qrCodeId }: TipFormPr
           name={name}
           message={message}
           email={email}
+          authorFirstName={authorFirstName}
           onNameChange={setName}
           onMessageChange={setMessage}
           onEmailChange={setEmail}

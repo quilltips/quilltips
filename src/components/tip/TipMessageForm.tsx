@@ -7,6 +7,7 @@ interface TipMessageFormProps {
   name: string;
   message: string;
   email: string;
+  authorFirstName?: string;
   onNameChange: (value: string) => void;
   onMessageChange: (value: string) => void;
   onEmailChange: (value: string) => void;
@@ -16,6 +17,7 @@ export const TipMessageForm = ({
   name,
   message,
   email,
+  authorFirstName = "the author",
   onNameChange,
   onMessageChange,
   onEmailChange,
@@ -29,7 +31,6 @@ export const TipMessageForm = ({
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
-          placeholder="Your name"
           className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary"
         />
       </div>
@@ -41,7 +42,6 @@ export const TipMessageForm = ({
           type="email"
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
-          placeholder="Your email address"
           className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary"
           required
         />
@@ -53,7 +53,7 @@ export const TipMessageForm = ({
           id="message"
           value={message}
           onChange={(e) => onMessageChange(e.target.value)}
-          placeholder="Leave a message for the author"
+          placeholder={`Tell ${authorFirstName} what you liked about this book!`}
           className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary resize-none"
           rows={3}
         />
