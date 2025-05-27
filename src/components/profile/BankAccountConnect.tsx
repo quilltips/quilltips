@@ -61,8 +61,14 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         throw new Error('Failed to get Stripe onboarding URL');
       }
       
-      // Redirect directly to Stripe for onboarding or dashboard
-      window.location.href = data.url;
+      // Open Stripe in a new tab for account management
+      window.open(data.url, '_blank');
+      
+      // Show feedback that Stripe opened in new tab
+      toast({
+        title: "Stripe Opened",
+        description: "Stripe account management has opened in a new tab. Return here when you're done.",
+      });
     } catch (error: any) {
       console.error("Error connecting to Stripe:", error);
       toast({
@@ -79,7 +85,6 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
     <div className="space-y-3">
       <Button
         type="button"
- 
         onClick={handleConnect}
         disabled={isConnecting}
         className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]"
@@ -87,14 +92,14 @@ export const BankAccountConnect = ({ profileId, stripeAccountId }: BankAccountCo
         {isConnecting ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Connecting to Stripe...</span>
+            <span>Opening Stripe...</span>
           </>
         ) : (
           <>
             <Wallet className="h-4 w-4" />
             <span>
               {stripeAccountId ? "Manage Payment Settings" : "Connect bank account"}
-              {stripeAccountId && <span className="text-xs ml-1">(Opens Stripe)</span>}
+              {stripeAccountId && <span className="text-xs ml-1">(Opens in new tab)</span>}
             </span>
           </>
         )}

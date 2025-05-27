@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { ArrowRight, Wallet, Info, Loader2 } from "lucide-react"; // Added Loader2 import
+import { ArrowRight, Wallet, Info, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "../ui/alert";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -60,9 +60,17 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
         // Continue with Stripe flow even if email fails
       }
 
-      // Redirect to Stripe for onboarding
-      window.location.href = data.url;
-      // Remove the onComplete call here - we'll handle the return in the dashboard
+      // Open Stripe in a new tab for onboarding
+      window.open(data.url, '_blank');
+      
+      // Show feedback and navigate to dashboard
+      toast({
+        title: "Stripe Opened",
+        description: "Stripe setup has opened in a new tab. Return here when you're done.",
+      });
+      
+      navigate('/author/dashboard');
+      onComplete();
     } catch (error: any) {
       console.error("Error connecting to Stripe:", error);
       toast({
@@ -98,12 +106,12 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              <span>Connecting to Stripe...</span>
+              <span>Opening Stripe...</span>
             </>
           ) : (
             <>
               <Wallet className="mr-2 h-4 w-4" />
-              <span>Set up payments now</span>
+              <span>Set up payments now (opens in new tab)</span>
             </>
           )}
         </Button>

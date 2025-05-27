@@ -91,8 +91,17 @@ const AuthorBankAccount = () => {
         // Continue with Stripe setup flow even if email fails
       }
 
-      // Direct redirect to Stripe Connect onboarding without going through dashboard first
-      window.location.href = data.url;
+      // Open Stripe in a new tab for onboarding
+      window.open(data.url, '_blank');
+      
+      // Show feedback to user
+      toast({
+        title: "Stripe Opened",
+        description: "Stripe setup has opened in a new tab. Return here when you're done.",
+      });
+      
+      // Navigate to dashboard after opening Stripe
+      navigate('/author/dashboard');
     } catch (error: any) {
       console.error("Error connecting bank account:", error);
       toast({
@@ -148,12 +157,12 @@ const AuthorBankAccount = () => {
                 {isConnecting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    <span>Connecting to Stripe...</span>
+                    <span>Opening Stripe...</span>
                   </>
                 ) : (
                   <>
                     <Wallet className="mr-2 h-4 w-4" />
-                    <span>Connect Bank Account</span>
+                    <span>Connect Bank Account (opens in new tab)</span>
                   </>
                 )}
               </Button>

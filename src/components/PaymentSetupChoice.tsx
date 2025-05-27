@@ -44,10 +44,15 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
         throw new Error('Failed to get Stripe onboarding URL');
       }
 
-      // Redirect to Stripe for onboarding
-      window.location.href = data.url;
+      // Open Stripe in a new tab for account setup
+      window.open(data.url, '_blank');
       
-      // This will only execute if the redirect fails
+      // Show feedback and continue the flow
+      toast({
+        title: "Stripe Opened",
+        description: "Stripe setup has opened in a new tab. Return here when you're done.",
+      });
+      
       onContinue();
     } catch (error: any) {
       console.error("Error connecting to Stripe:", error);
@@ -85,7 +90,7 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
             disabled={isLoading}
           >
             <Wallet className="mr-2 h-4 w-4" />
-            Set up payments now
+            Set up payments now (opens in new tab)
           </Button>
 
           <div className="relative">
