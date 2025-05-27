@@ -17,7 +17,7 @@ export const TopBooks = ({ topBooks }: TopBooksProps) => {
     <Card className="overflow-hidden">
       <CardContent className="p-4 md:p-6 bg-[#19363C] text-white min-h-[200px] flex flex-col">
         <div className="flex-1 space-y-6">
-          <h2 className="text-xl md:text-2xl font-playfair text-center">Top Books</h2>
+          <h2 className="text-xl md:text-2xl font-playfair text-left">Top Books</h2>
           
           <div className="flex-1 space-y-3">
             {topBooks.length > 0 ? (
