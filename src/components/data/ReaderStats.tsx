@@ -14,8 +14,8 @@ interface ReaderStatsProps {
 
 export const ReaderStats = ({ readerInfo }: ReaderStatsProps) => {
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-6 bg-[#19363C] text-white">
+    <Card className="overflow-hidden bg-[#19363C]">
+      <CardContent className="p-6  text-white">
         <div className="space-y-6">
           <h2 className="text-2xl font-playfair">Your readers</h2>
           

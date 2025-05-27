@@ -9,8 +9,8 @@ interface TipStatsProps {
 
 export const TipStats = ({ totalAmount, averageTip, totalTips }: TipStatsProps) => {
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-6 bg-[#19363C] text-white">
+    <Card className="overflow-hidden bg-[#19363c]">
+      <CardContent className="p-6  text-white">
         <div className="space-y-6 md:min-h-[165px]">
           <h2 className="text-2xl font-playfair">Tips</h2>
           

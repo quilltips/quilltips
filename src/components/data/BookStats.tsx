@@ -1,6 +1,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Book } from "lucide-react";
+import { BookOpenText } from "lucide-react";
 
 interface BookStatsProps {
   totalBooks: number;
@@ -8,27 +8,30 @@ interface BookStatsProps {
 
 export const BookStats = ({ totalBooks }: BookStatsProps) => {
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-6 bg-[#19363C] text-white">
+    <Card className="overflow-hidden bg-[#19363C]">
+      <CardContent className="p-6  text-white">
         <div className="space-y-6">
           <h2 className="text-2xl font-playfair">My books</h2>
           
-          <div className="flex items-center justify-between">
-            <div className="text-4xl font-bold text-[#FFD166]">
-              {totalBooks}
-              <div className="text-sm font-normal text-white mt-1">Books</div>
-            </div>
-            
-            <div className="flex items-center">
-              <div className="bg-[#FFD166] rounded-full p-4">
-                <Book className="h-8 w-8 text-[#19363C]" />
+          <div className="flex justify-center gap-5 w-full">
+            <div className="flex items-center ">
+              <div className="flex flex-col items-center text-4xl font-bold text-[#FFD166]">
+                {totalBooks}
+                <div className="text-sm font-normal text-[#FFD166] mt-1">Books</div>
+              </div>
+              
+              <div className="flex items-center">
+                <div className="bg-transparent rounded-full p-4">
+                  <BookOpenText className="h-12 w-12 text-[#FFD166]" />
+                </div>
               </div>
             </div>
           </div>
-          
-          <p className="text-sm text-white/80">
-            Number of books with an associated Quilltips Jar
-          </p>
+          <div className="w-full flex justify-center">
+            <p className="text-sm text-white/80">
+              Number of books with an associated Quilltips Jar
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>
