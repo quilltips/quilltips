@@ -47,7 +47,7 @@ export const TipDownloadButton = ({
           tip.amount,
           `"${(tip.message || '').replace(/"/g, '""')}"`,
           `"${(tip.reader_name || 'Anonymous').replace(/"/g, '""')}"`,
-          `"${(tip.reader_email || '').replace(/"/g, '""')}"`, // Fixed: removed extra backtick
+          `"${(tip.reader_email || '').replace(/"/g, '""')}"`,
           likes?.filter(like => like.tip_id === tip.id).length || 0,
           comments?.filter(comment => comment.tip_id === tip.id).length || 0
         ].join(','))
@@ -79,12 +79,11 @@ export const TipDownloadButton = ({
 
   return (
     <Button
-      variant="ghost"
-      size="icon"
       onClick={handleDownloadAll}
-      className="ml-2"
+      className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-white rounded-lg px-3 py-2 flex items-center gap-2 text-sm font-medium hover:underline"
     >
       <Download className="h-4 w-4" />
+      Download
     </Button>
   );
 };
