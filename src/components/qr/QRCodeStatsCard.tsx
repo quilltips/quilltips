@@ -126,10 +126,10 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       {/* Left side - QR Code, Book Cover, and Book Details */}
       <div className="">
         {/* QR Code, Book Cover, and Book Details Container */}
-        <Card className="p-8 border-2" style={{ borderColor: '#333333' }}>
+        <Card className="p-4 md:p-8 border-2" style={{ borderColor: '#333333' }}>
           <div className="space-y-8">
-            {/* QR Code and Book Cover */}
-            <div className="grid grid-cols-2 gap-8">
+            {/* QR Code and Book Cover - Responsive Stacking */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               {/* QR Code */}
               <div className="space-y-4">
                 <div className="bg-gray rounded-lg shadow-sm flex justify-center">
@@ -139,14 +139,14 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                     showBranding={true}
                     isPaid={isPaid}
                     variant="screen"
-                    size={200}
+                    size={window.innerWidth < 768 ? 180 : 200}
                   />
                 </div>
               </div>
 
-              {/* Book Cover with Upload */}
+              {/* Book Cover with Upload - Max Width Constraint */}
               <div className="space-y-4">
-                <div className="aspect-[2/3] rounded-lg overflow-hidden relative">
+                <div className="aspect-[2/3] rounded-lg overflow-hidden relative max-w-xs mx-auto md:mx-0">
                   <OptimizedImage
                     key={imageRefreshKey}
                     src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
@@ -196,21 +196,21 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         {/* Individual Tip Statistics Tiles */}
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-3">
-            <Card className="p-5 bg-[#19363C] text-white">
-              <p className="text-sm text-white/80 mb-2">Total Tips</p>
-              <p className="text-3xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
+            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
+              <p className="text-xs md:text-sm text-white/80 mb-2">Total Tips</p>
+              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
             </Card>
-            <Card className="p-5 bg-[#19363C] text-white">
-              <p className="text-sm text-white/80 mb-2">Total Amount</p>
-              <p className="text-3xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
+            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
+              <p className="text-xs md:text-sm text-white/80 mb-2">Total Amount</p>
+              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
             </Card>
-            <Card className="p-5 bg-[#19363C] text-white">
-              <p className="text-sm text-white/80 mb-2">Average Tip</p>
-              <p className="text-3xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
+            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
+              <p className="text-xs md:text-sm text-white/80 mb-2">Average Tip</p>
+              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
             </Card>
-            <Card className="p-5 bg-[#19363C] text-white">
-              <p className="text-sm text-white/80 mb-2">Last Tip</p>
-              <p className="text-3xl font-bold text-[#FFD166]">
+            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
+              <p className="text-xs md:text-sm text-white/80 mb-2">Last Tip</p>
+              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">
                 {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
               </p>
             </Card>
@@ -218,7 +218,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         </div>
 
         {/* Actions */}
-        <Card className="p-8">
+        <Card className="p-6 md:p-8">
           <div className="space-y-4">
             {/* Hidden download QR code */}
             <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
