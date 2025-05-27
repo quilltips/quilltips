@@ -132,7 +132,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             <div className="grid grid-cols-2 gap-8">
               {/* QR Code */}
               <div className="space-y-4">
-                <div className="bg-gray rounded-lg shadow-sm flex justify-center p-4">
+                <div className="bg-gray rounded-lg shadow-sm flex justify-center">
                   <StyledQRCode
                     ref={qrCodeRef}
                     value={`${window.location.origin}/qr/${qrCode.id}`}
@@ -168,7 +168,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             {/* Book Details */}
             <div className="space-y-2 pt-2">
               <div className="space-y-2">
-                <p className="text-lg font-bold">{qrCode.book_title}</p>
+                <p className="text-base font-bold">{qrCode.book_title}</p>
                 {qrCode.publisher && (
                   <p className="text-base">
                     <span className="font-sm">Publisher:</span> {qrCode.publisher}
