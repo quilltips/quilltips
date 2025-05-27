@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
-import { ChevronDown, Loader2, Plus, HelpCircle, ArrowRight, LockKeyhole } from "lucide-react";
+import { Loader2, Plus, HelpCircle, LockKeyhole } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { QRCodeCard } from "./qr/QRCodeCard";
 import { useState } from "react";
@@ -24,7 +24,6 @@ export const AuthorQRCodesList = ({
 }: AuthorQRCodesListProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [showAll, setShowAll] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   
   const stripeIncomplete = !hasStripeAccount || !stripeSetupComplete;
@@ -75,7 +74,8 @@ export const AuthorQRCodesList = ({
     </div>;
   }
 
-  const displayedQRCodes = showAll ? qrCodes : qrCodes?.slice(0, 5);
+  // Always show only first 5 QR codes in dashboard view
+  const displayedQRCodes = qrCodes?.slice(0, 5);
 
   const handlePopoverOpenChange = (open: boolean) => {
     setIsPopoverOpen(open);
@@ -156,26 +156,7 @@ export const AuthorQRCodesList = ({
                 onNavigate={() => navigate(`/author/qr/${qr.id}`)}
               />
             ))}
-            
-            {qrCodes.length > 5 && (
-              <Button 
-                variant="ghost" 
-                className="w-full mt-2 text-[#718096] hover:text-[#2D3748] hover:bg-gray-100 py-1 h-auto text-xs" 
-                onClick={() => setShowAll(!showAll)}
-              >
-                <ChevronDown className={`h-3 w-3 mr-1 transition-transform duration-200 ${showAll ? 'rotate-180' : ''}`} />
-                {showAll ? 'Show Less' : `Show ${qrCodes.length - 5} More`}
-              </Button>
-            )}
           </div>
-          
-          <Button 
-            onClick={() => navigate('/author/book-qr-codes?tab=new')} 
-            className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] p-3 h-auto font-medium text-sm"
-          >
-            <Plus className="h-3 w-3 mr-2" />
-            New QR code
-          </Button>
           
           {qrCodes && qrCodes.length > 0 && (
             <div className="relative">
@@ -184,12 +165,22 @@ export const AuthorQRCodesList = ({
                 <Link to="/author/book-qr-codes?tab=all" className="inline-flex items-center text-sm text-[#718096] hover:text-[#2D3748]">
                   <Button variant="ghost" className="flex items-center gap-1">
                     See all 
-                    <ArrowRight className="h-3 w-3" />
+                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </Button>
                 </Link>
               </div>
             </div>
           )}
+          
+          <Button 
+            onClick={() => navigate('/author/book-qr-codes?tab=new')} 
+            className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] p-3 h-auto font-medium text-sm"
+          >
+            <Plus className="h-3 w-3 mr-2" />
+            New QR code
+          </Button>
         </div>
       )}
     </div>
