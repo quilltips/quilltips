@@ -111,7 +111,7 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
           ) : (
             <>
               <Wallet className="mr-2 h-4 w-4" />
-              <span>Set up payments now (opens in new tab)</span>
+              <span>Set up payments now (opens Stripe in new tab)</span>
             </>
           )}
         </Button>

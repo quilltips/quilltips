@@ -90,7 +90,7 @@ export const PaymentSetupChoice = ({ onContinue, onSkip }: PaymentSetupChoicePro
             disabled={isLoading}
           >
             <Wallet className="mr-2 h-4 w-4" />
-            Set up payments now (opens in new tab)
+            Set up payments now (opens Stripe in new tab)
           </Button>
 
           <div className="relative">

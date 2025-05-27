@@ -162,7 +162,7 @@ const AuthorBankAccount = () => {
                 ) : (
                   <>
                     <Wallet className="mr-2 h-4 w-4" />
-                    <span>Connect Bank Account (opens in new tab)</span>
+                    <span>Connect Bank Account (opens Stripe in new tab)</span>
                   </>
                 )}
               </Button>
