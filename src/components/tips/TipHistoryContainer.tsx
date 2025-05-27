@@ -79,8 +79,8 @@ export const TipHistoryContainer = ({
                 <div className="h-12 bg-gradient-to-b from-transparent to-white/80 absolute bottom-0 left-0 right-0"></div>
               </div>
               
-              <div className="flex justify-center mt-4">
-                <Link to="/author/tip-feed" className="inline-flex items-center text-sm text-[#718096] hover:text-[#2D3748]">
+              <div className="flex justify-center mt-4 text-[#333333]">
+                <Link to="/author/tip-feed" className="inline-flex items-center text-sm text-[#333333] hover:text-[#2D3748] hover:underline">
                   <Button variant="ghost" className="flex items-center gap-1">
                     See all 
                     <ChevronRight className="h-3 w-3" />

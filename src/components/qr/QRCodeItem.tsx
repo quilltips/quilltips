@@ -24,7 +24,7 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
 
   return (
     <Card 
-      className="overflow-hidden hover:bg-white transition-all cursor-pointer"
+      className="overflow-hidden hover:bg-white/70 transition-all cursor-pointer mb-3"
       onClick={handleClick}
     >
       <div className="p-4 flex items-center gap-3">

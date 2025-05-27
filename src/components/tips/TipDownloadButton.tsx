@@ -80,10 +80,10 @@ export const TipDownloadButton = ({
   return (
     <Button
       onClick={handleDownloadAll}
-      className="flex items-center gap-2 text-sm font-medium text-[#333333] hover:underline bg-transparent hover:bg-transparent border-none shadow-none p-0"
+      className="group flex items-center gap-2 text-sm font-medium text-[#333333] hover:underline bg-transparent hover:bg-transparent hover:shadow-none border-none shadow-none p-0"
     >
       Download
-      <div className="bg-[#FFD166] hover:bg-transparent rounded-lg p-1">
+      <div className="bg-[#FFD166] hover:bg-[#FFD166] rounded-lg p-1">
         <Download className="h-4 w-4 text-white" />
       </div>
     </Button>

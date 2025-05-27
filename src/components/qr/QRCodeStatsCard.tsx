@@ -126,13 +126,13 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       {/* Left side - QR Code, Book Cover, and Book Details */}
       <div className="">
         {/* QR Code, Book Cover, and Book Details Container */}
-        <Card className="p-4 md:p-8 border-2" style={{ borderColor: '#333333' }}>
+        <Card className="p-4 md:p-7 border" style={{ borderColor: '#333333' }}>
           <div className="space-y-8">
             {/* QR Code and Book Cover - Responsive Stacking */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 ">
               {/* QR Code */}
               <div className="space-y-4">
-                <div className="bg-gray rounded-lg shadow-sm flex justify-center">
+                <div className="bg-gray rounded-lg flex justify-center">
                   <StyledQRCode
                     ref={qrCodeRef}
                     value={`${window.location.origin}/qr/${qrCode.id}`}
@@ -218,7 +218,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         </div>
 
         {/* Actions */}
-        <Card className="p-6 md:p-8">
+        <Card className="p-4 md:p-5 md:mt-4">
           <div className="space-y-4">
             {/* Hidden download QR code */}
             <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
@@ -238,8 +238,8 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             />
 
             <Button 
-              variant="outline" 
-              className="w-full"
+              variant="secondary" 
+              className="w-full border border-[#333333]"
               onClick={handleShare}
             >
               <Share2 className="mr-2 h-4 w-4" />

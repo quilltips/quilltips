@@ -153,11 +153,11 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
       <div className="flex justify-end">
         <Button
           onClick={handleDownload}
-          className="flex items-center gap-2 text-sm font-medium text-[#333333] hover:underline bg-transparent hover:bg-transparent border-none shadow-none p-0"
+          className="group flex items-center gap-2 text-sm font-medium text-[#333333] hover:underline bg-transparent hover:bg-transparent border-none shadow-none p-0 hover:shadow-none"
         >
           Download All Data
-          <div className="bg-[#FFD166] hover:bg-transparent rounded-lg p-1">
-            <Download className="h-4 w-4 text-white" />
+          <div className="bg-[#FFD166] hover:bg-[#ffd166] rounded-lg p-1">
+            <Download className="h-4 w-4 text-white " />
           </div>
         </Button>
       </div>

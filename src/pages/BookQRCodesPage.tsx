@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreateQRCode } from "@/components/CreateQRCode";
 import { HowQRCodesWork } from "@/components/qr/HowQRCodesWork";
+import { Link } from "react-router-dom";
 
 const BookQRCodesPage = () => {
   const navigate = useNavigate();
@@ -130,8 +131,18 @@ const BookQRCodesPage = () => {
                 </div>
                 
                 <CreateQRCode authorId={profile.id} />
-                
-                <HowQRCodesWork />
+                <div className="w-full text-center">
+                  <p className="mt-4">
+                      <Link 
+                        to="/how-it-works" 
+                        target="_blank"
+                        className="text-[#333333] underline  transition-colors"
+                      >
+                        Learn more about how Quilltips works
+                      </Link>
+                    </p>
+                </div>
+               
               </div>
             </TabsContent>
           </Tabs>

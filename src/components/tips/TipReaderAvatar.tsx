@@ -14,11 +14,11 @@ export const TipReaderAvatar = ({ readerName, className }: TipReaderAvatarProps)
   return (
     <div 
       className={cn(
-        "flex items-center justify-center w-12 h-12 rounded-full bg-[#FFD166]",
+        "flex items-center justify-center w-12 h-12 rounded-full bg-transparent border border-[#333333]",
         className
       )}
     >
-      <span className="text-[#19363C] text-lg font-semibold">
+      <span className="text-[#333333] text-md font-semibold">
         {initial}
       </span>
     </div>

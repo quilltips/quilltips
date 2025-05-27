@@ -159,7 +159,7 @@ export const AuthorQRCodesList = ({
           
           {qrCodes && qrCodes.length > 0 && (
             <div className="flex justify-center mt-4">
-              <Link to="/author/book-qr-codes?tab=all" className="inline-flex items-center text-sm text-[#718096] hover:text-[#2D3748]">
+              <Link to="/author/book-qr-codes?tab=all" className="inline-flex items-center text-sm text-[#333333] hover:text-[#2D3748] hover:underline">
                 <Button variant="ghost" className="flex items-center gap-1">
                   See all 
                   <ChevronRight className="h-3 w-3" />

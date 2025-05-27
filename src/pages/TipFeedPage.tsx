@@ -61,14 +61,14 @@ const TipFeedPage = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Tip Feed</h1>
+            <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Your tip activity</h1>
           </div>
 
-          <div className="bg-white border border-black rounded-xl p-6 shadow-sm">
+          <div className="bg-transparent border border-black rounded-xl p-6 shadow-sm">
             <TipHistory 
               authorId={profile.id} 
               isDashboard={false} 
-              customTitle="Your Tip Activity"
+              customTitle=" "
             />
           </div>
         </div>

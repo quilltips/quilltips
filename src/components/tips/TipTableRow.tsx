@@ -67,10 +67,10 @@ export const TipTableRow = ({
 
   return (
     <div 
-      className="group cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors"
+      className="group cursor-pointer hover:bg-[white]/70 p-2 rounded-lg transition-colors"
       onClick={() => onSelectTip(tip)}
     >
-      <div className="flex gap-3 font-bold">
+      <div className="flex gap-3 ">
         <TipReaderAvatar readerName={tip.reader_name} className="h-8 w-8" />
 
         <div className="flex-1 space-y-2">
@@ -80,7 +80,7 @@ export const TipTableRow = ({
               {" sent "}
               <span className="">${tip.amount}</span>
               {tip.book_title && (
-                <> for <span className="italic">{tip.book_title}</span></>
+                <> for <span className="italic font-bold">{tip.book_title}</span></>
               )}
             </p>
             
@@ -114,7 +114,7 @@ export const TipTableRow = ({
 
         </div>
       </div>
-      <div className="border-b py-3 border-gray-300"></div>
+      <div className="border-b py-2 border-gray-300"></div>
 
     </div>
   );

@@ -32,7 +32,7 @@ export const AuthorDashboardContent = ({
           />
         </div>
         
-        <div className="border border-[#333333] rounded-xl p-4 bg-transparent shadow-sm">
+        <div className="border border-[#333333] rounded-xl p-4 bg-transparent">
           <AuthorQRCodesList 
             authorId={authorId}
             stripeSetupComplete={stripeSetupComplete}

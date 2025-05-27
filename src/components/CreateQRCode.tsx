@@ -79,7 +79,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
 
   return (
     <Card className="p-6 shadow-none bg-transparent">
-      <form onSubmit={handleSubmit} className="space-y-5 text-left">
+      <form onSubmit={handleSubmit} className="space-y-6 text-left">
         <div className="space-y-2">
           <label className="text-sm font-medium">Enter the book title</label>
           <Input
@@ -109,7 +109,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal hover:bg-transparent hover:shadow-none",
+                  "border border-[#333333] rounded-md w-full justify-start text-left font-normal hover:bg-transparent hover:shadow-none",
                   !releaseDate && ""
                 )}
               >
@@ -133,7 +133,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           <Input
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
-            placeholder="Enter ISBN number"
+            placeholder=""
             required
           />
         </div>
@@ -168,7 +168,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
               {imageError}
             </p>
           )}
-          <p className="text-xs ">
+          <p className="text-sm pt-1 pb-4 ">
             Recommended size: 600×900 pixels. Max: 10MB.
           </p>
         </div>
