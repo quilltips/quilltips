@@ -3,6 +3,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { AuthorPublicTipFeed } from "@/components/tips/AuthorPublicTipFeed";
 import { BookOpen } from "lucide-react";
+import { useState } from "react";
+import { QRCodeDialog } from "@/components/qr/QRCodeDialog";
 
 interface AuthorProfileContentProps {
   authorId: string;
@@ -17,8 +19,14 @@ export const AuthorProfileContent = ({
   stripeSetupComplete = false,
   hasStripeAccount = false
 }: AuthorProfileContentProps) => {
+  const [selectedQRCode, setSelectedQRCode] = useState<{ id: string; bookTitle: string } | null>(null);
+  
   // Check if the author has completed Stripe onboarding
   const stripeOnboardingComplete = hasStripeAccount && stripeSetupComplete;
+
+  const handleTipClick = (qrCode: { id: string; bookTitle: string }) => {
+    setSelectedQRCode(qrCode);
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 px-4 py-8">
@@ -29,7 +37,12 @@ export const AuthorProfileContent = ({
             <CardTitle className="text-xl text-[#2D3748]">Books</CardTitle>
           </CardHeader>
           <CardContent>
-            <AuthorQRCodes authorId={authorId} authorName={authorName} />
+            <AuthorQRCodes 
+              authorId={authorId} 
+              authorName={authorName}
+              showTipButtons={true}
+              onTipClick={handleTipClick}
+            />
           </CardContent>
         </Card>
       ) : (
@@ -61,9 +74,19 @@ export const AuthorProfileContent = ({
       {/* Tip Guidance Text */}
       {stripeOnboardingComplete && (
         <p className="text-sm text-[#718096] text-center mt-4">
-          To send a tip, simply select a book from the Books section above and click the "Leave a tip!" button!
+          To send a tip, simply select a book from the Books section above and click the "Tip the author" button!
         </p>
+      )}
+
+      {selectedQRCode && (
+        <QRCodeDialog
+          isOpen={!!selectedQRCode}
+          onClose={() => setSelectedQRCode(null)}
+          selectedQRCode={selectedQRCode}
+          authorId={authorId}
+          authorName={authorName}
+        />
       )}
     </div>
   );
-}  
+}

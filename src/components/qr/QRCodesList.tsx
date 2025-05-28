@@ -15,12 +15,16 @@ interface QRCodesListProps {
   authorId: string;
   stripeSetupComplete?: boolean;
   hasStripeAccount?: boolean;
+  showTipButtons?: boolean;
+  onTipClick?: (qrCode: { id: string; bookTitle: string }) => void;
 }
 
 export const QRCodesList = ({ 
   authorId,
   stripeSetupComplete = true,
-  hasStripeAccount = true 
+  hasStripeAccount = true,
+  showTipButtons = false,
+  onTipClick
 }: QRCodesListProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -105,7 +109,7 @@ export const QRCodesList = ({
 
   return (
     <div className="space-y-4">
-      {stripeIncomplete && (
+      {stripeIncomplete && !showTipButtons && (
         <div className="flex items-center gap-2 mb-4 p-4 bg-amber-50/50 rounded-lg border border-amber-200">
           {/* For desktop, use tooltip */}
           <div className="hidden sm:block">
@@ -139,11 +143,13 @@ export const QRCodesList = ({
         </div>
       )}
       
-      <div className={stripeIncomplete ? 'opacity-75' : ''}>
+      <div className={stripeIncomplete && !showTipButtons ? 'opacity-75' : ''}>
         {qrCodes.map(qrCode => (
           <QRCodeItem 
             key={qrCode.id} 
-            qrCode={qrCode} 
+            qrCode={qrCode}
+            showTipButton={showTipButtons}
+            onTipClick={onTipClick}
           />
         ))}
       </div>

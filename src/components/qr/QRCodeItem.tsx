@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Card } from "../ui/card";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "../ui/optimized-image";
+import { Button } from "../ui/button";
 
 interface QRCodeItemProps {
   qrCode: {
@@ -13,13 +14,22 @@ interface QRCodeItemProps {
     release_date?: string | null;
     isbn?: string | null;
   };
+  showTipButton?: boolean;
+  onTipClick?: (qrCode: { id: string; bookTitle: string }) => void;
 }
 
-export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
+export const QRCodeItem = ({ qrCode, showTipButton = false, onTipClick }: QRCodeItemProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
     navigate(`/author/qr/${qrCode.id}`);
+  };
+
+  const handleTipClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onTipClick) {
+      onTipClick({ id: qrCode.id, bookTitle: qrCode.book_title });
+    }
   };
 
   return (
@@ -49,6 +59,16 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
             </div>
           )}
         </div>
+
+        {showTipButton && (
+          <Button
+            onClick={handleTipClick}
+            className="bg-[#FFD166] hover:bg-[#ffd166] text-[#19363C] font-medium text-sm px-4 py-2"
+            size="sm"
+          >
+            Tip the author
+          </Button>
+        )}
       </div>
     </Card>
   );
