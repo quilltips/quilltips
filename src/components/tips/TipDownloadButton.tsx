@@ -84,7 +84,7 @@ export const TipDownloadButton = ({
     >
       Download
       <div className="bg-[#FFD166] hover:bg-[#FFD166] rounded-lg p-1">
-        <Download className="h-4 w-4 text-white" />
+        <Download className="h-4 w-4 text-[white]" />
       </div>
     </Button>
   );

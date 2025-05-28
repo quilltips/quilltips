@@ -103,7 +103,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
        
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Enter the publication or release Date (optional)</label>
+          <label className="text-sm font-medium">Enter release date (optional)</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button

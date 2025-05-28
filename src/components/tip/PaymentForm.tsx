@@ -21,7 +21,7 @@ export const PaymentForm = ({
     <div className="flex flex-row-reverse justify-between items-center gap-4 mt-6">
       <Button 
         type="submit" 
-        className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold py-3 px-6 rounded-full transition-colors"
+        className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] py-3 px-7 rounded-full transition-colors"
         disabled={isLoading || (amount === 'custom' && !customAmount)}
       >
         {isLoading ? (

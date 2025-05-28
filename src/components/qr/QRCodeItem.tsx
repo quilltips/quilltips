@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Card } from "../ui/card";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "../ui/optimized-image";
+import { ChevronRight } from "lucide-react";
 
 interface QRCodeItemProps {
   qrCode: {
@@ -27,8 +28,8 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
       className="overflow-hidden hover:bg-white/70 transition-all cursor-pointer mb-3"
       onClick={handleClick}
     >
-      <div className="p-4 flex items-center gap-3">
-        <div className="flex-shrink-0 w-10 h-10 rounded-md flex items-center justify-center overflow-hidden">
+      <div className="p-4 flex items-center gap-3 border-b">
+        <div className="flex-shrink-0 w-14 h-18 rounded-md flex items-center justify-center overflow-hidden">
           <OptimizedImage
             src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
             alt={qrCode.book_title}
@@ -39,7 +40,7 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
         </div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-[#2D3748] text-base truncate">
+          <h3 className="font-medium text-[#333333] text-base truncate">
             {qrCode.book_title}
           </h3>
           
@@ -49,6 +50,7 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
             </div>
           )}
         </div>
+        <ChevronRight className="h-4 w-4 text-[#718096]" />
       </div>
     </Card>
   );

@@ -24,16 +24,16 @@ export const AuthorProfileContent = ({
     <div className="max-w-5xl mx-auto space-y-8 px-4 py-8">
       {/* Books Section */}
       {stripeOnboardingComplete ? (
-        <Card className="border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden" prominent>
+        <Card className="border border-[#333333]/50 rounded-lg overflow-hidden" prominent>
           <CardHeader>
-            <CardTitle className="text-xl text-[#2D3748]">Books</CardTitle>
+            <CardTitle className="text-xl text-[#333333]">Books</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="py-3">
             <AuthorQRCodes authorId={authorId} authorName={authorName} />
           </CardContent>
         </Card>
       ) : (
-        <Card className="border border-[#FFD166]/30 bg-amber-50/30 shadow-sm rounded-lg overflow-hidden p-6">
+        <Card className="border border-[#FFD166]/30 bg-amber-50/30 rounded-lg overflow-hidden p-6">
           <div className="flex items-center gap-3">
             <BookOpen size={24} className="text-[#FFD166] flex-shrink-0" />
             <div>

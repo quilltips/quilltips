@@ -96,8 +96,8 @@ export const generateEmailHtml = ({
       <body>
         <div class="container">
           <div class="box">
-            <div class="logo-container">
-              <img src="https://quilltips.co/lovable-uploads/quill_icon.png" width="60" alt="Quilltips Logo" style="border-radius: 8px;">
+            <div class="logo-container" style="background-color: #ffffff; padding: 8px; border-radius: 12px; display: inline-block">
+              <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets//logo_nav.webp" width="60" alt="Quilltips Logo" style="border-radius: 8px;">
             </div>
             <h1 class="brand-title">Quilltips</h1>
             <p class="brand-tagline">Helping authors get paid</p>

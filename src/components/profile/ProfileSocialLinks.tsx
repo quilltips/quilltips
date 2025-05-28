@@ -50,15 +50,17 @@ export const ProfileSocialLinks = ({
           </Button>
         </div>
       ))}
-      
-      <Button
-        type="button"
-        variant="link"
-        onClick={addSocialLink}
-        className="px-0 text-primary underline underline-offset-4 hover:text-primary/80 font-normal h-auto"
-      >
-        Add another link
-      </Button>
+
+     <div className="w-full flex justify-end">
+        <Button
+          type="button"
+          variant="link"
+          onClick={addSocialLink}
+          className="px-0 text-primary underline underline-offset-4 hover:text-primary/80 hover:bg-transparent hover:shadow-none font-normal h-auto"
+        >
+          + Add another link
+        </Button>
+      </div> 
     </div>
   );
 };

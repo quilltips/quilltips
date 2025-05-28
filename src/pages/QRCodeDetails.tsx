@@ -121,7 +121,7 @@ const QRCodeDetails = () => {
           )}
           
           {/* Tip feed section */}
-          <div className="rounded-lg border border-border p-6 space-y-4">
+          <div className="rounded-lg border border-border p-6 space-y-6">
             <h2 className="text-2xl font-semibold">Tip feed</h2>
             <PublicTipHistory qrCodeId={qrCode.id} />
           </div>

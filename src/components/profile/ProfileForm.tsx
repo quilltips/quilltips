@@ -64,7 +64,7 @@ export const ProfileForm = ({
 
   return (
     <form onSubmit={handleSubmit} className={`space-y-6 ${hasChanges ? 'relative' : ''}`}>
-      <UnsavedChangesIndicator show={hasChanges} />
+   
       
       <div className="space-y-2">
         <Label className="text-base font-medium">Full name</Label>
@@ -103,22 +103,29 @@ export const ProfileForm = ({
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center sm:justify-start">
+      <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center sm:justify-center">
+      <Button 
+          type="submit" 
+          variant="default"
+          disabled={isLoading || !hasChanges}
+          className={`px-8 py-2 h-auto rounded-full bg-[secondary] text-primary hover:bg-secondary-light font-medium
+            ${hasChanges ? 'bg-[#FFD166]' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}
+            
+            `}
+        >
+          Save changes
+        </Button>
+
         <Button 
           type="button" 
           variant="outline"
-          className="px-8 py-2 h-auto rounded-full"
+          disabled={isLoading || !hasChanges}
+          className={`px-8 py-2 h-auto rounded-full hover:bg-transparent ${hasChanges ? 'bg-red': 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
           onClick={handleCancel}
         >
           Cancel
         </Button>
-        <Button 
-          type="submit" 
-          disabled={isLoading || !hasChanges}
-          className={`px-8 py-2 h-auto rounded-full bg-secondary text-primary hover:bg-secondary-light font-medium`}
-        >
-          Save changes
-        </Button>
+       
       </div>
     </form>
   );

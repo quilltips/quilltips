@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "./ui/card";
-import { Loader2, Book, ChevronDown } from "lucide-react";
+import { Loader2, Book, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
@@ -58,10 +58,10 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
           to={`/qr/${qrCode.id}`} 
           className="block group"
         >
-          <Card className="transition-all hover:shadow-md hover:scale-[1.01]">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-16 flex-shrink-0 rounded-sm overflow-hidden border border-gray-200 shadow-sm bg-white">
+          <Card className="transition-all hover:bg-[white]/70 ">
+            <CardContent className="p-1">
+              <div className="flex items-center gap-3 py-3 pb-4 pl-2 border-b hover:border-none">
+                <div className="w-14 h-18 flex-shrink-0 rounded-sm overflow-hidden bg-white">
                   {qrCode.cover_image ? (
                     <img
                       src={qrCode.cover_image}
@@ -69,16 +69,17 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[#19363C]/50">
-                      <Book className="h-6 w-6" />
+                    <div className="w-full h-full flex items-center justify-center text-[#333333]/70">
+                      <Book className="h-14 w-18" />
                     </div>
                   )}
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="font-medium text-base text-[#19363C] leading-tight">{qrCode.book_title}</h3>
-                  <p className="text-sm ">by {authorName}</p>
+                  <h3 className="font-medium text-lg text-[#333333]">{qrCode.book_title}</h3>
+                
                 </div>
+                <ChevronRight className="h-4 w-4 text-[#718096]" />
               </div>
             </CardContent>
           </Card>
@@ -89,7 +90,7 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
         <Button 
           variant="ghost" 
           onClick={() => setShowAll(!showAll)} 
-          className="w-full text-[#718096] hover:text-[#2D3748] hover:bg-gray-100"
+          className="w-full text-[#718096] hover:underline hover:bg-[white]/70"
         >
           <ChevronDown className={`mr-2 h-4 w-4 transition-transform ${showAll ? 'rotate-180' : ''}`} />
           {showAll ? 'Show Less' : `Show ${qrCodes.length - 5} More`}

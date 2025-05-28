@@ -35,7 +35,7 @@ export const TipAmountSelector = ({
             />
             <Label
               htmlFor={`amount-${value}`}
-              className="flex h-12 w-full items-center justify-center rounded-lg border-2 peer-data-[state=checked]:bg-[#FFD166] peer-data-[state=checked]:border-[#FFD166] peer-data-[state=checked]:text-[#2D3748] hover:border-[#FFD166] cursor-pointer transition-colors"
+              className="flex h-14 w-14 items-center justify-center rounded-full border-2 peer-data-[state=checked]:bg-[#FFD166] peer-data-[state=checked]:border-[#FFD166] peer-data-[state=checked]:text-[#2D3748] hover:border-[#FFD166] cursor-pointer transition-colors"
             >
               ${value}
             </Label>

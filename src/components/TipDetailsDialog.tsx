@@ -192,7 +192,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
               </div>
             </div>
 
-            <div className="border-b py-4 border-gray-300"></div>
+            <div className="py-2 "></div>
 
             {/* Comments section with improved spacing */}
             <div className="space-y-6">

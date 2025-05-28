@@ -113,7 +113,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
 
         return (
           <div key={tip.id} className="space-y-1">
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 pb-1">
               <TipReaderAvatar readerName={tip.reader_name} />
               <div className="flex-1 space-y-1">
                 <div>
@@ -126,7 +126,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
                   )}
                 </div>
 
-                <div className="flex justify-between items-center pt-1">
+                <div className="flex justify-between items-center">
                   <PublicTipCommentButton
                     commentCount={commentCount}
                     onClick={() =>
