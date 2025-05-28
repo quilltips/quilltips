@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface AuthorDataDashboardProps {
   authorId: string;
+  hideDownloadButton?: boolean;
 }
 
 // Define types to match the ReaderInfo interface in ReaderStats component
@@ -23,7 +23,7 @@ interface ReaderInfo {
   value: number;
 }
 
-export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
+export const AuthorDataDashboard = ({ authorId, hideDownloadButton = false }: AuthorDataDashboardProps) => {
   const { toast } = useToast();
   
   const { data, isLoading } = useQuery({
@@ -150,17 +150,19 @@ export const AuthorDataDashboard = ({ authorId }: AuthorDataDashboardProps) => {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-end">
-        <Button
-          onClick={handleDownload}
-          className="group flex items-center gap-2 text-sm font-medium text-[#333333] hover:underline bg-transparent hover:bg-transparent border-none shadow-none p-0 hover:shadow-none"
-        >
-          Download All Data
-          <div className="bg-[#FFD166] hover:bg-[#ffd166] rounded-lg p-1">
-            <Download className="h-4 w-4 text-white " />
-          </div>
-        </Button>
-      </div>
+      {!hideDownloadButton && (
+        <div className="flex justify-end">
+          <Button
+            onClick={handleDownload}
+            className="group flex items-center gap-2 text-sm font-medium text-[#333333] hover:underline bg-transparent hover:bg-transparent border-none shadow-none p-0 hover:shadow-none"
+          >
+            Download All Data
+            <div className="bg-[#FFD166] hover:bg-[#ffd166] rounded-lg p-1">
+              <Download className="h-4 w-4 text-white " />
+            </div>
+          </Button>
+        </div>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <BookStats 
