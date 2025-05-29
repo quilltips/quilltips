@@ -1,3 +1,4 @@
+
 // supabase/functions/send-reader-notification/index.ts
 console.log("📧 Reader notification edge function initialized");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
@@ -44,6 +45,8 @@ serve(async (req) => {
       header: emailContent.header,
       message: emailContent.mainMessage,
       additionalContent: emailContent.additionalContent,
+      cta: emailContent.cta,
+      ctaUrl: emailContent.ctaUrl,
       unsubscribeToken: unsubscribeToken,
       tipId: data.tipId
     });
@@ -120,14 +123,14 @@ function generateEmailContent(
   data: any,
   token: string
 ) {
-  const baseUrl = "https://quilltips.app"; // Update with your actual domain
-  
   switch(type) {
     case 'tip_liked':
       return {
         subject: `${data.authorName} liked your tip!`,
         header: `${data.authorName} liked your tip!`,
         mainMessage: `${data.authorName} has liked your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
+        cta: "View Your Tips",
+        ctaUrl: "https://quilltips.co/dashboard",
         additionalContent: data.message ? `
           <div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #FFD166; border-radius: 4px;">
             <p style="font-style: italic; margin: 0;">"${data.message}"</p>
@@ -140,6 +143,8 @@ function generateEmailContent(
         subject: `${data.authorName} commented on your tip!`,
         header: `${data.authorName} commented on your tip!`,
         mainMessage: `${data.authorName} has commented on your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
+        cta: "View Comment",
+        ctaUrl: "https://quilltips.co/dashboard",
         additionalContent: `
           ${data.message ? `
             <div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #FFD166; border-radius: 4px;">
@@ -157,22 +162,28 @@ function generateEmailContent(
       return {
         subject: "Notification from Quilltips",
         header: "Notification from Quilltips",
-        mainMessage: "You've received a notification from Quilltips."
+        mainMessage: "You've received a notification from Quilltips.",
+        cta: "Visit Quilltips",
+        ctaUrl: "https://quilltips.co"
       };
   }
 }
 
-// Generate HTML email template with improved styling to match author emails
+// Generate HTML email template with improved styling and responsiveness
 function generateEmailHtml({
   header,
   message,
   additionalContent = '',
+  cta,
+  ctaUrl,
   unsubscribeToken,
   tipId
 }: {
   header: string;
   message: string;
   additionalContent?: string;
+  cta?: string;
+  ctaUrl?: string;
   unsubscribeToken: string;
   tipId: string;
 }): string {
@@ -188,7 +199,16 @@ function generateEmailHtml({
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>${header}</title>
+        
+        <!-- Google Fonts Import with Fallbacks -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        
         <style type="text/css">
+          /* Font fallbacks for email clients that don't support Google Fonts */
+          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap');
+          
           /* Gmail-specific CSS fixes */
           .gmail-fix { display: none !important; }
           
@@ -203,13 +223,30 @@ function generateEmailHtml({
           [data-ogsc] .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
           [data-ogsc] .gmail-footer { background-color: #F7FAFC !important; }
           
-          /* Gmail mobile fixes */
+          /* Responsive typography and layout */
           @media screen and (max-width: 600px) {
             .gmail-mobile { width: 100% !important; }
             .gmail-mobile-padding { padding: 20px !important; }
             .mobile-stack { display: block !important; width: 100% !important; }
             .mobile-logo { text-align: center !important; padding-bottom: 16px !important; }
             .mobile-text { text-align: center !important; }
+            
+            /* Mobile font sizing */
+            .mobile-logo-size { width: 60px !important; height: 60px !important; }
+            .mobile-title { font-size: 24px !important; line-height: 1.2 !important; }
+            .mobile-subtitle { font-size: 16px !important; }
+            .mobile-header { font-size: 20px !important; }
+            .mobile-body { font-size: 15px !important; }
+            .mobile-padding { padding: 16px !important; }
+          }
+          
+          @media screen and (min-width: 601px) {
+            /* Desktop font sizing */
+            .desktop-logo-size { width: 80px !important; height: 80px !important; }
+            .desktop-title { font-size: 32px !important; line-height: 1.2 !important; }
+            .desktop-subtitle { font-size: 18px !important; }
+            .desktop-header { font-size: 28px !important; }
+            .desktop-body { font-size: 16px !important; }
           }
           
           /* Remove Gmail's blue links */
@@ -229,16 +266,29 @@ function generateEmailHtml({
             -ms-interpolation-mode: bicubic !important;
             border: 0 !important;
           }
+          
+          /* Font family definitions with fallbacks */
+          .font-playfair {
+            font-family: 'Playfair Display', Georgia, 'Times New Roman', serif !important;
+          }
+          
+          .font-lato {
+            font-family: 'Lato', Arial, Helvetica, sans-serif !important;
+          }
         </style>
+        
         <!--[if mso]>
         <style type="text/css">
           table { border-collapse: collapse; border-spacing: 0; }
           .button { padding: 0 !important; }
           .button a { padding: 16px 32px !important; }
+          /* Outlook font handling */
+          .font-playfair { font-family: Georgia, 'Times New Roman', serif !important; }
+          .font-lato { font-family: Arial, Helvetica, sans-serif !important; }
         </style>
         <![endif]-->
       </head>
-      <body class="body" style="margin: 0; padding: 0; background-color: #f8fafc; font-family: Arial, Helvetica, sans-serif;">
+      <body class="body font-lato" style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Lato', Arial, Helvetica, sans-serif;">
         <!-- Gmail background fix -->
         <div class="gmail-background" style="background-color: #f8fafc;">
           <!-- Main Container Table -->
@@ -247,33 +297,34 @@ function generateEmailHtml({
               <td align="center" style="padding: 40px 20px;">
                 
                 <!-- Email Content Table -->
-                <table class="gmail-container gmail-mobile" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; max-width: 600px;" bgcolor="#ffffff">
+                <table class="gmail-container gmail-mobile" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; max-width: 600px; border-radius: 12px;" bgcolor="#ffffff">
                   
                   <!-- Header Section with Horizontal Layout -->
                   <tr>
-                    <td style="padding: 40px 48px; text-align: left;" align="left">
+                    <td class="mobile-padding" style="padding: 40px 48px; text-align: left;" align="left">
                       
                       <!-- Horizontal Logo and Text Layout -->
                       <table border="0" cellspacing="0" cellpadding="0" width="100%">
                         <tr>
-                          <td class="mobile-stack" style="vertical-align: middle; width: 80px;" valign="middle">
+                          <td class="mobile-stack" style="vertical-align: middle; width: 100px;" valign="middle">
                             <div class="mobile-logo">
                               <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant3.png" 
                                    alt="Quilltips Logo" 
-                                   width="60" 
-                                   height="60" 
-                                   style="display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; width: 60px; height: 60px;">
+                                   class="desktop-logo-size mobile-logo-size"
+                                   width="80" 
+                                   height="80" 
+                                   style="display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; width: 80px; height: 80px;">
                             </div>
                           </td>
                           <td class="mobile-stack mobile-text" style="vertical-align: middle; padding-left: 20px;" valign="middle">
                             <table border="0" cellspacing="0" cellpadding="0">
                               <tr>
-                                <td style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: bold; color: #19363C; line-height: 1.2; margin: 0;" align="left">
+                                <td class="font-playfair desktop-title mobile-title" style="font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-size: 32px; font-weight: 600; color: #19363C; line-height: 1.2; margin: 0;" align="left">
                                   Quilltips
                                 </td>
                               </tr>
                               <tr>
-                                <td style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; color: #6B7280; margin: 0; padding-top: 4px;" align="left">
+                                <td class="font-lato desktop-subtitle mobile-subtitle" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 18px; color: #6B7280; margin: 0; padding-top: 4px; font-weight: 400;" align="left">
                                   Helping authors get paid
                                 </td>
                               </tr>
@@ -287,12 +338,12 @@ function generateEmailHtml({
                   
                   <!-- Content Section -->
                   <tr>
-                    <td class="gmail-mobile-padding" style="padding: 0 48px 48px 48px; background-color: #ffffff;" bgcolor="#ffffff">
+                    <td class="gmail-mobile-padding mobile-padding" style="padding: 0 48px 48px 48px; background-color: #ffffff;" bgcolor="#ffffff">
                       
                       <!-- Content Header -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td style="font-family: Georgia, 'Times New Roman', serif; font-size: 24px; font-weight: bold; color: #19363C; text-align: center; line-height: 1.3; margin: 0 0 24px 0; padding-bottom: 24px;" align="center">
+                          <td class="font-playfair desktop-header mobile-header" style="font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: #19363C; text-align: center; line-height: 1.3; margin: 0 0 24px 0; padding-bottom: 24px;" align="center">
                             ${header}
                           </td>
                         </tr>
@@ -301,7 +352,7 @@ function generateEmailHtml({
                       <!-- Main Message -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; text-align: center; line-height: 1.6; margin: 0 0 32px 0; padding-bottom: 32px;" align="center">
+                          <td class="font-lato desktop-body mobile-body" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; text-align: center; line-height: 1.6; margin: 0 0 32px 0; padding-bottom: 32px;" align="center">
                             ${message}
                           </td>
                         </tr>
@@ -311,8 +362,38 @@ function generateEmailHtml({
                       <!-- Additional Content -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; line-height: 1.6; margin: 24px 0; padding: 24px 0;">
+                          <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; line-height: 1.6; margin: 24px 0; padding: 24px 0;">
                             ${additionalContent}
+                          </td>
+                        </tr>
+                      </table>
+                      ` : ''}
+
+                      ${cta && ctaUrl ? `
+                      <!-- CTA Button with Rounded Corners -->
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td align="center" style="padding: 40px 0;">
+                            <!--[if mso]>
+                            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${ctaUrl}" style="height:52px;v-text-anchor:middle;width:220px;" arcsize="25%" stroke="f" fillcolor="#FFD166">
+                              <w:anchorlock/>
+                              <center class="font-lato" style="color:#19363C;font-family:'Lato', Arial, sans-serif;font-size:16px;font-weight:600;">${cta}</center>
+                            </v:roundrect>
+                            <![endif]-->
+                            <!--[if !mso]><!-->
+                            <table border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                <td class="gmail-button" style="background-color: #FFD166; border: none; border-radius: 16px;" bgcolor="#FFD166">
+                                  <a href="${ctaUrl}" 
+                                     class="font-lato"
+                                     style="display: inline-block; padding: 18px 36px; font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 600; color: #19363C !important; text-decoration: none; min-width: 160px; text-align: center; line-height: 1; border-radius: 16px;"
+                                     target="_blank">
+                                    ${cta}
+                                  </a>
+                                </td>
+                              </tr>
+                            </table>
+                            <!--<![endif]-->
                           </td>
                         </tr>
                       </table>
@@ -321,8 +402,8 @@ function generateEmailHtml({
                       <!-- Secondary Link -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; text-align: center; padding: 24px 0;" align="center">
-                            Visit <a href="https://quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: bold;" target="_blank">quilltips.co</a> for more information
+                          <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; text-align: center; padding: 24px 0;" align="center">
+                            Visit <a href="https://quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: 600;" target="_blank">quilltips.co</a> for more information
                           </td>
                         </tr>
                       </table>
@@ -332,16 +413,16 @@ function generateEmailHtml({
                   
                   <!-- Footer Section -->
                   <tr>
-                    <td class="gmail-footer gmail-mobile-padding" style="background-color: #F7FAFC; padding: 32px 48px; text-align: center; border-top: 1px solid #E2E8F0;" bgcolor="#F7FAFC" align="center">
+                    <td class="gmail-footer gmail-mobile-padding mobile-padding" style="background-color: #F7FAFC; padding: 32px 48px; text-align: center; border-top: 1px solid #E2E8F0; border-radius: 0 0 12px 12px;" bgcolor="#F7FAFC" align="center">
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #6B7280; line-height: 1.5; text-align: center;" align="center">
-                            If you have any questions, contact us at <a href="mailto:hello@quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: bold;" target="_blank">hello@quilltips.co</a>
+                          <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 14px; color: #6B7280; line-height: 1.5; text-align: center;" align="center">
+                            If you have any questions, contact us at <a href="mailto:hello@quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: 600;" target="_blank">hello@quilltips.co</a>
                           </td>
                         </tr>
                         <tr>
                           <td style="padding-top: 20px;">
-                            <div style="font-size: 12px; color: #8898aa; text-align: center;">
+                            <div class="font-lato" style="font-size: 12px; color: #8898aa; text-align: center;">
                               <a href="${unsubscribeUrl}" style="color: #8898aa; text-decoration: underline;">Click here to unsubscribe</a> from notifications about this tip.
                             </div>
                           </td>
