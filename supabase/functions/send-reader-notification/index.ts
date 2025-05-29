@@ -42,7 +42,6 @@ serve(async (req) => {
     
     // Send email via Resend
     const emailHtml = generateEmailHtml({
-      header: emailContent.header,
       message: emailContent.mainMessage,
       additionalContent: emailContent.additionalContent,
       cta: emailContent.cta,
@@ -127,7 +126,6 @@ function generateEmailContent(
     case 'tip_liked':
       return {
         subject: `${data.authorName} liked your tip!`,
-        header: `${data.authorName} liked your tip!`,
         mainMessage: `${data.authorName} has liked your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
         cta: "View Your Tips",
         ctaUrl: "https://quilltips.co/dashboard",
@@ -141,7 +139,6 @@ function generateEmailContent(
     case 'tip_commented':
       return {
         subject: `${data.authorName} commented on your tip!`,
-        header: `${data.authorName} commented on your tip!`,
         mainMessage: `${data.authorName} has commented on your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
         cta: "View Comment",
         ctaUrl: "https://quilltips.co/dashboard",
@@ -161,7 +158,6 @@ function generateEmailContent(
     default:
       return {
         subject: "Notification from Quilltips",
-        header: "Notification from Quilltips",
         mainMessage: "You've received a notification from Quilltips.",
         cta: "Visit Quilltips",
         ctaUrl: "https://quilltips.co"
@@ -171,7 +167,6 @@ function generateEmailContent(
 
 // Generate HTML email template with improved styling and responsiveness
 function generateEmailHtml({
-  header,
   message,
   additionalContent = '',
   cta,
@@ -179,7 +174,6 @@ function generateEmailHtml({
   unsubscribeToken,
   tipId
 }: {
-  header: string;
   message: string;
   additionalContent?: string;
   cta?: string;
@@ -198,7 +192,7 @@ function generateEmailHtml({
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>${header}</title>
+        <title>Notification from Quilltips</title>
         
         <!-- Google Fonts Import with Fallbacks -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -232,20 +226,12 @@ function generateEmailHtml({
             .mobile-text { text-align: center !important; }
             
             /* Mobile font sizing */
-            .mobile-logo-size { width: 60px !important; height: 60px !important; }
-            .mobile-title { font-size: 24px !important; line-height: 1.2 !important; }
-            .mobile-subtitle { font-size: 16px !important; }
-            .mobile-header { font-size: 20px !important; }
             .mobile-body { font-size: 15px !important; }
             .mobile-padding { padding: 16px !important; }
           }
           
           @media screen and (min-width: 601px) {
             /* Desktop font sizing */
-            .desktop-logo-size { width: 80px !important; height: 80px !important; }
-            .desktop-title { font-size: 32px !important; line-height: 1.2 !important; }
-            .desktop-subtitle { font-size: 18px !important; }
-            .desktop-header { font-size: 28px !important; }
             .desktop-body { font-size: 16px !important; }
           }
           
@@ -299,55 +285,20 @@ function generateEmailHtml({
                 <!-- Email Content Table -->
                 <table class="gmail-container gmail-mobile" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; max-width: 600px; border-radius: 12px;" bgcolor="#ffffff">
                   
-                  <!-- Header Section with Horizontal Layout -->
+                  <!-- Header Section with Logo Only -->
                   <tr>
-                    <td class="mobile-padding" style="padding: 40px 48px; text-align: left;" align="left">
-                      
-                      <!-- Horizontal Logo and Text Layout -->
-                      <table border="0" cellspacing="0" cellpadding="0" width="100%">
-                        <tr>
-                          <td class="mobile-stack" style="vertical-align: middle; width: 100px;" valign="middle">
-                            <div class="mobile-logo">
-                              <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant3.png" 
-                                   alt="Quilltips Logo" 
-                                   class="desktop-logo-size mobile-logo-size"
-                                   width="80" 
-                                   height="80" 
-                                   style="display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; width: 80px; height: 80px;">
-                            </div>
-                          </td>
-                          <td class="mobile-stack mobile-text" style="vertical-align: middle; padding-left: 20px;" valign="middle">
-                            <table border="0" cellspacing="0" cellpadding="0">
-                              <tr>
-                                <td class="font-playfair desktop-title mobile-title" style="font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-size: 32px; font-weight: 600; color: #19363C; line-height: 1.2; margin: 0;" align="left">
-                                  Quilltips
-                                </td>
-                              </tr>
-                              <tr>
-                                <td class="font-lato desktop-subtitle mobile-subtitle" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 18px; color: #6B7280; margin: 0; padding-top: 4px; font-weight: 400;" align="left">
-                                  Helping authors get paid
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                      
+                    <td class="mobile-padding" style="padding: 40px 48px; text-align: center;" align="center">
+                      <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant3.png" 
+                           alt="Quilltips Logo" 
+                           width="200" 
+                           height="auto" 
+                           style="display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; margin: 0 auto;">
                     </td>
                   </tr>
                   
                   <!-- Content Section -->
                   <tr>
                     <td class="gmail-mobile-padding mobile-padding" style="padding: 0 48px 48px 48px; background-color: #ffffff;" bgcolor="#ffffff">
-                      
-                      <!-- Content Header -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td class="font-playfair desktop-header mobile-header" style="font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: #19363C; text-align: center; line-height: 1.3; margin: 0 0 24px 0; padding-bottom: 24px;" align="center">
-                            ${header}
-                          </td>
-                        </tr>
-                      </table>
                       
                       <!-- Main Message -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
