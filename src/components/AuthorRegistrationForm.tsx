@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
@@ -207,31 +206,32 @@ export const AuthorRegistrationForm = () => {
   };
 
   return (
-    <Card className="auth-card mx-auto animate-enter">
-      <div className="w-full max-w-sm">
+    <Card className="auth-card mx-auto animate-enter flex items-center justify-center">
+      <div className="w-full flex justify-center">
         {currentStep === "initial" && (
           <RegistrationStepInitial
             isLoading={isLoading}
             onNext={handleInitialSubmit}
           />
         )}
-      </div>
 
-      {currentStep === "details" && (
-        <RegistrationStepDetails
-          isLoading={isLoading}
-          error={error}
-          onAvatarSelected={(file) => setAvatarFile(file)}
-          onSubmit={handleDetailsSubmit}
-        />
-      )}
-     
-      {currentStep === "stripe-onboarding" && (
-         <div className="w-full max-w-3xl">
-        <RegistrationStepStripe onComplete={handleOnboardingComplete} />
-        </div>
-      )}
-     
+        {currentStep === "details" && (
+          <div className="w-full max-w-md mx-auto">
+            <RegistrationStepDetails
+              isLoading={isLoading}
+              error={error}
+              onAvatarSelected={(file) => setAvatarFile(file)}
+              onSubmit={handleDetailsSubmit}
+            />
+          </div>
+        )}
+       
+        {currentStep === "stripe-onboarding" && (
+          <div className="w-full max-w-3xl mx-auto">
+            <RegistrationStepStripe onComplete={handleOnboardingComplete} />
+          </div>
+        )}
+      </div>
     </Card>
   );
 };

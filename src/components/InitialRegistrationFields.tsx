@@ -5,7 +5,6 @@ import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import { Checkbox } from "./ui/checkbox";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 
 interface InitialRegistrationFieldsProps {
   isLoading: boolean;
@@ -18,7 +17,6 @@ export const InitialRegistrationFields = ({
 }: InitialRegistrationFieldsProps) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [tosError, setTosError] = useState<string | null>(null);
-  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,92 +44,94 @@ export const InitialRegistrationFields = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold">Create account</h2>
-      </div>
-
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Enter your email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder=""
-            required
-            className=""
-            disabled={isLoading}
-          />
+    <div className="w-full max-w-md mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-2 text-center">
+          <h2 className="text-2xl font-semibold">Create account</h2>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Enter a password</Label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder=""
-            required
-            minLength={8}
-            className=" "
-            disabled={isLoading}
-          />
-        </div>
-      </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Enter your email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder=""
+              required
+              className=""
+              disabled={isLoading}
+            />
+          </div>
 
-      <div className="space-y-2">
-        <div className="flex items-start gap-3">
-          <Checkbox
-            checked={termsAccepted}
-            onCheckedChange={(checked) => handleTermsChange(checked === true)}
-            disabled={isLoading}
-            className="mt-1"
-          />
-          <div className="text-sm font-normal leading-tight">
-            I agree to the{" "}
-            <Link
-              to="/terms"
-              className="text-[#2D3748] hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              to="/privacy"
-              className="text-[#2D3748] hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Privacy Policy
-            </Link>
+          <div className="space-y-2">
+            <Label htmlFor="password">Enter a password</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder=""
+              required
+              minLength={8}
+              className=" "
+              disabled={isLoading}
+            />
           </div>
         </div>
-        {tosError && (
-          <p className="text-sm font-medium text-destructive ml-7">
-            {tosError}
+
+        <div className="space-y-2">
+          <div className="flex items-start gap-3">
+            <Checkbox
+              checked={termsAccepted}
+              onCheckedChange={(checked) => handleTermsChange(checked === true)}
+              disabled={isLoading}
+              className="mt-1"
+            />
+            <div className="text-sm font-normal leading-tight">
+              I agree to the{" "}
+              <Link
+                to="/terms"
+                className="text-[#2D3748] hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link
+                to="/privacy"
+                className="text-[#2D3748] hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Privacy Policy
+              </Link>
+            </div>
+          </div>
+          {tosError && (
+            <p className="text-sm font-medium text-destructive ml-7">
+              {tosError}
+            </p>
+          )}
+        </div>
+
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+        >
+          Create an account
+        </Button>
+
+        <div className="text-center">
+          <p className="text-sm">
+            Already signed up?{" "}
+            <Link to="/author/login" className="text-[#2D3748] font-bold hover:underline">
+              Log in here
+            </Link>
           </p>
-        )}
-      </div>
-
-      <Button
-        type="submit"
-        disabled={isLoading}
-        className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
-      >
-        Create an account
-      </Button>
-
-      <div className="text-center">
-        <p className="text-sm">
-          Already signed up?{" "}
-          <Link to="/author/login" className="text-[#2D3748] font-bold hover:underline">
-            Log in here
-          </Link>
-        </p>
-      </div>
-    </form>
+        </div>
+      </form>
+    </div>
   );
 };
