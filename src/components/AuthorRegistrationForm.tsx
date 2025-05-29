@@ -207,13 +207,15 @@ export const AuthorRegistrationForm = () => {
   };
 
   return (
-    <Card className="auth-card max-w-md mx-auto animate-enter">
-      {currentStep === "initial" && (
-        <RegistrationStepInitial
-          isLoading={isLoading}
-          onNext={handleInitialSubmit}
-        />
-      )}
+    <Card className="auth-card mx-auto animate-enter">
+      <div className="w-full max-w-sm">
+        {currentStep === "initial" && (
+          <RegistrationStepInitial
+            isLoading={isLoading}
+            onNext={handleInitialSubmit}
+          />
+        )}
+      </div>
 
       {currentStep === "details" && (
         <RegistrationStepDetails
@@ -223,10 +225,13 @@ export const AuthorRegistrationForm = () => {
           onSubmit={handleDetailsSubmit}
         />
       )}
-
+     
       {currentStep === "stripe-onboarding" && (
+         <div className="w-full max-w-3xl">
         <RegistrationStepStripe onComplete={handleOnboardingComplete} />
+        </div>
       )}
+     
     </Card>
   );
 };

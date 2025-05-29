@@ -46,7 +46,7 @@ export const InitialRegistrationFields = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold">Create account</h2>
       </div>

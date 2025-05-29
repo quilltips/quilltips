@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "../ui/alert";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 
 interface RegistrationStepStripeProps {
   onComplete: () => void;
@@ -87,79 +88,67 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
     onComplete();
   };
 
+  const [showExplanation, setShowExplanation] = useState(false);
+
+
+
   return (
-    <div className="space-y-6">
-      <div className="space-y-6">
-        <h2 className="text-3xl font-semibold text-[#2D3748]">Connect a payment option</h2>
+   <div className="w-full">
+   <div className="space-y-10">
+
+      <div className="space-y-4">
+        <h2 className="text-4xl font-semibold text-[#333333]">Connect a payment option with Stripe</h2>
         <p className="">
-          Connect your bank account to start receiving tips from your readers
+        Connect your bank account to start receiving tips from your readers
         </p>
       </div>
-
       
-      <div className="space-y-4">
-        <Button
-          onClick={handleSetupPayments}
-          disabled={isLoading}
-          className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              <span>Opening Stripe...</span>
-            </>
-          ) : (
-            <>
-              <Wallet className="mr-2 h-4 w-4" />
-              <span>Set up payments now (opens Stripe in new tab)</span>
-            </>
-          )}
-        </Button>
-
-        <Alert className="border-transparent">
+      <div className="space-y-6 pt-4">
+        <div className="flex flex-col items-center text-left gap-2 w-full">
+          <Button
+            onClick={handleSetupPayments}
+            disabled={isLoading}
+            variant="default"
+            className="px-10 bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333]"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span>Opening Stripe...</span>
+              </>
+            ) : (
+              <>
+                <Wallet className="mr-2 h-4 w-4" />
+                <span>Set up payments (opens Stripe in new tab)</span>
+              </>
+            )}
+         </Button>
         
-        <AlertDescription>
-          You'll need to provide some basic information to verify your identity and connect your bank account. This typically takes 5-10 minutes.
-        </AlertDescription>
-      </Alert>
-
-      
+          <div className="max-w-md">
+              <Alert className="border-transparent">
+              
+              <AlertDescription>
+                You'll need to provide some basic information to verify your identity and connect your bank account. This typically takes 5-10 minutes.
+              </AlertDescription>
+            </Alert>
+           </div>
+       </div>
+    
+        <div>
         <Button
           variant="outline"
           onClick={handleSkip}
           className="w-full border-transparent underline hover:bg-transparent hover:shadow-none"
         >
           Skip for now
-          
         </Button>
 
-        <p className="text-sm text-center ">
-          You'll need to add a payment option later to get paid
+        <p className="text-sm text-center italic">
+          You'll need to add a payment option later to get paid.    
         </p>
       </div>
-
-      {/* Stripe explanation section */}
-      <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <h3 className="text-lg font-medium text-[#19363C] mb-3">How payments work with Quilltips</h3>
-        <div className="space-y-3 text-sm text-gray-600">
-          <p>
-            Quilltips uses Stripe as its payments partner. Authors who create accounts with Quilltips use 
-            Stripe to enable their QR codes to pay out to their bank account.
-          </p>
-          <p>
-            To get set up, Stripe needs to collect some basic information from you. Clicking "set up payments now" above will redirect 
-            you to the Stripe Connect onboarding flow, which should take less than 5 minutes to complete. 
-            You will be asked to link a bank account and verify your identity.
-          </p>
-          <p>
-            If you have any questions, don't hesitate to reach out to Quilltips. Once your account is set up, 
-            you will be able to receive tips from your readers!
-          </p>
-          <p>
-            *Please note that before submitting your completed information, Stripe will verify your identity. If you see incomplete tasks at this point, you will need to complete them before Stripe approves your account.
-          </p>
-        </div>
       </div>
+    </div>
     </div>
   );
 };
