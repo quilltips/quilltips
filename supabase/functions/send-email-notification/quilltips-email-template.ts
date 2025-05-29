@@ -1,4 +1,5 @@
 
+
 // Email template for Quilltips notifications
 // Using table-based layout with inline CSS for maximum email client compatibility
 
@@ -109,11 +110,11 @@ export const generateEmailHtml = ({
                   <tr>
                     <td class="gmail-header" style="background-color: #19363C; padding: 40px 48px; text-align: center;" bgcolor="#19363C" align="center">
                       
-                      <!-- Logo Container with enhanced white background -->
+                      <!-- Logo Container with embedded white background image -->
                       <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto 24px auto;">
                         <tr>
                           <td class="gmail-logo-container logo-white-bg" style="background-color: #ffffff !important; background: #ffffff !important; padding: 16px; text-align: center;" bgcolor="#ffffff" align="center">
-                            <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/logo_nav.png" 
+                            <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant3.png" 
                                  alt="Quilltips Logo" 
                                  width="60" 
                                  height="60" 
@@ -240,3 +241,4 @@ export const generateEmailHtml = ({
     </html>
   `;
 };
+
