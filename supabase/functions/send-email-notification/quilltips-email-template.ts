@@ -35,6 +35,20 @@ export const generateEmailHtml = ({
           u + .body .gmail-header { background-color: #19363C !important; }
           u + .body .gmail-button { background-color: #FFD166 !important; }
           u + .body .gmail-footer { background-color: #F7FAFC !important; }
+          u + .body .gmail-logo-container { background-color: #ffffff !important; }
+          
+          /* Gmail Dark Mode fixes */
+          [data-ogsc] .gmail-logo-container { background-color: #ffffff !important; }
+          [data-ogsc] .gmail-container { background-color: #ffffff !important; }
+          [data-ogsc] .gmail-header { background-color: #19363C !important; }
+          [data-ogsc] .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
+          [data-ogsc] .gmail-footer { background-color: #F7FAFC !important; }
+          
+          /* Force white background for logo in all Gmail modes */
+          .logo-white-bg {
+            background-color: #ffffff !important;
+            background: #ffffff !important;
+          }
           
           /* Gmail mobile fixes */
           @media screen and (max-width: 600px) {
@@ -58,6 +72,18 @@ export const generateEmailHtml = ({
             text-decoration: none !important;
             -ms-interpolation-mode: bicubic !important;
             border: 0 !important;
+          }
+          
+          /* Prevent Gmail from changing background colors in dark mode */
+          @media (prefers-color-scheme: dark) {
+            .logo-white-bg {
+              background-color: #ffffff !important;
+              background: #ffffff !important;
+            }
+            .gmail-logo-container {
+              background-color: #ffffff !important;
+              background: #ffffff !important;
+            }
           }
         </style>
         <!--[if mso]>
@@ -83,15 +109,15 @@ export const generateEmailHtml = ({
                   <tr>
                     <td class="gmail-header" style="background-color: #19363C; padding: 40px 48px; text-align: center;" bgcolor="#19363C" align="center">
                       
-                      <!-- Logo Container -->
+                      <!-- Logo Container with enhanced white background -->
                       <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto 24px auto;">
                         <tr>
-                          <td style="background-color: #ffffff; padding: 16px; text-align: center;" bgcolor="#ffffff" align="center">
+                          <td class="gmail-logo-container logo-white-bg" style="background-color: #ffffff !important; background: #ffffff !important; padding: 16px; text-align: center;" bgcolor="#ffffff" align="center">
                             <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/logo_nav.png" 
                                  alt="Quilltips Logo" 
                                  width="60" 
                                  height="60" 
-                                 style="display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; width: 60px; height: 60px;">
+                                 style="display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; width: 60px; height: 60px; background-color: transparent;">
                           </td>
                         </tr>
                       </table>
