@@ -1,3 +1,4 @@
+
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
@@ -16,24 +17,32 @@ export const InitialRegistrationFields = ({
   onNext
 }: InitialRegistrationFieldsProps) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [tosError, setTosError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!termsAccepted) {
-      toast({
-        title: "Agreement required",
-        description: "You must agree to the Terms and Privacy Policy to create an account.",
-        variant: "destructive",
-      });
+      setTosError("You must agree to the Terms and Privacy Policy to create an account.");
       return;
     }
+
+    // Clear any existing TOS error
+    setTosError(null);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     onNext(email, password);
+  };
+
+  const handleTermsChange = (checked: boolean) => {
+    setTermsAccepted(checked);
+    // Clear error when user accepts terms
+    if (checked && tosError) {
+      setTosError(null);
+    }
   };
 
   return (
@@ -71,33 +80,40 @@ export const InitialRegistrationFields = ({
         </div>
       </div>
 
-      <div className="flex items-start gap-3">
-        <Checkbox
-          checked={termsAccepted}
-          onCheckedChange={(checked) => setTermsAccepted(checked === true)}
-          disabled={isLoading}
-          className="mt-1"
-        />
-        <div className="text-sm font-normal leading-tight">
-          I agree to the{" "}
-          <Link
-            to="/terms"
-            className="text-[#2D3748] hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link
-            to="/privacy"
-            className="text-[#2D3748] hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Privacy Policy
-          </Link>
+      <div className="space-y-2">
+        <div className="flex items-start gap-3">
+          <Checkbox
+            checked={termsAccepted}
+            onCheckedChange={(checked) => handleTermsChange(checked === true)}
+            disabled={isLoading}
+            className="mt-1"
+          />
+          <div className="text-sm font-normal leading-tight">
+            I agree to the{" "}
+            <Link
+              to="/terms"
+              className="text-[#2D3748] hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              to="/privacy"
+              className="text-[#2D3748] hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Privacy Policy
+            </Link>
+          </div>
         </div>
+        {tosError && (
+          <p className="text-sm font-medium text-destructive ml-7">
+            {tosError}
+          </p>
+        )}
       </div>
 
       <Button
