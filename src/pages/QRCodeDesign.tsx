@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { useQRCodeGeneration } from "@/hooks/use-qr-code-generation";
@@ -41,7 +40,7 @@ const QRCodeDesign = () => {
     : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-5xl mx-auto">
