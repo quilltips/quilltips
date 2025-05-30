@@ -208,11 +208,14 @@ export const AuthorRegistrationForm = () => {
   return (
     <Card className="auth-card mx-auto animate-enter flex items-center justify-center">
       <div className="w-full flex justify-center">
+     
         {currentStep === "initial" && (
-          <RegistrationStepInitial
-            isLoading={isLoading}
-            onNext={handleInitialSubmit}
-          />
+           <div className="w-full max-w-sm mx-auto">
+              <RegistrationStepInitial
+                isLoading={isLoading}
+                onNext={handleInitialSubmit}
+              />
+          </div>
         )}
 
         {currentStep === "details" && (
