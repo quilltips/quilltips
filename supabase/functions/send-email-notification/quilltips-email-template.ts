@@ -1,22 +1,6 @@
-
 // Email template for Quilltips notifications
 // Using table-based layout with inline CSS for maximum email client compatibility
-
-interface EmailTemplateProps {
-  message: string;
-  header: string;
-  cta?: string;
-  ctaUrl?: string;
-  additionalContent?: string;
-}
-
-export const generateEmailHtml = ({
-  message,
-  header,
-  cta,
-  ctaUrl,
-  additionalContent,
-}: EmailTemplateProps): string => {
+export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalContent })=>{
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -120,11 +104,11 @@ export const generateEmailHtml = ({
                   <!-- Header Section with Logo Only -->
                   <tr>
                     <td class="mobile-padding" style="padding: 40px 48px; text-align: center;" align="center">
-                      <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant3.png" 
-                           alt="Quilltips Logo" 
-                           width="200" 
-                           height="auto" 
-                           style="display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; margin: 0 auto;">
+                    <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant4.png" 
+                        alt="Quilltips Logo" 
+                        style="display: block; max-width: 100%; width: 280px; height: auto; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" 
+                        class="mobile-logo" />
+
                     </td>
                   </tr>
                   

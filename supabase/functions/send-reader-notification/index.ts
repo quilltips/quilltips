@@ -1,45 +1,35 @@
-
 // supabase/functions/send-reader-notification/index.ts
 console.log("📧 Reader notification edge function initialized");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
-
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
-
 // Create Supabase client with service role key
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const supabase = createClient(supabaseUrl, supabaseKey);
-
-serve(async (req) => {
+serve(async (req)=>{
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       headers: corsHeaders
     });
   }
-
   try {
     const { type, readerEmail, data = {} } = await req.json();
     console.log(`📧 Processing ${type} notification for reader ${readerEmail}`);
-
     if (!readerEmail) {
       throw new Error("Reader email is required");
     }
-
     // Generate or retrieve unsubscribe token
     const unsubscribeToken = await getOrCreateUnsubscribeToken(data.tipId);
     console.log(`📧 Generated unsubscribe token for tip ${data.tipId}: ${unsubscribeToken}`);
-    
     // Generate email content based on notification type
     const emailContent = generateEmailContent(type, data, unsubscribeToken);
-    
     // Send email via Resend
     const emailHtml = generateEmailHtml({
       message: emailContent.mainMessage,
@@ -49,16 +39,13 @@ serve(async (req) => {
       unsubscribeToken: unsubscribeToken,
       tipId: data.tipId
     });
-
     const emailResponse = await resend.emails.send({
       from: "Quilltips <notifications@quilltips.co>",
       to: readerEmail,
       subject: emailContent.subject,
       html: emailHtml
     });
-
     console.log(`✅ Email sent successfully for ${type} notification to ${readerEmail}`);
-    
     return new Response(JSON.stringify({
       success: true,
       id: emailResponse.id
@@ -82,47 +69,30 @@ serve(async (req) => {
     });
   }
 });
-
 // Helper function to generate or retrieve an unsubscribe token
-async function getOrCreateUnsubscribeToken(tipId: string): Promise<string> {
+async function getOrCreateUnsubscribeToken(tipId) {
   try {
     // Check if token already exists
-    const { data: existingToken } = await supabase
-      .from('unsubscribe_tokens')
-      .select('token')
-      .eq('tip_id', tipId)
-      .maybeSingle();
-    
+    const { data: existingToken } = await supabase.from('unsubscribe_tokens').select('token').eq('tip_id', tipId).maybeSingle();
     if (existingToken?.token) {
       return existingToken.token;
     }
-    
     // Create new token
     const token = crypto.randomUUID();
-    
-    const { error } = await supabase
-      .from('unsubscribe_tokens')
-      .insert({
-        tip_id: tipId,
-        token: token
-      });
-    
+    const { error } = await supabase.from('unsubscribe_tokens').insert({
+      tip_id: tipId,
+      token: token
+    });
     if (error) throw error;
-    
     return token;
   } catch (error) {
     console.error("Error creating unsubscribe token:", error);
     return crypto.randomUUID(); // Fallback to generate a token even if DB insert fails
   }
 }
-
 // Generate email content based on notification type
-function generateEmailContent(
-  type: string, 
-  data: any,
-  token: string
-) {
-  switch(type) {
+function generateEmailContent(type, data, token) {
+  switch(type){
     case 'tip_liked':
       return {
         subject: `${data.authorName} liked your tip!`,
@@ -164,27 +134,11 @@ function generateEmailContent(
       };
   }
 }
-
 // Generate HTML email template with improved styling and responsiveness
-function generateEmailHtml({
-  message,
-  additionalContent = '',
-  cta,
-  ctaUrl,
-  unsubscribeToken,
-  tipId
-}: {
-  message: string;
-  additionalContent?: string;
-  cta?: string;
-  ctaUrl?: string;
-  unsubscribeToken: string;
-  tipId: string;
-}): string {
+function generateEmailHtml({ message, additionalContent = '', cta, ctaUrl, unsubscribeToken, tipId }) {
   const siteUrl = Deno.env.get("SITE_URL") || "https://quilltips.co";
   const unsubscribeUrl = `${siteUrl}/unsubscribe?token=${unsubscribeToken}&tipId=${tipId}`;
   console.log(`📧 Generated unsubscribe URL: ${unsubscribeUrl}`);
-
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -288,7 +242,7 @@ function generateEmailHtml({
                   <!-- Header Section with Logo Only -->
                   <tr>
                     <td class="mobile-padding" style="padding: 40px 48px; text-align: center;" align="center">
-                      <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant3.png" 
+                      <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant4.png" 
                            alt="Quilltips Logo" 
                            width="200" 
                            height="auto" 
