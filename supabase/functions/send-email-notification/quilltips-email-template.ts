@@ -1,6 +1,7 @@
+
 // Email template for Quilltips notifications
 // Using table-based layout with inline CSS for maximum email client compatibility
-export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalContent })=>{
+export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalContent }) => {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -25,11 +26,13 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
           /* Target Gmail specifically */
           u + .body .gmail-background { background-color: #f8fafc !important; }
           u + .body .gmail-container { background-color: #ffffff !important; }
+          u + .body .gmail-header { background-color: #19363C !important; }
           u + .body .gmail-button { background-color: #FFD166 !important; }
           u + .body .gmail-footer { background-color: #F7FAFC !important; }
           
           /* Gmail Dark Mode fixes */
           [data-ogsc] .gmail-container { background-color: #ffffff !important; }
+          [data-ogsc] .gmail-header { background-color: #19363C !important; }
           [data-ogsc] .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
           [data-ogsc] .gmail-footer { background-color: #F7FAFC !important; }
           
@@ -44,6 +47,7 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
             /* Mobile font sizing */
             .mobile-body { font-size: 15px !important; }
             .mobile-padding { padding: 16px !important; }
+            .mobile-header-padding { padding: 24px 16px !important; }
           }
           
           @media screen and (min-width: 601px) {
@@ -87,6 +91,8 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
           /* Outlook font handling */
           .font-playfair { font-family: Georgia, 'Times New Roman', serif !important; }
           .font-lato { font-family: Arial, Helvetica, sans-serif !important; }
+          /* Outlook dark header fix */
+          .gmail-header { background-color: #19363C !important; }
         </style>
         <![endif]-->
       </head>
@@ -99,22 +105,48 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
               <td align="center" style="padding: 40px 20px;">
                 
                 <!-- Email Content Table -->
-                <table class="gmail-container gmail-mobile" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; max-width: 600px; border-radius: 12px;" bgcolor="#ffffff">
+                <table class="gmail-container gmail-mobile" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; max-width: 600px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" bgcolor="#ffffff">
                   
-                  <!-- Header Section with Logo Only -->
+                  <!-- Dark Header Section with Logo and Branding -->
                   <tr>
-                    <td class="mobile-padding" style="padding: 40px 48px; text-align: center;" align="center">
-                    <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant4.png" 
-                        alt="Quilltips Logo" 
-                        style="display: block; max-width: 100%; width: 280px; height: auto; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" 
-                        class="mobile-logo" />
-
+                    <td class="gmail-header mobile-header-padding" style="background-color: #19363C; padding: 40px 48px; text-align: center;" bgcolor="#19363C" align="center">
+                      <!-- Logo -->
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td align="center" style="padding-bottom: 16px;">
+                            <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/logo_nav.png" 
+                                 alt="Quilltips Logo" 
+                                 style="display: block; max-width: 100%; width: 220px; height: auto; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" 
+                                 class="mobile-logo" />
+                          </td>
+                        </tr>
+                      </table>
+                      
+                      <!-- Tagline -->
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #ffffff; text-align: center; font-weight: 300; opacity: 0.9;" align="center">
+                            Connecting authors with their readers
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
                   
-                  <!-- Content Section -->
+                  <!-- Main Content Section -->
                   <tr>
-                    <td class="gmail-mobile-padding mobile-padding" style="padding: 0 48px 48px 48px; background-color: #ffffff;" bgcolor="#ffffff">
+                    <td class="gmail-mobile-padding mobile-padding" style="padding: 48px 48px; background-color: #ffffff;" bgcolor="#ffffff">
+                      
+                      <!-- Header Text -->
+                      ${header ? `
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td class="font-playfair" style="font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: #19363C; text-align: center; line-height: 1.3; margin: 0 0 24px 0; padding-bottom: 24px;" align="center">
+                            ${header}
+                          </td>
+                        </tr>
+                      </table>
+                      ` : ''}
                       
                       <!-- Main Message -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -137,12 +169,12 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
                       ` : ''}
 
                       ${cta && ctaUrl ? `
-                      <!-- CTA Button with Rounded Corners -->
+                      <!-- CTA Button with Enhanced Styling -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td align="center" style="padding: 40px 0;">
                             <!--[if mso]>
-                            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${ctaUrl}" style="height:52px;v-text-anchor:middle;width:220px;" arcsize="25%" stroke="f" fillcolor="#FFD166">
+                            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${ctaUrl}" style="height:56px;v-text-anchor:middle;width:240px;" arcsize="28%" stroke="f" fillcolor="#FFD166">
                               <w:anchorlock/>
                               <center class="font-lato" style="color:#19363C;font-family:'Lato', Arial, sans-serif;font-size:16px;font-weight:600;">${cta}</center>
                             </v:roundrect>
@@ -150,10 +182,10 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
                             <!--[if !mso]><!-->
                             <table border="0" cellspacing="0" cellpadding="0">
                               <tr>
-                                <td class="gmail-button" style="background-color: #FFD166; border: none; border-radius: 16px;" bgcolor="#FFD166">
+                                <td class="gmail-button" style="background-color: #FFD166; border: none; border-radius: 16px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" bgcolor="#FFD166">
                                   <a href="${ctaUrl}" 
                                      class="font-lato"
-                                     style="display: inline-block; padding: 18px 36px; font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 600; color: #19363C !important; text-decoration: none; min-width: 160px; text-align: center; line-height: 1; border-radius: 16px;"
+                                     style="display: inline-block; padding: 20px 40px; font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 600; color: #19363C !important; text-decoration: none; min-width: 180px; text-align: center; line-height: 1; border-radius: 16px; transition: all 0.2s ease;"
                                      target="_blank">
                                     ${cta}
                                   </a>
@@ -169,7 +201,7 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
                       <!-- Secondary Link -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; text-align: center; padding: 24px 0;" align="center">
+                          <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #6B7280; text-align: center; padding: 24px 0;" align="center">
                             or visit <a href="https://quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: 600;" target="_blank">quilltips.co</a>
                           </td>
                         </tr>
@@ -178,14 +210,17 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
                     </td>
                   </tr>
                   
-                  <!-- Footer Section -->
+                  <!-- Enhanced Footer Section -->
                   <tr>
-                    <td class="gmail-footer gmail-mobile-padding mobile-padding" style="background-color: #F7FAFC; padding: 32px 48px; text-align: center; border-top: 1px solid #E2E8F0; border-radius: 0 0 12px 12px;" bgcolor="#F7FAFC" align="center">
+                    <td class="gmail-footer gmail-mobile-padding mobile-padding" style="background-color: #F7FAFC; padding: 32px 48px; text-align: center; border-top: 1px solid #E2E8F0;" bgcolor="#F7FAFC" align="center">
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 14px; color: #6B7280; line-height: 1.5; text-align: center;" align="center">
-                            If you have any questions, reply to this email<br>
-                            or contact us at <a href="mailto:hello@quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: 600;" target="_blank">hello@quilltips.co</a>
+                            Questions? Contact us at <a href="mailto:hello@quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: 600;" target="_blank">hello@quilltips.co</a>
+                            <br><br>
+                            <span style="font-size: 12px; color: #9CA3AF;">
+                              © 2024 Quilltips. All rights reserved.
+                            </span>
                           </td>
                         </tr>
                       </table>
