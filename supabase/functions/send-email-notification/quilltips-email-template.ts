@@ -1,4 +1,3 @@
-
 // Email template for Quilltips notifications
 // Using table-based layout with inline CSS for maximum email client compatibility
 export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalContent }) => {
@@ -123,7 +122,7 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td align="center" style="padding-bottom: 12px;">
-                            <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant5.png" 
+                            <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant6.png" 
                                  alt="Quilltips Logo" 
                                  class="desktop-logo-img mobile-logo-img"
                                  style="display: block; max-width: 100%; width: 220px; height: auto; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />
@@ -144,7 +143,7 @@ export const generateEmailHtml = ({ message, header, cta, ctaUrl, additionalCont
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #ffffff; text-align: center; font-weight: 300; opacity: 0.9;" align="center">
-                            Connecting authors with their readers
+                            Helping authors get paid
                           </td>
                         </tr>
                       </table>
