@@ -20,7 +20,7 @@ interface ProfileTabProps {
 
 export const ProfileTab = ({ profile, onChangeStatus }: ProfileTabProps) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 py-8">
       <AvatarUpload
         profileId={profile.id}
         avatarUrl={profile.avatar_url ?? null}

@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileTab } from "@/components/settings/ProfileTab";
 import { AccountTab } from "@/components/settings/AccountTab";
 import { PaymentTab } from "@/components/settings/PaymentTab";
+import { Settings } from "lucide-react";
 
 const AuthorSettings = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -112,7 +113,10 @@ const AuthorSettings = () => {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-24 pb-12">
-        <h1 className="text-3xl font-playfair text-center mb-12">Edit profile</h1>
+        <h1 className="text-3xl font-playfair text-center mb-12 flex items-center justify-center gap-2">
+          <Settings className="w-6 h-6" />
+          Settings
+        </h1>
         <div className="max-w-2xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0 h-auto">
