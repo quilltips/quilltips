@@ -456,6 +456,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      unsubscribe_tip: {
+        Args: { tip_uuid: string; unsubscribe_token: string }
+        Returns: boolean
+      }
       update_public_profile: {
         Args: {
           profile_id: string

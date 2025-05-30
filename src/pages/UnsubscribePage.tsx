@@ -24,35 +24,30 @@ const UnsubscribePage = () => {
         return;
       }
 
+      console.log("Processing unsubscribe for tip:", tipId, "with token:", token);
+
       try {
-        // Verify token is valid
-        const { data: tokenData, error: tokenError } = await supabase
-          .from("unsubscribe_tokens")
-          .select("*")
-          .eq("token", token)
-          .eq("tip_id", tipId)
-          .single();
+        // Use the new secure unsubscribe function
+        const { data, error: rpcError } = await supabase.rpc('unsubscribe_tip', {
+          tip_uuid: tipId,
+          unsubscribe_token: token
+        });
 
-        if (tokenError || !tokenData) {
-          throw new Error("Invalid or expired unsubscribe token");
+        console.log("Unsubscribe function result:", data, "Error:", rpcError);
+
+        if (rpcError) {
+          console.error("RPC Error:", rpcError);
+          throw new Error(`Database error: ${rpcError.message}`);
         }
 
-        // Check token expiration
-        if (new Date(tokenData.expires_at) < new Date()) {
-          throw new Error("Unsubscribe link has expired");
+        if (data === true) {
+          console.log("Successfully unsubscribed");
+          setSuccess(true);
+        } else {
+          console.log("Unsubscribe failed - invalid or expired token");
+          throw new Error("Invalid or expired unsubscribe link");
         }
 
-        // Update tip record to mark as unsubscribed
-        const { error: updateError } = await supabase
-          .from("tips")
-          .update({ unsubscribed: true })
-          .eq("id", tipId);
-
-        if (updateError) {
-          throw updateError;
-        }
-
-        setSuccess(true);
       } catch (err) {
         console.error("Unsubscribe error:", err);
         setError(err.message || "Failed to process unsubscribe request");
@@ -65,7 +60,7 @@ const UnsubscribePage = () => {
   }, [token, tipId]);
 
   return (
-
+    <Layout>
       <div className="container max-w-2xl mx-auto px-4 pt-16 pb-20 text-center">
         <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
           {isLoading ? (
@@ -81,8 +76,14 @@ const UnsubscribePage = () => {
                 </div>
               </div>
               <h1 className="text-2xl font-bold mb-4">Successfully Unsubscribed</h1>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-gray-600 mb-4">
                 You will no longer receive notifications about this tip.
+              </p>
+              <p className="text-sm text-gray-500">
+                If you continue to receive emails, please contact us at{" "}
+                <a href="mailto:hello@quilltips.co" className="text-[#19363C] underline">
+                  hello@quilltips.co
+                </a>
               </p>
             </>
           ) : (
@@ -93,12 +94,18 @@ const UnsubscribePage = () => {
                 </div>
               </div>
               <h1 className="text-2xl font-bold mb-4">Unsubscribe Failed</h1>
-              <p className="text-lg text-gray-600">{error}</p>
+              <p className="text-lg text-gray-600 mb-4">{error}</p>
+              <p className="text-sm text-gray-500">
+                If you need help, please contact us at{" "}
+                <a href="mailto:hello@quilltips.co" className="text-[#19363C] underline">
+                  hello@quilltips.co
+                </a>
+              </p>
             </>
           )}
         </div>
       </div>
-
+    </Layout>
   );
 };
 

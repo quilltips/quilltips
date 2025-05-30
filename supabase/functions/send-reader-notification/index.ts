@@ -1,4 +1,3 @@
-
 // supabase/functions/send-reader-notification/index.ts
 console.log("📧 Reader notification edge function initialized");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
@@ -462,7 +461,7 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
                         </tr>
                       </table>
                       ` : ''}
-
+                      
                       ${cta && ctaUrl ? `
                       <!-- CTA Button with Enhanced Styling - Fully Rounded -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -505,7 +504,7 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
                     </td>
                   </tr>
                   
-                  <!-- Enhanced Footer Section -->
+                  <!-- Enhanced Footer Section with improved unsubscribe link -->
                   <tr>
                     <td class="gmail-footer gmail-mobile-padding mobile-padding" style="background-color: #F7FAFC; padding: 32px 48px; text-align: center; border-top: 1px solid #E2E8F0;" bgcolor="#F7FAFC" align="center">
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -517,9 +516,44 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
                         <tr>
                           <td style="padding-top: 20px;">
                             <div class="font-lato" style="font-size: 12px; color: #8898aa; text-align: center;">
-                              <a href="${unsubscribeUrl}" style="color: #8898aa; text-decoration: underline;">Click here to unsubscribe</a> from notifications about this tip.
-                              <br><br>
-                              <span style="color: #9CA3AF;">© 2025 Quilltips. All rights reserved.</span>
+                              <!-- Enhanced unsubscribe link with multiple compatibility formats -->
+                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                  <td align="center">
+                                    <!--[if mso]>
+                                    <table border="0" cellspacing="0" cellpadding="0">
+                                      <tr>
+                                        <td>
+                                          <a href="${unsubscribeUrl}" class="unsubscribe-link" style="color: #8898aa !important; text-decoration: underline !important; font-size: 12px;">Click here to unsubscribe</a>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                    <![endif]-->
+                                    <!--[if !mso]><!-->
+                                    <a href="${unsubscribeUrl}" 
+                                       class="unsubscribe-link"
+                                       style="color: #8898aa !important; text-decoration: underline !important; font-size: 12px !important; display: inline-block; padding: 2px 4px;"
+                                       target="_blank"
+                                       rel="noopener noreferrer">
+                                      Click here to unsubscribe
+                                    </a>
+                                    <!--<![endif]-->
+                                    from notifications about this tip.
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td align="center" style="padding-top: 8px;">
+                                    <span style="font-size: 11px; color: #9CA3AF;">
+                                      Or copy this link: ${unsubscribeUrl}
+                                    </span>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td align="center" style="padding-top: 16px;">
+                                    <span style="color: #9CA3AF;">© 2025 Quilltips. All rights reserved.</span>
+                                  </td>
+                                </tr>
+                              </table>
                             </div>
                           </td>
                         </tr>
