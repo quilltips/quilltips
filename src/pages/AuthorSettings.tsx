@@ -1,11 +1,14 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate, useBeforeUnload } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileSettings } from "@/components/ProfileSettings";
 import { useToast } from "@/hooks/use-toast";
 import { UnsavedChangesDialog } from "@/components/profile/UnsavedChangesDialog";
 import { usePreventNavigation } from "@/hooks/use-prevent-navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProfileTab } from "@/components/settings/ProfileTab";
+import { AccountTab } from "@/components/settings/AccountTab";
+import { PaymentTab } from "@/components/settings/PaymentTab";
 
 const AuthorSettings = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -13,6 +16,7 @@ const AuthorSettings = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("profile");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -110,10 +114,28 @@ const AuthorSettings = () => {
       <div className="container mx-auto px-4 pt-24 pb-12">
         <h1 className="text-3xl font-playfair text-center mb-12">Edit profile</h1>
         <div className="max-w-2xl mx-auto">
-          <ProfileSettings 
-            profile={profile}
-            onChangeStatus={setHasUnsavedChanges}
-          />
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="account">Account</TabsTrigger>
+              <TabsTrigger value="payments">Payments</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="profile" className="mt-6">
+              <ProfileTab 
+                profile={profile}
+                onChangeStatus={setHasUnsavedChanges}
+              />
+            </TabsContent>
+            
+            <TabsContent value="account" className="mt-6">
+              <AccountTab />
+            </TabsContent>
+            
+            <TabsContent value="payments" className="mt-6">
+              <PaymentTab profile={profile} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
