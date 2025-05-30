@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, PartyPopper } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,8 +60,9 @@ const TipSuccessPage = () => {
       <div className="container max-w-2xl mx-auto px-4 pt-16 pb-20 text-center">
         <div className="bg-transparent rounded-xl shadow-none p-8 md:p-12">
           <div className="flex justify-center mb-5">
-            <div className="rounded-full p-3">
-              <CheckCircle className="h-12 w-12 text-[#FFD166]" />
+            <div className="flex gap-2 rounded-full p-3">
+              <PartyPopper className="h-12 w-12 text-[#FFD166]" />
+              <PartyPopper className="h-12 w-12 text-[#19363c]" />
             </div>
           </div>
           
