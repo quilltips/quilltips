@@ -62,7 +62,7 @@ const UnsubscribePage = () => {
   return (
     <Layout>
       <div className="container max-w-2xl mx-auto px-4 pt-16 pb-20 text-center">
-        <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
+        <div className="bg-transparent rounded-xl shadow-none p-8 md:p-12">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-8">
               <LoadingSpinner />
@@ -71,8 +71,8 @@ const UnsubscribePage = () => {
           ) : success ? (
             <>
               <div className="flex justify-center mb-6">
-                <div className="rounded-full bg-[#FFD166]/10 p-3">
-                  <CheckCircle className="h-12 w-12 text-[#FFD166]" />
+                <div className="rounded-full bg-transparent p-3">
+                  <CheckCircle className="h-12 w-12 text-[#333333]" />
                 </div>
               </div>
               <h1 className="text-2xl font-bold mb-4">Successfully Unsubscribed</h1>
