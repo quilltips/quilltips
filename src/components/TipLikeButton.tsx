@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -51,7 +52,7 @@ export const TipLikeButton = ({
       
       if (readerEmail) {
         try {
-          await supabase.functions.invoke('send-reader-notification', {
+          const { data: notificationResponse } = await supabase.functions.invoke('send-reader-notification', {
             body: {
               type: 'tip_liked',
               readerEmail,
@@ -64,10 +65,48 @@ export const TipLikeButton = ({
               }
             }
           });
-          console.log('Reader notification sent successfully');
+
+          console.log('Like notification response:', notificationResponse);
+
+          // Handle different notification outcomes
+          if (notificationResponse?.success) {
+            if (notificationResponse.skipped) {
+              toast({
+                title: "Like successful",
+                description: "You've successfully liked this tip.",
+              });
+            } else if (notificationResponse.sent) {
+              toast({
+                title: "Like successful",
+                description: "You've liked this tip and the reader has been notified.",
+              });
+            } else {
+              toast({
+                title: "Like successful",
+                description: "You've successfully liked this tip.",
+              });
+            }
+          } else {
+            // Notification failed but like was successful
+            toast({
+              title: "Like successful",
+              description: "You've liked this tip, but we couldn't notify the reader.",
+            });
+          }
         } catch (notifyError) {
           console.error('Failed to send reader notification:', notifyError);
+          // Like successful, but notification failed
+          toast({
+            title: "Like successful",
+            description: "You've liked this tip, but we couldn't notify the reader.",
+          });
         }
+      } else {
+        // No reader email available
+        toast({
+          title: "Like successful",
+          description: "You've successfully liked this tip.",
+        });
       }
     } catch (error: any) {
       console.error('Error handling like:', error);

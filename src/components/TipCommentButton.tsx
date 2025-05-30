@@ -86,8 +86,8 @@ export const TipCommentButton = ({
           if (notificationResponse?.success) {
             if (notificationResponse.skipped) {
               toast({
-                title: "Comment Posted",
-                description: "Your comment has been posted. Reader notification was skipped as they have unsubscribed from this tip.",
+                title: "Comment posted successfully",
+                description: "Your comment has been posted.",
               });
             } else if (notificationResponse.sent) {
               toast({
