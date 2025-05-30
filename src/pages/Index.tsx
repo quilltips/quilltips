@@ -33,16 +33,14 @@ const Index = () => {
       {/* Hero Section */}
       <div className="mx-auto w-full max-w-5xl text-center space-y-8 animate-enter">
         <div className="space-y-4">
-          <OptimizedImage
-            src="/lovable-uploads/logo_nav.webp"
-            alt="Quilltips"
-            width={144}
-            height={144}
-            className="mx-auto"
-            priority={true}
-            sizes="144px"
-            objectFit="contain"
-          />
+        <div className="w-full flex justify-center mb-4 gap-4 pl-16">
+        <OptimizedImage
+              src="/lovable-uploads/logo_nav.webp"
+              alt="Book Icon"
+              className="w-10 h-10"
+              priority={true}
+            />
+            </div>
           <h1 className="font-playfair font-bold text-6xl text-[#19363C]">Quilltips</h1>
           <h2 className=" text-xl py-6 px-4">
             Helping authors get paid
