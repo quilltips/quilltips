@@ -1,3 +1,4 @@
+
 // supabase/functions/send-reader-notification/index.ts
 console.log("📧 Reader notification edge function initialized");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
@@ -32,6 +33,39 @@ serve(async (req) => {
       throw new Error("Reader email is required");
     }
 
+    if (!data.tipId) {
+      throw new Error("Tip ID is required");
+    }
+
+    // CRITICAL: Check if the tip is unsubscribed BEFORE proceeding
+    console.log(`📧 Checking unsubscribe status for tip ${data.tipId}`);
+    const { data: tipData, error: tipError } = await supabase
+      .from('tips')
+      .select('unsubscribed')
+      .eq('id', data.tipId)
+      .single();
+
+    if (tipError) {
+      console.error(`❌ Error checking tip unsubscribe status: ${tipError.message}`);
+      throw new Error(`Failed to check tip status: ${tipError.message}`);
+    }
+
+    if (tipData?.unsubscribed === true) {
+      console.log(`📧 Tip ${data.tipId} is unsubscribed - skipping notification`);
+      return new Response(JSON.stringify({
+        success: true,
+        skipped: true,
+        reason: 'unsubscribed',
+        message: 'Notification skipped - reader has unsubscribed'
+      }), {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        }
+      });
+    }
+
     // Generate or retrieve unsubscribe token
     const unsubscribeToken = await getOrCreateUnsubscribeToken(data.tipId);
     console.log(`📧 Generated unsubscribe token for tip ${data.tipId}: ${unsubscribeToken}`);
@@ -61,6 +95,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({
       success: true,
+      sent: true,
       id: emailResponse.id
     }), {
       status: 200,
@@ -72,7 +107,8 @@ serve(async (req) => {
   } catch (error) {
     console.error(`❌ Error processing notification: ${error.message}`);
     return new Response(JSON.stringify({
-      error: error.message
+      error: error.message,
+      success: false
     }), {
       status: 500,
       headers: {

@@ -57,7 +57,7 @@ export const TipCommentButton = ({
 
       if (error) throw error;
 
-      // Success
+      // Success - update UI first
       setCount(prev => prev + 1);
       setComment('');
       setOpen(false);
@@ -65,7 +65,7 @@ export const TipCommentButton = ({
       // Send notification to reader if we have their email
       if (readerEmail) {
         try {
-          await supabase.functions.invoke('send-reader-notification', {
+          const { data: notificationResponse } = await supabase.functions.invoke('send-reader-notification', {
             body: {
               type: 'tip_commented',
               readerEmail,
@@ -79,17 +79,49 @@ export const TipCommentButton = ({
               }
             }
           });
-          console.log('Reader notification sent successfully');
+
+          console.log('Notification response:', notificationResponse);
+
+          // Handle different notification outcomes
+          if (notificationResponse?.success) {
+            if (notificationResponse.skipped) {
+              toast({
+                title: "Comment Posted",
+                description: "Your comment has been posted. Reader notification was skipped as they have unsubscribed from this tip.",
+              });
+            } else if (notificationResponse.sent) {
+              toast({
+                title: "Comment Posted",
+                description: "Your comment has been posted and reader has been notified",
+              });
+            } else {
+              toast({
+                title: "Comment Posted",
+                description: "Your comment has been posted",
+              });
+            }
+          } else {
+            // Notification failed but comment was posted
+            toast({
+              title: "Comment Posted",
+              description: "Your comment has been posted, but we couldn't send a notification to the reader",
+            });
+          }
         } catch (notifyError) {
           console.error('Failed to send reader notification:', notifyError);
-          // Continue with the UI update even if notification fails
+          // Comment posted successfully, but notification failed
+          toast({
+            title: "Comment Posted",
+            description: "Your comment has been posted, but we couldn't send a notification to the reader",
+          });
         }
+      } else {
+        // No reader email available
+        toast({
+          title: "Comment Posted",
+          description: "Your comment has been successfully posted",
+        });
       }
-
-      toast({
-        title: "Comment Posted",
-        description: "Your comment has been successfully posted",
-      });
     } catch (error) {
       console.error('Error posting comment:', error);
       toast({
