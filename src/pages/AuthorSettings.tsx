@@ -115,10 +115,25 @@ const AuthorSettings = () => {
         <h1 className="text-3xl font-playfair text-center mb-12">Edit profile</h1>
         <div className="max-w-2xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="profile">Profile</TabsTrigger>
-              <TabsTrigger value="account">Account</TabsTrigger>
-              <TabsTrigger value="payments">Payments</TabsTrigger>
+            <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0 h-auto">
+              <TabsTrigger 
+                value="profile"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent"
+              >
+                Profile
+              </TabsTrigger>
+              <TabsTrigger 
+                value="account"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent"
+              >
+                Account
+              </TabsTrigger>
+              <TabsTrigger 
+                value="payments"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent"
+              >
+                Payments
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="profile" className="mt-6">
