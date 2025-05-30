@@ -203,6 +203,112 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
           [data-ogsc] .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
           [data-ogsc] .gmail-footer { background-color: #F7FAFC !important; }
           
+          /* Comprehensive Dark Mode Protection */
+          @media (prefers-color-scheme: dark) {
+            .gmail-background { background-color: #f8fafc !important; }
+            .gmail-container { background-color: #ffffff !important; }
+            .gmail-header { background-color: #19363C !important; }
+            .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
+            .gmail-footer { background-color: #F7FAFC !important; }
+            .desktop-brand-title, .mobile-brand-title { color: #ffffff !important; }
+            .desktop-tagline, .mobile-tagline { color: #ffffff !important; }
+            .desktop-body, .mobile-body { color: #4A5568 !important; }
+            .font-playfair { color: #19363C !important; }
+            .font-lato { color: #4A5568 !important; }
+          }
+          
+          /* Apple Mail Dark Mode */
+          @media (prefers-color-scheme: dark) and (-webkit-min-device-pixel-ratio: 0) {
+            .gmail-background { background-color: #f8fafc !important; }
+            .gmail-container { background-color: #ffffff !important; }
+            .gmail-header { background-color: #19363C !important; }
+            .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
+            .gmail-footer { background-color: #F7FAFC !important; }
+          }
+          
+          /* Outlook Dark Mode */
+          [data-outlook-dark] .gmail-container { background-color: #ffffff !important; }
+          [data-outlook-dark] .gmail-header { background-color: #19363C !important; }
+          [data-outlook-dark] .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
+          [data-outlook-dark] .gmail-footer { background-color: #F7FAFC !important; }
+          
+          /* Yahoo Mail Dark Mode */
+          [data-yahoo-dark] .gmail-container { background-color: #ffffff !important; }
+          [data-yahoo-dark] .gmail-header { background-color: #19363C !important; }
+          [data-yahoo-dark] .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
+          [data-yahoo-dark] .gmail-footer { background-color: #F7FAFC !important; }
+          
+          /* Image Protection Against Inversion */
+          .protected-logo {
+            filter: none !important;
+            -webkit-filter: none !important;
+            mix-blend-mode: normal !important;
+          }
+          
+          @media (prefers-color-scheme: dark) {
+            .protected-logo {
+              filter: none !important;
+              -webkit-filter: none !important;
+              mix-blend-mode: normal !important;
+              opacity: 1 !important;
+            }
+          }
+          
+          /* Auto-dark mode prevention */
+          [data-ogsc] .protected-logo {
+            filter: none !important;
+            -webkit-filter: none !important;
+            mix-blend-mode: normal !important;
+          }
+          
+          /* Color Fortification - Multiple specificity levels */
+          .gmail-header,
+          td.gmail-header,
+          table .gmail-header,
+          .gmail-header td {
+            background-color: #19363C !important;
+            background: #19363C !important;
+          }
+          
+          .gmail-button,
+          td.gmail-button,
+          table .gmail-button,
+          .gmail-button a {
+            background-color: #FFD166 !important;
+            background: #FFD166 !important;
+            color: #19363C !important;
+          }
+          
+          .gmail-container,
+          td.gmail-container,
+          table .gmail-container {
+            background-color: #ffffff !important;
+            background: #ffffff !important;
+          }
+          
+          .gmail-footer,
+          td.gmail-footer,
+          table .gmail-footer {
+            background-color: #F7FAFC !important;
+            background: #F7FAFC !important;
+          }
+          
+          /* Text Color Protection */
+          .desktop-brand-title,
+          .mobile-brand-title,
+          td.desktop-brand-title,
+          td.mobile-brand-title {
+            color: #ffffff !important;
+          }
+          
+          .desktop-tagline,
+          .mobile-tagline,
+          td.desktop-tagline,
+          td.mobile-tagline {
+            color: #ffffff !important;
+            opacity: 0.9 !important;
+          }
+          
           /* Responsive typography and layout */
           @media screen and (max-width: 600px) {
             .gmail-mobile { width: 100% !important; }
@@ -296,8 +402,8 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
                           <td align="center" style="padding-bottom: 12px;">
                             <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant6.png" 
                                  alt="Quilltips Logo" 
-                                 class="desktop-logo-img mobile-logo-img"
-                                 style="display: block; max-width: 100%; width: 165px; height: auto; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />
+                                 class="desktop-logo-img mobile-logo-img protected-logo"
+                                 style="display: block; max-width: 100%; width: 165px; height: auto; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; filter: none; -webkit-filter: none; mix-blend-mode: normal;" />
                           </td>
                         </tr>
                       </table>
