@@ -215,11 +215,18 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
             .mobile-body { font-size: 15px !important; }
             .mobile-padding { padding: 16px !important; }
             .mobile-header-padding { padding: 24px 16px !important; }
+            
+            /* Mobile logo sizing */
+            .mobile-logo-img { width: 180px !important; max-width: 180px !important; }
+            .mobile-brand-title { font-size: 24px !important; }
           }
           
           @media screen and (min-width: 601px) {
             /* Desktop font sizing */
             .desktop-body { font-size: 16px !important; }
+            /* Desktop logo sizing */
+            .desktop-logo-img { width: 220px !important; max-width: 220px !important; }
+            .desktop-brand-title { font-size: 28px !important; }
           }
           
           /* Remove Gmail's blue links */
@@ -260,6 +267,8 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
           .font-lato { font-family: Arial, Helvetica, sans-serif !important; }
           /* Outlook dark header fix */
           .gmail-header { background-color: #19363C !important; }
+          /* Outlook logo sizing */
+          .desktop-logo-img { width: 220px !important; }
         </style>
         <![endif]-->
       </head>
@@ -280,11 +289,20 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
                       <!-- Logo -->
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td align="center" style="padding-bottom: 16px;">
-                            <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/logo_nav.png" 
+                          <td align="center" style="padding-bottom: 12px;">
+                            <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant5.png" 
                                  alt="Quilltips Logo" 
-                                 style="display: block; max-width: 100%; width: 220px; height: auto; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" 
-                                 class="mobile-logo" />
+                                 class="desktop-logo-img mobile-logo-img"
+                                 style="display: block; max-width: 100%; width: 220px; height: auto; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />
+                          </td>
+                        </tr>
+                      </table>
+                      
+                      <!-- Brand Title -->
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td class="font-playfair desktop-brand-title mobile-brand-title" style="font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: #ffffff; text-align: center; margin: 0; padding-bottom: 8px;" align="center">
+                            Quilltips
                           </td>
                         </tr>
                       </table>
