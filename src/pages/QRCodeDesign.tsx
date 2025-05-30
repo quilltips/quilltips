@@ -105,7 +105,7 @@ const QRCodeDesign = () => {
                             objectFit="cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                          <div className="w-full h-full flex items-center justify-center bg-gray-100">
                             <img
                               src="/lovable-uploads/quill_icon.png"
                               alt="Quilltips Logo"
@@ -122,40 +122,20 @@ const QRCodeDesign = () => {
             
             {/* Right Column - Checkout Section */}
             <div>
-              <Card className="p-6 rounded-lg shadow-sm">
-                <h2 className="text-xl font-bold mb-6 text-[#19363C]">Complete Your QR Code Purchase</h2>
+              <Card className="p-6 rounded-lg ">
+                <h2 className="text-xl font-bold mb-6 text-[#333333]">Complete Your QR Code Purchase</h2>
                 
                 <div className="space-y-6">
-                  <div>
-                    <h3 className="font-medium mb-3 text-[#19363C]">What you're getting:</h3>
-                    <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-start">
-                        <span className="text-[#FFD166] mr-2">✓</span>
-                        <span>Custom QR code for "{qrCodeData.book_title}"</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-[#FFD166] mr-2">✓</span>
-                        <span>Unlimited scans and tips from readers</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-[#FFD166] mr-2">✓</span>
-                        <span>Downloadable in multiple formats (PNG, SVG)</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="text-[#FFD166] mr-2">✓</span>
-                        <span>Reader analytics and message history</span>
-                      </li>
-                    </ul>
-                  </div>
+                 
                   
-                  <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="px-3 py-6 rounded-lg">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-700">QR Code</span>
-                      <span className="font-bold">$35.00</span>
+                      <span className="font-medium ">QR Code - $35</span>
+                      
                     </div>
                   </div>
                   
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-6">
                     <Button 
                       onClick={handleCheckout}
                       className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] py-3"
@@ -168,7 +148,7 @@ const QRCodeDesign = () => {
                     <Button 
                       onClick={handleCancel}
                       variant="outline"
-                      className="w-full text-gray-700 border border-gray-300 py-3"
+                      className="w-full text-gray-500 border border-gray-300 py-3 hover:bg-transparent "
                     >
                       Cancel
                     </Button>

@@ -224,18 +224,39 @@ const QRCodeSummary = () => {
                     className="h-16 w-16 object-contain"
                   />
                 </div>
+                <div className="pt-8 text-sm">
+                    <h3 className="font-sm mb-3 text-[#333333] ">What you're getting:</h3>
+                    <ul className="space-y-2 text-[#333333]">
+                      <li className="flex items-start">
+                        <span className="text-[#FFD166] mr-2">✓</span>
+                        <span>Custom QR code for "{qrCode.book_title}"</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-[#FFD166] mr-2">✓</span>
+                        <span>Unlimited scans and tips from readers</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-[#FFD166] mr-2">✓</span>
+                        <span>Downloadable in multiple formats (PNG, SVG)</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-[#FFD166] mr-2">✓</span>
+                        <span>Reader analytics and message history</span>
+                      </li>
+                    </ul>
+                  </div>
               </div>
 
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h2 className="text-lg font-medium">QR Code</h2>
-                  <p className="text-sm ">
-                    {qrCode.book_title}
-                  </p>
+                  
+                  <h2 className="text-xl text-center px-2">
+                   <span className="font-bold"> QR Code for</span> "{qrCode.book_title}"
+                  </h2>
                 </div>
 
                 {/* Visible screen QR code */}
-                <div>
+                <div className="flex justify-center">
                   <StyledQRCode
                     ref={screenRef}
                     value={qrValue}
