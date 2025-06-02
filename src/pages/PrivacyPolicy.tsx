@@ -40,6 +40,7 @@ const PrivacyPolicy = () => {
             <ul className="list-disc pl-6 space-y-2">
               <li>Deliver core Quilltips functionality (e.g. showing tips, sending email notifications)</li>
               <li>Process payments through Stripe</li>
+              <li>Share select reader data with the author they tipped, to enable direct engagement and attribution</li>
               <li>Notify authors and readers regarding tips, messages, and likes.</li>
               <li>Improve the user experience and troubleshoot issues</li>
               <li>Send occasional service-related messages (e.g. onboarding reminders or updates)</li>

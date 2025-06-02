@@ -35,6 +35,7 @@ const TermsOfService = () => {
             <p>This information is used to:</p>
             <ul>
               <li>Facilitate tips and messages between readers and authors</li>
+              <li>Provide authors select data regarding the readers who tip them</li>
               <li>Improve our services</li>
               <li>Provide customer support</li>
               <li>Send important updates</li>
