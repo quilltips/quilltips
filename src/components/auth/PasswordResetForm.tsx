@@ -51,7 +51,7 @@ export const PasswordResetForm = ({
         </div>
         <Button 
           type="submit" 
-          className="w-full bg-[#FEC6A1] hover:bg-[#FEC6A1]/90 text-[#2D3748]" 
+          className="w-full bg-[#FFD166] hover:shadow-lg text-[#333333] hover:bg-[#ffd166]" 
           disabled={isLoading}
         >
           {isLoading ? "Sending Reset Link..." : "Send Reset Link"}
@@ -59,7 +59,7 @@ export const PasswordResetForm = ({
         <button 
           type="button" 
           onClick={onBack} 
-          className="text-sm hover:text-[#2D3748] w-full text-center"
+          className="text-sm hover:text-[#333333] hover:underline w-full text-center"
         >
           Back to login
         </button>
