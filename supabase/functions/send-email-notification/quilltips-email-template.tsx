@@ -33,7 +33,7 @@ export const QuilltipsEmail = ({
       <Container style={container}>
         <Section style={box}>
           <Img
-            src={`${baseUrl}/lovable-uploads/quill_icon.png`}
+            src={`${baseUrl}/lovable-uploads/logo_nav.png`}
             width="60"
             alt="Quilltips Logo"
             style={{ borderRadius: '8px', marginBottom: '12px' }}

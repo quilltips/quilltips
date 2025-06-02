@@ -76,12 +76,12 @@ export const StyledQRCode = forwardRef<HTMLDivElement, StyledQRCodeProps>(({
             <div className="absolute inset-0 flex items-center justify-center">
               <div
                 className={`bg-white rounded-full flex items-center justify-center ${logoPadding}`}
-                style={{ width: "20%", height: "20%" }}
+                style={{ width: "21%", height: "21%" }}
               >
                 <img
-                  src="/lovable-uploads/quill_icon.png"
+                  src="/lovable-uploads/logo_nav.png"
                   alt="Quilltips Logo"
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain p-1"
                 />
               </div>
             </div>

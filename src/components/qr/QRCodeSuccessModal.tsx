@@ -116,7 +116,7 @@ export const QRCodeSuccessModal = ({
             <div className="space-y-6">
               <div className="flex items-center gap-8">
                 <img 
-                  src="/lovable-uploads/quill_icon.png" 
+                  src="/lovable-uploads/logo_nav.png" 
                   alt="Quill Icon" 
                   className="h-10 w-10"
                 />

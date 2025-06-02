@@ -40,7 +40,7 @@ export const BookCard = ({
       <Link to={`/qr/${id}`} className="block">
         <div className="h-24 relative">
           <img
-            src={coverImage || "/lovable-uploads/quill_icon.png"}
+            src={coverImage || "/lovable-uploads/logo_nav.png"}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
           />

@@ -124,7 +124,7 @@ export const SearchBar = () => {
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-10 rounded flex items-center justify-center flex-shrink-0">
                           <img 
-                            src="/lovable-uploads/quill_icon.png" 
+                            src="/lovable-uploads/logo_nav.png" 
                             alt="Book cover" 
                             className="h-4 w-4 object-contain"
                           />

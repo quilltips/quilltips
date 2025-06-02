@@ -43,7 +43,7 @@ const SearchResultItem = memo(({ result, onNavigate }: { result: SearchResult, o
           ) : (
             <div className="w-24 h-32 rounded-md flex items-center justify-center flex-shrink-0 bg-muted">
               <img 
-                src="/lovable-uploads/quill_icon.png" 
+                src="/lovable-uploads/logo_nav.png" 
                 alt="Quilltips Logo"
                 className="h-12 w-12 object-contain"
               />

@@ -58,11 +58,11 @@ const QRCodeDetails = () => {
           <div className="flex items-center space-x-6">
             <div className="w-32 aspect-[2/3] relative shrink-0 rounded-md overflow-hidden">
               <OptimizedImage
-                src={qrCode.cover_image || "/lovable-uploads/quill_icon.png"}
+                src={qrCode.cover_image || "/lovable-uploads/logo_nav.png"}
                 alt={qrCode.book_title}
                 className="w-full h-full"
                 objectFit={qrCode.cover_image ? "cover" : "contain"}
-                fallbackSrc="/lovable-uploads/quill_icon.png"
+                fallbackSrc="/lovable-uploads/logo_nav.png"
                 sizes="128px"
                 priority={true}
               />

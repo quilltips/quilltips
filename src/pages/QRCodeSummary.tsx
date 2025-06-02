@@ -213,7 +213,7 @@ const QRCodeSummary = () => {
                 </h1>
                 <div className="flex items-center gap-8">
                   <img 
-                    src="/lovable-uploads/quill_icon.png" 
+                    src="/lovable-uploads/logo_nav.png" 
                     alt="Quill Icon" 
                     className="h-16 w-16"
                   />

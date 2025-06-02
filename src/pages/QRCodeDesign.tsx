@@ -107,7 +107,7 @@ const QRCodeDesign = () => {
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gray-100">
                             <img
-                              src="/lovable-uploads/quill_icon.png"
+                              src="/lovable-uploads/logo_nav.png"
                               alt="Quilltips Logo"
                               className="w-12 h-12 object-contain opacity-90"
                             />
