@@ -1,9 +1,9 @@
 
-// supabase/functions/send-reader-notification/index.ts
-console.log("📧 Reader notification edge function initialized");
+console.log("send-email edge function is open!");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
+import { generateEmailHtml } from "./quilltips-email-template.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -12,7 +12,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
 
-// Create Supabase client with service role key
+// Create Supabase client
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -29,42 +29,58 @@ serve(async (req) => {
     const { type, userId, data = {} } = await req.json();
     console.log(`📧 Processing ${type} notification for user ${userId}`);
 
-    if (!userId) {
-      throw new Error("User ID is required");
+    // Get user email from profiles table
+    const { data: profile, error: profileError } = await supabase.from('profiles').select('name, email').eq('id', userId).single();
+
+    if (profileError || !profile) {
+      console.error(`❌ Error fetching user profile: ${profileError?.message || "User not found"}`);
+      return new Response(JSON.stringify({
+        error: `User profile not found: ${profileError?.message || "No profile"}`
+      }), {
+        status: 404,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        }
+      });
     }
 
-    // Get user profile and email
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("email, name")
-      .eq("id", userId)
-      .single();
-
-    if (profileError || !profile?.email) {
-      throw new Error("User profile or email not found");
+    // Extract user email
+    const email = profile.email;
+    if (!email) {
+      console.error("❌ User does not have an email in their profile");
+      return new Response(JSON.stringify({
+        error: "User email not found in profile"
+      }), {
+        status: 400,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        }
+      });
     }
+
+    const userName = profile.name || "Author";
 
     // Generate email content based on notification type
-    const emailContent = generateEmailContent(type, data);
+    const emailContent = generateEmailContent(type, userName, data, userId);
 
-    // Generate email HTML
-    const emailHtml = generateEmailHtml({
-      message: emailContent.mainMessage,
-      header: emailContent.header,
-      additionalContent: emailContent.additionalContent,
-      cta: emailContent.cta,
-      ctaUrl: emailContent.ctaUrl
-    });
-
+    // Send email via Resend
     const emailResponse = await resend.emails.send({
       from: "Quilltips <notifications@quilltips.co>",
-      to: profile.email,
+      to: email,
       subject: emailContent.subject,
-      html: emailHtml
+      html: generateEmailHtml({
+        header: emailContent.header || emailContent.subject,
+        message: emailContent.mainMessage,
+        cta: emailContent.cta?.text,
+        ctaUrl: emailContent.cta?.url,
+        additionalContent: emailContent.additionalContent
+      })
     });
 
-    console.log(`✅ Email sent successfully for ${type} notification to ${profile.email}`);
-
+    console.log(`✅ Email sent successfully for ${type} notification`);
+    
     return new Response(JSON.stringify({
       success: true,
       id: emailResponse.id
@@ -90,418 +106,132 @@ serve(async (req) => {
 });
 
 // Generate email content based on notification type
-function generateEmailContent(type, data) {
-  switch (type) {
-    case 'tip_liked':
+function generateEmailContent(type, userName, data, userId) {
+  switch(type) {
+    case 'account_setup_complete':
       return {
-        subject: `${data.authorName} liked your tip!`,
-        header: "Your tip was liked! 💛",
-        mainMessage: `${data.authorName} has liked your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
-        cta: "View Your Tips",
-        ctaUrl: "https://quilltips.co/dashboard",
-        additionalContent: data.message ? `
-          <div style="margin: 20px 0; padding: 20px; background-color: #f9f9f9; border-left: 4px solid #FFD166; border-radius: 8px;">
-            <p style="font-style: italic; margin: 0; font-size: 16px; color: #4A5568;">"${data.message}"</p>
-            <p style="font-size: 14px; color: #6B7280; margin: 12px 0 0 0; font-weight: 500;">Your tip: $${data.amount}</p>
-          </div>
-        ` : ''
-      };
-    case 'tip_commented':
-      return {
-        subject: `${data.authorName} commented on your tip!`,
-        header: "New comment on your tip! 💬",
-        mainMessage: `${data.authorName} has commented on your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
-        cta: "View Comment",
-        ctaUrl: "https://quilltips.co/dashboard",
+        subject: "Welcome to Quilltips! Your account is ready",
+        header: `Welcome to Quilltips, ${userName}!`,
+        mainMessage: "Your author account has been successfully created. You're all set to start receiving tips from your readers.",
         additionalContent: `
-          ${data.message ? `
-            <div style="margin: 20px 0; padding: 20px; background-color: #f9f9f9; border-left: 4px solid #FFD166; border-radius: 8px;">
-              <p style="font-style: italic; margin: 0; font-size: 16px; color: #4A5568;">"${data.message}"</p>
-              <p style="font-size: 14px; color: #6B7280; margin: 12px 0 0 0; font-weight: 500;">Your tip: $${data.amount}</p>
-            </div>
-          ` : ''}
-          <div style="margin: 20px 0; padding: 20px; background-color: #f0f9ff; border-left: 4px solid #19363C; border-radius: 8px;">
-            <p style="margin: 0; font-weight: 600; color: #19363C; font-size: 16px;">Author's comment:</p>
-            <p style="margin: 12px 0 0 0; font-size: 16px; color: #4A5568;">"${data.commentContent}"</p>
-          </div>
+          <p><strong>Next steps:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            <li>Complete your Stripe setup to receive payments</li>
+            <li>Create your first QR code for your book</li>
+            <li>Share your QR code with readers</li>
+          </ul>
+        `,
+        cta: {
+          text: "Go to Dashboard",
+          url: "https://quilltips.co/author/dashboard"
+        }
+      };
+    case 'qr_code_purchased':
+      return {
+        subject: "Your Quilltips QR Code is Ready!",
+        header: "QR Code Purchase Successful",
+        mainMessage: `Hello ${userName}, your QR code for "${data.bookTitle || 'your book'}" has been successfully purchased and is now ready to use.`,
+        cta: {
+          text: "View Your QR Codes",
+          url: "https://quilltips.co/author/book-qr-codes"
+        }
+      };
+    case 'tip_received':
+      return {
+        subject: "You've Received a Tip on Quilltips!",
+        header: "You Received a Tip!",
+        mainMessage: `Great news, ${userName}! Someone appreciated your work.`,
+        additionalContent: `
+          <p>You've received a tip of $${data.amount || '0'} for your book "${data.bookTitle || 'your book'}".</p>
+          ${data.message ? `<p><em>"${data.message}"</em></p>` : ''}
+        `,
+        cta: {
+          text: "View Tip Details",
+          url: "https://quilltips.co/author/tip-feed"
+        }
+      };
+    case 'stripe_setup_incomplete':
+      return {
+        subject: "Action Required: Complete Your Payment Setup",
+        header: "Complete Your Payment Setup",
+        mainMessage: `Hello ${userName}, we noticed that your Stripe payment setup is incomplete. To start receiving tips from your readers, please complete your payment setup.`,
+        cta: {
+          text: "Complete Setup Now",
+          url: "https://quilltips.co/author/bank-account"
+        }
+      };
+    case 'stripe_setup_complete':
+      return {
+        subject: "Payment Setup Complete - Ready to Receive Tips!",
+        header: "You're All Set to Receive Tips!",
+        mainMessage: `Congratulations, ${userName}! Your payment account has been successfully set up. You can now receive tips from your readers directly to your bank account.`,
+        additionalContent: `
+          <p>All the necessary payment details have been verified and your account is ready to go. Tips will be automatically transferred to your connected bank account.</p>
+          <p>Now's a great time to create QR codes for your books so readers can show their appreciation!</p>
+        `,
+        cta: {
+          text: "Create QR Code",
+          url: "https://quilltips.co/author/create-qr"
+        }
+      };
+    case 'stripe_setup_reminder_day1':
+      return {
+        subject: "Finish Your Payment Setup - Just a Few Steps Left",
+        header: "Almost There! Finish Your Payment Setup",
+        mainMessage: `Hello ${userName}, you've started setting up your payment account but haven't completed it yet.`,
+        additionalContent: `
+          <p>You're just a few steps away from being able to receive tips from your readers. It only takes a few minutes to complete the remaining steps.</p>
+          <p><strong>Benefits of completing your setup:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            <li>Start receiving tips directly to your bank account</li>
+            <li>Track all your earnings in one place</li>
+            <li>Get paid automatically when readers appreciate your work</li>
+          </ul>
+        `,
+        cta: {
+          text: "Complete Your Setup",
+          url: "https://quilltips.co/author/bank-account"
+        }
+      };
+    case 'stripe_setup_reminder_day3':
+      return {
+        subject: "Set Up Payments to Start Receiving Tips",
+        header: "Don't Miss Out on Reader Tips",
+        mainMessage: `Hello ${userName}, we noticed you haven't set up your payment account yet.`,
+        additionalContent: `
+          <p>Setting up your payment account is essential to start receiving tips from your readers. The process is simple and only takes a few minutes.</p>
+          <p><strong>Why connect your bank account?</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            <li>Allow readers to send you tips for your books</li>
+            <li>Receive payments directly into your bank account</li>
+            <li>Build a stronger connection with your audience</li>
+          </ul>
+          <p>Our authors who complete their payment setup see an average increase of 30% in reader engagement!</p>
+        `,
+        cta: {
+          text: "Connect Your Bank Account",
+          url: "https://quilltips.co/author/bank-account"
+        }
+      };
+    case 'test_email':
+      return {
+        subject: "Quilltips Email System Test",
+        header: "Email System Test",
+        mainMessage: `Hello ${userName}, this is a test email to verify that the Quilltips email notification system is working correctly.`,
+        additionalContent: `
+          <p>If you're receiving this email, it means our system can successfully send emails to your address.</p>
+          <p><strong>Test details:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            <li>Timestamp: ${new Date(data.timestamp || Date.now()).toLocaleString()}</li>
+            <li>User ID: ${userId || 'Not provided'}</li>
+          </ul>
+          <p>You can ignore this email as it was sent for testing purposes only.</p>
         `
       };
     default:
       return {
         subject: "Notification from Quilltips",
-        header: "You have a notification",
-        mainMessage: "You've received a notification from Quilltips.",
-        cta: "Visit Quilltips",
-        ctaUrl: "https://quilltips.co"
+        mainMessage: `Hello ${userName}, this is a notification from Quilltips.`
       };
   }
-}
-
-// Simplified generateEmailHtml function without unsubscribe functionality
-function generateEmailHtml({ message, header, cta, ctaUrl, additionalContent }) {
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>${header || 'Notification from Quilltips'}</title>
-        
-        <!-- Google Fonts Import with Fallbacks -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        
-        <style type="text/css">
-          /* Font fallbacks for email clients that don't support Google Fonts */
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap');
-          
-          /* Gmail-specific CSS fixes */
-          .gmail-fix { display: none !important; }
-          
-          /* Target Gmail specifically */
-          u + .body .gmail-background { background-color: #f8fafc !important; }
-          u + .body .gmail-container { background-color: #ffffff !important; }
-          u + .body .gmail-header { background-color: #19363C !important; }
-          u + .body .gmail-button { background-color: #FFD166 !important; }
-          u + .body .gmail-footer { background-color: #F7FAFC !important; }
-          
-          /* Gmail Dark Mode fixes */
-          [data-ogsc] .gmail-container { background-color: #ffffff !important; }
-          [data-ogsc] .gmail-header { background-color: #19363C !important; }
-          [data-ogsc] .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
-          [data-ogsc] .gmail-footer { background-color: #F7FAFC !important; }
-          
-          /* Comprehensive Dark Mode Protection */
-          @media (prefers-color-scheme: dark) {
-            .gmail-background { background-color: #f8fafc !important; }
-            .gmail-container { background-color: #ffffff !important; }
-            .gmail-header { background-color: #19363C !important; }
-            .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
-            .gmail-footer { background-color: #F7FAFC !important; }
-            .desktop-brand-title, .mobile-brand-title { color: #ffffff !important; }
-            .desktop-tagline, .mobile-tagline { color: #ffffff !important; }
-            .desktop-body, .mobile-body { color: #4A5568 !important; }
-            .font-playfair { color: #19363C !important; }
-            .font-lato { color: #4A5568 !important; }
-          }
-          
-          /* Apple Mail Dark Mode */
-          @media (prefers-color-scheme: dark) and (-webkit-min-device-pixel-ratio: 0) {
-            .gmail-background { background-color: #f8fafc !important; }
-            .gmail-container { background-color: #ffffff !important; }
-            .gmail-header { background-color: #19363C !important; }
-            .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
-            .gmail-footer { background-color: #F7FAFC !important; }
-          }
-          
-          /* Outlook Dark Mode */
-          [data-outlook-dark] .gmail-container { background-color: #ffffff !important; }
-          [data-outlook-dark] .gmail-header { background-color: #19363C !important; }
-          [data-outlook-dark] .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
-          [data-outlook-dark] .gmail-footer { background-color: #F7FAFC !important; }
-          
-          /* Yahoo Mail Dark Mode */
-          [data-yahoo-dark] .gmail-container { background-color: #ffffff !important; }
-          [data-yahoo-dark] .gmail-header { background-color: #19363C !important; }
-          [data-yahoo-dark] .gmail-button { background-color: #FFD166 !important; color: #19363C !important; }
-          [data-yahoo-dark] .gmail-footer { background-color: #F7FAFC !important; }
-          
-          /* Image Protection Against Inversion */
-          .protected-logo {
-            filter: none !important;
-            -webkit-filter: none !important;
-            mix-blend-mode: normal !important;
-          }
-          
-          @media (prefers-color-scheme: dark) {
-            .protected-logo {
-              filter: none !important;
-              -webkit-filter: none !important;
-              mix-blend-mode: normal !important;
-              opacity: 1 !important;
-            }
-          }
-          
-          /* Auto-dark mode prevention */
-          [data-ogsc] .protected-logo {
-            filter: none !important;
-            -webkit-filter: none !important;
-            mix-blend-mode: normal !important;
-          }
-          
-          /* Color Fortification - Multiple specificity levels */
-          .gmail-header,
-          td.gmail-header,
-          table .gmail-header,
-          .gmail-header td {
-            background-color: #19363C !important;
-            background: #19363C !important;
-          }
-          
-          .gmail-button,
-          td.gmail-button,
-          table .gmail-button,
-          .gmail-button a {
-            background-color: #FFD166 !important;
-            background: #FFD166 !important;
-            color: #19363C !important;
-          }
-          
-          .gmail-container,
-          td.gmail-container,
-          table .gmail-container {
-            background-color: #ffffff !important;
-            background: #ffffff !important;
-          }
-          
-          .gmail-footer,
-          td.gmail-footer,
-          table .gmail-footer {
-            background-color: #F7FAFC !important;
-            background: #F7FAFC !important;
-          }
-          
-          /* Text Color Protection */
-          .desktop-brand-title,
-          .mobile-brand-title,
-          td.desktop-brand-title,
-          td.mobile-brand-title {
-            color: #ffffff !important;
-          }
-          
-          .desktop-tagline,
-          .mobile-tagline,
-          td.desktop-tagline,
-          td.mobile-tagline {
-            color: #ffffff !important;
-            opacity: 0.9 !important;
-          }
-          
-          /* Responsive typography and layout */
-          @media screen and (max-width: 600px) {
-            .gmail-mobile { width: 100% !important; }
-            .gmail-mobile-padding { padding: 20px !important; }
-            .mobile-stack { display: block !important; width: 100% !important; }
-            .mobile-logo { text-align: center !important; padding-bottom: 16px !important; }
-            .mobile-text { text-align: center !important; }
-            
-            /* Mobile font sizing */
-            .mobile-body { font-size: 15px !important; }
-            .mobile-padding { padding: 16px !important; }
-            .mobile-header-padding { padding: 24px 16px !important; }
-            
-            /* Mobile logo sizing */
-            .mobile-logo-img { width: 180px !important; max-width: 180px !important; }
-            .mobile-brand-title { font-size: 24px !important; }
-            .mobile-tagline { font-size: 16px !important; }
-          }
-          
-          @media screen and (min-width: 601px) {
-            /* Desktop font sizing */
-            .desktop-body { font-size: 16px !important; }
-            /* Desktop logo sizing - decreased by 25% */
-            .desktop-logo-img { width: 165px !important; max-width: 165px !important; }
-            /* Desktop brand title - increased by 50% */
-            .desktop-brand-title { font-size: 42px !important; }
-            /* Desktop tagline - increased by 30% */
-            .desktop-tagline { font-size: 21px !important; }
-          }
-          
-          /* Remove Gmail's blue links */
-          a[x-gmail-data-detectors] {
-            color: inherit !important;
-            text-decoration: none !important;
-            font-size: inherit !important;
-            font-family: inherit !important;
-            font-weight: inherit !important;
-            line-height: inherit !important;
-          }
-          
-          /* Fix Gmail image issues */
-          img {
-            outline: none !important;
-            text-decoration: none !important;
-            -ms-interpolation-mode: bicubic !important;
-            border: 0 !important;
-          }
-          
-          /* Font family definitions with fallbacks */
-          .font-playfair {
-            font-family: 'Playfair Display', Georgia, 'Times New Roman', serif !important;
-          }
-          
-          .font-lato {
-            font-family: 'Lato', Arial, Helvetica, sans-serif !important;
-          }
-        </style>
-        
-        <!--[if mso]>
-        <style type="text/css">
-          table { border-collapse: collapse; border-spacing: 0; }
-          .button { padding: 0 !important; }
-          .button a { padding: 16px 32px !important; }
-          /* Outlook font handling */
-          .font-playfair { font-family: Georgia, 'Times New Roman', serif !important; }
-          .font-lato { font-family: Arial, Helvetica, sans-serif !important; }
-          /* Outlook dark header fix */
-          .gmail-header { background-color: #19363C !important; }
-          /* Outlook logo sizing */
-          .desktop-logo-img { width: 165px !important; }
-        </style>
-        <![endif]-->
-      </head>
-      <body class="body font-lato" style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Lato', Arial, Helvetica, sans-serif;">
-        <!-- Gmail background fix -->
-        <div class="gmail-background" style="background-color: #f8fafc;">
-          <!-- Main Container Table -->
-          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; margin: 0; padding: 0;" bgcolor="#f8fafc">
-            <tr>
-              <td align="center" style="padding: 40px 20px;">
-                
-                <!-- Email Content Table -->
-                <table class="gmail-container gmail-mobile" width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; max-width: 600px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" bgcolor="#ffffff">
-                  
-                  <!-- Dark Header Section with Logo and Branding -->
-                  <tr>
-                    <td class="gmail-header mobile-header-padding" style="background-color: #19363C; padding: 40px 48px; text-align: center;" bgcolor="#19363C" align="center">
-                      <!-- Logo -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td align="center" style="padding-bottom: 12px;">
-                            <img src="https://qrawynczvedffcvnympn.supabase.co/storage/v1/object/public/public-assets/Variant6.png" 
-                                 alt="Quilltips Logo" 
-                                 class="desktop-logo-img mobile-logo-img protected-logo"
-                                 style="display: block; max-width: 100%; width: 165px; height: auto; margin: 0 auto; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; filter: none; -webkit-filter: none; mix-blend-mode: normal;" />
-                          </td>
-                        </tr>
-                      </table>
-                      
-                      <!-- Brand Title -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td class="font-playfair desktop-brand-title mobile-brand-title" style="font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-size: 42px; font-weight: 600; color: #ffffff; text-align: center; margin: 0; padding-bottom: 8px;" align="center">
-                            Quilltips
-                          </td>
-                        </tr>
-                      </table>
-                      
-                      <!-- Tagline -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td class="font-lato desktop-tagline mobile-tagline" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 21px; color: #ffffff; text-align: center; font-weight: 300; opacity: 0.9;" align="center">
-                            Helping authors get paid
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  
-                  <!-- Main Content Section with increased top padding -->
-                  <tr>
-                    <td class="gmail-mobile-padding mobile-padding" style="padding: 56px 48px 48px 48px; background-color: #ffffff;" bgcolor="#ffffff">
-                      
-                      <!-- Header Text -->
-                      ${header ? `
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td class="font-playfair" style="font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: #19363C; text-align: center; line-height: 1.3; margin: 0 0 24px 0; padding-bottom: 24px;" align="center">
-                            ${header}
-                          </td>
-                        </tr>
-                      </table>
-                      ` : ''}
-                      
-                      <!-- Main Message -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td class="font-lato desktop-body mobile-body" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; text-align: center; line-height: 1.6; margin: 0 0 32px 0; padding-bottom: 32px;" align="center">
-                            ${message}
-                          </td>
-                        </tr>
-                      </table>
-                      
-                      ${additionalContent ? `
-                      <!-- Additional Content -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; line-height: 1.6; margin: 24px 0; padding: 24px 0;">
-                            ${additionalContent}
-                          </td>
-                        </tr>
-                      </table>
-                      ` : ''}
-
-                      ${cta && ctaUrl ? `
-                      <!-- CTA Button with Enhanced Styling - Fully Rounded -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td align="center" style="padding: 40px 0;">
-                            <!--[if mso]>
-                            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${ctaUrl}" style="height:56px;v-text-anchor:middle;width:240px;" arcsize="50%" stroke="f" fillcolor="#FFD166">
-                              <w:anchorlock/>
-                              <center class="font-lato" style="color:#19363C;font-family:'Lato', Arial, sans-serif;font-size:16px;font-weight:600;">${cta}</center>
-                            </v:roundrect>
-                            <![endif]-->
-                            <!--[if !mso]><!-->
-                            <table border="0" cellspacing="0" cellpadding="0">
-                              <tr>
-                                <td class="gmail-button" style="background-color: #FFD166; border: none; border-radius: 9999px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" bgcolor="#FFD166">
-                                  <a href="${ctaUrl}" 
-                                     class="font-lato"
-                                     style="display: inline-block; padding: 20px 40px; font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 600; color: #19363C !important; text-decoration: none; min-width: 180px; text-align: center; line-height: 1; border-radius: 9999px; transition: all 0.2s ease;"
-                                     target="_blank">
-                                    ${cta}
-                                  </a>
-                                </td>
-                              </tr>
-                            </table>
-                            <!--<![endif]-->
-                          </td>
-                        </tr>
-                      </table>
-                      ` : ''}
-                      
-                      <!-- Secondary Link -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #6B7280; text-align: center; padding: 24px 0;" align="center">
-                            Visit <a href="https://quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: 600;" target="_blank">quilltips.co</a> for more information
-                          </td>
-                        </tr>
-                      </table>
-                      
-                    </td>
-                  </tr>
-                  
-                  <!-- Footer Section -->
-                  <tr>
-                    <td class="gmail-footer gmail-mobile-padding mobile-padding" style="background-color: #F7FAFC; padding: 32px 48px; text-align: center; border-top: 1px solid #E2E8F0;" bgcolor="#F7FAFC" align="center">
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 14px; color: #6B7280; line-height: 1.5; text-align: center;" align="center">
-                            Questions? Contact us at <a href="mailto:hello@quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: 600;" target="_blank">hello@quilltips.co</a>
-                            <br><br>
-                            <span style="font-size: 12px; color: #9CA3AF;">
-                              © 2025 Quilltips. All rights reserved.
-                            </span>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  
-                </table>
-                <!-- End Email Content Table -->
-                
-              </td>
-            </tr>
-          </table>
-          <!-- End Main Container Table -->
-        </div>
-        <!-- End Gmail background fix -->
-      </body>
-    </html>
-  `;
 }
