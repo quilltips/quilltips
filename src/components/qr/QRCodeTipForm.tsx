@@ -1,8 +1,8 @@
-
 import { Card, CardContent } from "../ui/card";
 import { TipAmountSelector } from "../tip/TipAmountSelector";
 import { TipMessageForm } from "../tip/TipMessageForm";
 import { PaymentForm } from "../tip/PaymentForm";
+import { Link } from "react-router-dom";
 
 interface QRCodeTipFormProps {
   name: string;
@@ -68,6 +68,17 @@ export const QRCodeTipForm = ({
             onSubmit={onSubmit}
             onCancel={onCancel}
           />
+
+          <p className="text-xs text-gray-500 text-center">
+            By tipping, you agree to our{" "}
+            <Link 
+              to="/terms" 
+              className="hover:underline"
+            >
+              Terms of Service
+            </Link>
+            .
+          </p>
         </form>
       </CardContent>
     </Card>
