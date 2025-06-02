@@ -79,7 +79,7 @@ const Contact = () => {
           </div>
           
           <div className="prose mb-8">
-            <p className="text-base md:text-lg text-gray-700">
+            <p className="text-base md:text-lg ">
               Have questions or feedback about Quilltips? Want to learn more about how we support authors? 
               We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.
             </p>

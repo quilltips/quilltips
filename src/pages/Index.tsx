@@ -64,7 +64,7 @@ const Index = () => {
 
         <div className="flex flex-col md:flex-row justify-center items-start gap-4 mt-5 px-2">
           {/* Author Dashboard */}
-          <div className="max-w-3xl w-full rounded-xl shadow-lg hover:shadow-2xl transition-all bg-[#19363C] p-2">
+          <div className="max-w-3xl w-full rounded-xl shadow-lg hover:shadow-lg transition-all bg-[#19363C] p-2">
             <img
               src="/lovable-uploads/screenshots/QT_dashboard.webp"
               alt="Author dashboard view"
@@ -73,7 +73,7 @@ const Index = () => {
           </div>
 
           {/* Reader Crumble View */}
-          <div className="max-w-lg w-full rounded-xl shadow-lg hover:shadow-2xl transition-all bg-[#FFD166] p-2">
+          <div className="max-w-lg w-full rounded-xl shadow-lg hover:shadow-lg transition-all bg-[#FFD166] p-2">
             <img
               src="/lovable-uploads/screenshots/crumble_screenshot.webp"
               alt="Reader tip jar view"

@@ -96,10 +96,10 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
    <div className="w-full">
    <div className="space-y-10">
 
-      <div className="space-y-4">
-        <h2 className="text-4xl font-semibold text-[#333333]">Connect a payment option with Stripe</h2>
-        <p className="">
-        Connect your bank account to start receiving tips from your readers
+      <div className="space-y-4 w-full">
+        <h2 className="text-4xl font-semibold text-[#333333]">Connect a payment option</h2>
+        <p className="pt-2">
+        Connect your bank account with Stripe to start receiving tips
         </p>
       </div>
       

@@ -211,7 +211,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
           id="bio"
           name="bio"
           placeholder="Tell readers a bit about yourself"
-          className=" text-left min-h-[120px] resize-none"
+          className=" text-left min-h-[120px] resize-none border border-[#333333]"
           disabled={isLoading}
           value={bioValue}
           onChange={handleBioChange}
@@ -243,7 +243,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
             type="button"
             onClick={addSocialLink}
             disabled={isLoading || !newUrl.trim()}
-            className="shrink-0 bg-[#ffd166] hover:bg-[#FFD166]/80 text-[#33333] px-3 py-2 flex items-center justify-center hover:shadow-none"
+            className="shrink-0 bg-transparent border border-[#333333] hover:bg-[#FFD166]/80 text-[#33333] px-3 py-2 flex items-center justify-center hover:shadow-none"
           >
             <Plus className="h-4 w-4" />
           </Button>

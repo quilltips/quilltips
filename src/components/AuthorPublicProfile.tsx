@@ -95,7 +95,7 @@ export const AuthorPublicProfileView = ({
       {socialLinks.length > 0 && (
         <Card className="mb-8 border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden">
           <CardHeader>
-            <CardTitle className="text-xl text-[#2D3748]">Links</CardTitle>
+            <CardTitle className="text-xl text-[#333333]">Links</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -105,7 +105,7 @@ export const AuthorPublicProfileView = ({
                   href={getValidURL(link.url)}
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="flex items-center gap-2 text-[#718096] hover:text-[#2D3748] transition-colors group"
+                  className="flex items-center gap-2 hover:underline transition-colors group"
                 >
                   {getSocialIcon(link.label)}
                   <span className="group-hover:underline">{link.url}</span>

@@ -9,7 +9,7 @@ const StripeHelp = () => {
           Get set up with Stripe to receive payments through Quilltips
         </h1>
         
-        <div className="space-y-6 text-gray-600">
+        <div className="space-y-6 ">
         <section className="space-y-4 pb-8">
             <h2 className="text-2xl font-playfair ">*IMPORTANT*</h2>
             <p>
