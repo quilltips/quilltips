@@ -1,3 +1,4 @@
+
 // supabase/functions/send-reader-notification/index.ts
 console.log("📧 Reader notification edge function initialized");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
@@ -43,43 +44,16 @@ serve(async (req) => {
       throw new Error("User profile or email not found");
     }
 
-    // For tip-related notifications, check if the user has unsubscribed
-    if (data.tipId && (type === 'tip_liked' || type === 'tip_commented')) {
-      const { data: tipData, error: tipError } = await supabase
-        .from("tips")
-        .select("unsubscribed")
-        .eq("id", data.tipId)
-        .single();
-
-      if (tipError) {
-        console.error("Error checking tip unsubscribe status:", tipError);
-      } else if (tipData?.unsubscribed) {
-        console.log(`📧 Skipping notification - user unsubscribed from tip ${data.tipId}`);
-        return new Response(JSON.stringify({
-          success: true,
-          message: "Notification skipped - user unsubscribed"
-        }), {
-          status: 200,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json"
-          }
-        });
-      }
-    }
-
     // Generate email content based on notification type
     const emailContent = generateEmailContent(type, data);
 
-    // Generate email HTML with enhanced unsubscribe handling
+    // Generate email HTML
     const emailHtml = generateEmailHtml({
       message: emailContent.mainMessage,
       header: emailContent.header,
       additionalContent: emailContent.additionalContent,
       cta: emailContent.cta,
-      ctaUrl: emailContent.ctaUrl,
-      showUnsubscribe: data.tipId ? true : false,
-      tipId: data.tipId
+      ctaUrl: emailContent.ctaUrl
     });
 
     const emailResponse = await resend.emails.send({
@@ -163,27 +137,8 @@ function generateEmailContent(type, data) {
   }
 }
 
-// Enhanced generateEmailHtml function with conditional unsubscribe link
-function generateEmailHtml({ message, header, cta, ctaUrl, additionalContent, showUnsubscribe = false, tipId }) {
-  const siteUrl = Deno.env.get("SITE_URL") || "https://quilltips.co";
-  const unsubscribeUrl = `${siteUrl}/unsubscribe?token=${unsubscribeToken}&tipId=${tipId}`;
-  console.log(`📧 Generated unsubscribe URL: ${unsubscribeUrl}`);
-
-  const unsubscribeSection = showUnsubscribe ? `
-    <tr>
-      <td align="center" style="padding-top: 8px;">
-        <span style="font-size: 11px; color: #9CA3AF;">
-          <a href="https://quilltips.co/unsubscribe?tipId=${tipId}" 
-             style="color: #8898aa !important; text-decoration: underline !important;"
-             target="_blank">
-            Click here to unsubscribe
-          </a>
-          from notifications about this tip.
-        </span>
-      </td>
-    </tr>
-  ` : '';
-
+// Simplified generateEmailHtml function without unsubscribe functionality
+function generateEmailHtml({ message, header, cta, ctaUrl, additionalContent }) {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -380,33 +335,6 @@ function generateEmailHtml({ message, header, cta, ctaUrl, additionalContent, sh
           .font-lato {
             font-family: 'Lato', Arial, Helvetica, sans-serif !important;
           }
-          
-          /* Enhanced unsubscribe link styling for better email client compatibility */
-          .unsubscribe-link {
-            color: #8898aa !important;
-            text-decoration: underline !important;
-            font-size: 12px !important;
-            display: inline-block !important;
-            padding: 2px 4px !important;
-            border: none !important;
-            background: none !important;
-          }
-          
-          .unsubscribe-link:hover {
-            color: #6B7280 !important;
-          }
-          
-          /* Force link visibility in Outlook */
-          .unsubscribe-link[x-apple-data-detectors] {
-            color: #8898aa !important;
-            text-decoration: underline !important;
-          }
-          
-          /* Gmail-specific unsubscribe link fixes */
-          u + .body .unsubscribe-link {
-            color: #8898aa !important;
-            text-decoration: underline !important;
-          }
         </style>
         
         <!--[if mso]>
@@ -421,12 +349,6 @@ function generateEmailHtml({ message, header, cta, ctaUrl, additionalContent, sh
           .gmail-header { background-color: #19363C !important; }
           /* Outlook logo sizing */
           .desktop-logo-img { width: 165px !important; }
-          
-          /* Outlook-specific unsubscribe link styling */
-          .unsubscribe-link {
-            color: #8898aa !important;
-            text-decoration: underline !important;
-          }
         </style>
         <![endif]-->
       </head>
@@ -553,57 +475,17 @@ function generateEmailHtml({ message, header, cta, ctaUrl, additionalContent, sh
                     </td>
                   </tr>
                   
-                  <!-- Enhanced Footer Section with improved unsubscribe link -->
+                  <!-- Footer Section -->
                   <tr>
                     <td class="gmail-footer gmail-mobile-padding mobile-padding" style="background-color: #F7FAFC; padding: 32px 48px; text-align: center; border-top: 1px solid #E2E8F0;" bgcolor="#F7FAFC" align="center">
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 14px; color: #6B7280; line-height: 1.5; text-align: center;" align="center">
                             Questions? Contact us at <a href="mailto:hello@quilltips.co" style="color: #19363C !important; text-decoration: none; font-weight: 600;" target="_blank">hello@quilltips.co</a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="padding-top: 20px;">
-                            <div class="font-lato" style="font-size: 12px; color: #8898aa; text-align: center;">
-                              <!-- Enhanced unsubscribe link with multiple compatibility formats -->
-                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                <tr>
-                                  <td align="center">
-                                    <!--[if mso]>
-                                    <table border="0" cellspacing="0" cellpadding="0">
-                                      <tr>
-                                        <td>
-                                          <a href="${unsubscribeUrl}" class="unsubscribe-link" style="color: #8898aa !important; text-decoration: underline !important; font-size: 12px;">Click here to unsubscribe</a>
-                                        </td>
-                                      </tr>
-                                    </table>
-                                    <![endif]-->
-                                    <!--[if !mso]><!-->
-                                    <a href="${unsubscribeUrl}" 
-                                       class="unsubscribe-link"
-                                       style="color: #8898aa !important; text-decoration: underline !important; font-size: 12px !important; display: inline-block; padding: 2px 4px;"
-                                       target="_blank"
-                                       rel="noopener noreferrer">
-                                      Click here to unsubscribe
-                                    </a>
-                                    <!--<![endif]-->
-                                    from notifications about this tip.
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td align="center" style="padding-top: 8px;">
-                                    <span style="font-size: 11px; color: #9CA3AF;">
-                                      Or copy this link: ${unsubscribeUrl}
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td align="center" style="padding-top: 16px;">
-                                    <span style="color: #9CA3AF;">© 2025 Quilltips. All rights reserved.</span>
-                                  </td>
-                                </tr>
-                              </table>
-                            </div>
+                            <br><br>
+                            <span style="font-size: 12px; color: #9CA3AF;">
+                              © 2025 Quilltips. All rights reserved.
+                            </span>
                           </td>
                         </tr>
                       </table>
