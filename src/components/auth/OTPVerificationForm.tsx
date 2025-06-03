@@ -37,15 +37,24 @@ export const OTPVerificationForm = ({ email, onVerified, onBack }: OTPVerificati
     setError(null);
 
     try {
-      const { error: verifyError } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: 'signup'
+      console.log("Verifying OTP code:", otp);
+      
+      // Call our custom verification function
+      const { data, error: verifyError } = await supabase.functions.invoke('verify-code', {
+        body: {
+          email,
+          code: otp
+        }
       });
 
       if (verifyError) {
         console.error("OTP verification error:", verifyError);
-        setError(verifyError.message || "Invalid verification code. Please try again.");
+        setError(verifyError.message || "Failed to verify code. Please try again.");
+        return;
+      }
+
+      if (!data?.success) {
+        setError(data?.error || "Invalid verification code. Please try again.");
         return;
       }
 
@@ -68,14 +77,24 @@ export const OTPVerificationForm = ({ email, onVerified, onBack }: OTPVerificati
     setError(null);
 
     try {
-      const { error: resendError } = await supabase.auth.resend({
-        type: 'signup',
-        email: email
+      console.log("Resending verification code to:", email);
+      
+      // Call our custom send verification code function
+      const { data, error: resendError } = await supabase.functions.invoke('send-verification-code', {
+        body: {
+          email,
+          type: 'signup'
+        }
       });
 
       if (resendError) {
         console.error("Resend error:", resendError);
         setError(resendError.message || "Failed to resend verification code");
+        return;
+      }
+
+      if (!data?.success) {
+        setError(data?.error || "Failed to resend verification code");
         return;
       }
 

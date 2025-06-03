@@ -28,13 +28,14 @@ export const AuthorRegistrationForm = () => {
     setError(null);
     
     try {
-      console.log("Starting signup process with OTP verification...");
+      console.log("Starting custom signup process...");
       
-      // Sign up the user - this will send the OTP email
-      const { error: signUpError } = await supabase.auth.signUp({
+      // First, create the user account without email confirmation
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/`,
           data: {
             role: "author"
           }
@@ -51,7 +52,26 @@ export const AuthorRegistrationForm = () => {
         throw signUpError;
       }
 
-      console.log("Signup successful, OTP sent to email");
+      console.log("User account created, sending verification code...");
+      
+      // Send custom verification code
+      const { data, error: emailError } = await supabase.functions.invoke('send-verification-code', {
+        body: {
+          email,
+          type: 'signup'
+        }
+      });
+
+      if (emailError) {
+        console.error("Email sending error:", emailError);
+        throw new Error("Account created but failed to send verification email. Please try again.");
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || "Failed to send verification email");
+      }
+
+      console.log("Verification code sent successfully");
       setRegistrationData({ email, password });
       setCurrentStep("otp-verification");
       

@@ -403,11 +403,45 @@ export type Database = {
           },
         ]
       }
+      verification_codes: {
+        Row: {
+          attempts: number
+          code: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          verified: boolean
+        }
+        Insert: {
+          attempts?: number
+          code: string
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          verified?: boolean
+        }
+        Update: {
+          attempts?: number
+          code?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_verification_codes: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       create_qr_code: {
         Args: {
           author_id: string
