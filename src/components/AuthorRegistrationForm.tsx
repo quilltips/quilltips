@@ -1,13 +1,15 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { RegistrationStepInitial } from "./registration/RegistrationStepInitial";
+import { RegistrationStepOTP } from "./registration/RegistrationStepOTP";
 import { RegistrationStepDetails } from "./registration/RegistrationStepDetails";
 import { RegistrationStepStripe } from "./registration/RegistrationStepStripe";
 
-type RegistrationStep = "initial" | "details" | "stripe-onboarding";
+type RegistrationStep = "initial" | "otp-verification" | "details" | "stripe-onboarding";
 
 export const AuthorRegistrationForm = () => {
   const [currentStep, setCurrentStep] = useState<RegistrationStep>("initial");
@@ -22,8 +24,64 @@ export const AuthorRegistrationForm = () => {
   const { toast } = useToast();
 
   const handleInitialSubmit = async (email: string, password: string) => {
-    setRegistrationData({ email, password });
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      console.log("Starting signup process with OTP verification...");
+      
+      // Sign up the user - this will send the OTP email
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: "author"
+          }
+        }
+      });
+
+      if (signUpError) {
+        console.error("Signup error:", signUpError);
+        
+        if (signUpError.message === "User already registered") {
+          throw new Error("This email is already registered. Please try logging in instead.");
+        }
+        
+        throw signUpError;
+      }
+
+      console.log("Signup successful, OTP sent to email");
+      setRegistrationData({ email, password });
+      setCurrentStep("otp-verification");
+      
+      toast({
+        title: "Verification code sent!",
+        description: "Please check your email for the 6-digit verification code.",
+      });
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      setError(err.message || "An error occurred during registration");
+      
+      toast({
+        title: "Registration Failed",
+        description: err.message || "An error occurred during registration",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOTPVerified = () => {
+    console.log("OTP verified successfully, proceeding to profile setup");
     setCurrentStep("details");
+  };
+
+  const handleBackToInitial = () => {
+    setCurrentStep("initial");
+    setRegistrationData({});
+    setError(null);
   };
 
   const createPublicProfile = async (userId: string, profileData: any) => {
@@ -77,32 +135,30 @@ export const AuthorRegistrationForm = () => {
     }
 
     try {
-      console.log("Starting registration process...");
-      const { error: signUpError, data } = await supabase.auth.signUp({
-        email: registrationData.email!,
-        password: registrationData.password!,
-        options: {
-          data: {
-            name,
-            bio,
-            role: "author",
-            social_links: socialLinks
-          }
-        }
-      });
-
-      if (signUpError) {
-        console.error("Signup error:", signUpError);
-        
-        if (signUpError.message === "User already registered") {
-          throw new Error("This email is already registered. Please try logging in instead.");
-        }
-        
-        throw signUpError;
+      console.log("Starting profile setup...");
+      
+      // Get the current authenticated user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        throw new Error("User not authenticated. Please try the verification process again.");
       }
 
-      if (!data.user) {
-        throw new Error("Failed to create user account");
+      console.log("User authenticated, updating profile...");
+
+      // Update the user's profile in the profiles table
+      const { error: profileUpdateError } = await supabase
+        .from('profiles')
+        .update({
+          name,
+          bio,
+          social_links: socialLinks
+        })
+        .eq('id', user.id);
+
+      if (profileUpdateError) {
+        console.error("Profile update error:", profileUpdateError);
+        throw profileUpdateError;
       }
 
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -110,7 +166,7 @@ export const AuthorRegistrationForm = () => {
       let avatarUrl = null;
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
-        const filePath = `${data.user.id}-${Date.now()}.${fileExt}`;
+        const filePath = `${user.id}-${Date.now()}.${fileExt}`;
 
         const { error: uploadError, data: uploadData } = await supabase.storage
           .from('avatars')
@@ -133,7 +189,7 @@ export const AuthorRegistrationForm = () => {
           const { error: updateError } = await supabase
             .from('profiles')
             .update({ avatar_url: publicUrl })
-            .eq('id', data.user.id);
+            .eq('id', user.id);
 
           if (updateError) {
             console.error("Profile update error:", updateError);
@@ -148,25 +204,25 @@ export const AuthorRegistrationForm = () => {
         social_links: socialLinks
       };
       
-      const publicProfileSuccess = await createPublicProfile(data.user.id, profileData);
+      const publicProfileSuccess = await createPublicProfile(user.id, profileData);
       
       if (!publicProfileSuccess) {
         console.warn("Public profile creation failed, but user was created successfully");
         toast({
-          title: "Registration Partially Complete",
+          title: "Profile Setup Partially Complete",
           description: "Your account was created but there was an issue setting up your public profile. Some features may be limited.",
           variant: "default",
         });
       }
 
-      console.log("Registration successful:", data);
+      console.log("Profile setup successful");
       
       // Send account_setup_complete email notification
       try {
         await supabase.functions.invoke('send-email-notification', {
           body: {
             type: 'account_setup_complete',
-            userId: data.user.id
+            userId: user.id
           }
         });
         console.log("Registration welcome email sent");
@@ -178,18 +234,16 @@ export const AuthorRegistrationForm = () => {
       setCurrentStep("stripe-onboarding");
       
       toast({
-        title: "Registration successful!",
+        title: "Profile created successfully!",
         description: "Let's set up your payment details to start receiving tips.",
       });
     } catch (err: any) {
-      console.error("Registration error:", err);
-      setError(err.message || "An error occurred during registration");
+      console.error("Profile setup error:", err);
+      setError(err.message || "An error occurred during profile setup");
       
       toast({
-        title: "Registration Failed",
-        description: err.message === "User already registered" 
-          ? "This email is already registered. Please try logging in instead."
-          : err.message || "An error occurred during registration",
+        title: "Profile Setup Failed",
+        description: err.message || "An error occurred during profile setup",
         variant: "destructive",
       });
     } finally {
@@ -215,6 +269,16 @@ export const AuthorRegistrationForm = () => {
                 isLoading={isLoading}
                 onNext={handleInitialSubmit}
               />
+          </div>
+        )}
+
+        {currentStep === "otp-verification" && (
+          <div className="w-full max-w-md mx-auto">
+            <RegistrationStepOTP
+              email={registrationData.email!}
+              onVerified={handleOTPVerified}
+              onBack={handleBackToInitial}
+            />
           </div>
         )}
 
