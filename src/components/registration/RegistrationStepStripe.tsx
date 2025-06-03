@@ -61,17 +61,8 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
         // Continue with Stripe flow even if email fails
       }
 
-      // Open Stripe in a new tab for onboarding
-      window.open(data.url, '_blank');
-      
-      // Show feedback and navigate to dashboard
-      toast({
-        title: "Stripe Opened",
-        description: "Stripe setup has opened in a new tab. Return here when you're done.",
-      });
-      
-      navigate('/author/dashboard');
-      onComplete();
+      // Redirect to Stripe in the same tab for registration flow
+      window.location.href = data.url;
     } catch (error: any) {
       console.error("Error connecting to Stripe:", error);
       toast({
@@ -89,8 +80,6 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
   };
 
   const [showExplanation, setShowExplanation] = useState(false);
-
-
 
   return (
    <div className="w-full">
@@ -114,12 +103,12 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Opening Stripe...</span>
+                <span>Redirecting to Stripe...</span>
               </>
             ) : (
               <>
                 <Wallet className="mr-2 h-4 w-4" />
-                <span>Set up payments (opens Stripe in new tab)</span>
+                <span>Set up payments</span>
               </>
             )}
          </Button>
@@ -128,7 +117,7 @@ export const RegistrationStepStripe = ({ onComplete }: RegistrationStepStripePro
               <Alert className="border-transparent">
               
               <AlertDescription>
-                You'll need to provide some basic information to verify your identity and connect your bank account. This typically takes 5-10 minutes.
+                You'll be redirected to Stripe to provide some basic information and connect your bank account. This typically takes 5-10 minutes.
               </AlertDescription>
             </Alert>
            </div>
