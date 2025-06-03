@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 import Stripe from "https://esm.sh/stripe@14.21.0?dts";
@@ -22,8 +23,6 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
-
-    // Removed rate limit check to restore functionality
 
     // Get author's Stripe account ID
     const { data: authorProfile, error: profileError } = await supabaseAdmin
@@ -124,10 +123,17 @@ serve(async (req) => {
       );
     }
 
-    // Calculate application fee (5%)
+    // Calculate application fee (5% of gross amount)
     const applicationFeeAmount = Math.round(amount * 100 * 0.05); // 5% of the amount in cents
+    const totalAmountInCents = Math.round(amount * 100);
 
-    console.log('Creating Stripe checkout session...');
+    console.log('Fee structure breakdown:');
+    console.log(`- Gross amount: $${amount} (${totalAmountInCents} cents)`);
+    console.log(`- Platform fee (5%): $${(applicationFeeAmount / 100).toFixed(2)} (${applicationFeeAmount} cents)`);
+    console.log(`- Processing on author's connected account: ${authorProfile.stripe_account_id}`);
+    console.log('- Stripe fees will be deducted from author\'s account');
+
+    console.log('Creating Stripe checkout session with direct charge model...');
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
@@ -138,15 +144,12 @@ serve(async (req) => {
             name: `Tip for ${bookTitle || 'Author'}`,
             description: message || undefined,
           },
-          unit_amount: Math.round(amount * 100), // Convert to cents
+          unit_amount: totalAmountInCents, // Convert to cents
         },
         quantity: 1,
       }],
       payment_intent_data: {
         application_fee_amount: applicationFeeAmount,
-        transfer_data: {
-          destination: authorProfile.stripe_account_id,
-        },
         metadata: {
           authorId,
           tipper_name: name,
@@ -165,9 +168,13 @@ serve(async (req) => {
         author_id: authorId,
         qr_code_id: qrCodeId,
       },
+    }, {
+      // Process payment directly on author's connected account
+      stripeAccount: authorProfile.stripe_account_id,
     });
 
     console.log('Checkout session created:', session.id);
+    console.log('Payment will be processed on author account:', authorProfile.stripe_account_id);
 
     // Create pending tip record
     const { error: tipError } = await supabaseAdmin
