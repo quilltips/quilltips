@@ -15,20 +15,15 @@ const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Email template function (copied from verification-email-template.ts)
-function generateEmailHtml({ code, type = 'signup' }: { code: string; type?: string }) {
-  const title = type === 'signup' ? 'Welcome to Quilltips!' : 'Verify Your Email';
-  const message = type === 'signup' 
-    ? 'Thanks for signing up! Please verify your email address with the code below:'
-    : 'Please verify your email address with the code below:';
-
+// Email template function for password reset
+function generatePasswordResetEmailHtml({ resetUrl }: { resetUrl: string }) {
   return `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>${title}</title>
+      <title>Reset Your Quilltips Password</title>
       <style>
         body { 
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Ubuntu, sans-serif; 
@@ -77,26 +72,19 @@ function generateEmailHtml({ code, type = 'signup' }: { code: string; type?: str
           line-height: 1.5; 
           margin-bottom: 30px; 
         }
-        .code-container { 
-          background-color: #f8f9fa; 
-          border: 2px solid #e9ecef; 
-          border-radius: 8px; 
-          padding: 20px; 
-          margin: 20px 0; 
-          display: inline-block; 
+        .button-container { 
+          text-align: center; 
+          margin: 30px 0; 
         }
-        .code { 
-          font-size: 32px; 
-          font-weight: bold; 
+        .reset-button { 
+          background-color: #FFD166; 
           color: #2D3748; 
-          letter-spacing: 4px; 
-          font-family: 'Courier New', monospace; 
-        }
-        .code-label { 
-          font-size: 12px; 
-          color: #666; 
-          text-transform: uppercase; 
-          margin-bottom: 8px; 
+          padding: 12px 24px; 
+          text-decoration: none; 
+          border-radius: 8px; 
+          font-weight: bold; 
+          display: inline-block; 
+          margin: 20px 0; 
         }
         .expiry { 
           font-size: 14px; 
@@ -116,6 +104,12 @@ function generateEmailHtml({ code, type = 'signup' }: { code: string; type?: str
           border-top: 1px solid #e9ecef; 
           margin: 20px 0; 
         }
+        .url-fallback {
+          font-size: 12px;
+          color: #666;
+          margin-top: 15px;
+          word-break: break-all;
+        }
       </style>
     </head>
     <body>
@@ -127,20 +121,24 @@ function generateEmailHtml({ code, type = 'signup' }: { code: string; type?: str
         </div>
         
         <div class="content">
-          <p class="message">${message}</p>
+          <p class="message">We received a request to reset your password. Click the button below to create a new password for your Quilltips account.</p>
           
-          <div class="code-container">
-            <div class="code-label">Verification Code</div>
-            <div class="code">${code}</div>
+          <div class="button-container">
+            <a href="${resetUrl}" class="reset-button">Reset Password</a>
           </div>
           
-          <p class="expiry">This code will expire in 10 minutes.</p>
+          <p class="expiry">This link will expire in 1 hour for security reasons.</p>
+          
+          <p class="url-fallback">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <span style="color: #2D3748;">${resetUrl}</span>
+          </p>
         </div>
 
         <hr>
         
         <div class="footer">
-          <p>If you didn't request this verification code, you can safely ignore this email.</p>
+          <p>If you didn't request this password reset, you can safely ignore this email.</p>
           <p>Need help? Contact us at <a href="mailto:hello@quilltips.co">hello@quilltips.co</a></p>
         </div>
       </div>
@@ -205,31 +203,14 @@ serve(async (req) => {
     console.log(`✅ Generated reset link for ${email}`);
 
     // Generate email content using the template
-    const emailHtml = generateEmailHtml({
-      code: '', // We don't need a code for password reset
-      type: 'password_reset'
-    });
-
-    // Customize the email HTML for password reset
-    const customEmailHtml = emailHtml
-      .replace('Welcome to Quilltips!', 'Reset Your Password')
-      .replace('Thanks for signing up! Please verify your email address with the code below:', 
-               'Click the button below to reset your password. This link will expire in 1 hour.')
-      .replace(/<div class="code-container">[\s\S]*?<\/div>/, 
-               `<div style="text-align: center; margin: 30px 0;">
-                  <a href="${resetUrl}" style="background-color: #FFD166; color: #2D3748; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                    Reset Password
-                  </a>
-                </div>`)
-      .replace('This code will expire in 10 minutes.', 'This link will expire in 1 hour.')
-      .replace('If you didn\'t request this verification code', 'If you didn\'t request this password reset');
+    const emailHtml = generatePasswordResetEmailHtml({ resetUrl });
 
     // Send email via Resend
     const emailResponse = await resend.emails.send({
       from: "Quilltips <notifications@quilltips.co>",
       to: email,
       subject: "Reset Your Quilltips Password",
-      html: customEmailHtml
+      html: emailHtml
     });
 
     console.log(`✅ Password reset email sent successfully`);

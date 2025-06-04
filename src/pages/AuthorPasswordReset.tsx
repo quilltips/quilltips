@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
@@ -12,7 +12,6 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Eye, EyeOff } from "lucide-react";
 
 const AuthorPasswordReset = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -23,42 +22,61 @@ const AuthorPasswordReset = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isValidToken, setIsValidToken] = useState(false);
-
-  // Extract token and type from URL parameters
-  const token = searchParams.get('token') || searchParams.get('access_token');
-  const type = searchParams.get('type');
+  const [isValidSession, setIsValidSession] = useState(false);
 
   useEffect(() => {
-    const validateToken = async () => {
-      if (!token || !type) {
-        setError("Invalid reset link. Please request a new password reset.");
-        setIsValidating(false);
-        return;
-      }
-
+    const validateSession = async () => {
       try {
-        // Verify the session using the token from the URL
-        const { data, error } = await supabase.auth.verifyOtp({
-          token_hash: token,
-          type: type as any,
-        });
+        // Check if we have a valid recovery session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        console.log("Current session:", session);
+        console.log("Session error:", error);
 
         if (error) {
-          setError("This reset link has expired or is invalid. Please request a new password reset.");
+          setError("Invalid or expired reset link. Please request a new password reset.");
+          setIsValidating(false);
+          return;
+        }
+
+        // Check if this is a recovery session (password reset)
+        if (session?.user && session.user.recovery_sent_at) {
+          setIsValidSession(true);
+          console.log("Valid recovery session found");
         } else {
-          setIsValidToken(true);
+          // Check URL fragments for tokens (Supabase auth uses URL fragments)
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+          const type = hashParams.get('type');
+
+          if (accessToken && type === 'recovery') {
+            // Set the session using the tokens from URL
+            const { error: sessionError } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || ''
+            });
+
+            if (sessionError) {
+              setError("Invalid or expired reset link. Please request a new password reset.");
+            } else {
+              setIsValidSession(true);
+              console.log("Session set from URL tokens");
+            }
+          } else {
+            setError("Invalid reset link. Please request a new password reset.");
+          }
         }
       } catch (err: any) {
-        console.error("Token validation error:", err);
+        console.error("Session validation error:", err);
         setError("Failed to validate reset token. Please try again.");
       } finally {
         setIsValidating(false);
       }
     };
 
-    validateToken();
-  }, [token, type]);
+    validateSession();
+  }, []);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,7 +129,7 @@ const AuthorPasswordReset = () => {
     );
   }
 
-  if (!isValidToken) {
+  if (!isValidSession) {
     return (
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-lg">
         <Card className="auth-card mx-auto animate-enter">

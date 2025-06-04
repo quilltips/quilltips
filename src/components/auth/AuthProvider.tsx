@@ -50,6 +50,7 @@ const isProtectedRoute = (pathname: string): boolean => {
     '/author/login',
     '/author/register',
     '/author/profile',
+    '/author/reset-password',
   ];
   
   // If the route starts with /author/ but is not one of the public routes
