@@ -76,7 +76,7 @@ const PrivacyPolicy = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">6. Data Retention and Deletion</h2>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Authors can delete their accounts by contacting us at gabriel@quilltips.co</li>
+              <li>Authors can delete their accounts by contacting us at hello@quilltips.co</li>
               <li>Tip and comment data may be retained as part of the author's profile and analytics history, unless deletion is requested</li>
               <li>We retain minimal logs for fraud prevention and security</li>
             </ul>
@@ -91,7 +91,7 @@ const PrivacyPolicy = () => {
             <h2 className="text-2xl font-semibold mb-4">8. Contact</h2>
             <p>If you have questions or requests related to this privacy policy, please contact:</p>
             <p className="mt-4">
-              gabriel@quilltips.co<br />
+              hello@quilltips.co<br />
               Quilltips LLC<br />
               Stamford, Connecticut, USA
             </p>
