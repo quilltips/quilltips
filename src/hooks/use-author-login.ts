@@ -111,15 +111,16 @@ export const useAuthorLogin = () => {
     setError(null);
 
     try {
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/author/reset-password`
+      // Use our custom password reset edge function
+      const { data, error } = await supabase.functions.invoke('send-password-reset', {
+        body: { email: resetEmail }
       });
 
-      if (resetError) throw resetError;
+      if (error) throw error;
 
       toast({
         title: "Password Reset Email Sent",
-        description: "Check your email for the password reset link."
+        description: "If an account with that email exists, a password reset link has been sent."
       });
 
       setResetEmail("");

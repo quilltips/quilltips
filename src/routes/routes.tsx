@@ -1,3 +1,4 @@
+
 // src/routes/routes.tsx
 
 import Index from "@/pages/Index";
@@ -8,6 +9,7 @@ import TermsOfService from "@/pages/TermsOfService";
 import SearchPage from "@/pages/SearchPage";
 import AuthorRegister from "@/pages/AuthorRegister";
 import AuthorLogin from "@/pages/AuthorLogin";
+import AuthorPasswordReset from "@/pages/AuthorPasswordReset";
 import AuthorDashboard from "@/pages/AuthorDashboard";
 import AuthorSettings from "@/pages/AuthorSettings";
 import QRCodeDesign from "@/pages/QRCodeDesign";
@@ -38,6 +40,7 @@ export const routes = [
   { path: "/profile/:id", component: PublicProfilePage },
   { path: "/author/register", component: AuthorRegister },
   { path: "/author/login", component: AuthorLogin },
+  { path: "/author/reset-password", component: AuthorPasswordReset },
   { path: "/author/dashboard", component: AuthorDashboard },
   { path: "/author/settings", component: AuthorSettings },
   { path: "/author/qr-design", component: QRCodeDesign },
