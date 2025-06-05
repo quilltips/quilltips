@@ -11,6 +11,7 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { Meta } from "@/components/Meta"; 
+import logoUrl from "@/assets/logo_nav.svg";
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -68,13 +69,8 @@ const Contact = () => {
     <div className="flex-grow">
       <main className="container mx-auto px-4 py-8 md:py-16 lg:py-24 flex-grow">
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-center mb-6 gap-4">
-            <OptimizedImage
-              src="/lovable-uploads/logo_nav.webp"
-              alt="Book Icon"
-              className="w-10 h-10"
-              priority={true}
-            />
+          <div className="flex items-center mb-6 gap-2">
+          <img src={logoUrl} alt="Quilltips logo" className="h-20 w-auto" />
             <h1 className="text-3xl md:text-4xl font-bold">Contact Us</h1>
           </div>
           
@@ -133,7 +129,7 @@ const Contact = () => {
                 disabled={isSubmitting}
                 required
                 rows={6}
-                className="w-full min-h-[150px]"
+                className="w-full min-h-[150px] border border-[#333333]"
               />
             </div>
 

@@ -15,7 +15,7 @@ const StripeHelp = () => {
             <p>
               Stripe is required by law to verify user identity. Please make sure to fill out all identify verification requirements  during Stripe onboarding to ensure proper account setup. If this is missed the first time, no biggie. You will see a prompt in your author dashboard to complete Stripe setup which will bring you back into their onboarding. 
             </p>
-            <img src="/lovable-uploads/Stripe_onboarding_example.webp" alt="Stripe onboarding example" />
+            <img src="/lovable-uploads/Stripe_onboarding_example.webp" alt="Stripe onboarding example" className="w-1/2 mx-auto" />
 
           </section>
           <section className="space-y-4">

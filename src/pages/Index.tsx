@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { Meta } from "@/components/Meta"; 
+import logoUrl from "@/assets/logo_nav.svg";
 
 const Index = () => {
   const { user } = useAuth();
@@ -33,14 +34,10 @@ const Index = () => {
       {/* Hero Section */}
       <div className="mx-auto w-full max-w-5xl text-center space-y-8 animate-enter">
         <div className="space-y-4">
-        <div className="w-full flex justify-center mb-4 gap-4 pl-16">
-        <OptimizedImage
-              src="/lovable-uploads/logo_nav.webp"
-              alt="Book Icon"
-              className="w-10 h-10"
-              priority={true}
-            />
+        <div className="w-full flex justify-center mb-4 gap-4 pl-14">
+             <img src={logoUrl} alt="Quilltips logo" className="h-40 w-auto mx-auto" />
             </div>
+           
           <h1 className="font-playfair font-bold text-6xl text-[#19363C]">Quilltips</h1>
           <h2 className=" text-xl py-6 px-4">
             Helping authors get paid
