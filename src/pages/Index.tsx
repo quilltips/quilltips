@@ -177,7 +177,7 @@ const Index = () => {
 
           <div className="flex justify-center mt-12">
             <RouterLink to="/how-it-works">
-              <Button variant="secondary" className="rounded-full px-10">
+              <Button variant="secondary" className="rounded-full px-10" data-plausible-event="how-it-works">
                 Learn more
               </Button>
             </RouterLink>
@@ -213,7 +213,7 @@ const Index = () => {
 
         <div className="flex justify-center mt-8">
           <RouterLink to="/about">
-            <Button variant="secondary" className="rounded-full px-10 flex items-center gap-2">
+            <Button variant="secondary" className="rounded-full px-10 flex items-center gap-2" data-plausible-event="about-quilltips">
               Learn more about us
             </Button>
           </RouterLink>
@@ -229,7 +229,7 @@ const Index = () => {
           </h3>
         </div>
         <RouterLink to="/author/register">
-          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]">
+          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px]" data-plausible-event="create-account-bottom">
             Create an account
           </Button>
         </RouterLink>
