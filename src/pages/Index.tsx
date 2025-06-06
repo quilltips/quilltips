@@ -6,13 +6,16 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { ImageModal } from "@/components/ui/image-modal";
 import { Meta } from "@/components/Meta"; 
+import { useState } from "react";
 import logoUrl from "@/assets/logo_nav.svg";
 
 const Index = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [expandedImage, setExpandedImage] = useState<{src: string, alt: string, title: string} | null>(null);
 
   const handleCreateQRCode = () => {
     if (!user) {
@@ -20,6 +23,14 @@ const Index = () => {
       return;
     }
     navigate("/author/create-qr");
+  };
+
+  const openImageModal = (src: string, alt: string, title: string) => {
+    setExpandedImage({ src, alt, title });
+  };
+
+  const closeImageModal = () => {
+    setExpandedImage(null);
   };
 
   return (
@@ -61,7 +72,14 @@ const Index = () => {
 
         <div className="flex flex-col md:flex-row justify-center items-start gap-4 mt-5 px-2">
           {/* Author Dashboard */}
-          <div className="max-w-3xl w-full rounded-xl shadow-lg hover:shadow-lg transition-all bg-[#19363C] p-2">
+          <div 
+            className="max-w-3xl w-full rounded-xl shadow-lg hover:shadow-lg transition-all bg-[#19363C] p-2 cursor-pointer hover:scale-105"
+            onClick={() => openImageModal(
+              "/lovable-uploads/screenshots/QT_dashboard.webp",
+              "Author dashboard view",
+              "Author Dashboard"
+            )}
+          >
             <img
               src="/lovable-uploads/screenshots/QT_dashboard.webp"
               alt="Author dashboard view"
@@ -70,7 +88,14 @@ const Index = () => {
           </div>
 
           {/* Reader Crumble View */}
-          <div className="max-w-lg w-full rounded-xl shadow-lg hover:shadow-lg transition-all bg-[#FFD166] p-2">
+          <div 
+            className="max-w-lg w-full rounded-xl shadow-lg hover:shadow-lg transition-all bg-[#FFD166] p-2 cursor-pointer hover:scale-105"
+            onClick={() => openImageModal(
+              "/lovable-uploads/screenshots/crumble_screenshot.webp",
+              "Reader tip jar view",
+              "Reader Tip Jar"
+            )}
+          >
             <img
               src="/lovable-uploads/screenshots/crumble_screenshot.webp"
               alt="Reader tip jar view"
@@ -78,7 +103,6 @@ const Index = () => {
             />
           </div>
         </div>
-
 
       {/* Value Props */}
       <div className="mx-auto w-full max-w-7xl mt-24 px-4">
@@ -210,6 +234,17 @@ const Index = () => {
         </RouterLink>
       </div>
     </div>
+
+    {/* Image Modal */}
+    {expandedImage && (
+      <ImageModal
+        isOpen={!!expandedImage}
+        onClose={closeImageModal}
+        src={expandedImage.src}
+        alt={expandedImage.alt}
+        title={expandedImage.title}
+      />
+    )}
     </>
   );
 };
