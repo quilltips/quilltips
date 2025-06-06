@@ -158,8 +158,6 @@ function generateEmailContent(type, data, token) {
         subject: `${data.authorName} liked your tip!`,
         header: "Your tip was liked! 💛",
         mainMessage: `${data.authorName} has liked your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
-        cta: "View Your Tips",
-        ctaUrl: "https://quilltips.co/dashboard",
         additionalContent: data.message ? `
           <div style="margin: 20px 0; padding: 20px; background-color: #f9f9f9; border-left: 4px solid #FFD166; border-radius: 8px;">
             <p style="font-style: italic; margin: 0; font-size: 16px; color: #4A5568;">"${data.message}"</p>
@@ -172,8 +170,6 @@ function generateEmailContent(type, data, token) {
         subject: `${data.authorName} commented on your tip!`,
         header: "New comment on your tip! 💬",
         mainMessage: `${data.authorName} has commented on your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
-        cta: "View Comment",
-        ctaUrl: "https://quilltips.co/dashboard",
         additionalContent: `
           ${data.message ? `
             <div style="margin: 20px 0; padding: 20px; background-color: #f9f9f9; border-left: 4px solid #FFD166; border-radius: 8px;">
@@ -191,9 +187,7 @@ function generateEmailContent(type, data, token) {
       return {
         subject: "Notification from Quilltips",
         header: "You have a notification",
-        mainMessage: "You've received a notification from Quilltips.",
-        cta: "Visit Quilltips",
-        ctaUrl: "https://quilltips.co"
+        mainMessage: "You've received a notification from Quilltips."
       };
   }
 }
@@ -493,36 +487,6 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
                         <tr>
                           <td class="font-lato" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; color: #4A5568; line-height: 1.6; margin: 24px 0; padding: 24px 0;">
                             ${additionalContent}
-                          </td>
-                        </tr>
-                      </table>
-                      ` : ''}
-                      
-                      ${cta && ctaUrl ? `
-                      <!-- CTA Button with Enhanced Styling - Fully Rounded -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td align="center" style="padding: 40px 0;">
-                            <!--[if mso]>
-                            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${ctaUrl}" style="height:56px;v-text-anchor:middle;width:240px;" arcsize="50%" stroke="f" fillcolor="#FFD166">
-                              <w:anchorlock/>
-                              <center class="font-lato" style="color:#19363C;font-family:'Lato', Arial, sans-serif;font-size:16px;font-weight:600;">${cta}</center>
-                            </v:roundrect>
-                            <![endif]-->
-                            <!--[if !mso]><!-->
-                            <table border="0" cellspacing="0" cellpadding="0">
-                              <tr>
-                                <td class="gmail-button" style="background-color: #FFD166; border: none; border-radius: 9999px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" bgcolor="#FFD166">
-                                  <a href="${ctaUrl}" 
-                                     class="font-lato"
-                                     style="display: inline-block; padding: 20px 40px; font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 600; color: #19363C !important; text-decoration: none; min-width: 180px; text-align: center; line-height: 1; border-radius: 9999px; transition: all 0.2s ease;"
-                                     target="_blank">
-                                    ${cta}
-                                  </a>
-                                </td>
-                              </tr>
-                            </table>
-                            <!--<![endif]-->
                           </td>
                         </tr>
                       </table>
