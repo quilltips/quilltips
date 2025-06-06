@@ -7,30 +7,26 @@ export const Footer = () => {
     <footer className="bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          {/* Left-aligned navigation links in 2 rows */}
-          <div className="flex flex-col gap-2 text-sm">
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
-              <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors">
-                About
-              </Link>
-              <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-                How It Works
-              </Link>
-              <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-                Pricing
-              </Link>
-              <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                FAQ
-              </Link>
-            </div>
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
-              <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                Contact
-              </Link>
-              <Link to="/stripe-help" className="text-muted-foreground hover:text-foreground transition-colors">
-                Stripe Help
-              </Link>
-            </div>
+          {/* Left-aligned navigation links in 3 columns, 2 rows */}
+          <div className="grid grid-cols-3 gap-x-6 gap-y-2 text-sm">
+            <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+              About
+            </Link>
+            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+              How It Works
+            </Link>
+            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+              Pricing
+            </Link>
+            <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+              FAQ
+            </Link>
+            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+              Contact
+            </Link>
+            <Link to="/stripe-help" className="text-muted-foreground hover:text-foreground transition-colors">
+              Stripe Help
+            </Link>
           </div>
 
           {/* Right-aligned social links, legal links, and copyright */}
