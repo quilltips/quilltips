@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { OptimizedImage } from "./optimized-image";
 
 interface ImageModalProps {
@@ -25,14 +26,16 @@ export const ImageModal = ({ isOpen, onClose, src, alt, title }: ImageModalProps
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
         )}
-        <div className="relative w-full h-full flex items-center justify-center">
-          <OptimizedImage
-            src={src}
-            alt={alt}
-            className="max-w-full max-h-[80vh] object-contain rounded-lg"
-            objectFit="contain"
-          />
-        </div>
+        <ScrollArea className="w-full h-full max-h-[75vh]">
+          <div className="relative w-full h-full flex items-center justify-center p-2">
+            <OptimizedImage
+              src={src}
+              alt={alt}
+              className="max-w-full h-auto object-contain rounded-lg"
+              objectFit="contain"
+            />
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
