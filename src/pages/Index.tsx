@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
@@ -73,7 +74,7 @@ const Index = () => {
         <div className="flex flex-col md:flex-row justify-center items-start gap-4 mt-5 px-2">
           {/* Author Dashboard */}
           <div 
-            className="max-w-3xl w-full rounded-xl shadow-lg hover:shadow-lg transition-all bg-[#19363C] p-2 cursor-pointer hover:scale-[1.02]"
+            className="max-w-3xl w-full rounded-xl shadow-lg bg-[#19363C] p-2 cursor-pointer"
             onClick={() => openImageModal(
               "/lovable-uploads/screenshots/QT_dashboard.webp",
               "Author dashboard view",
@@ -89,7 +90,7 @@ const Index = () => {
 
           {/* Reader Crumble View */}
           <div 
-            className="max-w-lg w-full rounded-xl shadow-lg hover:shadow-lg transition-all bg-[#FFD166] p-2 cursor-pointer hover:scale-[1.02]"
+            className="max-w-lg w-full rounded-xl shadow-lg bg-[#FFD166] p-2 cursor-pointer"
             onClick={() => openImageModal(
               "/lovable-uploads/screenshots/crumble_screenshot.webp",
               "Reader tip jar view",
