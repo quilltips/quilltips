@@ -60,7 +60,7 @@ export async function generateBrandedQRCodeSVG({
           bgColor="#ffffff"
         />
         {/* White circle behind logo */}
-        <circle cx="225" cy="225" r="55" fill="white" />
+        <circle cx="225" cy="225" r="60" fill="white" />
         {/* Logo image */}
         <image
           href={base64Logo}
