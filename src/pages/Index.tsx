@@ -213,7 +213,7 @@ const Index = () => {
 
         <div className="flex justify-center mt-8">
           <RouterLink to="/about">
-            <Button variant="secondary" className="rounded-full px-10 flex items-center gap-2 plausible-event-name=about-quilltips" data-plausible-event="about-quilltips">
+            <Button variant="secondary" className="rounded-full px-10 flex items-center gap-2 plausible-event-name=about-quilltips" >
               Learn more about us
             </Button>
           </RouterLink>
