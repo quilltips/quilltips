@@ -229,7 +229,7 @@ const Index = () => {
           </h3>
         </div>
         <RouterLink to="/author/register">
-          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px] plausible-event-name=create-account-button" data-plausible-event="create-account-bottom">
+          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px] plausible-event-name=create-account-bottom" data-plausible-event="create-account-bottom">
             Create an account
           </Button>
         </RouterLink>
