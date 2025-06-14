@@ -53,7 +53,7 @@ export const SearchBar = () => {
       <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
         <div className="relative">
           <Search 
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 z-10 cursor-pointer" 
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 z-10 cursor-pointer plausible-event-name=search" 
             onClick={handleSearchIconClick}
           />
 
@@ -65,7 +65,7 @@ export const SearchBar = () => {
                 onChange={handleSearch}
                 onKeyDown={handleInputKeyDown}
                 placeholder="Search authors or books..."
-                className="pl-10 rounded-full"
+                className="pl-10 rounded-full plausible-event-name=search"
                 aria-label="Search authors or books"
                 role="searchbox"
                 autoComplete="off"
