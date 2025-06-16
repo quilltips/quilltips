@@ -28,6 +28,7 @@ import UnsubscribePage from "@/pages/UnsubscribePage";
 import StripeHelp from "@/pages/StripeHelp";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import Pricing from "@/pages/Pricing";
+import AdminDashboard from "@/pages/AdminDashboard";
 import { Navigate } from "react-router-dom";
 
 export const routes = [
@@ -58,6 +59,9 @@ export const routes = [
   { path: "/stripe-help", component: StripeHelp },
   { path: "/privacy", component: PrivacyPolicy },
   { path: "/pricing", component: Pricing },
+  
+  // Admin route
+  { path: "/admin", component: AdminDashboard },
 
   // Redirects (still using JSX for Navigate)
   { path: "/author/create-qr", element: <Navigate to="/author/book-qr-codes?tab=new" replace /> },

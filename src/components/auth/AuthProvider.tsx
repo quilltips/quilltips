@@ -11,12 +11,14 @@ type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   isAuthor: boolean;
+  isAdmin: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
   isAuthor: false,
+  isAdmin: false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -53,6 +55,11 @@ const isProtectedRoute = (pathname: string): boolean => {
     '/author/reset-password',
   ];
   
+  // Admin routes require admin access
+  if (pathname.startsWith('/admin')) {
+    return true;
+  }
+  
   // If the route starts with /author/ but is not one of the public routes
   if (pathname.startsWith('/author/')) {
     // Check if it's a profile route (which is public)
@@ -67,9 +74,14 @@ const isProtectedRoute = (pathname: string): boolean => {
   return false;
 };
 
+const isAdminRoute = (pathname: string): boolean => {
+  return pathname.startsWith('/admin');
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthor, setIsAuthor] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -84,11 +96,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (user) {
         const profile = await fetchProfile(user.id);
         const userIsAuthor = profile?.role === 'author';
+        const userIsAdmin = profile?.role === 'admin';
         setIsAuthor(userIsAuthor);
+        setIsAdmin(userIsAdmin);
 
         const needsAuth = isProtectedRoute(location.pathname);
+        const needsAdmin = isAdminRoute(location.pathname);
 
-        if (needsAuth && !userIsAuthor) {
+        if (needsAdmin && !userIsAdmin) {
+          navigate('/');
+          toast({
+            title: "Unauthorized",
+            description: "You must be an admin to access this page.",
+            variant: "destructive",
+          });
+        } else if (needsAuth && !userIsAuthor && !userIsAdmin) {
           navigate('/author/login');
           toast({
             title: "Unauthorized",
@@ -98,10 +120,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } else {
         setIsAuthor(false);
+        setIsAdmin(false);
         const needsAuth = isProtectedRoute(location.pathname);
 
         if (needsAuth) {
-          navigate('/author/login');
+          if (isAdminRoute(location.pathname)) {
+            navigate('/');
+          } else {
+            navigate('/author/login');
+          }
         }
       }
 
@@ -134,7 +161,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isAuthor }}>
+    <AuthContext.Provider value={{ user, isLoading, isAuthor, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

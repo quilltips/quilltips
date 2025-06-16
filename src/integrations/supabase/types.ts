@@ -9,6 +9,38 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_activity_log: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string | null
+          details: Json | null
+          id: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_activity_log_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_rate_limits: {
         Row: {
           id: string
@@ -38,7 +70,7 @@ export type Database = {
           email: string | null
           id: string
           name: string | null
-          role: string | null
+          role: Database["public"]["Enums"]["app_role"] | null
           social_links: Json | null
           stripe_account_id: string | null
           stripe_emails_sent: Json | null
@@ -54,7 +86,7 @@ export type Database = {
           email?: string | null
           id: string
           name?: string | null
-          role?: string | null
+          role?: Database["public"]["Enums"]["app_role"] | null
           social_links?: Json | null
           stripe_account_id?: string | null
           stripe_emails_sent?: Json | null
@@ -70,7 +102,7 @@ export type Database = {
           email?: string | null
           id?: string
           name?: string | null
-          role?: string | null
+          role?: Database["public"]["Enums"]["app_role"] | null
           social_links?: Json | null
           stripe_account_id?: string | null
           stripe_emails_sent?: Json | null
@@ -468,6 +500,18 @@ export type Database = {
         Args: { profile_name: string }
         Returns: Record<string, unknown>
       }
+      get_qr_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_tip_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_user_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       has_email_been_sent: {
         Args: { user_id: string; email_type: string }
         Returns: boolean
@@ -481,6 +525,10 @@ export type Database = {
           profile_social_links: Json
         }
         Returns: undefined
+      }
+      is_admin: {
+        Args: { user_id: string }
+        Returns: boolean
       }
       record_email_sent: {
         Args: { user_id: string; email_type: string }
@@ -506,7 +554,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "author" | "reader"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -621,6 +669,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "author", "reader"],
+    },
   },
 } as const
