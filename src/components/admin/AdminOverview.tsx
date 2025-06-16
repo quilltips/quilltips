@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,7 +40,7 @@ export const AdminOverview = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_user_stats');
       if (error) throw error;
-      return data as UserStats;
+      return data as unknown as UserStats;
     },
   });
 
@@ -50,7 +49,7 @@ export const AdminOverview = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_tip_stats');
       if (error) throw error;
-      return data as TipStats;
+      return data as unknown as TipStats;
     },
   });
 
@@ -59,7 +58,7 @@ export const AdminOverview = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_qr_stats');
       if (error) throw error;
-      return data as QRStats;
+      return data as unknown as QRStats;
     },
   });
 
