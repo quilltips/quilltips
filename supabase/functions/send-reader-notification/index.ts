@@ -450,7 +450,7 @@ function generateEmailHtml({ message, header, additionalContent = '', cta, ctaUr
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td class="font-lato desktop-tagline mobile-tagline" style="font-family: 'Lato', Arial, Helvetica, sans-serif; font-size: 21px; color: #ffffff; text-align: center; font-weight: 300; opacity: 0.9;" align="center">
-                            Helping authors get paid
+                            Helping authors grow
                           </td>
                         </tr>
                       </table>

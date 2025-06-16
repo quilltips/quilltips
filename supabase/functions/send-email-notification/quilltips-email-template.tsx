@@ -39,7 +39,7 @@ export const QuilltipsEmail = ({
             style={{ borderRadius: '8px', marginBottom: '12px' }}
           />
           <Text style={brandTitle}>Quilltips</Text>
-          <Text style={brandTagline}>Helping authors get paid</Text>
+          <Text style={brandTagline}>Helping authors grow</Text>
           <Hr style={hr} />
 
           <Text style={paragraph}>{message}</Text>

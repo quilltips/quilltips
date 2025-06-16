@@ -89,7 +89,7 @@ const AuthorDashboard = () => {
               <h1 className="text-3xl md:text-4xl font-playfair font-bold text-[#333333]">
                 Welcome to Quilltips{authorFirstName ? `, ${authorFirstName}` : ''}
               </h1>
-              <p className="text-[#4A5568] text-lg">Helping authors get paid</p>
+              <p className="text-[#4A5568] text-lg">Helping authors grow</p>
             </div>
             
             {hasStripeAccount && stripeSetupComplete && (

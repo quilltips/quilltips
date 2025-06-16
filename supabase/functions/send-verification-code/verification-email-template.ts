@@ -106,7 +106,7 @@ export function generateEmailHtml({ code, type = 'signup' }: { code: string; typ
         <div class="header">
           <div class="logo">📚</div>
           <h1 class="brand-title">Quilltips</h1>
-          <p class="brand-tagline">Helping authors get paid</p>
+          <p class="brand-tagline">Helping authors grow</p>
         </div>
         
         <div class="content">
