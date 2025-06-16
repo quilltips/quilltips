@@ -5,13 +5,43 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Users, DollarSign, QrCode, TrendingUp } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
+interface UserStats {
+  total_users: number;
+  total_authors: number;
+  total_readers: number;
+  new_signups_today: number;
+  new_signups_this_week: number;
+  new_signups_this_month: number;
+}
+
+interface TipStats {
+  total_tips: number;
+  total_revenue: number;
+  average_tip: number;
+  tips_today: number;
+  tips_this_week: number;
+  tips_this_month: number;
+  revenue_today: number;
+  revenue_this_week: number;
+  revenue_this_month: number;
+}
+
+interface QRStats {
+  total_qr_codes: number;
+  active_qr_codes: number;
+  paid_qr_codes: number;
+  qr_codes_created_today: number;
+  qr_codes_created_this_week: number;
+  qr_codes_created_this_month: number;
+}
+
 export const AdminOverview = () => {
   const { data: userStats, isLoading: loadingUserStats } = useQuery({
     queryKey: ['admin-user-stats'],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_user_stats');
       if (error) throw error;
-      return data;
+      return data as UserStats;
     },
   });
 
@@ -20,7 +50,7 @@ export const AdminOverview = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_tip_stats');
       if (error) throw error;
-      return data;
+      return data as TipStats;
     },
   });
 
@@ -29,7 +59,7 @@ export const AdminOverview = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_qr_stats');
       if (error) throw error;
-      return data;
+      return data as QRStats;
     },
   });
 
