@@ -177,7 +177,7 @@ const Index = () => {
 
           <div className="flex justify-center mt-12">
             <RouterLink to="/how-it-works">
-              <Button variant="secondary" className="rounded-full px-10" data-plausible-event="how-it-works">
+              <Button variant="secondary" className="rounded-full px-10 plausible-event-name=how-it-works" data-plausible-event="how-it-works">
                 Learn more
               </Button>
             </RouterLink>
