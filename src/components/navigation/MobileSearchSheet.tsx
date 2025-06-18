@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useSearch } from "@/hooks/use-search";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Search, User, Book, X } from "lucide-react";
+import { Search, User, Book } from "lucide-react";
 
 interface MobileSearchSheetProps {
   onNavigate?: () => void;
@@ -67,10 +67,6 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
     navigate(`/search?q=${encodeURIComponent(query)}`);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -84,21 +80,8 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
         </Button>
       </SheetTrigger>
       <SheetContent side="top" className="!p-0 max-w-full h-auto">
-        {/* Custom Header with Close Button */}
-        <div className="flex items-center justify-between p-4 border-b bg-background">
-          <h2 className="text-lg font-semibold">Search</h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClose}
-            className="h-8 w-8 rounded-full hover:bg-accent/20"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        
         {/* Search Input */}
-        <form ref={formRef} onSubmit={handleSubmit} className="p-4 bg-background">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-6 bg-background">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input

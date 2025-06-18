@@ -54,11 +54,11 @@ export const AuthorPublicProfileView = ({
       <div className="flex flex-col items-center text-center">
         <Dialog>
           <DialogTrigger asChild>
-            <button className="w-40 h-40 mb-4 rounded-full overflow-hidden border-2 border-[#f1f1f1] shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FFD166] focus:ring-offset-2">
+            <button className="w-48 h-48 mb-4 rounded-full overflow-hidden border-2 border-[#f1f1f1] shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FFD166] focus:ring-offset-2">
               {imageUrl && imageUrl !== "/placeholder.svg" ? (
                 <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-[#19363C] text-[#FFD166] text-5xl font-semibold uppercase">
+                <div className="w-full h-full flex items-center justify-center bg-[#19363C] text-[#FFD166] text-6xl font-semibold uppercase">
                   {firstName.charAt(0)}
                 </div>
               )}
