@@ -10,7 +10,6 @@ import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ImageModal } from "@/components/ui/image-modal";
 import { Meta } from "@/components/Meta"; 
 import { useState } from "react";
-import LogoNavSvg from "@/assets/logo_nav.svg?react";
 
 const Index = () => {
   const { user } = useAuth();
@@ -73,7 +72,11 @@ const Index = () => {
           {/* Right Visual - Logo */}
           <div className="flex-1 flex justify-center lg:justify-end max-w-sm lg:max-w-md">
             <div className="w-64 h-64 lg:w-80 lg:h-80">
-              <LogoNavSvg className="w-full h-full object-contain" />
+              <img 
+                src="/lovable-uploads/logo_nav.webp" 
+                alt="Quilltips Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
         </div>
