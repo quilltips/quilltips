@@ -10,7 +10,6 @@ import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ImageModal } from "@/components/ui/image-modal";
 import { Meta } from "@/components/Meta"; 
 import { useState } from "react";
-import logoUrl from "@/assets/logo_nav.svg";
 
 const Index = () => {
   const { user } = useAuth();
@@ -42,25 +41,74 @@ const Index = () => {
       url="https://quilltips.co"
     />
 
-    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
+    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
       {/* Hero Section */}
-      <div className="mx-auto w-full max-w-5xl text-center space-y-8 animate-enter">
-        <div className="space-y-4">
-        <div className="w-full flex justify-center mb-4 gap-4 pl-14">
-             <img src={logoUrl} alt="Quilltips logo" className="h-40 w-auto mx-auto" />
+      <div className="mx-auto w-full max-w-7xl">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 py-12 lg:py-20">
+          {/* Left Content */}
+          <div className="flex-1 text-center lg:text-left space-y-8 max-w-2xl">
+            <div className="space-y-6">
+              <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#19363C] leading-tight">
+                Helping authors grow
+              </h1>
+              <p className="text-xl sm:text-2xl text-[#19363C]/80 font-medium">
+                Powerful QR codes for your books
+              </p>
             </div>
-           
-          <h1 className="font-playfair font-bold text-6xl text-[#19363C]">Quilltips</h1>
-          <h2 className=" text-xl py-6 px-4">
-            Helping authors grow
-          </h2>
-        </div>
 
-        <RouterLink to="/author/register">
-          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px] plausible-event-name=create-account " data-plausible-event="create-account" >
-            Create an account
-          </Button>
-        </RouterLink>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <RouterLink to="/author/register">
+                <Button 
+                  size="lg" 
+                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold text-lg px-8 py-4 h-auto rounded-full shadow-lg hover:shadow-xl transition-all duration-200 plausible-event-name=create-account-hero" 
+                  data-plausible-event="create-account-hero"
+                >
+                  Create an account
+                </Button>
+              </RouterLink>
+              <RouterLink to="/how-it-works">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-[#19363C] text-[#19363C] hover:bg-[#19363C] hover:text-white font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200"
+                >
+                  See how it works
+                </Button>
+              </RouterLink>
+            </div>
+          </div>
+
+          {/* Right Visual */}
+          <div className="flex-1 flex justify-center lg:justify-end max-w-lg lg:max-w-none">
+            <div className="relative">
+              {/* Phone mockup with QR code */}
+              <div className="relative bg-white rounded-[2.5rem] p-4 shadow-2xl border-8 border-[#19363C] max-w-sm mx-auto">
+                <div className="bg-gray-50 rounded-[1.5rem] p-6 h-96 flex flex-col items-center justify-center space-y-4">
+                  {/* Quill icon */}
+                  <div className="w-16 h-16 bg-[#19363C] rounded-full flex items-center justify-center mb-2">
+                    <BookOpen className="w-8 h-8 text-[#FFD166]" />
+                  </div>
+                  
+                  {/* Heart */}
+                  <div className="text-[#19363C] mb-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  </div>
+                  
+                  {/* QR Code placeholder */}
+                  <div className="w-32 h-32 bg-white border-2 border-[#19363C] rounded-lg flex items-center justify-center">
+                    <QrCode className="w-24 h-24 text-[#19363C]" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Book base */}
+              <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-64 h-8 bg-[#19363C] rounded-lg shadow-lg opacity-80"></div>
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-56 h-6 bg-[#19363C] rounded-lg shadow-lg opacity-60"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* What is Quilltips */}
