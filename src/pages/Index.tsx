@@ -43,11 +43,11 @@ const Index = () => {
 
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
       {/* Hero Section */}
-      <div className="mx-auto w-full max-w-5xl">
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-16 py-20 lg:py-32">
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 py-24 lg:py-32">
           {/* Left Content */}
-          <div className="flex-1 text-center lg:text-left space-y-12 max-w-lg">
-            <div className="space-y-8">
+          <div className="flex-1 text-center lg:text-left space-y-16 max-w-lg">
+            <div className="space-y-10">
               <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#19363C] leading-tight">
                 Helping authors grow
               </h1>
@@ -56,23 +56,14 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-6">
+            <div className="flex justify-center lg:justify-start pt-8">
               <RouterLink to="/author/register">
                 <Button 
                   size="lg" 
-                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold text-lg px-8 py-4 h-auto rounded-full transition-colors duration-200" 
+                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium text-lg px-8 py-4 h-auto rounded-full transition-colors duration-200" 
                   data-plausible-event="create-account-hero"
                 >
                   Create an account
-                </Button>
-              </RouterLink>
-              <RouterLink to="/how-it-works">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="border-[#19363C] text-[#19363C] hover:bg-[#19363C] hover:text-white font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200"
-                >
-                  See how it works
                 </Button>
               </RouterLink>
             </div>
@@ -102,7 +93,7 @@ const Index = () => {
       <div className="flex flex-col md:flex-row justify-center items-start gap-6 mt-16 px-2">
         {/* Author Dashboard */}
         <div 
-          className="max-w-3xl w-full rounded-2xl bg-white border border-[#19363C]/10 p-3 cursor-pointer transition-transform duration-200 hover:scale-105"
+          className="max-w-3xl w-full rounded-2xl bg-white border border-[#19363C]/10 p-3 cursor-pointer transition-transform duration-200"
           onClick={() => openImageModal(
             "/lovable-uploads/screenshots/QT_dashboard.webp",
             "Author dashboard view",
@@ -118,7 +109,7 @@ const Index = () => {
 
         {/* Reader Crumble View */}
         <div 
-          className="max-w-lg w-full rounded-2xl bg-white border border-[#FFD166]/20 p-3 cursor-pointer transition-transform duration-200 hover:scale-105"
+          className="max-w-lg w-full rounded-2xl bg-white border border-[#FFD166]/20 p-3 cursor-pointer transition-transform duration-200"
           onClick={() => openImageModal(
             "/lovable-uploads/screenshots/crumble_screenshot.webp",
             "Reader tip jar view",
@@ -150,7 +141,7 @@ const Index = () => {
             title: "Promote Your Platform",
             text: "Link to your website and socials - all from one centralized place."
           }].map(({ icon, title, text }, idx) => (
-            <Card key={idx} className="bg-white/90 p-8 transition-transform duration-200 border border-[#19363C]/10 rounded-2xl">
+            <Card key={idx} className="bg-transparent p-8 border-none shadow-none">
               <div className="flex flex-col items-center text-center space-y-6">
                 <div className="w-16 h-16 bg-[#FFD166] rounded-full flex items-center justify-center">
                   {icon}
@@ -248,19 +239,21 @@ const Index = () => {
       </div>
 
       {/* Get Started Section */}
-      <div className="mx-auto w-full max-w-4xl mt-32 text-center space-y-12 py-20 px-4">
-        <div className="space-y-8">
-          <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-[#19363C]">Ready to get started?</h2>
-          <h3 className="text-xl sm:text-2xl text-[#19363C]/80">
-            Create an account to connect with readers and earn tips!
-          </h3>
-        </div>
-        <div className="pt-4">
-          <RouterLink to="/author/register">
-            <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold transition-colors duration-200 px-12 py-4 h-auto rounded-full" data-plausible-event="create-account-bottom">
-              Create an account
-            </Button>
-          </RouterLink>
+      <div className="mx-auto w-full max-w-4xl mt-32 text-center py-20 px-4">
+        <div className="space-y-12">
+          <div className="space-y-8">
+            <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-[#19363C]">Ready to get started?</h2>
+            <h3 className="text-xl sm:text-2xl text-[#19363C]/80">
+              Create an account to connect with readers and earn tips!
+            </h3>
+          </div>
+          <div className="pt-8">
+            <RouterLink to="/author/register">
+              <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium transition-colors duration-200 px-12 py-4 h-auto rounded-full" data-plausible-event="create-account-bottom">
+                Create an account
+              </Button>
+            </RouterLink>
+          </div>
         </div>
       </div>
     </div>
