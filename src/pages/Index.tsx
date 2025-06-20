@@ -42,29 +42,70 @@ const Index = () => {
       url="https://quilltips.co"
     />
 
-    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
-      {/* Hero Section */}
-      <div className="mx-auto w-full max-w-5xl text-center space-y-8 animate-enter">
-        <div className="space-y-4">
-        <div className="w-full flex justify-center mb-4 gap-4 pl-14">
-             <img src={logoUrl} alt="Quilltips logo" className="h-40 w-auto mx-auto" />
+    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12">
+      {/* Modern Hero Section */}
+      <div className="mx-auto w-full max-w-6xl text-center space-y-12 animate-enter">
+        {/* Hero Content */}
+        <div className="space-y-8">
+          {/* Logo and Main Heading */}
+          <div className="flex flex-col items-center space-y-6">
+            <div className="w-24 h-24 md:w-32 md:h-32">
+              <img src={logoUrl} alt="Quilltips logo" className="w-full h-full object-contain" />
             </div>
-           
-          <h1 className="font-playfair font-bold text-6xl text-[#19363C]">Quilltips</h1>
-          <h2 className=" text-xl py-6 px-4">
-            Helping authors grow
-          </h2>
+            
+            <div className="space-y-4">
+              <h1 className="font-playfair font-bold text-4xl md:text-6xl lg:text-7xl text-[#19363C] leading-tight">
+                Helping authors grow
+              </h1>
+              <p className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Connect with readers who love your work. Add QR codes to your books so fans can send tips and messages directly to you.
+              </p>
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <RouterLink to="/author/register">
+              <Button 
+                size="lg" 
+                className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold text-lg px-8 py-4 h-auto rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 plausible-event-name=create-account" 
+                data-plausible-event="create-account"
+              >
+                Start earning from your books
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </Button>
+            </RouterLink>
+            <RouterLink to="/how-it-works">
+              <Button 
+                variant="ghost" 
+                size="lg" 
+                className="text-[#19363C] hover:bg-[#19363C]/10 font-medium text-lg px-8 py-4 h-auto rounded-full plausible-event-name=learn-more"
+              >
+                Learn how it works
+              </Button>
+            </RouterLink>
+          </div>
         </div>
 
-        <RouterLink to="/author/register">
-          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px] plausible-event-name=create-account " data-plausible-event="create-account" >
-            Create an account
-          </Button>
-        </RouterLink>
+        {/* Social Proof / Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto pt-8">
+          <div className="text-center space-y-2">
+            <div className="text-3xl font-bold text-[#19363C]">Easy</div>
+            <div className="text-gray-600">Just add a QR code to your book</div>
+          </div>
+          <div className="text-center space-y-2">
+            <div className="text-3xl font-bold text-[#19363C]">Direct</div>
+            <div className="text-gray-600">Readers tip you immediately</div>
+          </div>
+          <div className="text-center space-y-2">
+            <div className="text-3xl font-bold text-[#19363C]">Growing</div>
+            <div className="text-gray-600">Build your fanbase over time</div>
+          </div>
+        </div>
       </div>
 
       {/* What is Quilltips */}
-      <div className="mx-auto w-full max-w-6xl mt-24 text-center space-y-6">
+      <div className="mx-auto w-full max-w-6xl mt-32 text-center space-y-6">
         <h2 className="text-4xl font-playfair font-medium">What is Quilltips?</h2>
         <p className="font-lato text-lg max-w-4xl mx-auto pb-10">
           With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltips Jar, where readers can leave a tip and message!
@@ -74,7 +115,7 @@ const Index = () => {
         <div className="flex flex-col md:flex-row justify-center items-start gap-4 mt-5 px-2">
           {/* Author Dashboard */}
           <div 
-            className="max-w-3xl w-full rounded-xl shadow-lg bg-[#19363C] p-2 cursor-pointer"
+            className="max-w-3xl w-full rounded-xl shadow-lg bg-[#19363C] p-2 cursor-pointer hover:shadow-xl transition-shadow duration-300"
             onClick={() => openImageModal(
               "/lovable-uploads/screenshots/QT_dashboard.webp",
               "Author dashboard view",
@@ -90,7 +131,7 @@ const Index = () => {
 
           {/* Reader Crumble View */}
           <div 
-            className="max-w-lg w-full rounded-xl shadow-lg bg-[#FFD166] p-2 cursor-pointer"
+            className="max-w-lg w-full rounded-xl shadow-lg bg-[#FFD166] p-2 cursor-pointer hover:shadow-xl transition-shadow duration-300"
             onClick={() => openImageModal(
               "/lovable-uploads/screenshots/crumble_screenshot.webp",
               "Reader tip jar view",
@@ -106,8 +147,8 @@ const Index = () => {
         </div>
 
       {/* Value Props */}
-      <div className="mx-auto w-full max-w-7xl mt-24 px-4">
-        <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Do Authors Love Quilltips?</h2>
+      <div className="mx-auto w-full max-w-7xl mt-32 px-4">
+        <h2 className="text-4xl font-playfair font-medium text-center mb-16">Why Do Authors Love Quilltips?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[{
             icon: <DollarSign className="w-8 h-8 text-[#19363C]" />,
@@ -122,7 +163,7 @@ const Index = () => {
             title: "Promote Your Platform",
             text: "Link to your website and socials - all from one centralized place."
           }].map(({ icon, title, text }, idx) => (
-            <Card key={idx} className="bg-white p-8 transition-all duration-200 border border-[#FFD166]/20">
+            <Card key={idx} className="bg-white p-8 transition-all duration-300 border border-[#FFD166]/20 hover:shadow-lg hover:-translate-y-1">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="w-16 h-16 bg-[#FFD166] rounded-full flex items-center justify-center mb-2">
                   {icon}
@@ -136,7 +177,7 @@ const Index = () => {
       </div>
 
       {/* How It Works */}
-      <div className="mx-auto w-full max-w-6xl mt-24 px-4">
+      <div className="mx-auto w-full max-w-6xl mt-32 px-4">
           <h2 className="text-4xl font-playfair font-medium text-center mb-20">How Does It Work?</h2>
 
           {[{
@@ -185,7 +226,7 @@ const Index = () => {
         </div>
 
       {/* Message for Readers */}
-      <div className="mx-auto w-full max-w-4xl lg:max-w-6xl mt-24 px-4 text-center">
+      <div className="mx-auto w-full max-w-4xl lg:max-w-6xl mt-32 px-4 text-center">
         <div className="max-w-3xl lg:max-w-4xl mx-auto rounded-2xl p-8">
           <h2 className="text-4xl font-playfair font-medium mb-6">For Readers</h2>
           <p className="text-lg mb-8">
@@ -202,7 +243,7 @@ const Index = () => {
       </div>
 
       {/* Why Quilltips Story */}
-      <div className="mx-auto w-full max-w-5xl mt-24 px-4">
+      <div className="mx-auto w-full max-w-5xl mt-32 px-4">
         <h2 className="text-4xl font-playfair font-medium text-center mb-12">Why Quilltips?</h2>
         <div className="text-lg space-y-4 text-left max-w-3xl mx-auto">
           <p>Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on used books and reused library copies are nonexistent.</p>
@@ -221,16 +262,21 @@ const Index = () => {
       </div>
 
       {/* Get Started Section */}
-      <div className="mx-auto w-full max-w-5xl mt-24 text-center space-y-8 animate-enter py-[75px] px-4">
-        <div className="space-y-4">
+      <div className="mx-auto w-full max-w-5xl mt-32 text-center space-y-8 animate-enter py-16 px-4 bg-gradient-to-br from-[#19363C]/5 to-[#FFD166]/10 rounded-3xl">
+        <div className="space-y-6">
           <h2 className="text-4xl font-playfair font-medium">Ready to get started?</h2>
-          <h3 className="text-xl py-[24px]">
-            Create an account to connect with readers and earn tips!
-          </h3>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Join thousands of authors who are already connecting with their readers and earning from their books.
+          </p>
         </div>
         <RouterLink to="/author/register">
-          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] hover:shadow-lg transition-all duration-200 px-12 py-[9px] my-[10px] plausible-event-name=create-account-bottom" data-plausible-event="create-account-bottom">
-            Create an account
+          <Button 
+            size="lg" 
+            className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold text-lg px-10 py-4 h-auto rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 plausible-event-name=create-account-bottom" 
+            data-plausible-event="create-account-bottom"
+          >
+            Create your account today
+            <ChevronRight className="ml-2 h-5 w-5" />
           </Button>
         </RouterLink>
       </div>
