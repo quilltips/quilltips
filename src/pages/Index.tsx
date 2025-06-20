@@ -10,6 +10,7 @@ import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ImageModal } from "@/components/ui/image-modal";
 import { Meta } from "@/components/Meta"; 
 import { useState } from "react";
+import LogoNavSvg from "@/assets/logo_nav.svg?react";
 
 const Index = () => {
   const { user } = useAuth();
@@ -60,7 +61,7 @@ const Index = () => {
               <RouterLink to="/author/register">
                 <Button 
                   size="lg" 
-                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium text-lg px-8 py-4 h-auto rounded-full transition-colors duration-200" 
+                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium text-lg px-8 py-4 h-auto rounded-full transition-colors duration-200 hover:shadow-none" 
                   data-plausible-event="create-account-hero"
                 >
                   Create an account
@@ -72,11 +73,7 @@ const Index = () => {
           {/* Right Visual - Logo */}
           <div className="flex-1 flex justify-center lg:justify-end max-w-sm lg:max-w-md">
             <div className="w-64 h-64 lg:w-80 lg:h-80">
-              <img 
-                src="/src/assets/logo_nav.svg" 
-                alt="Quilltips Logo" 
-                className="w-full h-full object-contain"
-              />
+              <LogoNavSvg className="w-full h-full object-contain" />
             </div>
           </div>
         </div>
@@ -93,7 +90,7 @@ const Index = () => {
       <div className="flex flex-col md:flex-row justify-center items-start gap-6 mt-16 px-2">
         {/* Author Dashboard */}
         <div 
-          className="max-w-3xl w-full rounded-2xl bg-white border border-[#19363C]/10 p-3 cursor-pointer transition-transform duration-200"
+          className="max-w-3xl w-full rounded-2xl border border-[#19363C]/10 p-3 cursor-pointer"
           onClick={() => openImageModal(
             "/lovable-uploads/screenshots/QT_dashboard.webp",
             "Author dashboard view",
@@ -109,7 +106,7 @@ const Index = () => {
 
         {/* Reader Crumble View */}
         <div 
-          className="max-w-lg w-full rounded-2xl bg-white border border-[#FFD166]/20 p-3 cursor-pointer transition-transform duration-200"
+          className="max-w-lg w-full rounded-2xl border border-[#FFD166]/20 p-3 cursor-pointer"
           onClick={() => openImageModal(
             "/lovable-uploads/screenshots/crumble_screenshot.webp",
             "Reader tip jar view",
@@ -204,7 +201,7 @@ const Index = () => {
 
       {/* Message for Readers */}
       <div className="mx-auto w-full max-w-4xl lg:max-w-5xl mt-32 px-4 text-center">
-        <div className="max-w-3xl lg:max-w-4xl mx-auto p-12">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto">
           <h2 className="text-4xl sm:text-5xl font-playfair font-medium mb-8 text-[#19363C]">For Readers</h2>
           <p className="text-lg sm:text-xl mb-12 text-[#19363C]/80 leading-relaxed">
             Readers can use Quilltips quickly and easily—just scan the QR code on your book or search for it on Quilltips, add a message, and send a tip! No accounts or sign-up required.
@@ -222,7 +219,7 @@ const Index = () => {
       {/* Why Quilltips Story */}
       <div className="mx-auto w-full max-w-4xl mt-32 px-4">
         <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-center mb-16 text-[#19363C]">Why Quilltips?</h2>
-        <div className="text-lg sm:text-xl space-y-6 text-left max-w-3xl mx-auto text-[#19363C]/80 leading-relaxed p-12">
+        <div className="text-lg sm:text-xl space-y-6 text-left max-w-3xl mx-auto text-[#19363C]/80 leading-relaxed">
           <p>Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on used books and reused library copies are nonexistent.</p>
           <p>As the demand for used books grows, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accessible way. Most readers would be happy to directly support their favorite authors, if only there was a way to do it!</p>
           <p>This is the idea that hatched Quilltips, a platform that supports fair author compensation and connects authors directly with their audience.</p>
@@ -249,7 +246,7 @@ const Index = () => {
           </div>
           <div className="pt-8">
             <RouterLink to="/author/register">
-              <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium transition-colors duration-200 px-12 py-4 h-auto rounded-full" data-plausible-event="create-account-bottom">
+              <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium transition-colors duration-200 px-12 py-4 h-auto rounded-full hover:shadow-none" data-plausible-event="create-account-bottom">
                 Create an account
               </Button>
             </RouterLink>
