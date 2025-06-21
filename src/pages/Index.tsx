@@ -52,7 +52,7 @@ const Index = () => {
                 Helping authors grow
               </h1>
               <p className="text-xl sm:text-2xl text-[#19363C]/70 font-medium">
-                Powerful QR codes for your books
+                Engage readers with QR codes on your books
               </p>
             </div>
 
@@ -60,7 +60,7 @@ const Index = () => {
               <RouterLink to="/author/register">
                 <Button 
                   size="lg" 
-                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" 
+                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" 
                   data-plausible-event="create-account-hero"
                 >
                   Create an account
@@ -70,7 +70,7 @@ const Index = () => {
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="border-[#19363C] text-[#19363C] hover:shadow-lg font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200"
+                  className="border-[#333333] text-[#333333] hover:shadow-lg font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 hover:bg-transparent plausible-event-name=how-it-works"
                 >
                   See how it works
                 </Button>
@@ -224,7 +224,7 @@ const Index = () => {
 
         <div className="flex justify-center mt-16">
           <RouterLink to="/how-it-works">
-            <Button variant="outline" className="rounded-full px-10 border-[#19363C] text-[#19363C] hover:bg-[#19363C] hover:text-white plausible-event-name=how-it-works" data-plausible-event="how-it-works">
+            <Button variant="outline" className="rounded-full px-10 border-[#19363C] text-[#19363C] hover:bg-transparent hover:shadow-lg plausible-event-name=how-it-works" data-plausible-event="how-it-works">
               Learn more
             </Button>
           </RouterLink>
@@ -260,7 +260,7 @@ const Index = () => {
 
         <div className="flex justify-center mt-12">
           <RouterLink to="/about">
-            <Button variant="outline" className="rounded-full px-10 flex items-center gap-2 border-[#19363C] text-[#19363C] hover:bg-[#19363C] hover:text-white plausible-event-name=about-quilltips" >
+            <Button variant="outline" className="rounded-full px-10 flex items-center gap-2 border-[#333333] text-[#333333] hover:bg-transparent plausible-event-name=about-quilltips" >
               Learn more about us
             </Button>
           </RouterLink>
@@ -268,15 +268,15 @@ const Index = () => {
       </div>
 
       {/* Get Started Section */}
-      <div className="mx-auto w-full max-w-4xl mt-32 text-center space-y-12 animate-enter py-24 px-4">
+      <div className="mx-auto w-full max-w-4xl mt-24 text-center space-y-12 animate-enter py-24 px-4">
         <div className="space-y-8">
-          <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-[#19363C]">Ready to get started?</h2>
-          <h3 className="text-xl sm:text-2xl text-[#19363C]/80">
+          <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-[#333333]">Ready to get started?</h2>
+          <h3 className="text-xl sm:text-2xl text-[#333333]">
             Create an account to connect with readers and earn tips!
           </h3>
         </div>
         <RouterLink to="/author/register">
-          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold transition-all duration-200 px-12 py-4 h-auto rounded-full plausible-event-name=create-account-bottom" data-plausible-event="create-account-bottom">
+          <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium transition-all duration-200 px-12 py-4 h-auto rounded-full plausible-event-name=create-account-bottom mt-8" data-plausible-event="create-account-bottom">
             Create an account
           </Button>
         </RouterLink>
