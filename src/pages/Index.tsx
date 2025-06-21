@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
@@ -44,39 +43,37 @@ const Index = () => {
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
       {/* Hero Section */}
       <div className="mx-auto w-full max-w-6xl">
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 py-24 lg:py-32">
-          {/* Left Content */}
-          <div className="flex-1 text-center lg:text-left space-y-16 max-w-lg">
-            <div className="space-y-10">
-              <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#19363C] leading-tight">
+        <div className="relative py-32 lg:py-48">
+          {/* Background Design */}
+          <div className="absolute inset-0 -mx-4 sm:-mx-6 lg:-mx-8">
+            <div className="w-full h-full bg-gradient-to-br from-[#FFD166]/20 via-[#FFD166]/10 to-transparent rounded-3xl"></div>
+            <div className="absolute top-10 right-10 w-32 h-32 bg-[#19363C]/5 rounded-full blur-xl"></div>
+            <div className="absolute bottom-10 left-10 w-24 h-24 bg-[#FFD166]/20 rounded-full blur-lg"></div>
+            <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-[#19363C]/20 rounded-full"></div>
+            <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-[#FFD166]/40 rounded-full"></div>
+          </div>
+
+          {/* Content */}
+          <div className="relative text-center space-y-12 max-w-4xl mx-auto">
+            <div className="space-y-8">
+              <h1 className="font-playfair font-bold text-6xl sm:text-7xl lg:text-8xl text-[#19363C] leading-tight">
                 Helping authors grow
               </h1>
-              <p className="text-xl sm:text-2xl text-[#19363C]/70 font-medium">
+              <p className="text-2xl sm:text-3xl lg:text-4xl text-[#19363C]/70 font-medium">
                 Powerful QR codes for your books
               </p>
             </div>
 
-            <div className="flex justify-center lg:justify-start pt-8">
+            <div className="pt-8">
               <RouterLink to="/author/register">
                 <Button 
                   size="lg" 
-                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium text-lg px-8 py-4 h-auto rounded-full transition-colors duration-200 hover:shadow-none" 
+                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold text-xl px-12 py-6 h-auto rounded-full transition-all duration-300 hover:shadow-lg hover:scale-105" 
                   data-plausible-event="create-account-hero"
                 >
                   Create an account
                 </Button>
               </RouterLink>
-            </div>
-          </div>
-
-          {/* Right Visual - Updated Graphic */}
-          <div className="flex-1 flex justify-center lg:justify-end max-w-sm lg:max-w-md">
-            <div className="w-64 h-64 lg:w-80 lg:h-80">
-              <img 
-                src="/lovable-uploads/b32d54ed-201a-476a-a46c-128c1a7da6cf.png" 
-                alt="Reader scanning QR code in book with Quilltips"
-                className="w-full h-full object-contain"
-              />
             </div>
           </div>
         </div>
