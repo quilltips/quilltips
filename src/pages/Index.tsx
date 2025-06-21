@@ -40,10 +40,10 @@ const Index = () => {
       url="https://quilltips.co"
     />
 
-    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-32">
       {/* Hero Section */}
       <div className="mx-auto w-full max-w-6xl">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 py-16 lg:py-24">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 py-4 lg:py-2">
           {/* Left Content */}
           <div className="flex-1 text-center lg:text-left space-y-10 max-w-xl">
             <div className="space-y-8">
@@ -79,9 +79,9 @@ const Index = () => {
 
           {/* Right Visual - Updated with new graphic */}
           <div className="flex-1 flex justify-center lg:justify-center max-w-md lg:max-w-lg">
-            <div className="relative">
+            <div className="relative w-[200px] lg:w-[300px]">
               <img
-                src="/lovable-uploads/53780611-3882-4448-90cd-a7f0388741ea.png"
+                src="/lovable-uploads/better_phone_graphic.png"
                 alt="Quilltips phone mockup showing QR code interface"
                 className="max-w-full h-auto"
               />
