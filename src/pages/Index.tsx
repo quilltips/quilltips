@@ -60,7 +60,7 @@ const Index = () => {
               <RouterLink to="/author/register">
                 <Button 
                   size="lg" 
-                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" 
+                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" 
                   data-plausible-event="create-account-hero"
                 >
                   Create an account
@@ -70,7 +70,7 @@ const Index = () => {
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="border-[#19363C] text-[#19363C] hover:bg-[#19363C] hover:text-white font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200"
+                  className="border-[#19363C] text-[#19363C] hover:shadow-lg font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200"
                 >
                   See how it works
                 </Button>
@@ -79,7 +79,7 @@ const Index = () => {
           </div>
 
           {/* Right Visual */}
-          <div className="flex-1 flex justify-center lg:justify-end max-w-md lg:max-w-lg">
+          <div className="flex-1 flex justify-center lg:justify-center max-w-md lg:max-w-lg">
             <div className="relative">
               {/* Phone mockup with QR code */}
               <div className="relative bg-white rounded-[2.5rem] p-4 border-4 border-[#19363C] max-w-sm mx-auto">
@@ -122,7 +122,7 @@ const Index = () => {
       <div className="flex flex-col md:flex-row justify-center items-start gap-6 mt-16 px-2">
         {/* Author Dashboard */}
         <div 
-          className="max-w-3xl w-full rounded-2xl bg-white border border-[#19363C]/10 p-3 cursor-pointer hover:shadow-lg transition-all duration-200"
+          className="max-w-3xl w-full rounded-2xl bg-white border border-[#19363C]/10 p-3 cursor-pointer transition-all duration-200"
           onClick={() => openImageModal(
             "/lovable-uploads/screenshots/QT_dashboard.webp",
             "Author dashboard view",
@@ -138,7 +138,7 @@ const Index = () => {
 
         {/* Reader Crumble View */}
         <div 
-          className="max-w-lg w-full rounded-2xl bg-white border border-[#FFD166]/20 p-3 cursor-pointer hover:shadow-lg transition-all duration-200"
+          className="max-w-lg w-full rounded-2xl bg-white border border-[#FFD166]/20 p-3 cursor-pointer transition-all duration-200"
           onClick={() => openImageModal(
             "/lovable-uploads/screenshots/crumble_screenshot.webp",
             "Reader tip jar view",
@@ -170,7 +170,7 @@ const Index = () => {
             title: "Promote Your Platform",
             text: "Link to your website and socials - all from one centralized place."
           }].map(({ icon, title, text }, idx) => (
-            <Card key={idx} className="bg-white/90 p-8 transition-all duration-200 border border-[#19363C]/10 rounded-2xl hover:shadow-lg hover:-translate-y-1">
+            <Card key={idx} className="bg-white/90 p-8 border border-[#19363C]/10 rounded-2xl">
               <div className="flex flex-col items-center text-center space-y-6">
                 <div className="w-16 h-16 bg-[#FFD166] rounded-full flex items-center justify-center">
                   {icon}
@@ -233,7 +233,7 @@ const Index = () => {
 
       {/* Message for Readers */}
       <div className="mx-auto w-full max-w-4xl lg:max-w-5xl mt-32 px-4 text-center">
-        <div className="max-w-3xl lg:max-w-4xl mx-auto rounded-3xl bg-white/50 border border-[#19363C]/10 p-12">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto p-12">
           <h2 className="text-4xl sm:text-5xl font-playfair font-medium mb-8 text-[#19363C]">For Readers</h2>
           <p className="text-lg sm:text-xl mb-12 text-[#19363C]/80 leading-relaxed">
             Readers can use Quilltips quickly and easily—just scan the QR code on your book or search for it on Quilltips, add a message, and send a tip! No accounts or sign-up required.
@@ -242,7 +242,7 @@ const Index = () => {
             <img
               src="/lovable-uploads/reader_quilltips.webp"
               alt="Reader scanning a QR code to tip an author"
-              className="max-w-md w-full rounded-2xl border border-[#19363C]/10"
+              className="max-w-md w-full rounded-2xl"
             />
           </div>
         </div>
@@ -251,7 +251,7 @@ const Index = () => {
       {/* Why Quilltips Story */}
       <div className="mx-auto w-full max-w-4xl mt-32 px-4">
         <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-center mb-16 text-[#19363C]">Why Quilltips?</h2>
-        <div className="text-lg sm:text-xl space-y-6 text-left max-w-3xl mx-auto text-[#19363C]/80 leading-relaxed bg-white/50 rounded-3xl p-12 border border-[#19363C]/10">
+        <div className="text-lg sm:text-xl space-y-6 text-left max-w-3xl mx-auto text-[#19363C]/80 leading-relaxed p-12">
           <p>Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on used books and reused library copies are nonexistent.</p>
           <p>As the demand for used books grows, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accessible way. Most readers would be happy to directly support their favorite authors, if only there was a way to do it!</p>
           <p>This is the idea that hatched Quilltips, a platform that supports fair author compensation and connects authors directly with their audience.</p>
@@ -268,8 +268,8 @@ const Index = () => {
       </div>
 
       {/* Get Started Section */}
-      <div className="mx-auto w-full max-w-4xl mt-32 text-center space-y-10 animate-enter py-20 px-4">
-        <div className="space-y-6">
+      <div className="mx-auto w-full max-w-4xl mt-32 text-center space-y-12 animate-enter py-24 px-4">
+        <div className="space-y-8">
           <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-[#19363C]">Ready to get started?</h2>
           <h3 className="text-xl sm:text-2xl text-[#19363C]/80">
             Create an account to connect with readers and earn tips!
