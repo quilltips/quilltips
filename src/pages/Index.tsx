@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
@@ -78,34 +77,14 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Right Visual */}
+          {/* Right Visual - Updated with new graphic */}
           <div className="flex-1 flex justify-center lg:justify-center max-w-md lg:max-w-lg">
             <div className="relative">
-              {/* Phone mockup with QR code */}
-              <div className="relative bg-white rounded-[2.5rem] p-4 border-4 border-[#19363C] max-w-sm mx-auto">
-                <div className="bg-gray-50 rounded-[1.5rem] p-6 h-96 flex flex-col items-center justify-center space-y-4">
-                  {/* Quill icon */}
-                  <div className="w-16 h-16 bg-[#19363C] rounded-full flex items-center justify-center mb-2">
-                    <BookOpen className="w-8 h-8 text-[#FFD166]" />
-                  </div>
-                  
-                  {/* Heart */}
-                  <div className="text-[#19363C] mb-2">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                    </svg>
-                  </div>
-                  
-                  {/* QR Code placeholder */}
-                  <div className="w-32 h-32 bg-white border-2 border-[#19363C] rounded-lg flex items-center justify-center">
-                    <QrCode className="w-24 h-24 text-[#19363C]" />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Book base */}
-              <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-64 h-8 bg-[#19363C] rounded-lg opacity-20"></div>
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-56 h-6 bg-[#19363C] rounded-lg opacity-10"></div>
+              <img
+                src="/lovable-uploads/53780611-3882-4448-90cd-a7f0388741ea.png"
+                alt="Quilltips phone mockup showing QR code interface"
+                className="max-w-full h-auto"
+              />
             </div>
           </div>
         </div>
