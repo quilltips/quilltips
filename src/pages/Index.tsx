@@ -40,45 +40,35 @@ const Index = () => {
       url="https://quilltips.co"
     />
 
-    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
-      {/* Hero Section */}
-      <div className="mx-auto w-full max-w-6xl">
-        <div className="relative py-32 lg:py-48">
-          {/* Background Design */}
-          <div className="absolute inset-0 -mx-4 sm:-mx-6 lg:-mx-8">
-            <div className="w-full h-full bg-gradient-to-br from-[#FFD166]/20 via-[#FFD166]/10 to-transparent rounded-3xl"></div>
-            <div className="absolute top-10 right-10 w-32 h-32 bg-[#19363C]/5 rounded-full blur-xl"></div>
-            <div className="absolute bottom-10 left-10 w-24 h-24 bg-[#FFD166]/20 rounded-full blur-lg"></div>
-            <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-[#19363C]/20 rounded-full"></div>
-            <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-[#FFD166]/40 rounded-full"></div>
+    {/* Hero Section with full width background */}
+    <div className="w-full bg-gradient-to-br from-[#FFD166]/20 via-[#FFD166]/10 to-transparent">
+      <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+        <div className="text-center space-y-10 max-w-4xl mx-auto">
+          <div className="space-y-6">
+            <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#19363C] leading-tight">
+              Helping authors grow
+            </h1>
+            <p className="text-xl sm:text-2xl lg:text-3xl text-[#19363C]/70 font-medium">
+              Powerful QR codes for your books
+            </p>
           </div>
 
-          {/* Content */}
-          <div className="relative text-center space-y-12 max-w-4xl mx-auto">
-            <div className="space-y-8">
-              <h1 className="font-playfair font-bold text-6xl sm:text-7xl lg:text-8xl text-[#19363C] leading-tight">
-                Helping authors grow
-              </h1>
-              <p className="text-2xl sm:text-3xl lg:text-4xl text-[#19363C]/70 font-medium">
-                Powerful QR codes for your books
-              </p>
-            </div>
-
-            <div className="pt-8">
-              <RouterLink to="/author/register">
-                <Button 
-                  size="lg" 
-                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-semibold text-xl px-12 py-6 h-auto rounded-full transition-all duration-300 hover:shadow-lg hover:scale-105" 
-                  data-plausible-event="create-account-hero"
-                >
-                  Create an account
-                </Button>
-              </RouterLink>
-            </div>
+          <div className="pt-6">
+            <RouterLink to="/author/register">
+              <Button 
+                size="lg" 
+                className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium transition-colors duration-200 px-12 py-4 h-auto rounded-full hover:shadow-lg" 
+                data-plausible-event="create-account-hero"
+              >
+                Create an account
+              </Button>
+            </RouterLink>
           </div>
         </div>
       </div>
+    </div>
 
+    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
       {/* What is Quilltips */}
       <div className="mx-auto w-full max-w-5xl mt-32 text-center space-y-8">
         <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-[#19363C]">What is Quilltips?</h2>
