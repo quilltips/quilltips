@@ -37,8 +37,19 @@ const HowItWorks = () => {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-10 items-center">
-          <div className="space-y-8 order-1">
+        {/* Moved infographic here and shrunk by 40% */}
+        <div className="flex justify-center">
+          <img 
+            src="/lovable-uploads/how-quilltips-works.webp" 
+            alt="How Quilltips Works" 
+            className="mx-auto max-w-full h-auto rounded-sm"
+            style={{ maxWidth: '60%' }}
+          />
+        </div>
+        
+        {/* Improved layout for bullet points - using more horizontal width */}
+        <div className="grid md:grid-cols-3 gap-8 items-start">
+          <div className="md:col-span-2 space-y-8">
             <div className="space-y-3">
               <h2 className="text-2xl font-playfair font-medium">For Authors</h2>
               <ul className="list-disc list-inside space-y-4 pl-2">
@@ -71,7 +82,8 @@ const HowItWorks = () => {
             </div>
           </div>
           
-          <div className="rounded-xl overflow-hidden order-2 flex justify-center items-center p-6">
+          {/* QR Code now takes up less space */}
+          <div className="rounded-xl overflow-hidden flex justify-center items-center p-6">
             <StyledQRCode 
               value="https://quilltips.com/example" 
               size={180} 
@@ -121,14 +133,6 @@ const HowItWorks = () => {
           </div>
 
         </div>
-      </div>
-      
-      <div className="mt-16 text-center">
-        <img 
-          src="/lovable-uploads/how-quilltips-works.webp" 
-          alt="How Quilltips Works" 
-          className="mx-auto max-w-full h-auto rounded-sm max-w-1xl"
-        />
       </div>
       
       <div className="mt-14 flex justify-center">
