@@ -40,7 +40,7 @@ const Index = () => {
       url="https://quilltips.co"
     />
 
-    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-32">
+    <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
       {/* Hero Section */}
       <div className="mx-auto w-full max-w-6xl">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 py-4 lg:py-2">
