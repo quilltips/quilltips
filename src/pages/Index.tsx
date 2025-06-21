@@ -69,12 +69,12 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Right Visual - Logo */}
+          {/* Right Visual - Updated Graphic */}
           <div className="flex-1 flex justify-center lg:justify-end max-w-sm lg:max-w-md">
             <div className="w-64 h-64 lg:w-80 lg:h-80">
               <img 
-                src="/lovable-uploads/logo_nav.webp" 
-                alt="Quilltips Logo"
+                src="/lovable-uploads/b32d54ed-201a-476a-a46c-128c1a7da6cf.png" 
+                alt="Reader scanning QR code in book with Quilltips"
                 className="w-full h-full object-contain"
               />
             </div>
