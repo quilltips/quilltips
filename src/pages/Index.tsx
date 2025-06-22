@@ -81,7 +81,7 @@ const Index = () => {
           <div className="flex-1 flex justify-center lg:justify-center max-w-md lg:max-w-lg">
             <div className="relative w-[200px] lg:w-[300px]">
               <img
-                src="/lovable-uploads/better_phone_graphic.png"
+                src="/lovable-uploads/better_phone_graphic.webp"
                 alt="Quilltips phone mockup showing QR code interface"
                 className="max-w-full h-auto"
               />
@@ -229,7 +229,7 @@ const Index = () => {
 
       {/* Why Quilltips Story */}
       <div className="mx-auto w-full max-w-4xl mt-32 px-4">
-        <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-center mb-16 text-[#19363C]">Why Quilltips?</h2>
+        <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-center mb-8 text-[#19363C]">Why Quilltips?</h2>
         <div className="text-lg sm:text-xl space-y-6 text-left max-w-3xl mx-auto text-[#19363C]/80 leading-relaxed p-12">
           <p>Fair author compensation is really hard to achieve given the structure of the book industry, where royalties on used books and reused library copies are nonexistent.</p>
           <p>As the demand for used books grows, books can have an active and adventurous life for years after they are printed, providing joy to readers in an environmentally sustainable and accessible way. Most readers would be happy to directly support their favorite authors, if only there was a way to do it!</p>

@@ -38,7 +38,7 @@ const HowItWorks = () => {
         </div>
         
         {/* Moved infographic here and shrunk by 40% */}
-        <div className="flex justify-center">
+        <div className="flex justify-center pb-8">
           <img 
             src="/lovable-uploads/how-quilltips-works.webp" 
             alt="How Quilltips Works" 
