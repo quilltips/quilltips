@@ -118,7 +118,7 @@ export const InitialRegistrationFields = ({
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+          className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] plausible-event-name=create-account-registration-page"
           data-plausible-event="initial-author-details"
         >
           Create an account
