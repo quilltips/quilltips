@@ -35,7 +35,7 @@ const Index = () => {
   return (
     <>
     <Meta
-      title="Quilltips – Instantly Tip Your Favorite Authors"
+      title="Quilltips – Engage readers with QR codes on your books"
       description="Quilltips lets readers support authors by scanning a QR code on their book and sending a tip with a personal message."
       url="https://quilltips.co"
     />
