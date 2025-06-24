@@ -9,22 +9,22 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           {/* Left-aligned navigation links in 3 columns, 2 rows */}
           <div className="grid grid-cols-3 gap-x-6 gap-y-2 text-sm">
-            <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors plausible-event-name=about-quilltips">
               About
             </Link>
-            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors plausible-event-name=how-it-works">
               How It Works
             </Link>
-            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors plausible-event-name=pricing">
               Pricing
             </Link>
-            <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors plausible-event-name=faq">
               FAQ
             </Link>
-            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors plausible-event-name=contact">
               Contact
             </Link>
-            <Link to="/stripe-help" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/stripe-help" className="text-muted-foreground hover:text-foreground transition-colors plausible-event-name=stripe-help">
               Stripe Help
             </Link>
           </div>
