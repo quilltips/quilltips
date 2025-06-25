@@ -46,15 +46,21 @@ const Index = () => {
   };
 
   const carouselImages = [
-    {
-      src: "/lovable-uploads/screenshots/QT_dashboard.webp",
-      alt: "Author dashboard view",
-      title: "Author Dashboard"
-    },
+    
     {
       src: "/lovable-uploads/screenshots/crumble_screenshot.webp",
       alt: "Reader tip jar view",
       title: "Reader Tip Jar"
+    },
+    {
+      src: "/lovable-uploads/screenshots/public_profile_screenshot.webp",
+      alt: "Author dashboard view",
+      title: "Author Dashboard"
+    },
+    {
+      src: "/lovable-uploads/screenshots/QT_dashboard.webp",
+      alt: "Author dashboard view",
+      title: "Author Dashboard"
     }
   ];
 
@@ -86,11 +92,11 @@ const Index = () => {
           {/* Left Content */}
           <div className="flex-1 text-center lg:text-left space-y-10 max-w-xl">
             <div className="space-y-8">
-              <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#19363C] leading-tight">
+              <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#333333] leading-tight">
                 Give your book a boost
               </h1>
              
-              <p className="text-xl sm:text-2xl text-[#19363C]/70 font-medium">
+              <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">
                 Add a QR code to your book that readers can use to support you, message you, and find their next read. 
               </p>
             </div>
@@ -146,14 +152,14 @@ const Index = () => {
                 <CarouselItem key={index}>
                   <div className="p-1">
                     <div 
-                      className="rounded-2xl bg-white border border-[#19363C]/10 p-3 cursor-pointer transition-all duration-200 hover:shadow-lg"
+                      className="rounded-2xl bg-transparent p-3 cursor-pointer transition-all duration-200 hover:shadow-none"
                       onClick={() => openImageModal(image.src, image.alt, image.title)}
                     >
-                      <div className="aspect-[4/3] w-full">
+                      <div className=" w-full">
                         <img
                           src={image.src}
                           alt={image.alt}
-                          className="w-full h-full rounded-xl object-contain"
+                          className="w-full h-[450px] rounded-xl object-contain"
                         />
                       </div>
                     </div>
