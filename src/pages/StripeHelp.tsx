@@ -4,12 +4,12 @@ import { Layout } from "@/components/Layout";
 const StripeHelp = () => {
   return (
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <h1 className="text-3xl md:text-4xl font-playfair font-medium mb-8">
+      <div className="container mx-auto px-4 py-12 max-w-5xl">
+        <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-20">
           Get set up with Stripe to receive payments through Quilltips
         </h1>
         
-        <div className="space-y-6 ">
+        <div className="space-y-10 ">
        
           <section className="space-y-4">
             <h2 className="text-2xl font-playfair ">What to expect during Stripe Connect setup</h2>
