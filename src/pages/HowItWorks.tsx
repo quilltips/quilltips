@@ -176,7 +176,7 @@ const HowItWorks = () => {
                   <span className="text-[#19363C]">Email list growth</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div class="w-2 h-2 bg-[#FFD166] rounded-full"></div>
+                  <div className="w-2 h-2 bg-[#FFD166] rounded-full"></div>
                   <span className="text-[#19363C]">Social media and website traffic</span>
                 </div>
               </div>
