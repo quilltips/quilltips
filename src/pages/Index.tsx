@@ -1,4 +1,5 @@
 
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
@@ -9,13 +10,14 @@ import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ImageModal } from "@/components/ui/image-modal";
 import { Meta } from "@/components/Meta"; 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 
 const Index = () => {
@@ -23,6 +25,9 @@ const Index = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [expandedImage, setExpandedImage] = useState<{src: string, alt: string, title: string} | null>(null);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
 
   const handleCreateQRCode = () => {
     if (!user) {
@@ -52,6 +57,19 @@ const Index = () => {
       title: "Reader Tip Jar"
     }
   ];
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
 
   return (
     <>
@@ -120,9 +138,9 @@ const Index = () => {
         </p>
       </div>
 
-      <div className="flex justify-center mt-16 px-2">
+      <div className="flex flex-col items-center mt-16 px-2">
         <div className="w-full max-w-4xl">
-          <Carousel className="w-full">
+          <Carousel setApi={setApi} className="w-full">
             <CarouselContent>
               {carouselImages.map((image, index) => (
                 <CarouselItem key={index}>
@@ -131,19 +149,35 @@ const Index = () => {
                       className="rounded-2xl bg-white border border-[#19363C]/10 p-3 cursor-pointer transition-all duration-200 hover:shadow-lg"
                       onClick={() => openImageModal(image.src, image.alt, image.title)}
                     >
-                      <img
-                        src={image.src}
-                        alt={image.alt}
-                        className="w-full rounded-xl object-contain"
-                      />
+                      <div className="aspect-[4/3] w-full">
+                        <img
+                          src={image.src}
+                          alt={image.alt}
+                          className="w-full h-full rounded-xl object-contain"
+                        />
+                      </div>
                     </div>
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
           </Carousel>
+        </div>
+        
+        {/* Dot indicators */}
+        <div className="flex justify-center space-x-2 mt-6">
+          {Array.from({ length: count }).map((_, index) => (
+            <button
+              key={index}
+              className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+                index + 1 === current 
+                  ? 'bg-[#FFD166]' 
+                  : 'bg-[#19363C]/20 hover:bg-[#19363C]/40'
+              }`}
+              onClick={() => api?.scrollTo(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
       </div>
 
@@ -292,3 +326,4 @@ const Index = () => {
 };
 
 export default Index;
+
