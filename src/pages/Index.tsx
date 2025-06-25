@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
@@ -9,6 +10,13 @@ import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ImageModal } from "@/components/ui/image-modal";
 import { Meta } from "@/components/Meta"; 
 import { useState } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const Index = () => {
   const { user } = useAuth();
@@ -31,6 +39,19 @@ const Index = () => {
   const closeImageModal = () => {
     setExpandedImage(null);
   };
+
+  const carouselImages = [
+    {
+      src: "/lovable-uploads/screenshots/QT_dashboard.webp",
+      alt: "Author dashboard view",
+      title: "Author Dashboard"
+    },
+    {
+      src: "/lovable-uploads/screenshots/crumble_screenshot.webp",
+      alt: "Reader tip jar view",
+      title: "Reader Tip Jar"
+    }
+  ];
 
   return (
     <>
@@ -82,7 +103,7 @@ const Index = () => {
           <div className="flex-1 flex justify-center lg:justify-center max-w-md lg:max-w-lg">
             <div className="relative w-[200px] lg:w-[300px]">
               <img
-                src="/lovable-uploads/better_phone_graphic.webp"
+                src="/lovable-uploads/53780611-3882-4448-90cd-a7f0388741ea.png"
                 alt="Quilltips phone mockup showing QR code interface"
                 className="max-w-full h-auto"
               />
@@ -99,37 +120,30 @@ const Index = () => {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-center items-start gap-6 mt-16 px-2">
-        {/* Author Dashboard */}
-        <div 
-          className="max-w-3xl w-full rounded-2xl bg-white border border-[#19363C]/10 p-3 cursor-pointer transition-all duration-200"
-          onClick={() => openImageModal(
-            "/lovable-uploads/screenshots/QT_dashboard.webp",
-            "Author dashboard view",
-            "Author Dashboard"
-          )}
-        >
-          <img
-            src="/lovable-uploads/screenshots/QT_dashboard.webp"
-            alt="Author dashboard view"
-            className="w-full rounded-xl object-contain"
-          />
-        </div>
-
-        {/* Reader Crumble View */}
-        <div 
-          className="max-w-lg w-full rounded-2xl bg-white border border-[#FFD166]/20 p-3 cursor-pointer transition-all duration-200"
-          onClick={() => openImageModal(
-            "/lovable-uploads/screenshots/crumble_screenshot.webp",
-            "Reader tip jar view",
-            "Reader Tip Jar"
-          )}
-        >
-          <img
-            src="/lovable-uploads/screenshots/crumble_screenshot.webp"
-            alt="Reader tip jar view"
-            className="w-full rounded-xl object-contain"
-          />
+      <div className="flex justify-center mt-16 px-2">
+        <div className="w-full max-w-4xl">
+          <Carousel className="w-full">
+            <CarouselContent>
+              {carouselImages.map((image, index) => (
+                <CarouselItem key={index}>
+                  <div className="p-1">
+                    <div 
+                      className="rounded-2xl bg-white border border-[#19363C]/10 p-3 cursor-pointer transition-all duration-200 hover:shadow-lg"
+                      onClick={() => openImageModal(image.src, image.alt, image.title)}
+                    >
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full rounded-xl object-contain"
+                      />
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </div>
 
