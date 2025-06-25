@@ -48,10 +48,11 @@ const Index = () => {
           <div className="flex-1 text-center lg:text-left space-y-10 max-w-xl">
             <div className="space-y-8">
               <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#19363C] leading-tight">
-                Helping authors grow
+                Give your book a boost
               </h1>
+             
               <p className="text-xl sm:text-2xl text-[#19363C]/70 font-medium">
-                Engage readers with QR codes on your books
+                Add a QR code to your book that readers can use to support you, message you, and find their next read. 
               </p>
             </div>
 
@@ -62,7 +63,7 @@ const Index = () => {
                   className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" 
                   data-plausible-event="create-account-hero"
                 >
-                  Create an account
+                  Create my QR code
                 </Button>
               </RouterLink>
               <RouterLink to="/how-it-works">
