@@ -54,13 +54,18 @@ const Index = () => {
     },
     {
       src: "/lovable-uploads/screenshots/public_profile_screenshot.webp",
-      alt: "Author dashboard view",
+      alt: "Quilltips public profile example",
       title: "Author Dashboard"
     },
     {
       src: "/lovable-uploads/screenshots/QT_dashboard.webp",
       alt: "Author dashboard view",
       title: "Author Dashboard"
+    },
+    {
+      src: "/lovable-uploads/screenshots/about_author_qr.webp",
+      alt: "About the author example",
+      title: "About author"
     }
   ];
 
