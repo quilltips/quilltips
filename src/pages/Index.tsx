@@ -180,7 +180,7 @@ const Index = () => {
           {Array.from({ length: count }).map((_, index) => (
             <button
               key={index}
-              className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+              className={`w-3 h-3 rounded-full transition-colors duration-200 plausible-event-name=carousel-images ${
                 index + 1 === current 
                   ? 'bg-[#FFD166]' 
                   : 'bg-[#19363C]/20 hover:bg-[#19363C]/40'
