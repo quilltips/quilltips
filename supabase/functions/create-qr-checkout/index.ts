@@ -97,6 +97,7 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
+      allow_promotion_codes: true,
       mode: 'payment',
       success_url: `${req.headers.get('origin')}/qr-summary?qr_code=${qrCodeId}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/author/dashboard`,
