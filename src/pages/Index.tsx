@@ -1,5 +1,3 @@
-
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrCode, MessageSquare, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
@@ -88,6 +86,35 @@ const Index = () => {
       title="Quilltips – Engage readers with QR codes on your books"
       description="Quilltips lets readers support authors by scanning a QR code on their book and sending a tip with a personal message."
       url="https://quilltips.co"
+      image="https://quilltips.co/og-image.png"
+      jsonLd={[
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Quilltips",
+          "url": "https://quilltips.co",
+          "logo": "https://quilltips.co/logo_nav.png",
+          "sameAs": [
+            "https://twitter.com/quilltips",
+            "https://www.instagram.com/quilltips",
+            "https://www.linkedin.com/company/quilltips",
+            "https://www.threads.net/@quilltips",
+            "https://www.reddit.com/user/quilltips_books",
+            "https://www.tiktok.com/@quilltips"
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "url": "https://quilltips.co",
+          "name": "Quilltips",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://quilltips.co/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]}
     />
 
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
