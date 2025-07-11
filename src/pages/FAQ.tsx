@@ -12,7 +12,7 @@ const FAQ = () => {
   return (
     <>
     <Meta
-      title="Frequently Asked Questions – Quilltips"
+      title="Quilltips - Frequently Asked Questions"
       description="Got questions about how tipping, QR codes, or author payouts work? Check out our FAQ for quick answers."
       url="https://quilltips.co/faq"
     />

@@ -7,7 +7,7 @@ const PrivacyPolicy = () => {
   return (
     <>
     <Meta
-      title="Privacy Policy – Quilltips"
+      title="Quilltips - Privacy Policy"
       description="Your privacy is important to us. Learn how Quilltips handles your data and protects your information."
       url="https://quilltips.co/privacy"
     />

@@ -23,7 +23,7 @@ const HowItWorks = () => {
   return (
     <>
     <Meta
-      title="Turn Your Book Into An Asset – Quilltips"
+      title="Quilltips - Turn Your Book Into An Asset"
       description="Learn how to turn your book into a revenue-generating asset with Quilltips QR codes. Simple steps to connect with readers and earn tips."
       url="https://quilltips.co/how-it-works"
     />
