@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from 'https://esm.sh/stripe@14.21.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
@@ -134,7 +135,7 @@ serve(async (req) => {
       if (!accountExists) {
         console.log('Creating new Stripe Connect account with prefilled information');
         
-        // Create a new Connect account with enhanced prefilled data
+        // Create a new Connect account with enhanced prefilled data and monthly payouts
         const account = await stripe.accounts.create({
           type: 'express',
           email: user.email, // Use the authenticated user's email from auth
@@ -147,6 +148,13 @@ serve(async (req) => {
             mcc: '5942', // Books, periodicals, and newspapers
             url: 'https://quilltips.co',
             product_description: 'Author receiving tips',
+          },
+          settings: {
+            payouts: {
+              schedule: {
+                interval: 'monthly',
+              },
+            },
           },
           metadata: {
             supabaseUserId: user.id,
