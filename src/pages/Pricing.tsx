@@ -1,3 +1,4 @@
+
 import { Meta } from "@/components/Meta"; 
 
 const Pricing = () => {
@@ -12,7 +13,7 @@ const Pricing = () => {
     <div className="flex-grow">
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-semibold text-center mb-12">Simple, Transparent Pricing</h1>
+          <h1 className="text-4xl font-semibold text-center mb-12">Simple, transparent pricing. Free signup.</h1>
           
           <div className="space-y-8">
             <div className="bg-white rounded-lg p-8 border border-gray-200 shadow-sm">

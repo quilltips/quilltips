@@ -33,7 +33,7 @@ const HowItWorks = () => {
         {/* Hero Section */}
         <div className="text-center mb-24">
           <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-10 text-[#333333]">
-            Turn your book into an asset
+            Connect with your readers
           </h1>
           <p className="text-xl md:text-2xl text-[#333333] max-w-3xl mx-auto leading-relaxed">
             Create a Quilltips Jar, add the QR code to your book and give your readers a way to say thanks
