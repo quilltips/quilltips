@@ -7,26 +7,25 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ImageModal } from "@/components/ui/image-modal";
-import { Meta } from "@/components/Meta"; 
+import { Meta } from "@/components/Meta";
 import { useState, useEffect } from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
-} from "@/components/ui/carousel";
-
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 const Index = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const {
+    user
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-  const [expandedImage, setExpandedImage] = useState<{src: string, alt: string, title: string} | null>(null);
+  const [expandedImage, setExpandedImage] = useState<{
+    src: string;
+    alt: string;
+    title: string;
+  } | null>(null);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
-
   const handleCreateQRCode = () => {
     if (!user) {
       navigate("/author/login");
@@ -34,88 +33,62 @@ const Index = () => {
     }
     navigate("/author/create-qr");
   };
-
   const openImageModal = (src: string, alt: string, title: string) => {
-    setExpandedImage({ src, alt, title });
+    setExpandedImage({
+      src,
+      alt,
+      title
+    });
   };
-
   const closeImageModal = () => {
     setExpandedImage(null);
   };
-
-  const carouselImages = [
-    
-    {
-      src: "/lovable-uploads/screenshots/crumble_screenshot.webp",
-      alt: "Reader tip jar view",
-      title: "Reader Tip Jar"
-    },
-    {
-      src: "/lovable-uploads/screenshots/public_profile_screenshot.webp",
-      alt: "Quilltips public profile example",
-      title: "Author Dashboard"
-    },
-    {
-      src: "/lovable-uploads/screenshots/QT_dashboard.webp",
-      alt: "Author dashboard view",
-      title: "Author Dashboard"
-    },
-    {
-      src: "/lovable-uploads/screenshots/about_author_qr.webp",
-      alt: "About the author example",
-      title: "About author"
-    }
-  ];
-
+  const carouselImages = [{
+    src: "/lovable-uploads/screenshots/crumble_screenshot.webp",
+    alt: "Reader tip jar view",
+    title: "Reader Tip Jar"
+  }, {
+    src: "/lovable-uploads/screenshots/public_profile_screenshot.webp",
+    alt: "Quilltips public profile example",
+    title: "Author Dashboard"
+  }, {
+    src: "/lovable-uploads/screenshots/QT_dashboard.webp",
+    alt: "Author dashboard view",
+    title: "Author Dashboard"
+  }, {
+    src: "/lovable-uploads/screenshots/about_author_qr.webp",
+    alt: "About the author example",
+    title: "About author"
+  }];
   useEffect(() => {
     if (!api) {
       return;
     }
-
     setCount(api.scrollSnapList().length);
     setCurrent(api.selectedScrollSnap() + 1);
-
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap() + 1);
     });
   }, [api]);
-
-  return (
-    <>
-    <Meta
-      title="Quilltips – Engage readers with QR codes on your books"
-      description="Quilltips lets readers support authors by scanning a QR code on their book and sending a tip with a personal message."
-      url="https://quilltips.co"
-      image="https://quilltips.co/og-image.png"
-      jsonLd={[
-        {
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "Quilltips",
-          "url": "https://quilltips.co",
-          "logo": "https://quilltips.co/logo_nav.png",
-          "sameAs": [
-            "https://twitter.com/quilltips",
-            "https://www.instagram.com/quilltips",
-            "https://www.linkedin.com/company/quilltips",
-            "https://www.threads.net/@quilltips",
-            "https://www.reddit.com/user/quilltips_books",
-            "https://www.tiktok.com/@quilltips"
-          ]
-        },
-        {
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "url": "https://quilltips.co",
-          "name": "Quilltips",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://quilltips.co/search?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        }
-      ]}
-    />
+  return <>
+    <Meta title="Quilltips – Engage readers with QR codes on your books" description="Quilltips lets readers support authors by scanning a QR code on their book and sending a tip with a personal message." url="https://quilltips.co" image="https://quilltips.co/og-image.png" jsonLd={[{
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Quilltips",
+      "url": "https://quilltips.co",
+      "logo": "https://quilltips.co/logo_nav.png",
+      "sameAs": ["https://twitter.com/quilltips", "https://www.instagram.com/quilltips", "https://www.linkedin.com/company/quilltips", "https://www.threads.net/@quilltips", "https://www.reddit.com/user/quilltips_books", "https://www.tiktok.com/@quilltips"]
+    }, {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://quilltips.co",
+      "name": "Quilltips",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://quilltips.co/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }]} />
 
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
       {/* Hero Section */}
@@ -128,27 +101,17 @@ const Index = () => {
                 Give your book a boost
               </h1>
              
-              <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">
-                Add a QR code to your book that readers can use to support you, message you, and find their next read. 
-              </p>
+              <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Add a Quilltips QR code to your book that readers can use to support you, message you, and find their next read.</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-4">
               <RouterLink to="/author/register">
-                <Button 
-                  size="lg" 
-                  className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" 
-                  data-plausible-event="create-account-hero"
-                >
+                <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" data-plausible-event="create-account-hero">
                   Create my QR code
                 </Button>
               </RouterLink>
               <RouterLink to="/how-it-works">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="border-[#333333] text-[#333333] hover:shadow-lg font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 hover:bg-transparent plausible-event-name=how-it-works"
-                >
+                <Button variant="outline" size="lg" className="border-[#333333] text-[#333333] hover:shadow-lg font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 hover:bg-transparent plausible-event-name=how-it-works">
                   See how it works
                 </Button>
               </RouterLink>
@@ -158,11 +121,7 @@ const Index = () => {
           {/* Right Visual - Updated with new graphic */}
           <div className="flex-1 flex justify-center lg:justify-center max-w-md lg:max-w-lg">
             <div className="relative w-[200px] lg:w-[300px]">
-              <img
-                src="/lovable-uploads/53780611-3882-4448-90cd-a7f0388741ea.png"
-                alt="Quilltips phone mockup showing QR code interface"
-                className="max-w-full h-auto"
-              />
+              <img src="/lovable-uploads/53780611-3882-4448-90cd-a7f0388741ea.png" alt="Quilltips phone mockup showing QR code interface" className="max-w-full h-auto" />
             </div>
           </div>
         </div>
@@ -180,42 +139,24 @@ const Index = () => {
         <div className="w-full max-w-4xl">
           <Carousel setApi={setApi} className="w-full">
             <CarouselContent>
-              {carouselImages.map((image, index) => (
-                <CarouselItem key={index}>
+              {carouselImages.map((image, index) => <CarouselItem key={index}>
                   <div className="p-1">
-                    <div 
-                      className="rounded-2xl bg-transparent p-3 cursor-pointer transition-all duration-200 hover:shadow-none"
-                      onClick={() => openImageModal(image.src, image.alt, image.title)}
-                    >
+                    <div className="rounded-2xl bg-transparent p-3 cursor-pointer transition-all duration-200 hover:shadow-none" onClick={() => openImageModal(image.src, image.alt, image.title)}>
                       <div className=" w-full">
-                        <img
-                          src={image.src}
-                          alt={image.alt}
-                          className="w-full h-[450px] rounded-xl object-contain"
-                        />
+                        <img src={image.src} alt={image.alt} className="w-full h-[450px] rounded-xl object-contain" />
                       </div>
                     </div>
                   </div>
-                </CarouselItem>
-              ))}
+                </CarouselItem>)}
             </CarouselContent>
           </Carousel>
         </div>
         
         {/* Dot indicators */}
         <div className="flex justify-center space-x-2 mt-6">
-          {Array.from({ length: count }).map((_, index) => (
-            <button
-              key={index}
-              className={`w-3 h-3 rounded-full transition-colors duration-200 plausible-event-name=carousel-images ${
-                index + 1 === current 
-                  ? 'bg-[#FFD166]' 
-                  : 'bg-[#19363C]/20 hover:bg-[#19363C]/40'
-              }`}
-              onClick={() => api?.scrollTo(index)}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+          {Array.from({
+            length: count
+          }).map((_, index) => <button key={index} className={`w-3 h-3 rounded-full transition-colors duration-200 plausible-event-name=carousel-images ${index + 1 === current ? 'bg-[#FFD166]' : 'bg-[#19363C]/20 hover:bg-[#19363C]/40'}`} onClick={() => api?.scrollTo(index)} aria-label={`Go to slide ${index + 1}`} />)}
         </div>
       </div>
 
@@ -235,8 +176,11 @@ const Index = () => {
             icon: <LinkIcon className="w-8 h-8 text-[#19363C]" />,
             title: "Promote Your Platform",
             text: "Link to your website and socials - all from one centralized place."
-          }].map(({ icon, title, text }, idx) => (
-            <Card key={idx} className="bg-white/90 p-8 border border-[#19363C]/10 rounded-2xl">
+          }].map(({
+            icon,
+            title,
+            text
+          }, idx) => <Card key={idx} className="bg-white/90 p-8 border border-[#19363C]/10 rounded-2xl">
               <div className="flex flex-col items-center text-center space-y-6">
                 <div className="w-16 h-16 bg-[#FFD166] rounded-full flex items-center justify-center">
                   {icon}
@@ -244,8 +188,7 @@ const Index = () => {
                 <h3 className="text-xl font-semibold text-[#19363C]">{title}</h3>
                 <p className="text-[#19363C]/80 leading-relaxed">{text}</p>
               </div>
-            </Card>
-          ))}
+            </Card>)}
         </div>
       </div>
 
@@ -268,11 +211,12 @@ const Index = () => {
           title: "Step 3. Build support",
           text: "Grow your e-mail list and understand your audience with Quilltips' Data dashboard.",
           reverse: false
-        }].map(({ icon, title, text, reverse }, idx) => (
-          <div
-            key={idx}
-            className={`flex flex-col-reverse md:flex-row ${reverse ? "md:flex-row-reverse" : ""} items-center gap-12 mb-24`}
-          >
+        }].map(({
+          icon,
+          title,
+          text,
+          reverse
+        }, idx) => <div key={idx} className={`flex flex-col-reverse md:flex-row ${reverse ? "md:flex-row-reverse" : ""} items-center gap-12 mb-24`}>
             {/* Text */}
             <div className="text-center md:text-left max-w-lg space-y-4">
               <h3 className="font-semibold text-2xl text-[#19363C]">{title}</h3>
@@ -285,8 +229,7 @@ const Index = () => {
                {icon}
               </div>
             </div>
-          </div>
-        ))}
+          </div>)}
 
         <div className="flex justify-center mt-16">
           <RouterLink to="/how-it-works">
@@ -305,11 +248,7 @@ const Index = () => {
             Readers can use Quilltips quickly and easily—just scan the QR code on your book or search for it on Quilltips, add a message, and send a tip! No accounts or sign-up required.
           </p>
           <div className="flex justify-center">
-            <img
-              src="/lovable-uploads/reader_quilltips.webp"
-              alt="Reader scanning a QR code to tip an author"
-              className="max-w-md w-full rounded-2xl"
-            />
+            <img src="/lovable-uploads/reader_quilltips.webp" alt="Reader scanning a QR code to tip an author" className="max-w-md w-full rounded-2xl" />
           </div>
         </div>
       </div>
@@ -326,7 +265,7 @@ const Index = () => {
 
         <div className="flex justify-center mt-12">
           <RouterLink to="/about">
-            <Button variant="outline" className="rounded-full px-10 flex items-center gap-2 border-[#333333] text-[#333333] hover:bg-transparent plausible-event-name=about-quilltips" >
+            <Button variant="outline" className="rounded-full px-10 flex items-center gap-2 border-[#333333] text-[#333333] hover:bg-transparent plausible-event-name=about-quilltips">
               Learn more about us
             </Button>
           </RouterLink>
@@ -350,17 +289,7 @@ const Index = () => {
     </div>
 
     {/* Image Modal */}
-    {expandedImage && (
-      <ImageModal
-        isOpen={!!expandedImage}
-        onClose={closeImageModal}
-        src={expandedImage.src}
-        alt={expandedImage.alt}
-        title={expandedImage.title}
-      />
-    )}
-    </>
-  );
+    {expandedImage && <ImageModal isOpen={!!expandedImage} onClose={closeImageModal} src={expandedImage.src} alt={expandedImage.alt} title={expandedImage.title} />}
+    </>;
 };
-
 export default Index;
