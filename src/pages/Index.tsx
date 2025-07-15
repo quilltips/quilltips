@@ -343,7 +343,7 @@ const Index = () => {
         </div>
         <RouterLink to="/author/register">
           <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] font-medium transition-all duration-200 px-12 py-4 h-auto rounded-full plausible-event-name=create-account-bottom mt-8" data-plausible-event="create-account-bottom">
-            Create an account
+            Sign up for free
           </Button>
         </RouterLink>
       </div>
@@ -364,4 +364,3 @@ const Index = () => {
 };
 
 export default Index;
-
