@@ -1,19 +1,12 @@
-
-import { Meta } from "@/components/Meta"; 
-
+import { Meta } from "@/components/Meta";
 const Pricing = () => {
-  return (
-    <>
-    <Meta
-      title="Quilltips Pricing – Always Free for Readers"
-      description="Quilltips is free for readers. Authors pay a small transaction fee to collect tips through our Stripe-powered system."
-      url="https://quilltips.co/pricing"
-    />
+  return <>
+    <Meta title="Quilltips Pricing – Always Free for Readers" description="Quilltips is free for readers. Authors pay a small transaction fee to collect tips through our Stripe-powered system." url="https://quilltips.co/pricing" />
 
     <div className="flex-grow">
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-semibold text-center mb-12">Simple, transparent pricing. Free signup.</h1>
+          <h1 className="text-4xl font-semibold text-center mb-12">Free signup and profile. Simple, per-book pricing.</h1>
           
           <div className="space-y-8">
             <div className="bg-white rounded-lg p-8 border border-gray-200 shadow-sm">
@@ -45,8 +38,6 @@ const Pricing = () => {
         </div>
       </main>
     </div>
-    </>
-  );
+    </>;
 };
-
 export default Pricing;
