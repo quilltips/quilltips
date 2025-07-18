@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ImageModal } from "@/components/ui/image-modal";
+import { VideoPlayer } from "@/components/ui/video-player";
 import { Meta } from "@/components/Meta";
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
@@ -98,10 +99,10 @@ const Index = () => {
           <div className="flex-1 text-center lg:text-left space-y-10 max-w-xl">
             <div className="space-y-8">
               <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#333333] leading-tight">
-                Give your book a boost
+                Engage with your readers
               </h1>
              
-              <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Add a Quilltips QR code to your book that readers can use to support you, message you, and find their next read.</p>
+              <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Add a Quilltips QR code to your book that readers can scan to support you, message you, and find their next read.</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-4">
@@ -118,10 +119,20 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Right Visual - Updated with new graphic */}
-          <div className="flex-1 flex justify-center lg:justify-center max-w-md lg:max-w-lg">
-            <div className="relative w-[200px] lg:w-[300px]">
-              <img src="/lovable-uploads/53780611-3882-4448-90cd-a7f0388741ea.png" alt="Quilltips phone mockup showing QR code interface" className="max-w-full h-auto" />
+          {/* Right Visual - Product Demo Video */}
+          <div className="flex-1 flex justify-center lg:justify-center max-w-sm lg:max-w-md">
+            <div className="relative w-[220px] lg:w-[320px]">
+              <VideoPlayer
+                src="/lovable-uploads/quilltips-demo.mp4"
+                posterTime={2}
+                alt="Quilltips product demo video showing QR code scan and reader tipping and messaging interaction"
+                autoPlay={false}
+                muted={true}
+                loop={true}
+                aspectRatio="mobile"
+                objectFit="cover"
+                className="w-full"
+              />
             </div>
           </div>
         </div>
