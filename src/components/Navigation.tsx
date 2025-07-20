@@ -1,6 +1,6 @@
 
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, User, ChevronDown } from "lucide-react";
+import { Menu, User, ChevronDown, Search, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,13 +8,14 @@ import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { GuestMenu } from "./navigation/GuestMenu";
 import { SearchBar } from "./navigation/SearchBar";
-import { MobileSearchSheet } from "./navigation/MobileSearchSheet";
+
 import { useAuth } from "./auth/AuthProvider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
   const { user, isAuthor } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -80,6 +81,7 @@ export const Navigation = () => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+    setIsAboutExpanded(false);
   };
 
   // Single Guest Log In Button for mobile menu (used in MobileMenu below, not both places)
@@ -98,66 +100,164 @@ export const Navigation = () => {
     closeMobileMenu();
   };
 
-  // Refined, only one Log in button ensured for unauthenticated users
+    // Refined, only one Log in button ensured for unauthenticated users
   const MobileMenu = () => (
-    <div className="flex flex-col space-y-4">
-      {user ? (
-        <>
+    <div className="flex flex-col space-y-4 flex-1 overflow-y-auto">
+      {/* Home Section - Always visible */}
+      <div className="border-b border-gray-200 pb-4">
+        <div className="flex flex-col space-y-1">
           <Link 
-            to="/author/dashboard" 
+            to="/" 
             className="px-4 py-2 hover:bg-accent/10 rounded-md"
             onClick={closeMobileMenu}
           >
-            Dashboard
+            Home
           </Link>
+        </div>
+      </div>
+
+      {/* Login Section - Only for guests */}
+      {!user && (
+        <div className="border-b border-gray-200 pb-4">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 px-4">
+            Account
+          </h3>
+          <div className="flex flex-col space-y-1">
+            <MobileGuestMenu />
+          </div>
+        </div>
+      )}
+
+      {/* Search Section - Always visible */}
+      <div className="border-b border-gray-200 pb-4">
+        <div className="flex flex-col space-y-1">
           <Link 
-            to="/author/tip-feed" 
+            to="/search" 
             className="px-4 py-2 hover:bg-accent/10 rounded-md"
             onClick={closeMobileMenu}
           >
-            Tip feed
+            Search
           </Link>
-          <Link 
-            to="/author/book-qr-codes?tab=all" 
-            className="px-4 py-2 hover:bg-accent/10 rounded-md"
-            onClick={closeMobileMenu}
-          >
-            Book QR codes
-          </Link>
-          <Link 
-            to="/author/data" 
-            className="px-4 py-2 hover:bg-accent/10 rounded-md"
-            onClick={closeMobileMenu}
-          >
-            Data
-          </Link>
-          <Link 
-            to="/author/settings" 
-            className="px-4 py-2 hover:bg-accent/10 rounded-md"
-            onClick={closeMobileMenu}
-          >
-            Settings
-          </Link>
-          <Link 
-            to={`/author/profile/${user?.id}`} 
-            className="px-4 py-2 hover:bg-accent/10 rounded-md"
-            onClick={closeMobileMenu}
-          >
-            Public profile
-          </Link>
-          <button
-            onClick={() => {
-              closeMobileMenu();
-              handleLogout();
-            }}
-            disabled={isLoading}
-            className="px-4 py-2 text-left hover:bg-accent/10 rounded-md text-red-500"
-          >
-            {isLoading ? "Logging out..." : "Log out"}
-          </button>
-        </>
-      ) : (
-        <MobileGuestMenu />
+        </div>
+      </div>
+
+      {/* About Section - Collapsible */}
+      <div className="border-b border-gray-200 pb-4">
+        <button
+          onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+          className="w-full px-4 py-2 text-left hover:bg-accent/10 rounded-md flex items-center justify-between"
+        >
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+            About
+          </h3>
+          <ChevronRight 
+            className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+              isAboutExpanded ? 'rotate-90' : ''
+            }`} 
+          />
+        </button>
+        {isAboutExpanded && (
+          <div className="flex flex-col space-y-1 mt-2">
+            <Link 
+              to="/about" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              About Quilltips
+            </Link>
+            <Link 
+              to="/how-it-works" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              How It Works
+            </Link>
+            <Link 
+              to="/faq" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              FAQ
+            </Link>
+            <Link 
+              to="/pricing" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              Pricing
+            </Link>
+            <Link 
+              to="/stripe-help" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              Stripe Help
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* Account Section - Only for logged in users */}
+      {user && (
+        <div className="border-b border-gray-200 pb-4 mb-0">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 px-4">
+            Account
+          </h3>
+          <div className="flex flex-col space-y-1">
+            <Link 
+              to="/author/dashboard" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              Dashboard
+            </Link>
+            <Link 
+              to="/author/tip-feed" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              Tip feed
+            </Link>
+            <Link 
+              to="/author/book-qr-codes?tab=all" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              Book QR codes
+            </Link>
+            <Link 
+              to="/author/data" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              Data
+            </Link>
+            <Link 
+              to="/author/settings" 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              Settings
+            </Link>
+            <Link 
+              to={`/author/profile/${user?.id}`} 
+              className="px-4 py-2 hover:bg-accent/10 rounded-md"
+              onClick={closeMobileMenu}
+            >
+              Public profile
+            </Link>
+            <button
+              onClick={() => {
+                closeMobileMenu();
+                handleLogout();
+              }}
+              disabled={isLoading}
+              className="px-4 py-2 text-left hover:bg-accent/10 rounded-md text-red-500"
+            >
+              {isLoading ? "Logging out..." : "Log out"}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -166,10 +266,6 @@ export const Navigation = () => {
     <div className="flex items-center gap-4">
       <div className="hidden md:block">
         <SearchBar />
-      </div>
-      <div className="md:hidden">
-        {/* Pass handleMobileNavigate so search sheet can close the mobile sheet after navigation */}
-        <MobileSearchSheet onNavigate={handleMobileNavigate} />
       </div>
       {user ? (
         <div className="hidden md:block">
@@ -213,10 +309,8 @@ export const Navigation = () => {
               <SheetDescription className="sr-only">
                 Use this panel to navigate to different parts of the site.
               </SheetDescription>
-              <div className="flex flex-col gap-4 pt-8">
-                {/* NavLinks includes mobile search bar with onNavigate to control closing sheet */}
-                <NavLinks />
-                {/* Only one "Log in" via this menu for unauth */}
+              <div className="flex flex-col h-full pt-8 pb-4">
+                {/* Navigation Menu */}
                 <MobileMenu />
               </div>
             </SheetContent>

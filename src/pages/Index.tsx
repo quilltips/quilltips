@@ -94,10 +94,10 @@ const Index = () => {
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
       {/* Hero Section */}
       <div className="mx-auto w-full max-w-6xl">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 py-4 lg:py-2">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 py-8 lg:py-2">
           {/* Left Content */}
-          <div className="flex-1 text-center lg:text-left space-y-10 max-w-xl">
-            <div className="space-y-8">
+          <div className="flex-1 text-center lg:text-left space-y-6 lg:space-y-10 max-w-xl">
+            <div className="space-y-6 lg:space-y-8">
               <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#333333] leading-tight">
                 Engage with your readers
               </h1>
@@ -105,7 +105,7 @@ const Index = () => {
               <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Add a Quilltips QR code to your book that readers can scan to support you, message you, and find their next read.</p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-4">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-2 lg:pt-4">
               <RouterLink to="/author/register">
                 <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" data-plausible-event="create-account-hero">
                   Create my QR code
@@ -131,7 +131,7 @@ const Index = () => {
                 loop={true}
                 aspectRatio="mobile"
                 objectFit="cover"
-                className="w-full"
+                className="w-full plausible-event-name=watch-demo"
               />
             </div>
           </div>
@@ -139,7 +139,7 @@ const Index = () => {
       </div>
 
       {/* What is Quilltips */}
-      <div className="mx-auto w-full max-w-5xl mt-32 text-center space-y-8">
+      <div className="mx-auto w-full max-w-5xl mt-16 lg:mt-32 text-center space-y-8">
         <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-[#19363C]">What is Quilltips?</h2>
         <p className="font-lato text-lg sm:text-xl max-w-4xl mx-auto text-[#19363C]/80 leading-relaxed">
           With Quilltips, authors can add a QR code to their books for readers to scan. Scanning opens a Quilltips Jar, where readers can leave a tip and message!

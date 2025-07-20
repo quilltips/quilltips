@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,8 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
   const [comments, setComments] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [readerEmail, setReaderEmail] = useState<string | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!tip || !isOpen) return;
@@ -160,13 +162,21 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className={`sm:max-w-md overflow-y-auto p-0 transition-all duration-300 ${
+        isTyping 
+          ? 'max-h-[100vh] !top-0 sm:max-h-[90vh] sm:!top-auto' 
+          : 'max-h-[85vh] sm:max-h-[90vh]'
+      } mx-2 sm:mx-0`}>
         <DialogHeader className="p-4 border-b">
           <DialogTitle className="text-lg font-playfair">Tip Details</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-4rem)]">
-          <div className="p-6 space-y-8">
+        <ScrollArea ref={scrollAreaRef} className={`transition-all duration-300 ${
+          isTyping 
+            ? 'max-h-[calc(100vh-4rem)] sm:max-h-[calc(90vh-4rem)]' 
+            : 'max-h-[calc(85vh-4rem)] sm:max-h-[calc(90vh-4rem)]'
+        }`}>
+          <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
             {/* Tip content that matches TipTableRow */}
             <div className="flex gap-3 font-bold">
               <TipReaderAvatar readerName={tip.reader_name} className="h-8 w-8" />
@@ -195,19 +205,22 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
             <div className="py-2 "></div>
 
             {/* Comments section with improved spacing */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {user && (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <Textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
+                    onFocus={() => setIsTyping(true)}
+                    onBlur={() => setIsTyping(false)}
                     placeholder="Write a comment..."
-                    className="w-full text-sm min-h-[80px]"
+                    className="w-full text-sm min-h-[60px] sm:min-h-[80px] resize-none"
+                    autoFocus={false}
                   />
                   <Button 
                     onClick={handleSubmitComment}
                     disabled={!newComment.trim() || isSubmitting}
-                    className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748]"
+                    className="w-full bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] py-2 sm:py-2"
                   >
                     Post Comment
                   </Button>
@@ -219,14 +232,14 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 <h3 className="font-medium text-sm">Comments ({comments.length})</h3>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {comments.map((comment) => (
-                  <div key={comment.id} className="bg-muted/50 p-4 rounded-lg space-y-3">
+                  <div key={comment.id} className="bg-muted/50 p-3 sm:p-4 rounded-lg space-y-2 sm:space-y-3">
                     <div className="flex items-center gap-3">
                       <AuthorCommentAvatar 
                         authorName={comment.profiles?.name} 
                         avatarUrl={comment.profiles?.avatar_url}
-                        className="h-7 w-7" 
+                        className="h-6 w-6 sm:h-7 sm:w-7" 
                       />
                       <div>
                         <p className="font-medium text-sm">
@@ -237,7 +250,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                         </p>
                       </div>
                     </div>
-                    <p className="text-sm pl-10 leading-relaxed">{comment.content}</p>
+                    <p className="text-sm pl-9 sm:pl-10 leading-relaxed">{comment.content}</p>
                   </div>
                 ))}
               </div>
