@@ -135,7 +135,7 @@ export default function BlogPostPage() {
 
   // Handle 404
   useEffect(() => {
-    if (error && error.code === 'PGRST116') {
+    if (error && 'code' in error && error.code === 'PGRST116') {
       navigate('/blog', { replace: true });
     }
   }, [error, navigate]);

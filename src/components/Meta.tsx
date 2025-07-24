@@ -6,14 +6,16 @@ type MetaProps = {
   description?: string;
   url?: string;
   image?: string;
+  keywords?: string[];
   jsonLd?: Record<string, any>; 
 };
 
-export const Meta = ({ title, description, url, image, jsonLd }: MetaProps) => {
+export const Meta = ({ title, description, url, image, keywords, jsonLd }: MetaProps) => {
   return (
     <Helmet>
       <title>{title}</title>
       {description && <meta name="description" content={description} />}
+      {keywords && <meta name="keywords" content={keywords.join(', ')} />}
       <meta property="og:type" content="website" />
       <meta property="og:title" content={title} />
       {description && <meta property="og:description" content={description} />}

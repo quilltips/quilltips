@@ -146,7 +146,13 @@ export const AdminBlogManagement = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_blog_stats');
       if (error) throw error;
-      return data;
+      return data as {
+        total_posts: number;
+        published_posts: number;
+        total_views: number;
+        views_this_month: number;
+        total_subscribers: number;
+      };
     },
   });
 
@@ -754,7 +760,9 @@ export const AdminBlogManagement = () => {
                 featured_image_url: editingPostData.featured_image_url,
                 meta_title: editingPostData.meta_title || "",
                 meta_description: editingPostData.meta_description || "",
-                meta_keywords: editingPostData.meta_keywords || "",
+                meta_keywords: Array.isArray(editingPostData.meta_keywords) 
+                  ? editingPostData.meta_keywords.join(', ')
+                  : editingPostData.meta_keywords || "",
                 category_ids: editingPostData.category_ids
               }}
               onSave={handleSavePost}
