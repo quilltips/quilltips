@@ -8,9 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { GuestMenu } from "./navigation/GuestMenu";
 import { SearchBar } from "./navigation/SearchBar";
-
 import { useAuth } from "./auth/AuthProvider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import logoUrl from "@/assets/Logo_Nav_Text.svg";
 
 export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -177,24 +177,36 @@ export const Navigation = () => {
               className="px-4 py-2 hover:bg-accent/10 rounded-md"
               onClick={closeMobileMenu}
             >
-              FAQ
-            </Link>
-            <Link 
-              to="/pricing" 
-              className="px-4 py-2 hover:bg-accent/10 rounded-md"
-              onClick={closeMobileMenu}
-            >
-              Pricing
-            </Link>
-            <Link 
-              to="/stripe-help" 
-              className="px-4 py-2 hover:bg-accent/10 rounded-md"
-              onClick={closeMobileMenu}
-            >
-              Stripe Help
+              FAQs
             </Link>
           </div>
         )}
+      </div>
+
+      {/* Pricing Section */}
+      <div className="border-b border-gray-200 pb-4">
+        <div className="flex flex-col space-y-1">
+          <Link 
+            to="/pricing" 
+            className="px-4 py-2 hover:bg-accent/10 rounded-md"
+            onClick={closeMobileMenu}
+          >
+            Pricing
+          </Link>
+        </div>
+      </div>
+
+      {/* Blog Section */}
+      <div className="border-b border-gray-200 pb-4">
+        <div className="flex flex-col space-y-1">
+          <Link 
+            to="/blog" 
+            className="px-4 py-2 hover:bg-accent/10 rounded-md"
+            onClick={closeMobileMenu}
+          >
+            Blog
+          </Link>
+        </div>
       </div>
 
       {/* Account Section - Only for logged in users */}
@@ -262,41 +274,77 @@ export const Navigation = () => {
     </div>
   );
 
-  const NavLinks = () => (
-    <div className="flex items-center gap-4">
-      <div className="hidden md:block">
-        <SearchBar />
-      </div>
-      {user ? (
-        <div className="hidden md:block">
-          <UserDropdownMenu />
-        </div>
-      ) : (
-        // Only show GuestMenu on desktop (since mobile nav already covers unauth flow)
-        <div className="hidden md:block">
-          <GuestMenu />
-        </div>
-      )}
-    </div>
-  );
-
   return (
-    <nav className="fixed top-0 w-full bg-background z-50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+    <nav className="fixed top-0 w-full bg-background z-50 border-b border-gray-100">
+      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+        {/* Left side: Logo and main navigation */}
+        <div className="flex items-center gap-8">
           <Link 
             to={isAuthor ? "/author/dashboard" : "/"} 
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            <img src="/lovable-uploads/qt_logo_text.png" alt="Quilltips Logo" className="h-7 w-auto" />
+            <img src={logoUrl} alt="Quilltips Logo" className="h-8 w-auto" />
           </Link>
+          
+          {/* Desktop Navigation Links */}
+          <div className="hidden md:flex items-center gap-6">
+            {/* About Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-[#19363C] transition-colors px-0">
+                  About
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48 bg-white">
+                <DropdownMenuItem onClick={() => navigate('/about')}>
+                  About
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/how-it-works')}>
+                  How It Works
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/faq')}>
+                  FAQs
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            {/* Pricing Link */}
+            <Link 
+              to="/pricing" 
+              className="text-sm font-medium text-gray-700 hover:text-[#19363C] transition-colors"
+            >
+              Pricing
+            </Link>
+            
+            {/* Blog Link */}
+            <Link 
+              to="/blog" 
+              className="text-sm font-medium text-gray-700 hover:text-[#19363C] transition-colors"
+            >
+              Blog
+            </Link>
+          </div>
         </div>
         
-        <div className="hidden md:block">
-          <NavLinks />
+        {/* Right side: Search and user actions */}
+        <div className="flex items-center gap-4">
+          <div className="hidden md:block">
+            <SearchBar />
+          </div>
+          {user ? (
+            <div className="hidden md:block">
+              <UserDropdownMenu />
+            </div>
+          ) : (
+            <div className="hidden md:block">
+              <GuestMenu />
+            </div>
+          )}
         </div>
 
+        {/* Mobile menu button */}
         <div className="md:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>

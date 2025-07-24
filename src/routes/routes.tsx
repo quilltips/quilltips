@@ -29,6 +29,8 @@ import StripeHelp from "@/pages/StripeHelp";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import Pricing from "@/pages/Pricing";
 import AdminDashboard from "@/pages/AdminDashboard";
+import BlogPage from "@/pages/BlogPage";
+import BlogPostPage from "@/pages/BlogPostPage";
 import { Navigate } from "react-router-dom";
 
 export const routes = [
@@ -59,6 +61,10 @@ export const routes = [
   { path: "/stripe-help", component: StripeHelp },
   { path: "/privacy", component: PrivacyPolicy },
   { path: "/pricing", component: Pricing },
+  
+  // Blog routes
+  { path: "/blog", component: BlogPage },
+  { path: "/blog/:slug", component: BlogPostPage },
   
   // Admin route
   { path: "/admin", component: AdminDashboard },

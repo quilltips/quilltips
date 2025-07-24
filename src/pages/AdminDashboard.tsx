@@ -10,8 +10,9 @@ import { AdminUserManagement } from "@/components/admin/AdminUserManagement";
 import { AdminTipAnalytics } from "@/components/admin/AdminTipAnalytics";
 import { AdminQRAnalytics } from "@/components/admin/AdminQRAnalytics";
 import { AdminActivityLog } from "@/components/admin/AdminActivityLog";
+import { AdminBlogManagement } from "@/components/admin/AdminBlogManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, Users, DollarSign, QrCode, Activity } from "lucide-react";
+import { Shield, Users, DollarSign, QrCode, Activity, FileText } from "lucide-react";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -63,7 +64,7 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 bg-white border">
+            <TabsList className="grid w-full grid-cols-6 bg-white border">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <Activity className="h-4 w-4" />
                 <span className="hidden sm:inline">Overview</span>
@@ -79,6 +80,10 @@ const AdminDashboard = () => {
               <TabsTrigger value="qr-codes" className="flex items-center gap-2">
                 <QrCode className="h-4 w-4" />
                 <span className="hidden sm:inline">QR Codes</span>
+              </TabsTrigger>
+              <TabsTrigger value="blog" className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline">Blog</span>
               </TabsTrigger>
               <TabsTrigger value="activity" className="flex items-center gap-2">
                 <Activity className="h-4 w-4" />
@@ -102,6 +107,9 @@ const AdminDashboard = () => {
               <AdminQRAnalytics />
             </TabsContent>
 
+            <TabsContent value="blog">
+              <AdminBlogManagement />
+            </TabsContent>
             <TabsContent value="activity">
               <AdminActivityLog />
             </TabsContent>

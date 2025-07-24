@@ -34,7 +34,6 @@ verify_jwt = false
 
 [functions.stripe-email-reminders]
 verify_jwt = false
-schedule = "@daily" # Run once a day
 
 [functions.platform-webhook]
 verify_jwt = false

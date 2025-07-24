@@ -13,14 +13,14 @@ const About = () => {
     />
 
     <main className="container mx-auto px-4 py-24 flex-grow">
-      <div className="max-w-3xl mx-auto prose">
+      <div className="max-w-2xl mx-auto prose prose-lg" style={{ maxWidth: '42rem' }}>
 
         <h1 className="text-center text-5xl font-bold mb-10 text-[#19363C]">About Quilltips</h1>
     
         <OptimizedImage
           src="/lovable-uploads/QT_about_image.webp"
           alt="Quilltips book landscape"
-          className="w-full max-w-md rounded-xl shadow-md mx-auto"
+          className="w-full max-w-md rounded-xl mx-auto"
           priority={true}
           sizes="(max-width: 768px) 100vw, 600px"
           objectFit="cover"

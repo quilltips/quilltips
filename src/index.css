@@ -101,3 +101,85 @@
 .hover-lift {
   @apply transition-transform duration-300 hover:-translate-y-1;
 }
+
+/* Add custom prose styles for blog content */
+.prose {
+  max-width: none;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  color: #19363C;
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.prose h1 {
+  font-size: 2.5rem;
+}
+
+.prose h2 {
+  font-size: 2rem;
+}
+
+.prose h3 {
+  font-size: 1.5rem;
+}
+
+.prose p {
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+  font-size: 1.1rem;
+}
+
+.prose a {
+  color: #2563eb;
+  text-decoration: none;
+  border-bottom: 1px solid #dbeafe;
+  transition: border-color 0.2s;
+}
+
+.prose a:hover {
+  border-bottom-color: #3b82f6;
+}
+
+.prose blockquote {
+  border-left: 4px solid #19363C;
+  background-color: #f8fafc;
+  padding: 1rem 1.5rem;
+  margin: 2rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-style: italic;
+}
+
+.prose img {
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+}
+
+.prose ul,
+.prose ol {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: #19363C;
+}
+
+.prose em {
+  font-style: italic;
+  color: #4b5563;
+}
