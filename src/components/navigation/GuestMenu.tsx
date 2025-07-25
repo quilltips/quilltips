@@ -38,33 +38,6 @@ ListItem.displayName = "ListItem";
 export const GuestMenu = () => {
   return (
     <div className="flex items-center gap-2">
-      <NavigationMenu>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger className="data-[active]:bg-transparent data-[state=open]:bg-transparent hover:bg-transparent focus:bg-transparent hover:underline">About</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[180px] gap-1 p-2 md:w-[220px]">
-                <Link to="/about" onClick={() => document.activeElement instanceof HTMLElement && document.activeElement.blur()}>
-                  <ListItem title="About Quilltips" />
-                </Link>
-                <Link to="/how-it-works" onClick={() => document.activeElement instanceof HTMLElement && document.activeElement.blur()}>
-                  <ListItem title="How It Works" />
-                </Link>
-                <Link to="/faq" onClick={() => document.activeElement instanceof HTMLElement && document.activeElement.blur()}>
-                  <ListItem title="FAQ" />
-                </Link>
-                <Link to="/pricing" onClick={() => document.activeElement instanceof HTMLElement && document.activeElement.blur()}>
-                  <ListItem title="Pricing" />
-                </Link>
-                <Link to="/stripe-help" onClick={() => document.activeElement instanceof HTMLElement && document.activeElement.blur()}>
-                  <ListItem title="Stripe Help" />
-                </Link>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-      
       <Link to="/author/login">
         <Button 
           variant="ghost" 
