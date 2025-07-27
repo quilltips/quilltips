@@ -99,10 +99,10 @@ const Index = () => {
           <div className="flex-1 text-center lg:text-left space-y-6 lg:space-y-10 max-w-xl">
             <div className="space-y-6 lg:space-y-8">
               <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#333333] leading-tight">
-                Engage with your readers
+                QR codes for your books
               </h1>
              
-              <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Add a Quilltips QR code to your book that readers can scan to support you, message you, and find their next read.</p>
+              <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Earn more from your work, connect with your biggest fans, and link back to your website and socials.</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-2 lg:pt-4">
