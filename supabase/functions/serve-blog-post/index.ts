@@ -196,10 +196,15 @@ serve(async (req) => {
         </div>
         
         <script>
-          // Redirect to the React app after a short delay
-          setTimeout(() => {
-            window.location.href = '/blog/${post.slug}';
-          }, 100);
+          // Only redirect for human users, not social media crawlers
+          const userAgent = navigator.userAgent || '';
+          const isCrawler = /bot|crawler|spider|linkedinbot|facebookexternalhit|twitterbot|pinterest/i.test(userAgent);
+          
+          if (!isCrawler) {
+            setTimeout(() => {
+              window.location.href = '/blog/${post.slug}';
+            }, 100);
+          }
         </script>
       </body>
       </html>
