@@ -198,8 +198,8 @@ export default function BlogPostPage() {
         title={post.meta_title || post.title}
         description={post.meta_description || post.excerpt || "Read this blog post on Quilltips"}
         keywords={post.meta_keywords || ["blog", "writing", "publishing"]}
-        image={post.social_image_url || post.featured_image_url}
-        url={`/blog/${post.slug}`}
+        image={post.social_image_url || post.featured_image_url ? `https://quilltips.co${post.social_image_url || post.featured_image_url}` : 'https://quilltips.co/og-image.png'}
+        url={`https://quilltips.co/blog/${post.slug}`}
       />
       
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
