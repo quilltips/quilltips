@@ -283,10 +283,12 @@ export type Database = {
       }
       profiles: {
         Row: {
+          admin_notes: string | null
           avatar_url: string | null
           bio: string | null
           created_at: string
           email: string | null
+          flags: Json | null
           id: string
           name: string | null
           role: Database["public"]["Enums"]["app_role"] | null
@@ -299,10 +301,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          admin_notes?: string | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           email?: string | null
+          flags?: Json | null
           id: string
           name?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
@@ -315,10 +319,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          admin_notes?: string | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           email?: string | null
+          flags?: Json | null
           id?: string
           name?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
