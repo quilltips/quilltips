@@ -1,5 +1,2 @@
-# Blog post redirects for social media crawlers
-/blog/* https://qrawynczvedffcvnympn.supabase.co/functions/v1/serve-blog-post?slug=:splat 200
-
 # Fallback for SPA
 /* /index.html 200 

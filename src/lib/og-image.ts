@@ -11,8 +11,7 @@ export function generateOGImageUrl(post: {
   // Priority order for OG image:
   // 1. Custom social image URL
   // 2. Featured image URL
-  // 3. Generated OG image from static HTML generator
-  // 4. Default OG image
+  // 3. Static blog OG image (default)
   
   if (post.social_image_url) {
     return post.social_image_url.startsWith('http') 
@@ -26,15 +25,8 @@ export function generateOGImageUrl(post: {
       : `https://quilltips.co${post.featured_image_url}`;
   }
   
-  // Use the static HTML generator for dynamic OG image
-  const params = new URLSearchParams({
-    title: post.title,
-    ...(post.excerpt && { excerpt: post.excerpt }),
-    ...(post.author?.name && { author: post.author.name }),
-    ...(post.featured_image_url && { image: post.featured_image_url })
-  });
-  
-  return `https://quilltips.co/og-image-generator.html?${params.toString()}`;
+  // Use the static blog OG image
+  return 'https://quilltips.co/lovable-uploads/qt-blog-image.png';
 }
 
 /**
@@ -42,4 +34,11 @@ export function generateOGImageUrl(post: {
  */
 export function getDefaultOGImageUrl() {
   return 'https://quilltips.co/og-image.png';
+}
+
+/**
+ * Get blog OG image URL
+ */
+export function getBlogOGImageUrl() {
+  return 'https://quilltips.co/lovable-uploads/qt-blog-image.png';
 } 
