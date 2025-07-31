@@ -27,12 +27,18 @@ serve(async (req) => {
     // Fetch blog post data
     const { data: post, error } = await supabase
       .from('blog_posts')
-      .select('title, featured_image_url, excerpt')
+      .select(`
+        title, 
+        featured_image_url, 
+        excerpt,
+        author:profiles!blog_posts_author_id_fkey(name)
+      `)
       .eq('slug', slug)
       .eq('status', 'published')
       .single()
 
     if (error || !post) {
+      console.error('Blog post not found:', error)
       return new Response('Blog post not found', { status: 404 })
     }
 
@@ -71,6 +77,8 @@ serve(async (req) => {
               flex-direction: column;
               justify-content: center;
               background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+              position: relative;
+              z-index: 2;
             }
             .title {
               font-size: 48px;
@@ -147,6 +155,12 @@ serve(async (req) => {
               top: -60px;
               right: -60px;
               opacity: 0.6;
+              z-index: 1;
+            }
+            .author-info {
+              font-size: 18px;
+              color: #64748b;
+              margin-bottom: 20px;
             }
           </style>
         </head>
@@ -156,6 +170,7 @@ serve(async (req) => {
               <div class="accent-dot"></div>
               <h1 class="title">${post.title}</h1>
               ${post.excerpt ? `<p class="excerpt">${post.excerpt}</p>` : ''}
+              ${post.author?.name ? `<p class="author-info">By ${post.author.name}</p>` : ''}
               <div class="branding">
                 <div class="logo">Q</div>
                 <div class="site-name">Quilltips</div>
@@ -176,6 +191,7 @@ serve(async (req) => {
       headers: {
         ...corsHeaders,
         'Content-Type': 'text/html',
+        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
       },
     })
 

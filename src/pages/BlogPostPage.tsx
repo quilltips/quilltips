@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { NewsletterSignup } from "@/components/blog/NewsletterSignup";
 import { Meta } from "@/components/Meta";
+import { generateOGImageUrl } from "@/lib/og-image";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { 
   Calendar, 
@@ -198,7 +199,13 @@ export default function BlogPostPage() {
         title={post.meta_title || post.title}
         description={post.meta_description || post.excerpt || "Read this blog post on Quilltips"}
         keywords={post.meta_keywords || ["blog", "writing", "publishing"]}
-        image={post.social_image_url ? `https://quilltips.co${post.social_image_url}` : `https://qrawynczvedffcvnympn.supabase.co/functions/v1/generate-blog-og-image?slug=${post.slug}`}
+        image={generateOGImageUrl({
+          title: post.title,
+          excerpt: post.excerpt,
+          author: post.author,
+          featured_image_url: post.featured_image_url,
+          social_image_url: post.social_image_url
+        })}
         url={`https://quilltips.co/blog/${post.slug}`}
       />
       
