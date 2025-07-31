@@ -25,8 +25,19 @@ export function generateOGImageUrl(post: {
       : `https://quilltips.co${post.featured_image_url}`;
   }
   
-  // Use the static blog OG image
-  return 'https://quilltips.co/lovable-uploads/qt-blog-image.png';
+  // Generate dynamic OG image using the generator
+  const params = new URLSearchParams({
+    title: post.title,
+    excerpt: post.excerpt || '',
+    author: post.author?.name || 'Quilltips',
+    date: new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    })
+  });
+  
+  return `https://quilltips.co/og-image-generator.html?${params.toString()}`;
 }
 
 /**

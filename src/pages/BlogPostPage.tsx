@@ -199,7 +199,7 @@ export default function BlogPostPage() {
         title={post.meta_title || post.title}
         description={post.meta_description || post.excerpt || "Read this blog post on Quilltips"}
         keywords={post.meta_keywords || ["blog", "writing", "publishing"]}
-        image="https://quilltips.co/lovable-uploads/qt-blog-image.png"
+        image={generateOGImageUrl(post)}
         url={`https://quilltips.co/blog/${post.slug}`}
       />
       
