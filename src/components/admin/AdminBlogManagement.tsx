@@ -297,10 +297,11 @@ export const AdminBlogManagement = () => {
         if (error) throw error;
         result = data;
       } else {
-        // Create new post
+        // Create new post - remove id field to let database generate it
+        const { id, ...postFieldsWithoutId } = postFields;
         const { data, error } = await supabase
           .from('blog_posts')
-          .insert([postFields])
+          .insert([postFieldsWithoutId])
           .select()
           .single();
         if (error) throw error;
