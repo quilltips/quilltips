@@ -19,9 +19,16 @@ serve(async (req) => {
       return new Response('Missing slug parameter', { status: 400 })
     }
 
+    // Create Supabase client with service role key for public access
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
     )
 
     // Fetch blog post data
