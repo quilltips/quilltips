@@ -55,13 +55,8 @@ serve(async (req) => {
       return new Response('Blog post not found', { status: 404 })
     }
 
-    // Generate OG image URL
-    const ogImageUrl = `https://quilltips.co/og-image-generator.html?${new URLSearchParams({
-      title: post.title,
-      ...(post.excerpt && { excerpt: post.excerpt }),
-      ...(post.author?.name && { author: post.author.name }),
-      ...(post.featured_image_url && { image: post.featured_image_url })
-    }).toString()}`
+    // Generate OG image URL using server-side edge function
+    const ogImageUrl = `https://qrawynczvedffcvnympn.supabase.co/functions/v1/generate-blog-og-image?slug=${slug}`
 
     // Generate HTML with proper meta tags
     const html = `
