@@ -111,6 +111,9 @@ export const Footer = () => {
                 <Link to="/faq" className="text-white hover:text-gray-300 transition-colors">
                   FAQ
                 </Link>
+                <a href="/sitemap.xml" className="text-white hover:text-gray-300 transition-colors">
+                  Sitemap
+                </a>
               </div>
 
               {/* Right-aligned social links and copyright */}
