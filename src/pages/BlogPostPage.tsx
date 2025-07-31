@@ -198,7 +198,7 @@ export default function BlogPostPage() {
         title={post.meta_title || post.title}
         description={post.meta_description || post.excerpt || "Read this blog post on Quilltips"}
         keywords={post.meta_keywords || ["blog", "writing", "publishing"]}
-        image={post.social_image_url ? `https://quilltips.co${post.social_image_url}` : `https://quilltips.co/api/og-image?slug=${post.slug}`}
+        image={post.social_image_url ? `https://quilltips.co${post.social_image_url}` : `https://qrawynczvedffcvnympn.supabase.co/functions/v1/generate-blog-og-image?slug=${post.slug}`}
         url={`https://quilltips.co/blog/${post.slug}`}
       />
       
