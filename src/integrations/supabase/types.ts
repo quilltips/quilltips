@@ -292,6 +292,7 @@ export type Database = {
           id: string
           name: string | null
           role: Database["public"]["Enums"]["app_role"] | null
+          slug: string | null
           social_links: Json | null
           stripe_account_id: string | null
           stripe_emails_sent: Json | null
@@ -310,6 +311,7 @@ export type Database = {
           id: string
           name?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
+          slug?: string | null
           social_links?: Json | null
           stripe_account_id?: string | null
           stripe_emails_sent?: Json | null
@@ -328,6 +330,7 @@ export type Database = {
           id?: string
           name?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
+          slug?: string | null
           social_links?: Json | null
           stripe_account_id?: string | null
           stripe_emails_sent?: Json | null
@@ -429,6 +432,7 @@ export type Database = {
           qr_code_image_url: string | null
           qr_code_status: string
           release_date: string | null
+          slug: string | null
           stripe_session_id: string | null
           template: string
           total_amount: number | null
@@ -450,6 +454,7 @@ export type Database = {
           qr_code_image_url?: string | null
           qr_code_status?: string
           release_date?: string | null
+          slug?: string | null
           stripe_session_id?: string | null
           template?: string
           total_amount?: number | null
@@ -471,6 +476,7 @@ export type Database = {
           qr_code_image_url?: string | null
           qr_code_status?: string
           release_date?: string | null
+          slug?: string | null
           stripe_session_id?: string | null
           template?: string
           total_amount?: number | null
@@ -710,8 +716,20 @@ export type Database = {
         }
         Returns: string
       }
+      ensure_unique_profile_slug: {
+        Args: { base_slug: string; profile_id?: string }
+        Returns: string
+      }
+      ensure_unique_qr_slug: {
+        Args: { base_slug: string; qr_id?: string }
+        Returns: string
+      }
       generate_slug: {
         Args: { title: string }
+        Returns: string
+      }
+      generate_url_slug: {
+        Args: { input_text: string }
         Returns: string
       }
       get_blog_stats: {
