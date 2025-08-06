@@ -152,7 +152,7 @@ export const AuthorQRCodesList = ({
               <QRCodeCard 
                 key={qr.id} 
                 qrCode={qr} 
-                onNavigate={() => navigate(`/author/qr/${qr.id}`)}
+                onNavigate={() => navigate(`/author/book/${qr.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}
               />
             ))}
           </div>

@@ -55,7 +55,7 @@ export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
       {displayedQRCodes.map((qrCode) => (
         <Link 
           key={qrCode.id}
-          to={`/qr/${qrCode.id}`} 
+          to={`/book/${qrCode.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`} 
           className="block group"
         >
           <Card className="transition-all hover:bg-[white]/70 ">

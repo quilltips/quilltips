@@ -26,9 +26,9 @@ export const usePublicProfile = (identifier: string | undefined) => {
             profileData = data[0];
           }
         } else {
-          // Try slug lookup first using RPC to avoid TypeScript issues
-          const { data: slugData, error: slugError } = await supabase.rpc('get_public_profile_by_name', { 
-            profile_name: identifier 
+          // Try slug lookup first using RPC function
+          const { data: slugData, error: slugError } = await supabase.rpc('get_public_profile_by_slug', { 
+            profile_slug: identifier 
           });
 
           if (!slugError && slugData && Array.isArray(slugData) && slugData.length > 0) {

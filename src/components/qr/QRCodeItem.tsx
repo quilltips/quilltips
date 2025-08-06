@@ -20,7 +20,8 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/author/qr/${qrCode.id}`);
+    const bookSlug = qrCode.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
+    navigate(`/author/book/${bookSlug}`);
   };
 
   return (

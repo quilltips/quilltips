@@ -26,7 +26,7 @@ const SearchResultItem = memo(({ result, onNavigate }: { result: SearchResult, o
   return (
     <Link 
       key={result.id} 
-      to={`/qr/${result.id}`}
+      to={`/book/${result.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`}
       className="block transition-transform hover:scale-102"
       onClick={onNavigate}
     >
@@ -143,7 +143,7 @@ export const Search = () => {
         {results?.books && results.books.length > 0 && (
           <div className="space-y-4 animate-slideUp">
             {results.books.map((result) => (
-              result ? <SearchResultItem key={result.id} result={result} onNavigate={() => handleResultClick(`/qr/${result.id}`)} /> : null
+              result ? <SearchResultItem key={result.id} result={result} onNavigate={() => handleResultClick(`/book/${result.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)} /> : null
             ))}
           </div>
         )}

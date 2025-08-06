@@ -105,7 +105,7 @@ export function MobileSearch({ onNavigate, onClose }: MobileSearchProps) {
                 <button
                   key={`author-${author.id}`}
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-accent/20 flex items-center gap-3 transition-colors"
-                  onClick={() => handleResultClick(`/author/profile/${author.id}`)}
+                  onClick={() => handleResultClick(`/author/${author.name?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}
                   type="button"
                 >
                   <div className="w-6 h-6 rounded-full bg-[#19363C] text-[#FFD166] flex items-center justify-center text-xs font-semibold">
@@ -124,7 +124,7 @@ export function MobileSearch({ onNavigate, onClose }: MobileSearchProps) {
                 <button
                   key={`book-${book.id}`}
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-accent/20 flex items-center gap-3 transition-colors"
-                  onClick={() => handleResultClick(`/qr/${book.id}`)}
+                  onClick={() => handleResultClick(`/book/${book.book_title?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}
                   type="button"
                 >
                   <div className="w-6 h-6 rounded bg-muted flex items-center justify-center shrink-0">

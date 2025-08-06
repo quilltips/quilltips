@@ -348,6 +348,7 @@ export type Database = {
           created_at: string | null
           id: string
           name: string | null
+          slug: string | null
           social_links: Json | null
         }
         Insert: {
@@ -356,6 +357,7 @@ export type Database = {
           created_at?: string | null
           id: string
           name?: string | null
+          slug?: string | null
           social_links?: Json | null
         }
         Update: {
@@ -364,6 +366,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           name?: string | null
+          slug?: string | null
           social_links?: Json | null
         }
         Relationships: []
@@ -744,12 +747,25 @@ export type Database = {
           created_at: string | null
           id: string
           name: string | null
+          slug: string | null
           social_links: Json | null
         }[]
       }
       get_public_profile_by_name: {
         Args: { profile_name: string }
         Returns: Record<string, unknown>
+      }
+      get_public_profile_by_slug: {
+        Args: { profile_slug: string }
+        Returns: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          id: string
+          name: string | null
+          slug: string | null
+          social_links: Json | null
+        }[]
       }
       get_qr_stats: {
         Args: Record<PropertyKey, never>

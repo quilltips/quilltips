@@ -70,7 +70,7 @@ export const Navigation = () => {
         <DropdownMenuItem onClick={() => navigate('/author/settings')}>
           Settings
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate(`/author/profile/${user?.id}`)}>
+        <DropdownMenuItem onClick={() => navigate(`/author/${user?.user_metadata?.name?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}>
           Public profile
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout} disabled={isLoading}>
@@ -252,7 +252,7 @@ export const Navigation = () => {
               Settings
             </Link>
             <Link 
-              to={`/author/profile/${user?.id}`} 
+              to={`/author/${user?.user_metadata?.name?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`} 
               className="px-4 py-2 hover:bg-accent/10 rounded-md"
               onClick={closeMobileMenu}
             >
