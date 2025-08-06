@@ -1,4 +1,3 @@
-
 // src/routes/routes.tsx
 
 import Index from "@/pages/Index";
@@ -41,7 +40,17 @@ export const routes = [
   { path: "/contact", component: Contact },
   { path: "/terms", component: TermsOfService },
   { path: "/search", component: SearchPage },
+  
+  // New slug-based routes
+  { path: "/author/:nameSlug", component: PublicProfilePage },
+  { path: "/book/:bookSlug", component: QRCodeDetails },
+  { path: "/author/book/:bookSlug", component: AuthorQRCodeDetails },
+  
+  // Legacy UUID routes for backward compatibility
   { path: "/profile/:id", component: PublicProfilePage },
+  { path: "/qr/:id", component: QRCodeDetails },
+  { path: "/author/qr/:id", component: AuthorQRCodeDetails },
+  
   { path: "/author/register", component: AuthorRegister },
   { path: "/author/login", component: AuthorLogin },
   { path: "/author/reset-password", component: AuthorPasswordReset },
@@ -50,13 +59,11 @@ export const routes = [
   { path: "/author/qr-design", component: QRCodeDesign },
   { path: "/author/bank-account", component: AuthorBankAccount },
   { path: "/author/profile/:id", component: AuthorPublicProfile },
-  { path: "/author/qr/:id", component: AuthorQRCodeDetails },
   { path: "/author/book-qr-codes", component: BookQRCodesPage },
   { path: "/author/tip-feed", component: TipFeedPage },
   { path: "/author/data", component: AuthorDataPage },
   { path: "/how-it-works", component: HowItWorks },
   { path: "/qr-summary", component: QRCodeSummary },
-  { path: "/qr/:id", component: QRCodeDetails },
   { path: "/tip-success", component: TipSuccessPage },
   { path: "/unsubscribe", component: UnsubscribePage },
   { path: "/stripe-help", component: StripeHelp },

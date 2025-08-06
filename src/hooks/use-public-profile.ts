@@ -1,70 +1,53 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { AuthorProfile } from "@/types/author";
 
-interface PublicProfileData {
-  id: string;
-  name: string | null;
-  bio: string | null;
-  avatar_url: string | null;
-  social_links: any | null;
-  created_at?: string;
-}
+// Helper function to check if string is a UUID
+const isUUID = (str: string): boolean => {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+};
 
-// Define types for RPC function responses
-interface RPCResponse<T> {
-  data: T | null;
-  error: Error | null;
-}
-
-export const usePublicProfile = (id: string | undefined) => {
+export const usePublicProfile = (identifier: string | undefined) => {
   return useQuery({
-    queryKey: ['author-public-profile', id],
-    queryFn: async () => {
-      if (!id) throw new Error('Author identifier is required');
+    queryKey: ['author-public-profile', identifier],
+    queryFn: async (): Promise<AuthorProfile> => {
+      if (!identifier) throw new Error('Author identifier is required');
 
       try {
-        // First try UUID lookup in public profiles using RPC function
-        if (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
-          // Using type assertion to bypass strict type checking for RPC parameters
-          const { data, error: uuidError } = await (supabase.rpc as any)(
-            'get_public_profile_by_id', 
-            { profile_id: id }
-          ) as RPCResponse<PublicProfileData[]>;
+        let profileData: any = null;
 
-          if (!uuidError && data && Array.isArray(data) && data.length > 0) {
-            const profileData = data[0] as PublicProfileData;
-            
-            // Transform social links if needed and return
-            return {
-              id: profileData.id,
-              name: profileData.name || 'Anonymous Author',
-              bio: profileData.bio,
-              avatar_url: profileData.avatar_url,
-              social_links: Array.isArray(profileData.social_links) 
-                ? profileData.social_links.map((link: any) => ({
-                    url: String(link.url || ''),
-                    label: String(link.label || 'Link')
-                  }))
-                : null,
-              role: 'author', // Adding role to match existing interface
-              created_at: profileData.created_at // Make sure to include created_at in the return object
-            } as AuthorProfile;
+        if (isUUID(identifier)) {
+          // Try UUID lookup using RPC function
+          const { data, error } = await supabase.rpc('get_public_profile_by_id', { 
+            profile_id: identifier 
+          });
+
+          if (!error && data && Array.isArray(data) && data.length > 0) {
+            profileData = data[0];
+          }
+        } else {
+          // Try slug lookup first using RPC to avoid TypeScript issues
+          const { data: slugData, error: slugError } = await supabase.rpc('get_public_profile_by_name', { 
+            profile_name: identifier 
+          });
+
+          if (!slugError && slugData && Array.isArray(slugData) && slugData.length > 0) {
+            profileData = slugData[0];
+          } else {
+            // Fallback to name lookup using RPC function
+            const { data, error } = await supabase.rpc('get_public_profile_by_name', { 
+              profile_name: identifier.replace(/-/g, ' ') 
+            });
+
+            if (!error && data && Array.isArray(data) && data.length > 0) {
+              profileData = data[0];
+            }
           }
         }
 
-        // Then try name lookup using RPC function
-        // Using type assertion to bypass strict type checking for RPC parameters
-        const { data, error: nameError } = await (supabase.rpc as any)(
-          'get_public_profile_by_name', 
-          { profile_name: id.replace(/-/g, ' ') }
-        ) as RPCResponse<PublicProfileData[]>;
-
-        if (nameError) throw nameError;
-        if (!data || !Array.isArray(data) || data.length === 0) throw new Error('Author not found');
-
-        const profileData = data[0] as PublicProfileData;
+        if (!profileData) {
+          throw new Error('Author not found');
+        }
         
         // Transform the data to match our expected format
         return {
@@ -78,9 +61,9 @@ export const usePublicProfile = (id: string | undefined) => {
                 label: String(link.label || 'Link')
               }))
             : null,
-          role: 'author', // Adding role to match existing interface
-          created_at: profileData.created_at // Make sure to include created_at in the return object
-        } as AuthorProfile;
+          role: 'author',
+          created_at: profileData.created_at
+        };
       } catch (error) {
         console.error('Error fetching author:', error);
         throw error;
