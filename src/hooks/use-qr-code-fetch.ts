@@ -12,19 +12,20 @@ const isUUID = (str: string): boolean => {
 };
 
 export const useQRCodeFetch = () => {
-  const { id } = useParams();
+  const { id, bookSlug } = useParams<{ id?: string; bookSlug?: string }>();
+  const identifier = id || bookSlug;
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [showPublisherInvite, setShowPublisherInvite] = useState(false);
 
   const { data: qrCode, isLoading: qrCodeLoading } = useQuery({
-    queryKey: qrCodeQueryKeys.detail(id || ''),
+    queryKey: qrCodeQueryKeys.detail(identifier || ''),
     queryFn: async () => {
-      if (!id) throw new Error('No QR code identifier provided');
+      if (!identifier) throw new Error('No QR code identifier provided');
       
       let qrData, qrError;
       
-      if (isUUID(id)) {
+      if (isUUID(identifier)) {
         // Fetch by UUID
         ({ data: qrData, error: qrError } = await supabase
           .from('qr_codes')
@@ -36,7 +37,7 @@ export const useQRCodeFetch = () => {
               bio
             )
           `)
-          .eq('id', id)
+          .eq('id', identifier)
           .maybeSingle());
       } else {
         // Fetch by slug
@@ -50,7 +51,7 @@ export const useQRCodeFetch = () => {
               bio
             )
           `)
-          .eq('slug', id)
+          .eq('slug', identifier)
           .maybeSingle());
       }
 
@@ -60,7 +61,7 @@ export const useQRCodeFetch = () => {
       return qrData;
     },
     staleTime: 60000, // 1 minute stale time
-    enabled: !!id,
+    enabled: !!identifier,
   });
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export const useQRCodeFetch = () => {
   }, [searchParams, toast]);
 
   return {
-    id,
+    id: identifier,
     qrCode,
     qrCodeLoading,
     showPublisherInvite,

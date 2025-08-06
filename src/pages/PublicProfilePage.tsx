@@ -10,13 +10,14 @@ import { usePublicProfile } from "@/hooks/use-public-profile";
 import { Meta } from "@/components/Meta";
 
 const PublicProfilePage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, nameSlug } = useParams<{ id?: string; nameSlug?: string }>();
+  const identifier = id || nameSlug;
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [selectedQRCode, setSelectedQRCode] = useState<{ id: string; bookTitle: string } | null>(null);
   const [stripeSetupInfo, setStripeSetupInfo] = useState({ hasStripeAccount: false, stripeSetupComplete: false });
 
-  const { data: author, isLoading, error } = usePublicProfile(id);
+  const { data: author, isLoading, error } = usePublicProfile(identifier);
 
   useEffect(() => {
     const fetchStripeSetupInfo = async () => {
@@ -105,12 +106,12 @@ const PublicProfilePage = () => {
       <Meta
         title={`${author.name} – Author on Quilltips`}
         description={`Support ${author.name} by tipping them for their work.`}
-        url={`https://quilltips.co/profile/${id}`}
+        url={`https://quilltips.co/profile/${identifier}`}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Person",
           name: author.name,
-          url: `https://quilltips.co/profile/${id}`,
+          url: `https://quilltips.co/profile/${identifier}`,
           description: author.bio || "Author on Quilltips"
         }}
 
@@ -122,7 +123,7 @@ const PublicProfilePage = () => {
           "@context": "https://schema.org",
           "@type": "Person",
           name: author.name,
-          url: `https://quilltips.co/profile/${id}`,
+          url: `https://quilltips.co/profile/${identifier}`,
           description: author.bio || "Author on Quilltips"
         })}
       </script>
