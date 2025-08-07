@@ -9,6 +9,7 @@ interface QRCodeGenerationProps {
     author_id: string;
     book_title: string;
     cover_image?: string | null;
+    slug?: string | null;
   } | null;
 }
 
@@ -27,7 +28,7 @@ export const useQRCodeGeneration = ({ qrCodeData }: QRCodeGenerationProps) => {
 
         const { data: existingQrCode, error: fetchError } = await supabase
           .from('qr_codes')
-          .select('qr_code_image_url, qr_code_status')
+          .select('qr_code_image_url, qr_code_status, slug')
           .eq('id', qrCodeData.id)
           .maybeSingle();
 
@@ -39,8 +40,12 @@ export const useQRCodeGeneration = ({ qrCodeData }: QRCodeGenerationProps) => {
           return;
         }
 
-        // Generate QR code URL
-        const tipUrl = `${window.location.origin}/qr/${qrCodeData.id}`;
+        // Generate QR code URL - use slug if available, fallback to old format for backward compatibility
+        const bookSlug = existingQrCode?.slug || qrCodeData.slug || 
+          qrCodeData.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
+        const tipUrl = bookSlug ? 
+          `${window.location.origin}/book/${bookSlug}` : 
+          `${window.location.origin}/qr/${qrCodeData.id}`;
         console.log('Setting QR code preview URL:', tipUrl);
         setQrCodePreview(tipUrl);
 

@@ -7,6 +7,7 @@ interface QRCodeDetailCardProps {
   qrCode: {
     id: string;
     book_title: string;
+    slug?: string | null;
     publisher?: string | null;
     isbn?: string | null;
     release_date?: string | null;
@@ -20,7 +21,11 @@ interface QRCodeDetailCardProps {
 }
 
 export const QRCodeDetailCard = ({ qrCode }: QRCodeDetailCardProps) => {
-  const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
+  // Use slug if available, fallback to old format for backward compatibility
+  const bookSlug = qrCode.slug || qrCode.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
+  const qrValue = bookSlug ? 
+    `${window.location.origin}/book/${bookSlug}` : 
+    `${window.location.origin}/qr/${qrCode.id}`;
 
   const bookDetails = {
     title: qrCode.book_title,

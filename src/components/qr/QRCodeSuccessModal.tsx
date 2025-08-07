@@ -20,6 +20,7 @@ interface QRCodeSuccessModalProps {
     id: string;
     book_title: string;
     author_id: string;
+    slug?: string | null;
     cover_image?: string | null;
   } | null;
 }
@@ -33,7 +34,11 @@ export const QRCodeSuccessModal = ({
   
   if (!qrCode) return null;
 
-  const qrValue = `${window.location.origin}/qr/${qrCode.id}`;
+  // Use slug if available, fallback to old format for backward compatibility
+  const bookSlug = qrCode.slug || qrCode.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
+  const qrValue = bookSlug ? 
+    `${window.location.origin}/book/${bookSlug}` : 
+    `${window.location.origin}/qr/${qrCode.id}`;
 
   const handleDownloadSVG = async () => {
     if (!qrCodeRef.current) return;

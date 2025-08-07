@@ -25,6 +25,7 @@ interface QRCodeStatsCardProps {
   qrCode: {
     id: string;
     book_title: string;
+    slug?: string | null;
     is_paid?: boolean;
     cover_image?: string | null;
     publisher?: string | null;
@@ -45,6 +46,12 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
   const downloadRef = useRef<HTMLDivElement>(null);
 
+  // Use slug if available, fallback to old format for backward compatibility
+  const bookSlug = qrCode.slug || qrCode.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
+  const qrUrl = bookSlug ? 
+    `${window.location.origin}/book/${bookSlug}` : 
+    `${window.location.origin}/qr/${qrCode.id}`;
+
   const handleDownloadSVG = async () => {
     if (!isPaid) {
       toast({
@@ -57,7 +64,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
     try {
       const svgUrl = await generateBrandedQRCodeSVG({
-        url: `${window.location.origin}/qr/${qrCode.id}`,
+        url: qrUrl,
         bookTitle: qrCode.book_title
       });
 
@@ -135,7 +142,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                 <div className="bg-gray rounded-lg flex justify-center">
                   <StyledQRCode
                     ref={qrCodeRef}
-                    value={`${window.location.origin}/qr/${qrCode.id}`}
+                    value={qrUrl}
                     showBranding={true}
                     isPaid={isPaid}
                     variant="screen"
@@ -224,7 +231,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
               <StyledQRCode
                 ref={downloadRef}
-                value={`${window.location.origin}/qr/${qrCode.id}`}
+                value={qrUrl}
                 showBranding={true}
                 isPaid={isPaid}
                 variant="download"

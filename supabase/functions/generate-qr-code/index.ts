@@ -29,20 +29,24 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get author's profile to construct the tip URL
-    const { data: authorProfile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('id')
-      .eq('id', authorId)
+    // Get QR code details to construct the tip URL using slug
+    const { data: qrCodeData, error: qrError } = await supabaseClient
+      .from('qr_codes')
+      .select('slug, book_title')
+      .eq('id', qrCodeId)
       .maybeSingle();
 
-    if (profileError) {
-      console.error('Profile error:', profileError);
-      throw profileError;
+    if (qrError) {
+      console.error('QR code error:', qrError);
+      throw qrError;
     }
 
-    // Construct the tip URL for this book
-    const tipUrl = `${req.headers.get('origin')}/author/profile/${authorId}?qr=${qrCodeId}`;
+    // Construct the tip URL using slug if available, fallback to old format for backward compatibility
+    const bookSlug = qrCodeData?.slug || 
+      qrCodeData?.book_title?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
+    const tipUrl = bookSlug ? 
+      `${req.headers.get('origin')}/book/${bookSlug}` : 
+      `${req.headers.get('origin')}/qr/${qrCodeId}`;
     console.log('Generated tip URL:', tipUrl);
 
     try {
