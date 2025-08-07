@@ -1,4 +1,3 @@
-
 import { format } from "date-fns";
 import { Card } from "../ui/card";
 import { RefObject, useRef } from "react";
@@ -74,11 +73,16 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error generating SVG QR code:", error);
+
       toast({
-        title: "SVG Download Failed",
-        description: "Something went wrong generating your SVG.",
+        title: "QR code downloaded",
+        description: "Your branded QR code has been downloaded as an SVG file."
+      });
+    } catch (error) {
+      console.error("Error downloading SVG:", error);
+      toast({
+        title: "Download failed",
+        description: "Failed to download the QR code. Please try again.",
         variant: "destructive"
       });
     }
@@ -94,45 +98,56 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       return;
     }
 
-    if (!downloadRef?.current) return;
+    if (!downloadRef.current) return;
 
     try {
-      const pngDataUrl = await toPng(downloadRef.current, {
-        cacheBust: true,
-        pixelRatio: 1,
-        backgroundColor: null
+      const dataUrl = await toPng(downloadRef.current, {
+        backgroundColor: "white",
+        pixelRatio: 2,
+        width: 512,
+        height: 512
       });
-
+      
       const link = document.createElement("a");
-      link.href = pngDataUrl;
+      link.href = dataUrl;
       link.download = `quilltips-qr-${qrCode?.book_title || "download"}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      toast({
+        title: "QR code downloaded",
+        description: "Your QR code has been downloaded as a PNG file."
+      });
     } catch (error) {
-      console.error("Error generating PNG QR code image:", error);
+      console.error("Error downloading PNG:", error);
+      toast({
+        title: "Download failed",
+        description: "Failed to download the QR code. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = () => {
     if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `QR Code for ${qrCode?.book_title}`,
-          text: 'Check out my QR code on Quilltips!',
-          url: window.location.href
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-      }
+      navigator.share({
+        title: `QuillTips QR Code for ${qrCode.book_title}`,
+        text: `Check out this book: ${qrCode.book_title}`,
+        url: qrUrl
+      });
+    } else {
+      navigator.clipboard.writeText(qrUrl);
+      toast({
+        title: "Link copied",
+        description: "QR code link copied to clipboard."
+      });
     }
   };
 
   return (
-    <div className="grid xl:grid-cols-[3fr_2fr] gap-7 mx-auto">
-      {/* Left side - QR Code, Book Cover, and Book Details */}
-      <div className="">
-        {/* QR Code, Book Cover, and Book Details Container */}
+    <div className="space-y-4 md:space-y-5">
+      <div>
         <Card className="p-4 md:p-7 border" style={{ borderColor: '#333333' }}>
           <div className="space-y-8">
             {/* QR Code and Book Cover - Responsive Stacking */}
@@ -152,38 +167,41 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
               </div>
 
               {/* Book Cover with Upload - Max Width Constraint */}
-              <div className="space-y-4">
-                <div className="aspect-[2/3] rounded-lg overflow-hidden relative max-w-xs mx-auto md:mx-0">
-                  <OptimizedImage
-                    key={imageRefreshKey}
-                    src={qrCode.cover_image || "/lovable-uploads/logo_nav.png"}
-                    alt={qrCode.book_title}
-                    className="w-full h-full"
-                    objectFit={qrCode.cover_image ? "cover" : "contain"}
-                    fallbackSrc="/lovable-uploads/logo_nav.png"
-                  />
+              <div className="space-y-4 max-w-sm mx-auto md:mx-0">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="w-40 h-56 relative">
+                    <OptimizedImage
+                      src={qrCode.cover_image || "/lovable-uploads/logo_nav.png"}
+                      alt={qrCode.book_title}
+                      className="w-full h-full rounded-lg shadow-lg"
+                      objectFit={qrCode.cover_image ? "cover" : "contain"}
+                      fallbackSrc="/lovable-uploads/logo_nav.png"
+                      key={imageRefreshKey}
+                    />
+                  </div>
                   <BookCoverUpload 
                     qrCodeId={qrCode.id}
-                    coverImage={qrCode.cover_image}
+                    onUploadSuccess={(imageUrl) => updateCoverImage(imageUrl)}
                     bookTitle={qrCode.book_title}
-                    updateCoverImage={updateCoverImage}
                   />
                 </div>
               </div>
             </div>
 
             {/* Book Details */}
-            <div className="space-y-2 pt-2">
-              <div className="space-y-2">
-                <p className="text-base font-bold">{qrCode.book_title}</p>
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold">{qrCode.book_title}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 {qrCode.publisher && (
                   <p className="text-base">
-                    <span className="font-sm">Publisher:</span> {qrCode.publisher}
+                    <span className="font-sm">Publisher:</span>{' '}
+                    {qrCode.publisher}
                   </p>
                 )}
                 {qrCode.isbn && (
                   <p className="text-base">
-                    <span className="font-sm">ISBN:</span> {qrCode.isbn}
+                    <span className="font-sm">ISBN:</span>{' '}
+                    {qrCode.isbn}
                   </p>
                 )}
                 {qrCode.release_date && (
@@ -198,79 +216,79 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         </Card>
       </div>
 
-      {/* Right side - Stats and Actions */}
-      <div className="space-y-6">
-        {/* Individual Tip Statistics Tiles */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-3">
-            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
-              <p className="text-xs md:text-sm text-white/80 mb-2">Total Tips</p>
-              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
-            </Card>
-            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
-              <p className="text-xs md:text-sm text-white/80 mb-2">Total Amount</p>
-              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
-            </Card>
-            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
-              <p className="text-xs md:text-sm text-white/80 mb-2">Average Tip</p>
-              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
-            </Card>
-            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
-              <p className="text-xs md:text-sm text-white/80 mb-2">Last Tip</p>
-              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">
-                {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
-              </p>
-            </Card>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+        <Card className="p-3 md:p-5 text-center" style={{ borderColor: '#333333' }}>
+          <div className="text-xl md:text-2xl font-bold text-[#333333]">
+            {qrCode.total_tips || 0}
           </div>
-        </div>
+          <div className="text-xs md:text-sm text-[#718096]">Total Tips</div>
+        </Card>
+        
+        <Card className="p-3 md:p-5 text-center" style={{ borderColor: '#333333' }}>
+          <div className="text-xl md:text-2xl font-bold text-[#333333]">
+            ${(qrCode.total_amount || 0).toFixed(2)}
+          </div>
+          <div className="text-xs md:text-sm text-[#718096]">Total Amount</div>
+        </Card>
+        
+        <Card className="p-3 md:p-5 text-center" style={{ borderColor: '#333333' }}>
+          <div className="text-xl md:text-2xl font-bold text-[#333333]">
+            ${(qrCode.average_tip || 0).toFixed(2)}
+          </div>
+          <div className="text-xs md:text-sm text-[#718096]">Average Tip</div>
+        </Card>
+        
+        <Card className="p-3 md:p-5 text-center" style={{ borderColor: '#333333' }}>
+          <div className="text-xl md:text-2xl font-bold text-[#333333]">
+            {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), 'MMM d') : 'N/A'}
+          </div>
+          <div className="text-xs md:text-sm text-[#718096]">Last Tip</div>
+        </Card>
+      </div>
 
-        {/* Actions */}
-        <Card className="p-4 md:p-5 md:mt-4">
-          <div className="space-y-4">
-            {/* Hidden download QR code */}
-            <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
-              <StyledQRCode
-                ref={downloadRef}
-                value={qrUrl}
-                showBranding={true}
-                isPaid={isPaid}
-                variant="download"
-              />
-            </div>
-
-            <QRCodeDownloadOptions
-              onDownloadSVG={handleDownloadSVG}
-              onDownloadPNG={handleDownloadPNG}
-              disabled={!isPaid}
+      {/* Actions */}
+      <Card className="p-4 md:p-5 md:mt-4">
+        <div className="space-y-4">
+          {/* Hidden download QR code */}
+          <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
+            <StyledQRCode
+              ref={downloadRef}
+              value={qrUrl}
+              showBranding={true}
+              isPaid={isPaid}
+              variant="download"
             />
+          </div>
 
-            <Button 
-              variant="secondary" 
-              className="w-full border border-[#333333]"
+          <QRCodeDownloadOptions
+            onDownloadSVG={handleDownloadSVG}
+            onDownloadPNG={handleDownloadPNG}
+          />
+
+          <div className="flex flex-col md:flex-row gap-3 pt-2">
+            <Button
               onClick={handleShare}
+              variant="outline"
+              className="flex-1 flex items-center justify-center gap-2"
             >
-              <Share2 className="mr-2 h-4 w-4" />
+              <Share2 className="h-4 w-4" />
               Share QR Code
             </Button>
 
             {!isPaid && (
-              <div className="space-y-2">
-                <p className="text-sm text-center text-orange-500">
-                  This QR code hasn't been purchased yet. Please complete your purchase to download.
-                </p>
-                <Button
-                  onClick={handleCheckout}
-                  disabled={isCheckingOut}
-                  className="w-full bg-[#FFD166] hover:bg-[#FFD166]/80 text-[#19363C]"
-                >
-                  <ShoppingCart className="mr-2 h-4 w-4" />
-                  {isCheckingOut ? "Processing..." : "Purchase QR Code"}
-                </Button>
-              </div>
+              <Button
+                onClick={handleCheckout}
+                disabled={isCheckingOut}
+                className="flex-1 flex items-center justify-center gap-2"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                {isCheckingOut ? "Processing..." : "Purchase QR Code"}
+              </Button>
             )}
           </div>
-        </Card>
-      </div>
+        </div>
+      </Card>
     </div>
   );
 };
