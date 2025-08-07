@@ -47,28 +47,25 @@ const fetchProfile = async (userId: string) => {
 
 // Check if a route requires authentication
 const isProtectedRoute = (pathname: string): boolean => {
-  // Public routes starting with /author/
-  const publicAuthorRoutes = [
-    '/author/login',
-    '/author/register',
-    '/author/profile',
-    '/author/reset-password',
-  ];
-  
   // Admin routes require admin access
   if (pathname.startsWith('/admin')) {
     return true;
   }
   
-  // If the route starts with /author/ but is not one of the public routes
+  // Specific protected author routes that require authentication
+  const protectedAuthorRoutes = [
+    '/author/dashboard',
+    '/author/settings',
+    '/author/book-qr-codes',
+    '/author/create-qr',
+    '/author/data',
+    '/author/bank-account',
+    '/author/book/',  // /author/book/:bookSlug (QR code details for authors)
+  ];
+  
+  // Check if the route is a protected author route
   if (pathname.startsWith('/author/')) {
-    // Check if it's a profile route (which is public)
-    if (pathname.startsWith('/author/profile/')) {
-      return false;
-    }
-    
-    // Check other public routes
-    return !publicAuthorRoutes.some(route => pathname.startsWith(route));
+    return protectedAuthorRoutes.some(route => pathname.startsWith(route));
   }
   
   return false;
