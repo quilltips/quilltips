@@ -6,7 +6,7 @@ const Pricing = () => {
     <div className="flex-grow">
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-semibold text-center mb-12">Signup and create your author profile for free. Then, pay a one-time fee of $35 for each book you add. No subscriptions or recurring charges.</h1>
+          <h1 className="text-4xl font-semibold text-center mb-12">Sign up and create your author profile for free. Then, pay a one-time fee of $35 for each book you add. No subscriptions or recurring charges.</h1>
           
           <div className="space-y-8">
             <div className="bg-white rounded-lg p-8 border border-gray-200 shadow-sm">
