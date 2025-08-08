@@ -89,7 +89,7 @@ export const SearchBar = () => {
                   {results?.authors?.filter(author => author && author.id).map((author) => (
                     <Link
                       key={author.id}
-                      to={`/author/${author.name?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`}
+                      to={`/profile/${author.id}`}
                       className="block p-2 hover:bg-accent"
                       onClick={handleClosePopover}
                     >
@@ -133,7 +133,7 @@ export const SearchBar = () => {
                           <p className="font-medium text-sm truncate">{book.book_title}</p>
                           <p className="text-xs ">
                             By <Link 
-                                to={`/author/${book.author?.name?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`}
+                                to={`/profile/${book.author?.id}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleClosePopover();

@@ -17,13 +17,23 @@ export const usePublicProfile = (identifier: string | undefined) => {
         let profileData: any = null;
 
         if (isUUID(identifier)) {
-          // Try UUID lookup using RPC function
+          // Try UUID lookup using RPC function (public_profiles)
           const { data, error } = await supabase.rpc('get_public_profile_by_id', { 
             profile_id: identifier 
           });
 
           if (!error && data && Array.isArray(data) && data.length > 0) {
             profileData = data[0];
+          }
+
+          // Fallback: if no public profile, read from profiles directly
+          if (!profileData) {
+            const { data: prof, error: profErr } = await supabase
+              .from('profiles')
+              .select('id, name, bio, avatar_url, created_at')
+              .eq('id', identifier)
+              .maybeSingle();
+            if (!profErr && prof) profileData = prof;
           }
         } else {
           // Try slug lookup first using RPC function
@@ -33,14 +43,31 @@ export const usePublicProfile = (identifier: string | undefined) => {
 
           if (!slugError && slugData && Array.isArray(slugData) && slugData.length > 0) {
             profileData = slugData[0];
-          } else {
-            // Fallback to name lookup using RPC function
-            const { data, error } = await supabase.rpc('get_public_profile_by_name', { 
-              profile_name: identifier.replace(/-/g, ' ') 
-            });
+          }
 
-            if (!error && data && Array.isArray(data) && data.length > 0) {
-              profileData = data[0];
+          // Fallback: fuzzy name match in public_profiles
+          if (!profileData) {
+            const nameQuery = identifier.replace(/-/g, ' ').trim();
+            const { data: fuzzyPublic, error: fuzzyPublicErr } = await supabase
+              .from('public_profiles')
+              .select('*')
+              .ilike('name', `%${nameQuery}%`)
+              .limit(1);
+            if (!fuzzyPublicErr && fuzzyPublic && fuzzyPublic.length > 0) {
+              profileData = fuzzyPublic[0];
+            }
+          }
+
+          // Fallback: check profiles by slug or fuzzy name
+          if (!profileData) {
+            const nameQuery = identifier.replace(/-/g, ' ').trim();
+            const { data: profList, error: profErr } = await supabase
+              .from('profiles')
+              .select('id, name, bio, avatar_url, created_at, slug')
+              .or(`slug.eq.${identifier},name.ilike.%${nameQuery}%`)
+              .limit(1);
+            if (!profErr && profList && profList.length > 0) {
+              profileData = profList[0];
             }
           }
         }
