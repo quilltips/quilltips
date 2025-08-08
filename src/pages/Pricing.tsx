@@ -6,7 +6,7 @@ const Pricing = () => {
     <div className="flex-grow">
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-semibold text-center mb-12">Free signup. Simple, per-book pricing.</h1>
+          <h1 className="text-4xl font-semibold text-center mb-12">Free signup. Simple, $35 -per-book pricing.</h1>
           
           <div className="space-y-8">
             <div className="bg-white rounded-lg p-8 border border-gray-200 shadow-sm">
