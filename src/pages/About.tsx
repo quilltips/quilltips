@@ -4,34 +4,22 @@ import { OptimizedImage } from "@/components/ui/optimized-image";
 import { Meta } from "@/components/Meta"; // 👈 Add this import
 
 const About = () => {
-  return (
-    <>
-    <Meta
-      title="About Quilltips – Built to Support Authors"
-      description="Quilltips helps authors earn more by connecting them directly with readers who want to show appreciation with a tip."
-      url="https://quilltips.co/about"
-    />
+  return <>
+    <Meta title="About Quilltips – Built to Support Authors" description="Quilltips helps authors earn more by connecting them directly with readers who want to show appreciation with a tip." url="https://quilltips.co/about" />
 
     <main className="container mx-auto px-4 py-24 flex-grow">
-      <div className="max-w-2xl mx-auto prose prose-lg" style={{ maxWidth: '42rem' }}>
+      <div className="max-w-2xl mx-auto prose prose-lg" style={{
+        maxWidth: '42rem'
+      }}>
 
         <h1 className="text-center text-5xl font-bold mb-10 text-[#19363C]">About Quilltips</h1>
     
-        <OptimizedImage
-          src="/lovable-uploads/QT_about_image.webp"
-          alt="Quilltips book landscape"
-          className="w-full max-w-md rounded-xl mx-auto"
-          priority={true}
-          sizes="(max-width: 768px) 100vw, 600px"
-          objectFit="cover"
-        />
+        <OptimizedImage src="/lovable-uploads/QT_about_image.webp" alt="Quilltips book landscape" className="w-full max-w-md rounded-xl mx-auto" priority={true} sizes="(max-width: 768px) 100vw, 600px" objectFit="cover" />
 
 
         <section className="mb-12 mt-20">
           <h2 className="text-2xl font-semibold mb-4">A way to say "thanks" to all the great authors out there</h2>
-          <p>
-            Quilltips was founded to give readers a way to say thanks to the authors of books they love and to help bring those author-reader connections to life by allowing readers to easiliy send tips and message to authors. With royalties on new books hovering around 10% for published authors, and royalties on used books and library copies 0%, authors receive only a minute share of the value they create with their stories despite their books circulating for decades after the first sale.
-          </p>
+          <p>Quilltips was founded to give readers a way to say thanks to the authors of books they love and to help bring those author-reader connections to life by allowing readers to easily send tips and message to authors. With royalties on new books hovering around 10% for published authors, and royalties on used books and library copies 0%, authors receive only a minute share of the value they create with their stories despite their books circulating for decades after the first sale.</p>
         </section>
 
         <section className="mb-12">
@@ -70,8 +58,6 @@ const About = () => {
         </section>
       </div>
     </main>
-    </>
-  );
+    </>;
 };
-
 export default About;
