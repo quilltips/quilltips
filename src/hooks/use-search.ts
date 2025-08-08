@@ -79,7 +79,7 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
       // For full search (search page), fetch more comprehensive results
       else {
         try {
-          // Fix the search query syntax - separate the queries instead of using OR with complex conditions
+          // Fetch books that match by title
           const bookTitleQuery = await supabase
             .from('qr_codes')
             .select(`
@@ -96,6 +96,7 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
             .ilike('book_title', `%${debouncedQuery}%`)
             .order('book_title');
 
+          // Also fetch books where the author's name matches (best-effort)
           const authorNameQuery = await supabase
             .from('qr_codes')
             .select(`
@@ -112,9 +113,18 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
             .ilike('profiles.name', `%${debouncedQuery}%`)
             .order('book_title');
 
+          // Fetch matching authors for full search results
+          const authorsQuery = await supabase
+            .from('public_profiles')
+            .select('id, name, bio, avatar_url')
+            .ilike('name', `%${debouncedQuery}%`)
+            .order('name')
+            .limit(20);
+
           // Add error logging
           if (bookTitleQuery.error) console.error('Book title search error:', bookTitleQuery.error);
           if (authorNameQuery.error) console.error('Author name search error:', authorNameQuery.error);
+          if (authorsQuery.error) console.error('Authors search error (full):', authorsQuery.error);
 
           // Combine results, removing duplicates and filtering out null values
           const bookResults = bookTitleQuery.data || [];
@@ -130,7 +140,7 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
 
           return { 
             books: uniqueBooks || [], 
-            authors: [] 
+            authors: authorsQuery.data || [] 
           };
         } catch (error) {
           console.error('Full search error:', error);

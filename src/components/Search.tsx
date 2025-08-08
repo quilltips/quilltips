@@ -4,6 +4,7 @@ import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Search as SearchIcon, Loader2 } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { useSearch } from "@/hooks/use-search";
 
 interface SearchResult {
@@ -70,6 +71,39 @@ const SearchResultItem = memo(({ result, onNavigate }: { result: SearchResult, o
 });
 
 SearchResultItem.displayName = 'SearchResultItem';
+
+const AuthorResultItem = memo(({ author, onNavigate }: { author: { id: string; name: string; bio?: string | null; avatar_url?: string | null }, onNavigate?: () => void }) => {
+  if (!author) return null;
+  const initial = author.name?.charAt(0)?.toUpperCase() || 'A';
+  return (
+    <Link
+      key={author.id}
+      to={`/profile/${author.id}`}
+      className="block transition-transform hover:scale-102"
+      onClick={onNavigate}
+    >
+      <Card className="p-6 hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-sm">
+        <div className="flex items-center gap-4">
+          <Avatar className="h-12 w-12">
+            <AvatarImage src={author.avatar_url || undefined} alt={`${author.name} avatar`} />
+            <AvatarFallback>{initial}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 space-y-1">
+            <div className="flex items-center gap-2">
+              <Badge variant="default" className="text-sm bg-[#19363C] text-white">Author</Badge>
+            </div>
+            <h3 className="text-lg font-semibold">{author.name}</h3>
+            {author.bio && (
+              <p className="text-sm line-clamp-2">{author.bio}</p>
+            )}
+          </div>
+        </div>
+      </Card>
+    </Link>
+  );
+});
+
+AuthorResultItem.displayName = 'AuthorResultItem';
 
 export const Search = () => {
   const [searchParams] = useSearchParams();
@@ -140,6 +174,20 @@ export const Search = () => {
           </div>
         )}
 
+        {results?.authors && results.authors.length > 0 && (
+          <div className="space-y-4 animate-slideUp">
+            {results.authors.map((author: any) => (
+              author ? (
+                <AuthorResultItem
+                  key={author.id}
+                  author={author}
+                  onNavigate={() => handleResultClick(`/profile/${author.id}`)}
+                />
+              ) : null
+            ))}
+          </div>
+        )}
+
         {results?.books && results.books.length > 0 && (
           <div className="space-y-4 animate-slideUp">
             {results.books.map((result) => (
@@ -148,7 +196,7 @@ export const Search = () => {
           </div>
         )}
 
-        {query && (!results?.books?.length) && !isLoading && (
+        {query && (!results?.books?.length && !results?.authors?.length) && !isLoading && (
           <Card className="p-6 text-center animate-fadeIn bg-white/80 backdrop-blur-sm">
             No results found for "{query}"
           </Card>
