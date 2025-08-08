@@ -155,14 +155,14 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 ">
               {/* QR Code */}
               <div className="space-y-4">
-                <div className="bg-gray rounded-lg flex justify-center">
+                <div className="bg-white rounded-lg flex justify-center">
                   <StyledQRCode
                     ref={qrCodeRef}
                     value={qrUrl}
                     showBranding={true}
                     isPaid={isPaid}
                     variant="screen"
-                    size={window.innerWidth < 768 ? 180 : 200}
+                    size={window.innerWidth < 768 ? 160 : 180}
                   />
                 </div>
               </div>
@@ -170,7 +170,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
               {/* Book Cover with Upload - Max Width Constraint */}
               <div className="space-y-4 max-w-sm mx-auto md:mx-0">
                 <div className="flex flex-col items-center space-y-4">
-                  <div className="w-40 h-56 relative">
+                  <div className="w-44 h-64 relative">
                     <OptimizedImage
                       src={qrCode.cover_image || "/lovable-uploads/logo_nav.png"}
                       alt={qrCode.book_title}
@@ -184,6 +184,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                     qrCodeId={qrCode.id}
                     onUploadSuccess={(imageUrl) => updateCoverImage(imageUrl)}
                     bookTitle={qrCode.book_title}
+                    placement="below"
                   />
                 </div>
               </div>

@@ -17,6 +17,7 @@ interface BookCoverUploadProps {
   coverImage?: string | null;
   updateCoverImage?: (imageUrl: string) => Promise<any>;
   onUploadSuccess?: (imageUrl: string) => void;
+  placement?: 'overlay' | 'below';
 }
 
 export const BookCoverUpload = ({
@@ -24,7 +25,8 @@ export const BookCoverUpload = ({
   bookTitle,
   coverImage,
   updateCoverImage,
-  onUploadSuccess
+  onUploadSuccess,
+  placement = 'overlay'
 }: BookCoverUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -128,7 +130,7 @@ export const BookCoverUpload = ({
   };
 
   return (
-    <div className="relative">
+    <div className={placement === 'overlay' ? 'relative' : 'relative flex justify-center'}>
       <Input
         type="file"
         accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
@@ -146,7 +148,7 @@ export const BookCoverUpload = ({
               size="sm"
               onClick={() => document.getElementById('cover-upload')?.click()}
               disabled={isUploading || isProcessing}
-              className="absolute bottom-2 right-2 z-10"
+              className={placement === 'overlay' ? 'absolute bottom-2 right-2 z-10' : 'static mt-3'}
             >
               {isUploading || isProcessing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
