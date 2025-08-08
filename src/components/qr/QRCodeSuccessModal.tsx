@@ -69,11 +69,8 @@ export const QRCodeSuccessModal = ({
     try {
       const pngDataUrl = await toPng(qrCodeRef.current, { 
         cacheBust: true,
-        pixelRatio: 3,
-        backgroundColor: null,
-        style: {
-          borderRadius: '8px',
-        }
+        pixelRatio: 1,
+        backgroundColor: null
       });
       
       const link = document.createElement('a');
@@ -143,12 +140,12 @@ export const QRCodeSuccessModal = ({
               </div>
 
               <div>
-                <StyledQRCode
-                  ref={qrCodeRef}
-                  value={qrValue}
-                  size={200}
-                  showBranding={true}
-                />
+                                  <StyledQRCode
+                    ref={qrCodeRef}
+                    value={qrValue}
+                    size={200}
+                    showBranding={true}
+                  />
               </div>
 
               <div className="space-y-3">

@@ -169,7 +169,7 @@ const QRCodeSummary = () => {
       const pngDataUrl = await toPng(downloadRef.current, { 
         cacheBust: true,
         pixelRatio: 1,
-        backgroundColor: null,
+        backgroundColor: null
       });
       
       const link = document.createElement('a');
@@ -267,6 +267,7 @@ const QRCodeSummary = () => {
                     showBranding={true}
                     isPaid={isPaid}
                     variant="screen"
+                    size={200}
                   />
                 </div>
 
