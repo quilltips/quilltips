@@ -146,7 +146,8 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
   };
 
   return (
-    <div className="space-y-4 md:space-y-5">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+      {/* Left column: QR + Cover + Details */}
       <div>
         <Card className="p-4 md:p-7 border" style={{ borderColor: '#333333' }}>
           <div className="space-y-8">
@@ -216,79 +217,68 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         </Card>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-        <Card className="p-3 md:p-5 text-center" style={{ borderColor: '#333333' }}>
-          <div className="text-xl md:text-2xl font-bold text-[#333333]">
-            {qrCode.total_tips || 0}
-          </div>
-          <div className="text-xs md:text-sm text-[#718096]">Total Tips</div>
-        </Card>
-        
-        <Card className="p-3 md:p-5 text-center" style={{ borderColor: '#333333' }}>
-          <div className="text-xl md:text-2xl font-bold text-[#333333]">
-            ${(qrCode.total_amount || 0).toFixed(2)}
-          </div>
-          <div className="text-xs md:text-sm text-[#718096]">Total Amount</div>
-        </Card>
-        
-        <Card className="p-3 md:p-5 text-center" style={{ borderColor: '#333333' }}>
-          <div className="text-xl md:text-2xl font-bold text-[#333333]">
-            ${(qrCode.average_tip || 0).toFixed(2)}
-          </div>
-          <div className="text-xs md:text-sm text-[#718096]">Average Tip</div>
-        </Card>
-        
-        <Card className="p-3 md:p-5 text-center" style={{ borderColor: '#333333' }}>
-          <div className="text-xl md:text-2xl font-bold text-[#333333]">
-            {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), 'MMM d') : 'N/A'}
-          </div>
-          <div className="text-xs md:text-sm text-[#718096]">Last Tip</div>
-        </Card>
-      </div>
+      {/* Right column: Stats + Actions */}
+      <div className="space-y-5">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 gap-3 md:gap-5">
+          <Card className="p-4 md:p-5 text-center bg-primary text-primary-foreground">
+            <div className="text-2xl font-bold text-accent">{qrCode.total_tips || 0}</div>
+            <div className="text-xs md:text-sm opacity-80">Total Tips</div>
+          </Card>
+          <Card className="p-4 md:p-5 text-center bg-primary text-primary-foreground">
+            <div className="text-2xl font-bold text-accent">${(qrCode.total_amount || 0).toFixed(2)}</div>
+            <div className="text-xs md:text-sm opacity-80">Total Amount</div>
+          </Card>
+          <Card className="p-4 md:p-5 text-center bg-primary text-primary-foreground">
+            <div className="text-2xl font-bold text-accent">${(qrCode.average_tip || 0).toFixed(2)}</div>
+            <div className="text-xs md:text-sm opacity-80">Average Tip</div>
+          </Card>
+          <Card className="p-4 md:p-5 text-center bg-primary text-primary-foreground">
+            <div className="text-2xl font-bold text-accent">{qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), 'MMM d') : 'N/A'}</div>
+            <div className="text-xs md:text-sm opacity-80">Last Tip</div>
+          </Card>
+        </div>
 
-      {/* Actions */}
-      <Card className="p-4 md:p-5 md:mt-4">
-        <div className="space-y-4">
-          {/* Hidden download QR code */}
-          <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
-            <StyledQRCode
-              ref={downloadRef}
-              value={qrUrl}
-              showBranding={true}
-              isPaid={isPaid}
-              variant="download"
-            />
-          </div>
+        {/* Hidden download QR code for PNG rendering */}
+        <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
+          <StyledQRCode
+            ref={downloadRef}
+            value={qrUrl}
+            showBranding={true}
+            isPaid={isPaid}
+            variant="download"
+          />
+        </div>
 
+        {/* Actions */}
+        <div className="space-y-3">
           <QRCodeDownloadOptions
             onDownloadSVG={handleDownloadSVG}
             onDownloadPNG={handleDownloadPNG}
+            disabled={!isPaid}
           />
 
-          <div className="flex flex-col md:flex-row gap-3 pt-2">
-            <Button
-              onClick={handleShare}
-              variant="outline"
-              className="flex-1 flex items-center justify-center gap-2"
-            >
-              <Share2 className="h-4 w-4" />
-              Share QR Code
-            </Button>
+          <Button
+            onClick={handleShare}
+            variant="secondary"
+            className="w-full"
+          >
+            <Share2 className="h-4 w-4" />
+            Share QR Code
+          </Button>
 
-            {!isPaid && (
-              <Button
-                onClick={handleCheckout}
-                disabled={isCheckingOut}
-                className="flex-1 flex items-center justify-center gap-2"
-              >
-                <ShoppingCart className="h-4 w-4" />
-                {isCheckingOut ? "Processing..." : "Purchase QR Code"}
-              </Button>
-            )}
-          </div>
+          {!isPaid && (
+            <Button
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+              className="w-full"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              {isCheckingOut ? "Processing..." : "Purchase QR Code"}
+            </Button>
+          )}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
