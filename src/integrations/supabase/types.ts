@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -712,10 +712,10 @@ export type Database = {
         Args: {
           author_id: string
           book_title: string
-          template: string
-          publisher: string
-          isbn: string
           cover_image: string
+          isbn: string
+          publisher: string
+          template: string
         }
         Returns: string
       }
@@ -780,7 +780,7 @@ export type Database = {
         Returns: Json
       }
       has_email_been_sent: {
-        Args: { user_id: string; email_type: string }
+        Args: { email_type: string; user_id: string }
         Returns: boolean
       }
       increment_blog_view: {
@@ -789,10 +789,10 @@ export type Database = {
       }
       insert_public_profile: {
         Args: {
+          profile_avatar_url: string
+          profile_bio: string
           profile_id: string
           profile_name: string
-          profile_bio: string
-          profile_avatar_url: string
           profile_social_links: Json
         }
         Returns: undefined
@@ -802,7 +802,7 @@ export type Database = {
         Returns: boolean
       }
       record_email_sent: {
-        Args: { user_id: string; email_type: string }
+        Args: { email_type: string; user_id: string }
         Returns: undefined
       }
       test_pg_net_extension: {
@@ -815,10 +815,10 @@ export type Database = {
       }
       update_public_profile: {
         Args: {
+          profile_avatar_url: string
+          profile_bio: string
           profile_id: string
           profile_name: string
-          profile_bio: string
-          profile_avatar_url: string
           profile_social_links: Json
         }
         Returns: undefined
