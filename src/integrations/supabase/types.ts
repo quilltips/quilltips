@@ -731,6 +731,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_tip_for_unsubscribe: {
+        Args: { tip_uuid: string; token_value: string }
+        Returns: boolean
+      }
       cleanup_expired_verification_codes: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -853,6 +857,10 @@ export type Database = {
           profile_social_links: Json
         }
         Returns: undefined
+      }
+      validate_unsubscribe_token: {
+        Args: { tip_uuid: string; token_value: string }
+        Returns: boolean
       }
     }
     Enums: {
