@@ -6,10 +6,12 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { getAuthorUrl } from "@/lib/url-utils";
 
 const TipSuccessPage = () => {
   const [searchParams] = useSearchParams();
   const [authorName, setAuthorName] = useState<string | null>(null);
+  const [authorSlug, setAuthorSlug] = useState<string | null>(null);
   const [readerName, setReaderName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,6 +42,7 @@ const TipSuccessPage = () => {
         
         if (authorData && authorData.length > 0) {
           setAuthorName(authorData[0].name || 'the author');
+          setAuthorSlug(authorData[0].slug);
         }
         
         if (readerData) {
@@ -84,7 +87,7 @@ const TipSuccessPage = () => {
               asChild 
               className="bg-[#FFD166] hover:bg-[#19363C]/90 text-[#333333] px-7 py-3 h-auto  font-medium rounded-full"
             >
-              <Link to={`/profile/${authorId}`}>
+              <Link to={getAuthorUrl({ id: authorId, slug: authorSlug })}>
                 Return to Author Profile
               </Link>
             </Button>

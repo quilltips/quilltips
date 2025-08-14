@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { QRCodeTipForm } from "@/components/qr/QRCodeTipForm";
 import { Link } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { getAuthorUrl } from "@/lib/url-utils";
 
 const QRCodeDetails = () => {
   const {
@@ -73,7 +74,7 @@ const QRCodeDetails = () => {
               <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
               <p className="">
                 by <Link 
-                    to={`/profile/${qrCode.author_id}`}
+                    to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author?.slug })}
                     className="hover:underline hover:text-primary transition-colors"
                   >
                     {qrCode.author?.name || 'Unknown Author'}

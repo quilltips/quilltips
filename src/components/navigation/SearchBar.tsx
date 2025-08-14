@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSearch } from "@/hooks/use-search";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { getAuthorUrl } from "@/lib/url-utils";
 
 export const SearchBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -89,7 +90,7 @@ export const SearchBar = () => {
                   {results?.authors?.filter(author => author && author.id).map((author) => (
                     <Link
                       key={author.id}
-                      to={`/profile/${author.id}`}
+                      to={getAuthorUrl(author)}
                       className="block p-2 hover:bg-accent"
                       onClick={handleClosePopover}
                     >
@@ -133,7 +134,7 @@ export const SearchBar = () => {
                           <p className="font-medium text-sm truncate">{book.book_title}</p>
                           <p className="text-xs ">
                             By <Link 
-                                to={`/profile/${book.author?.id}`}
+                                to={getAuthorUrl(book.author)}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleClosePopover();

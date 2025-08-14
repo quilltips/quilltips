@@ -6,6 +6,7 @@ import { Search as SearchIcon, Loader2 } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { useSearch } from "@/hooks/use-search";
+import { getAuthorUrl } from "@/lib/url-utils";
 
 interface SearchResult {
   id: string;
@@ -72,13 +73,13 @@ const SearchResultItem = memo(({ result, onNavigate }: { result: SearchResult, o
 
 SearchResultItem.displayName = 'SearchResultItem';
 
-const AuthorResultItem = memo(({ author, onNavigate }: { author: { id: string; name: string; bio?: string | null; avatar_url?: string | null }, onNavigate?: () => void }) => {
+const AuthorResultItem = memo(({ author, onNavigate }: { author: { id: string; name: string; bio?: string | null; avatar_url?: string | null; slug?: string | null }, onNavigate?: () => void }) => {
   if (!author) return null;
   const initial = author.name?.charAt(0)?.toUpperCase() || 'A';
   return (
     <Link
       key={author.id}
-      to={`/profile/${author.id}`}
+      to={getAuthorUrl(author)}
       className="block transition-transform hover:scale-102"
       onClick={onNavigate}
     >
@@ -181,7 +182,7 @@ export const Search = () => {
                 <AuthorResultItem
                   key={author.id}
                   author={author}
-                  onNavigate={() => handleResultClick(`/profile/${author.id}`)}
+                  onNavigate={() => handleResultClick(getAuthorUrl(author))}
                 />
               ) : null
             ))}

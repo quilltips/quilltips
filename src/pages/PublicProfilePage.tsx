@@ -8,6 +8,7 @@ import { AuthorProfileContent } from "@/components/author/AuthorProfileContent";
 import { supabase } from "@/integrations/supabase/client";
 import { usePublicProfile } from "@/hooks/use-public-profile";
 import { Meta } from "@/components/Meta";
+import { getCanonicalUrl } from "@/lib/url-utils";
 
 const PublicProfilePage = () => {
   const { id, nameSlug } = useParams<{ id?: string; nameSlug?: string }>();
@@ -106,12 +107,12 @@ const PublicProfilePage = () => {
       <Meta
         title={`${author.name} – Author on Quilltips`}
         description={`Support ${author.name} by tipping them for their work.`}
-        url={`https://quilltips.co/profile/${identifier}`}
+        url={getCanonicalUrl('author', author)}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Person",
           name: author.name,
-          url: `https://quilltips.co/profile/${identifier}`,
+          url: getCanonicalUrl('author', author),
           description: author.bio || "Author on Quilltips"
         }}
 
@@ -123,7 +124,7 @@ const PublicProfilePage = () => {
           "@context": "https://schema.org",
           "@type": "Person",
           name: author.name,
-          url: `https://quilltips.co/profile/${identifier}`,
+          url: getCanonicalUrl('author', author),
           description: author.bio || "Author on Quilltips"
         })}
       </script>

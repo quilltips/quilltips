@@ -48,7 +48,7 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
           const [authorsResponse, booksResponse] = await Promise.all([
             supabase
               .from('profiles')
-              .select('*')
+              .select('id, name, bio, avatar_url, slug')
               .ilike('name', `%${debouncedQuery}%`)
               .eq('role', 'author')
               .order('name')
@@ -56,7 +56,7 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
 
             supabase
               .from('qr_codes')
-              .select('*, author:profiles(*)')
+              .select('*, author:profiles(id, name, avatar_url, slug)')
               .ilike('book_title', `%${debouncedQuery}%`)
               .order('book_title')
               .limit(5),
@@ -90,7 +90,8 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
               author:profiles (
                 id,
                 name,
-                avatar_url
+                avatar_url,
+                slug
               )
             `)
             .ilike('book_title', `%${debouncedQuery}%`)
@@ -107,7 +108,8 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
               author:profiles (
                 id,
                 name,
-                avatar_url
+                avatar_url,
+                slug
               )
             `)
             .ilike('profiles.name', `%${debouncedQuery}%`)
@@ -116,7 +118,7 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
           // Fetch matching authors for full search results
           const authorsQuery = await supabase
             .from('public_profiles')
-            .select('id, name, bio, avatar_url')
+            .select('id, name, bio, avatar_url, slug')
             .ilike('name', `%${debouncedQuery}%`)
             .order('name')
             .limit(20);
