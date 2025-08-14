@@ -357,6 +357,8 @@ export type Database = {
           name: string | null
           slug: string | null
           social_links: Json | null
+          stripe_account_id: string | null
+          stripe_setup_complete: boolean | null
         }
         Insert: {
           avatar_url?: string | null
@@ -366,6 +368,8 @@ export type Database = {
           name?: string | null
           slug?: string | null
           social_links?: Json | null
+          stripe_account_id?: string | null
+          stripe_setup_complete?: boolean | null
         }
         Update: {
           avatar_url?: string | null
@@ -375,6 +379,8 @@ export type Database = {
           name?: string | null
           slug?: string | null
           social_links?: Json | null
+          stripe_account_id?: string | null
+          stripe_setup_complete?: boolean | null
         }
         Relationships: []
       }
@@ -770,6 +776,8 @@ export type Database = {
           name: string | null
           slug: string | null
           social_links: Json | null
+          stripe_account_id: string | null
+          stripe_setup_complete: boolean | null
         }[]
       }
       get_public_profile_by_name: {
@@ -786,6 +794,8 @@ export type Database = {
           name: string | null
           slug: string | null
           social_links: Json | null
+          stripe_account_id: string | null
+          stripe_setup_complete: boolean | null
         }[]
       }
       get_qr_stats: {
