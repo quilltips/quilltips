@@ -9,9 +9,16 @@ import { Button } from "./ui/button";
 interface AuthorQRCodesProps {
   authorId: string;
   authorName: string;
+  stripeSetupComplete?: boolean;
+  hasStripeAccount?: boolean;
 }
 
-export const AuthorQRCodes = ({ authorId, authorName }: AuthorQRCodesProps) => {
+export const AuthorQRCodes = ({ 
+  authorId, 
+  authorName, 
+  stripeSetupComplete = false, 
+  hasStripeAccount = false 
+}: AuthorQRCodesProps) => {
   const [showAll, setShowAll] = useState(false);
 
   const { data: qrCodes, isLoading } = useQuery({

@@ -12,9 +12,18 @@ interface TipFormProps {
   bookTitle?: string;
   qrCodeId?: string;
   authorName?: string;
+  stripeSetupComplete?: boolean;
+  hasStripeAccount?: boolean;
 }
 
-export const TipForm = ({ authorId, authorName, bookTitle, qrCodeId }: TipFormProps) => {
+export const TipForm = ({ 
+  authorId, 
+  authorName, 
+  bookTitle, 
+  qrCodeId,
+  stripeSetupComplete = false,
+  hasStripeAccount = false
+}: TipFormProps) => {
   const {
     amount,
     setAmount,
@@ -30,6 +39,24 @@ export const TipForm = ({ authorId, authorName, bookTitle, qrCodeId }: TipFormPr
     handleSubmit,
     authorFirstName
   } = useTipForm({ authorId, authorName, bookTitle, qrCodeId });
+
+  const stripeOnboardingComplete = hasStripeAccount && stripeSetupComplete;
+
+  if (!stripeOnboardingComplete) {
+    return (
+      <Card className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="p-6 text-center space-y-4">
+          <h2 className="text-2xl font-bold text-[#19363C]">
+            Tipping Not Available
+          </h2>
+          <p className="text-[#718096]">
+            {authorName?.split(' ')[0] || 'This author'} is still setting up their payment processing. 
+            Check back soon to send tips!
+          </p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">

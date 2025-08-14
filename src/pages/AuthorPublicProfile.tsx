@@ -136,6 +136,8 @@ const AuthorPublicProfile = () => {
           onClose={() => setSelectedQRCode(null)}
           selectedQRCode={selectedQRCode}
           authorId={author.id}
+          stripeSetupComplete={stripeSetupInfo.stripeSetupComplete}
+          hasStripeAccount={stripeSetupInfo.hasStripeAccount}
         />
       )}
     </>

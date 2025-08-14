@@ -11,9 +11,19 @@ interface QRCodeDialogProps {
   } | null;
   authorId: string;
   authorName?: string;
+  stripeSetupComplete?: boolean;
+  hasStripeAccount?: boolean;
 }
 
-export const QRCodeDialog = ({ isOpen, onClose, selectedQRCode, authorId, authorName }: QRCodeDialogProps) => {
+export const QRCodeDialog = ({ 
+  isOpen, 
+  onClose, 
+  selectedQRCode, 
+  authorId, 
+  authorName,
+  stripeSetupComplete = false,
+  hasStripeAccount = false
+}: QRCodeDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -29,6 +39,8 @@ export const QRCodeDialog = ({ isOpen, onClose, selectedQRCode, authorId, author
             bookTitle={selectedQRCode.bookTitle}
             qrCodeId={selectedQRCode.id}
             onSuccess={onClose}
+            stripeSetupComplete={stripeSetupComplete}
+            hasStripeAccount={hasStripeAccount}
           />
         )}
       </DialogContent>
