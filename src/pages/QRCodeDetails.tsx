@@ -32,7 +32,9 @@ const QRCodeDetails = () => {
     handleSubmit,
     showTipForm,
     setShowTipForm,
-    authorFirstName
+    authorFirstName,
+    stripeSetupComplete,
+    hasStripeAccount
   } = useQRCodeDetails();
 
   if (qrCodeLoading) {
@@ -90,14 +92,24 @@ const QRCodeDetails = () => {
             </div>
           </div>
             
-          {/* Leave a tip button */}
+          {/* Leave a tip button or message */}
           {!showTipForm && (
-            <Button 
-              onClick={() => setShowTipForm(true)} 
-              className="w-full bg-[#FFD166] hover:bg-[#FFD166]/80 hover:shadow text-secondary-foreground rounded-full py-6"
-            >
-              Leave a tip!
-            </Button>
+            <>
+              {stripeSetupComplete && hasStripeAccount ? (
+                <Button 
+                  onClick={() => setShowTipForm(true)} 
+                  className="w-full bg-[#FFD166] hover:bg-[#FFD166]/80 hover:shadow text-secondary-foreground rounded-full py-6"
+                >
+                  Leave a tip!
+                </Button>
+              ) : (
+                <div className="w-full p-4 bg-muted rounded-lg border border-border text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Tipping not available - author setting up payments
+                  </p>
+                </div>
+              )}
+            </>
           )}
 
           {/* Tip form (conditionally rendered) */}
@@ -110,6 +122,8 @@ const QRCodeDetails = () => {
               customAmount={customAmount}
               isLoading={isLoading}
               authorFirstName={authorFirstName}
+              stripeSetupComplete={stripeSetupComplete}
+              hasStripeAccount={hasStripeAccount}
               onNameChange={setName}
               onMessageChange={setMessage}
               onEmailChange={setEmail}

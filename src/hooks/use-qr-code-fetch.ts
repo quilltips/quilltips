@@ -34,7 +34,9 @@ export const useQRCodeFetch = () => {
             author:author_id (
               name,
               avatar_url,
-              bio
+              bio,
+              stripe_account_id,
+              stripe_setup_complete
             )
           `)
           .eq('id', identifier)
@@ -48,7 +50,9 @@ export const useQRCodeFetch = () => {
             author:author_id (
               name,
               avatar_url,
-              bio
+              bio,
+              stripe_account_id,
+              stripe_setup_complete
             )
           `)
           .eq('slug', identifier)

@@ -12,6 +12,8 @@ interface QRCodeTipFormProps {
   customAmount: string;
   isLoading: boolean;
   authorFirstName: string;
+  stripeSetupComplete?: boolean;
+  hasStripeAccount?: boolean;
   onNameChange: (value: string) => void;
   onMessageChange: (value: string) => void;
   onEmailChange: (value: string) => void;
@@ -29,6 +31,8 @@ export const QRCodeTipForm = ({
   customAmount,
   isLoading,
   authorFirstName,
+  stripeSetupComplete = true,
+  hasStripeAccount = true,
   onNameChange,
   onMessageChange,
   onEmailChange,
@@ -43,7 +47,24 @@ export const QRCodeTipForm = ({
         <h2 className="text-2xl font-bold text-left mb-6">
           Send {authorFirstName} a tip!
         </h2>
-        <form onSubmit={onSubmit} className="space-y-8">
+        
+        {!stripeSetupComplete || !hasStripeAccount ? (
+          <div className="space-y-4">
+            <div className="p-4 bg-muted rounded-lg border border-border text-center">
+              <p className="text-sm text-muted-foreground mb-4">
+                Tipping is not available at this time as the author is still setting up their payment processing.
+              </p>
+              <button
+                type="button"
+                onClick={onCancel}
+                className="px-4 py-2 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={onSubmit} className="space-y-8">
           <TipMessageForm
             name={name}
             message={message}
@@ -69,17 +90,18 @@ export const QRCodeTipForm = ({
             onCancel={onCancel}
           />
 
-          <p className="text-xs text-gray-500 text-center">
-            By tipping, you agree to our{" "}
-            <Link 
-              to="/terms" 
-              className="hover:underline"
-            >
-              Terms of Service
-            </Link>
-            .
-          </p>
-        </form>
+            <p className="text-xs text-gray-500 text-center">
+              By tipping, you agree to our{" "}
+              <Link 
+                to="/terms" 
+                className="hover:underline"
+              >
+                Terms of Service
+              </Link>
+              .
+            </p>
+          </form>
+        )}
       </CardContent>
     </Card>
   );
