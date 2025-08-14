@@ -31,7 +31,7 @@ export const useQRCodeFetch = () => {
           .from('qr_codes')
           .select(`
             *,
-            author:author_id (
+            author:public_profiles!author_id (
               name,
               avatar_url,
               bio,
@@ -47,7 +47,7 @@ export const useQRCodeFetch = () => {
           .from('qr_codes')
           .select(`
             *,
-            author:author_id (
+            author:public_profiles!author_id (
               name,
               avatar_url,
               bio,

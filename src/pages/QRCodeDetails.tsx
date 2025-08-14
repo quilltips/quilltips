@@ -39,19 +39,11 @@ const QRCodeDetails = () => {
   } = useQRCodeDetails();
 
   if (qrCodeLoading) {
-    return (
-      <Layout>
-        <QRCodeLoading />
-      </Layout>
-    );
+    return <QRCodeLoading />;
   }
 
   if (!qrCode) {
-    return (
-      <Layout>
-        <QRCodeNotFound />
-      </Layout>
-    );
+    return <QRCodeNotFound />;
   }
 
   return (

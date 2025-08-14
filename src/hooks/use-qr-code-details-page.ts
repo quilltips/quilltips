@@ -83,7 +83,7 @@ export const useQRCodeDetailsPage = () => {
             average_tip, 
             last_tip_date, 
             is_paid,
-            author:author_id (
+            author:public_profiles!author_id (
               name,
               avatar_url,
               bio
@@ -108,7 +108,7 @@ export const useQRCodeDetailsPage = () => {
             average_tip, 
             last_tip_date, 
             is_paid,
-            author:author_id (
+            author:public_profiles!author_id (
               name,
               avatar_url,
               bio
