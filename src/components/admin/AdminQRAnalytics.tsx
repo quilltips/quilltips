@@ -34,7 +34,7 @@ export const AdminQRAnalytics = () => {
           total_tips,
           total_amount,
           created_at,
-          author:public_profiles!qr_codes_author_id_fkey(name)
+          author:public_profiles!qr_codes_author_public_profiles_fkey(name)
         `)
         .order('created_at', { ascending: false })
         .limit(20);

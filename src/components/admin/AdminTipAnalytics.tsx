@@ -36,7 +36,7 @@ export const AdminTipAnalytics = () => {
           book_title,
           status,
           created_at,
-          author:public_profiles!tips_author_id_fkey(name)
+          author:public_profiles!tips_author_public_profiles_fkey(name)
         `)
         .order('created_at', { ascending: false })
         .limit(20);

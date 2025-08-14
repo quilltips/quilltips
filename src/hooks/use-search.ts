@@ -55,7 +55,7 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
 
             supabase
               .from('qr_codes')
-              .select('*, author:public_profiles(id, name, avatar_url, slug)')
+              .select('id, book_title, publisher, cover_image, author_id')
               .ilike('book_title', `%${debouncedQuery}%`)
               .order('book_title')
               .limit(5),
@@ -65,9 +65,33 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
           if (authorsResponse.error) console.error('Authors search error:', authorsResponse.error);
           if (booksResponse.error) console.error('Books search error:', booksResponse.error);
 
+          // Get author details for the books
+          const books = [];
+          if (booksResponse.data && booksResponse.data.length > 0) {
+            const authorIds = booksResponse.data.map(book => book.author_id);
+            const authorsForBooksResponse = await supabase
+              .from('public_profiles')
+              .select('id, name, avatar_url, slug')
+              .in('id', authorIds);
+
+            if (authorsForBooksResponse.data) {
+              const authorsMap = new Map(authorsForBooksResponse.data.map(author => [author.id, author]));
+              
+              for (const book of booksResponse.data) {
+                const author = authorsMap.get(book.author_id);
+                if (author) {
+                  books.push({
+                    ...book,
+                    author
+                  });
+                }
+              }
+            }
+          }
+
           return {
             authors: authorsResponse.data || [],
-            books: (booksResponse.data || []).filter(book => book && book.author),
+            books,
           };
         } catch (error) {
           console.error('Quick search error:', error);
@@ -81,37 +105,8 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
           // Fetch books that match by title
           const bookTitleQuery = await supabase
             .from('qr_codes')
-            .select(`
-              id,
-              book_title,
-              publisher,
-              cover_image,
-              author:public_profiles (
-                id,
-                name,
-                avatar_url,
-                slug
-              )
-            `)
+            .select('id, book_title, publisher, cover_image, author_id')
             .ilike('book_title', `%${debouncedQuery}%`)
-            .order('book_title');
-
-          // Also fetch books where the author's name matches (best-effort)
-          const authorNameQuery = await supabase
-            .from('qr_codes')
-            .select(`
-              id,
-              book_title,
-              publisher,
-              cover_image,
-              author:public_profiles (
-                id,
-                name,
-                avatar_url,
-                slug
-              )
-            `)
-            .ilike('public_profiles.name', `%${debouncedQuery}%`)
             .order('book_title');
 
           // Fetch matching authors for full search results
@@ -124,24 +119,61 @@ export function useSearch(initialQuery = '', type: SearchType = 'quick') {
 
           // Add error logging
           if (bookTitleQuery.error) console.error('Book title search error:', bookTitleQuery.error);
-          if (authorNameQuery.error) console.error('Author name search error:', authorNameQuery.error);
           if (authorsQuery.error) console.error('Authors search error (full):', authorsQuery.error);
 
-          // Combine results, removing duplicates and filtering out null values
-          const bookResults = bookTitleQuery.data || [];
-          const authorResults = authorNameQuery.data || [];
+          // Get author details for books and find books by author name
+          const books = [];
+          const authorResults = authorsQuery.data || [];
           
-          const allBooks = [...bookResults, ...authorResults]
-            .filter(book => book && book.id && book.author); // Filter out null/invalid books
-            
-          // Remove duplicates
-          const uniqueBooks = Array.from(
-            new Map(allBooks.map(book => [book.id, book])).values()
-          );
+          if (bookTitleQuery.data && bookTitleQuery.data.length > 0) {
+            const authorIds = bookTitleQuery.data.map(book => book.author_id);
+            const authorsForBooksResponse = await supabase
+              .from('public_profiles')
+              .select('id, name, avatar_url, slug')
+              .in('id', authorIds);
+
+            if (authorsForBooksResponse.data) {
+              const authorsMap = new Map(authorsForBooksResponse.data.map(author => [author.id, author]));
+              
+              for (const book of bookTitleQuery.data) {
+                const author = authorsMap.get(book.author_id);
+                if (author) {
+                  books.push({
+                    ...book,
+                    author
+                  });
+                }
+              }
+            }
+          }
+
+          // Also search for books by author name
+          if (authorResults.length > 0) {
+            const authorIds = authorResults.map(author => author.id);
+            const booksByAuthorQuery = await supabase
+              .from('qr_codes')
+              .select('id, book_title, publisher, cover_image, author_id')
+              .in('author_id', authorIds)
+              .order('book_title');
+
+            if (booksByAuthorQuery.data) {
+              const authorsMap = new Map(authorResults.map(author => [author.id, author]));
+              
+              for (const book of booksByAuthorQuery.data) {
+                const author = authorsMap.get(book.author_id);
+                if (author && !books.find(b => b.id === book.id)) {
+                  books.push({
+                    ...book,
+                    author
+                  });
+                }
+              }
+            }
+          }
 
           return { 
-            books: uniqueBooks || [], 
-            authors: authorsQuery.data || [] 
+            books: books || [], 
+            authors: authorResults 
           };
         } catch (error) {
           console.error('Full search error:', error);
