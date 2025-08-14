@@ -45,7 +45,7 @@ export default function BlogPage() {
           published_at,
           view_count,
           read_time_minutes,
-          author:profiles!blog_posts_author_id_fkey(name, avatar_url),
+          author:public_profiles!blog_posts_author_id_fkey(name, avatar_url),
           categories:blog_post_categories(
             category:blog_categories(name, slug)
           )

@@ -91,7 +91,7 @@ export default function BlogPostPage() {
           social_title,
           social_description,
           social_image_url,
-          author:profiles!blog_posts_author_id_fkey(name, avatar_url, bio),
+          author:public_profiles!blog_posts_author_id_fkey(name, avatar_url, bio),
           categories:blog_post_categories(
             category:blog_categories(name, slug)
           )
