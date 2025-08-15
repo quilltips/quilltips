@@ -153,6 +153,7 @@ serve(async (req) => {
             payouts: {
               schedule: {
                 interval: 'monthly',
+                monthly_anchor: 1, // Payouts on the 1st of each month
               },
             },
           },
