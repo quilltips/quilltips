@@ -9,6 +9,7 @@ import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ImageModal } from "@/components/ui/image-modal";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { Meta } from "@/components/Meta";
+import { Helmet } from "react-helmet-async";
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 const Index = () => {
@@ -90,6 +91,11 @@ const Index = () => {
         "query-input": "required name=search_term_string"
       }
     }]} />
+    <Helmet>
+      <script>
+        {`!function(w,d){if(!w.rdt){var p=w.rdt=function(){p.sendEvent?p.sendEvent.apply(p,arguments):p.callQueue.push(arguments)};p.callQueue=[];var t=d.createElement("script");t.src="https://www.redditstatic.com/ads/pixel.js",t.async=!0;var s=d.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s)}}(window,document);rdt('init','a2_h5wzcimw9952');rdt('track', 'PageVisit');`}
+      </script>
+    </Helmet>
 
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
       {/* Hero Section */}
