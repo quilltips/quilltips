@@ -10,6 +10,21 @@ interface ReaderEngagementCardProps {
 
 export const ReaderEngagementCard = ({ authorId }: ReaderEngagementCardProps) => {
   const navigate = useNavigate();
+
+  // Check if any signup features are enabled
+  const { data: profileSettings, isLoading: profileLoading } = useQuery({
+    queryKey: ['profile-settings', authorId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('arc_signup_enabled, beta_reader_enabled, newsletter_enabled')
+        .eq('id', authorId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  });
   
   const { data, isLoading } = useQuery({
     queryKey: ['author-reader-engagement', authorId],
@@ -50,10 +65,20 @@ export const ReaderEngagementCard = ({ authorId }: ReaderEngagementCardProps) =>
         totalNewsletter,
         totalSignups
       };
-    }
+    },
+    enabled: !!(profileSettings?.arc_signup_enabled || profileSettings?.beta_reader_enabled || profileSettings?.newsletter_enabled)
   });
 
-  if (isLoading) {
+  // Don't show the card if no signup features are enabled
+  const hasAnySignupEnabled = profileSettings?.arc_signup_enabled || 
+                              profileSettings?.beta_reader_enabled || 
+                              profileSettings?.newsletter_enabled;
+
+  if (!hasAnySignupEnabled) {
+    return null;
+  }
+
+  if (isLoading || profileLoading) {
     return (
       <Card className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow">
         <CardContent className="p-4 flex justify-center items-center">

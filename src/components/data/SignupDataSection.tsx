@@ -16,6 +16,21 @@ interface SignupDataSectionProps {
 export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
   const { toast } = useToast();
 
+  // Fetch profile settings to check if signup features are enabled
+  const { data: profileSettings, isLoading: profileLoading } = useQuery({
+    queryKey: ['profile-settings', authorId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('arc_signup_enabled, beta_reader_enabled, newsletter_enabled')
+        .eq('id', authorId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   // Fetch ARC signups
   const { data: arcSignups, isLoading: arcLoading } = useQuery({
     queryKey: ['arc-signups', authorId],
@@ -28,7 +43,8 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
       
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!profileSettings?.arc_signup_enabled
   });
 
   // Fetch Beta Reader signups
@@ -43,7 +59,8 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
       
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!profileSettings?.beta_reader_enabled
   });
 
   // Fetch Newsletter signups
@@ -58,7 +75,8 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
       
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!profileSettings?.newsletter_enabled
   });
 
   const downloadCSV = (data: any[], filename: string, headers: string[]) => {
@@ -108,7 +126,16 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
     }
   };
 
-  const isLoading = arcLoading || betaLoading || newsletterLoading;
+  const isLoading = arcLoading || betaLoading || newsletterLoading || profileLoading;
+
+  // Don't show the section if no signup features are enabled
+  const hasAnySignupEnabled = profileSettings?.arc_signup_enabled || 
+                              profileSettings?.beta_reader_enabled || 
+                              profileSettings?.newsletter_enabled;
+
+  if (!hasAnySignupEnabled) {
+    return null;
+  }
 
   if (isLoading) {
     return (
@@ -152,16 +179,16 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
             {/* ARC Readers Tab */}
             <TabsContent value="arc" className="mt-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">ARC Reader Signups</h3>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => downloadCSV(
                     arcSignups || [], 
                     'arc_signups',
-                    ['Reader Name', 'Reader Email', 'Reader Location', 'Message', 'Status', 'Created At']
+                    ['Reader Name', 'Reader Email', 'Reader Location', 'Message', 'Created At']
                   )}
                   disabled={!arcSignups?.length}
+                  className="ml-auto"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Download CSV
@@ -176,7 +203,6 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
                       <TableHead>Email</TableHead>
                       <TableHead>Location</TableHead>
                       <TableHead>Message</TableHead>
-                      <TableHead>Status</TableHead>
                       <TableHead>Date</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -187,9 +213,6 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
                         <TableCell>{signup.reader_email}</TableCell>
                         <TableCell>{signup.reader_location || '-'}</TableCell>
                         <TableCell className="max-w-xs truncate">{signup.message || '-'}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{signup.status}</Badge>
-                        </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {formatDistanceToNow(new Date(signup.created_at), { addSuffix: true })}
                         </TableCell>
@@ -205,16 +228,16 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
             {/* Beta Readers Tab */}
             <TabsContent value="beta" className="mt-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Beta Reader Signups</h3>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => downloadCSV(
                     betaSignups || [], 
                     'beta_reader_signups',
-                    ['Reader Name', 'Reader Email', 'Reading Experience', 'Favorite Genres', 'Message', 'Status', 'Created At']
+                    ['Reader Name', 'Reader Email', 'Reading Experience', 'Favorite Genres', 'Message', 'Created At']
                   )}
                   disabled={!betaSignups?.length}
+                  className="ml-auto"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Download CSV
@@ -230,7 +253,6 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
                       <TableHead>Experience</TableHead>
                       <TableHead>Genres</TableHead>
                       <TableHead>Message</TableHead>
-                      <TableHead>Status</TableHead>
                       <TableHead>Date</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -242,9 +264,6 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
                         <TableCell className="max-w-xs truncate">{signup.reading_experience || '-'}</TableCell>
                         <TableCell className="max-w-xs truncate">{signup.favorite_genres || '-'}</TableCell>
                         <TableCell className="max-w-xs truncate">{signup.message || '-'}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{signup.status}</Badge>
-                        </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {formatDistanceToNow(new Date(signup.created_at), { addSuffix: true })}
                         </TableCell>
@@ -260,7 +279,6 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
             {/* Newsletter Tab */}
             <TabsContent value="newsletter" className="mt-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Newsletter Subscribers</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -270,6 +288,7 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
                     ['Subscriber Name', 'Subscriber Email', 'Is Active', 'Created At', 'Unsubscribed At']
                   )}
                   disabled={!newsletterSignups?.length}
+                  className="ml-auto"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Download CSV
