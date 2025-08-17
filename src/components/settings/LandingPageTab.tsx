@@ -198,45 +198,10 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <p className="text-md text-[#333333]">
-            Enhance your public profile with these optional features! Once enabled, these will be displayed on your public profile. Simply link to your public profile from your author website or social media.
-          </p>
-        </div>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 shrink-0">
-              <RotateCcw className="h-4 w-4" />
-              Reset All
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Reset Reader Engagement Settings</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will clear all your reader engagement settings including:
-                <ul className="list-disc list-inside mt-2 space-y-1">
-                  <li>Release countdown clock</li>
-                  <li>ARC signup form and description</li>
-                  <li>Beta reader signup form and description</li>
-                  <li>Newsletter signup form and description</li>
-                </ul>
-                This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={handleReset}
-                disabled={isResetting}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                {isResetting ? <LoadingSpinner /> : "Reset All Settings"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+      <div>
+        <p className="text-md text-[#333333]">
+          Enhance your public profile with these optional features! Once enabled, these will be displayed on your public profile. Simply link to your public profile from your author website or social media.
+        </p>
       </div>
 
       {/* Release Countdown */}
@@ -416,8 +381,42 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
         </CardContent>
       </Card>
 
-      {hasChanges && (
-        <div className="flex justify-end">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline" size="sm" className="flex items-center gap-2 shrink-0 hover:bg-transparent hover:shadow-none hover:underline">
+              <RotateCcw className="h-4 w-4" />
+              Reset All
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Reset Reader Engagement Settings</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will clear all your reader engagement settings including:
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Release countdown clock</li>
+                  <li>ARC signup form and description</li>
+                  <li>Beta reader signup form and description</li>
+                  <li>Newsletter signup form and description</li>
+                </ul>
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleReset}
+                disabled={isResetting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isResetting ? <LoadingSpinner /> : "Reset All Settings"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        
+        {hasChanges && (
           <Button 
             onClick={handleSave} 
             disabled={isSaving}
@@ -425,8 +424,8 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
           >
             {isSaving ? <LoadingSpinner /> : "Save Changes"}
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
