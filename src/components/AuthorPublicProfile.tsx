@@ -20,6 +20,7 @@ interface AuthorPublicProfileProps {
   joinedDate?: string;
   releaseDate?: string | null;
   releaseTitle?: string | null;
+  countdownEnabled?: boolean;
 }
 
 const getFirstName = (fullName: string): string => {
@@ -48,13 +49,15 @@ export const AuthorPublicProfileView = ({
   authorId,
   joinedDate,
   releaseDate,
-  releaseTitle
+  releaseTitle,
+  countdownEnabled = true
 }: AuthorPublicProfileProps) => {
   const [showTipDialog, setShowTipDialog] = useState(false);
   const firstName = getFirstName(name);
   
-  // Show countdown if we have release date and title
-  const showCountdown = releaseDate && 
+  // Show countdown if enabled, we have release date and title, and date is in the future
+  const showCountdown = countdownEnabled && 
+                       releaseDate && 
                        releaseTitle && 
                        new Date(releaseDate) > new Date();
   

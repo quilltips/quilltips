@@ -11,6 +11,7 @@ interface AuthorProfileHeaderProps {
 interface LandingPageSettings {
   next_release_date: string | null;
   next_release_title: string | null;
+  countdown_enabled: boolean;
 }
 
 export const AuthorProfileHeader = ({ author }: AuthorProfileHeaderProps) => {
@@ -25,10 +26,11 @@ export const AuthorProfileHeader = ({ author }: AuthorProfileHeaderProps) => {
     const fetchLandingPageSettings = async () => {
       try {
         const { data, error } = await supabase
-          .from('public_profiles')
+          .from('profiles')
           .select(`
             next_release_date,
-            next_release_title
+            next_release_title,
+            countdown_enabled
           `)
           .eq('id', author.id)
           .single();
@@ -38,6 +40,7 @@ export const AuthorProfileHeader = ({ author }: AuthorProfileHeaderProps) => {
         setLandingPageSettings({
           next_release_date: data.next_release_date || null,
           next_release_title: data.next_release_title || null,
+          countdown_enabled: data.countdown_enabled ?? true,
         });
       } catch (error) {
         console.error('Error fetching landing page settings:', error);
@@ -57,6 +60,7 @@ export const AuthorProfileHeader = ({ author }: AuthorProfileHeaderProps) => {
       joinedDate={joinedYear}
       releaseDate={landingPageSettings?.next_release_date || null}
       releaseTitle={landingPageSettings?.next_release_title || null}
+      countdownEnabled={landingPageSettings?.countdown_enabled ?? true}
     />
   );
 };
