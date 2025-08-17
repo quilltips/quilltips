@@ -61,7 +61,18 @@ export const AuthorProfileContent = ({
         setLandingPageSettings({
           next_release_date: data.next_release_date || null,
           next_release_title: data.next_release_title || null,
-          countdown_enabled: data.countdown_enabled ?? true,
+          countdown_enabled: data.countdown_enabled ?? false,
+          arc_signup_enabled: data.arc_signup_enabled || false,
+          arc_signup_description: data.arc_signup_description || null,
+          beta_reader_enabled: data.beta_reader_enabled || false,
+          beta_reader_description: data.beta_reader_description || null,
+          newsletter_enabled: data.newsletter_enabled || false,
+          newsletter_description: data.newsletter_description || null,
+        });
+        console.log('Landing page settings fetched:', {
+          next_release_date: data.next_release_date || null,
+          next_release_title: data.next_release_title || null,
+          countdown_enabled: data.countdown_enabled ?? false,
           arc_signup_enabled: data.arc_signup_enabled || false,
           arc_signup_description: data.arc_signup_description || null,
           beta_reader_enabled: data.beta_reader_enabled || false,
@@ -106,14 +117,23 @@ export const AuthorProfileContent = ({
       />
 
       {/* Release Countdown */}
-      {landingPageSettings?.countdown_enabled && 
-       landingPageSettings?.next_release_date && 
-       landingPageSettings?.next_release_title && (
-        <ReleaseCountdown
-          bookTitle={landingPageSettings.next_release_title}
-          releaseDate={landingPageSettings.next_release_date}
-        />
-      )}
+      {(() => {
+        const shouldShow = landingPageSettings?.countdown_enabled && 
+                          landingPageSettings?.next_release_date && 
+                          landingPageSettings?.next_release_title;
+        console.log('Countdown display check:', {
+          countdown_enabled: landingPageSettings?.countdown_enabled,
+          next_release_date: landingPageSettings?.next_release_date,
+          next_release_title: landingPageSettings?.next_release_title,
+          shouldShow
+        });
+        return shouldShow ? (
+          <ReleaseCountdown
+            bookTitle={landingPageSettings.next_release_title}
+            releaseDate={landingPageSettings.next_release_date}
+          />
+        ) : null;
+      })()}
   
       {/* Tip Feed Section */}
       <Card className="border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden" prominent>
