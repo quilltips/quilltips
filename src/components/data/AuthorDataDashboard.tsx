@@ -9,6 +9,7 @@ import { BookStats } from "./BookStats";
 import { TipStats } from "./TipStats";
 import { TopBooks } from "./TopBooks";
 import { ReaderStats } from "./ReaderStats";
+import { SignupDataSection } from "./SignupDataSection";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthorDataDashboardProps {
@@ -184,6 +185,8 @@ export const AuthorDataDashboard = ({ authorId, hideDownloadButton = false }: Au
           onDownload={handleDownload}
         />
       </div>
+
+      <SignupDataSection authorId={authorId} />
     </div>
   );
 };
