@@ -56,39 +56,30 @@ export const ReleaseCountdown = ({ releaseDate, bookTitle }: ReleaseCountdownPro
 
   return (
     <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
-      <div className="flex items-center gap-2 mb-3">
-        <Clock className="h-5 w-5 text-primary" />
-        <h3 className="font-semibold text-foreground">Upcoming Release</h3>
-      </div>
-      
-      <div className="mb-3">
-        <p className="text-sm text-muted-foreground mb-1">Get ready for</p>
-        <p className="font-medium text-foreground">{bookTitle}</p>
-      </div>
-
-      <div className="grid grid-cols-4 gap-3">
-        <div className="text-center">
-          <div className="bg-background/50 rounded-md p-2 border">
-            <div className="text-lg font-bold text-primary">{timeLeft.days}</div>
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">Days</div>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-primary" />
+          <h3 className="font-medium text-foreground">
+            Next Release: <span className="font-semibold">{bookTitle}</span>
+          </h3>
         </div>
-        <div className="text-center">
-          <div className="bg-background/50 rounded-md p-2 border">
-            <div className="text-lg font-bold text-primary">{timeLeft.hours}</div>
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">Hours</div>
+        
+        <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-1">
+            <span className="font-bold text-primary">{timeLeft.days}</span>
+            <span className="text-muted-foreground text-xs">d</span>
           </div>
-        </div>
-        <div className="text-center">
-          <div className="bg-background/50 rounded-md p-2 border">
-            <div className="text-lg font-bold text-primary">{timeLeft.minutes}</div>
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">Min</div>
+          <div className="flex items-center gap-1">
+            <span className="font-bold text-primary">{timeLeft.hours}</span>
+            <span className="text-muted-foreground text-xs">h</span>
           </div>
-        </div>
-        <div className="text-center">
-          <div className="bg-background/50 rounded-md p-2 border">
-            <div className="text-lg font-bold text-primary">{timeLeft.seconds}</div>
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">Sec</div>
+          <div className="flex items-center gap-1">
+            <span className="font-bold text-primary">{timeLeft.minutes}</span>
+            <span className="text-muted-foreground text-xs">m</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="font-bold text-primary">{timeLeft.seconds}</span>
+            <span className="text-muted-foreground text-xs">s</span>
           </div>
         </div>
       </div>
