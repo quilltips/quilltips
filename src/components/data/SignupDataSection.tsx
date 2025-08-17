@@ -128,12 +128,16 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
 
   const isLoading = arcLoading || betaLoading || newsletterLoading || profileLoading;
 
-  // Don't show the section if no signup features are enabled
+  // Show the section if signup features are enabled OR if there's existing data
   const hasAnySignupEnabled = profileSettings?.arc_signup_enabled || 
                               profileSettings?.beta_reader_enabled || 
                               profileSettings?.newsletter_enabled;
+                              
+  const hasExistingData = (arcSignups && arcSignups.length > 0) ||
+                          (betaSignups && betaSignups.length > 0) ||
+                          (newsletterSignups && newsletterSignups.length > 0);
 
-  if (!hasAnySignupEnabled) {
+  if (!hasAnySignupEnabled && !hasExistingData) {
     return null;
   }
 

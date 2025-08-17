@@ -69,12 +69,14 @@ export const ReaderEngagementCard = ({ authorId }: ReaderEngagementCardProps) =>
     enabled: !!(profileSettings?.arc_signup_enabled || profileSettings?.beta_reader_enabled || profileSettings?.newsletter_enabled)
   });
 
-  // Don't show the card if no signup features are enabled
+  // Show the card if signup features are enabled OR if there's existing data
   const hasAnySignupEnabled = profileSettings?.arc_signup_enabled || 
                               profileSettings?.beta_reader_enabled || 
                               profileSettings?.newsletter_enabled;
+                              
+  const hasExistingData = data && (data.totalARC > 0 || data.totalBeta > 0 || data.totalNewsletter > 0);
 
-  if (!hasAnySignupEnabled) {
+  if (!hasAnySignupEnabled && !hasExistingData) {
     return null;
   }
 
