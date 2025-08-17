@@ -5,10 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Calendar, Users, BookOpen, Mail } from "lucide-react";
+import { Calendar, Users, BookOpen, Mail, RotateCcw } from "lucide-react";
 
 interface LandingPageTabProps {
   profileId: string;
@@ -42,6 +43,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
   const [savedSettings, setSavedSettings] = useState<LandingPageSettings>(settings);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const { toast } = useToast();
 
   // Check for changes
@@ -104,19 +106,22 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Convert empty strings to null before saving
+      const cleanSettings = {
+        next_release_date: settings.next_release_date || null,
+        next_release_title: settings.next_release_title || null,
+        countdown_enabled: settings.countdown_enabled,
+        arc_signup_enabled: settings.arc_signup_enabled,
+        arc_signup_description: settings.arc_signup_description || null,
+        beta_reader_enabled: settings.beta_reader_enabled,
+        beta_reader_description: settings.beta_reader_description || null,
+        newsletter_enabled: settings.newsletter_enabled,
+        newsletter_description: settings.newsletter_description || null,
+      };
+
       const { error } = await supabase
         .from('profiles')
-        .update({
-          next_release_date: settings.next_release_date,
-          next_release_title: settings.next_release_title,
-          countdown_enabled: settings.countdown_enabled,
-          arc_signup_enabled: settings.arc_signup_enabled,
-          arc_signup_description: settings.arc_signup_description,
-          beta_reader_enabled: settings.beta_reader_enabled,
-          beta_reader_description: settings.beta_reader_description,
-          newsletter_enabled: settings.newsletter_enabled,
-          newsletter_description: settings.newsletter_description,
-        })
+        .update(cleanSettings)
         .eq('id', profileId);
 
       if (error) throw error;
@@ -138,6 +143,46 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
     }
   };
 
+  const handleReset = async () => {
+    setIsResetting(true);
+    try {
+      const resetSettings: LandingPageSettings = {
+        next_release_date: null,
+        next_release_title: null,
+        countdown_enabled: false,
+        arc_signup_enabled: false,
+        arc_signup_description: null,
+        beta_reader_enabled: false,
+        beta_reader_description: null,
+        newsletter_enabled: false,
+        newsletter_description: null,
+      };
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(resetSettings)
+        .eq('id', profileId);
+
+      if (error) throw error;
+
+      setSettings(resetSettings);
+      setSavedSettings(resetSettings);
+      toast({
+        title: "Success",
+        description: "Reader engagement settings have been reset"
+      });
+    } catch (error) {
+      console.error('Error resetting settings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reset settings",
+        variant: "destructive"
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   const formatDateForInput = (dateString: string | null) => {
     if (!dateString) return '';
     return new Date(dateString).toISOString().slice(0, 16);
@@ -153,11 +198,45 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
 
   return (
     <div className="space-y-6">
-      <div>
-     
-        <p className="pt-4 text-md text-[#333333]">
-          Enhance your public profile with these optional features! Once enabled, these will be displayed on your public profile. Simply link to your public profile from your author website or social media.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <p className="text-md text-[#333333]">
+            Enhance your public profile with these optional features! Once enabled, these will be displayed on your public profile. Simply link to your public profile from your author website or social media.
+          </p>
+        </div>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline" size="sm" className="flex items-center gap-2 shrink-0">
+              <RotateCcw className="h-4 w-4" />
+              Reset All
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Reset Reader Engagement Settings</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will clear all your reader engagement settings including:
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Release countdown clock</li>
+                  <li>ARC signup form and description</li>
+                  <li>Beta reader signup form and description</li>
+                  <li>Newsletter signup form and description</li>
+                </ul>
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleReset}
+                disabled={isResetting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isResetting ? <LoadingSpinner /> : "Reset All Settings"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       {/* Release Countdown */}
@@ -193,7 +272,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
                   value={settings.next_release_title || ''}
                   onChange={(e) => setSettings(prev => ({
                     ...prev,
-                    next_release_title: e.target.value || null
+                    next_release_title: e.target.value.trim() || null
                   }))}
                 />
               </div>
@@ -246,7 +325,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
                 value={settings.arc_signup_description || ''}
                 onChange={(e) => setSettings(prev => ({
                   ...prev,
-                  arc_signup_description: e.target.value || null
+                  arc_signup_description: e.target.value.trim() || null
                 }))}
                 rows={3}
               />
@@ -287,7 +366,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
                 value={settings.beta_reader_description || ''}
                 onChange={(e) => setSettings(prev => ({
                   ...prev,
-                  beta_reader_description: e.target.value || null
+                  beta_reader_description: e.target.value.trim() || null
                 }))}
                 rows={3}
               />
@@ -328,7 +407,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
                 value={settings.newsletter_description || ''}
                 onChange={(e) => setSettings(prev => ({
                   ...prev,
-                  newsletter_description: e.target.value || null
+                  newsletter_description: e.target.value.trim() || null
                 }))}
                 rows={3}
               />
