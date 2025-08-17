@@ -35,6 +35,7 @@ export const useQRCodeFetch = () => {
               name,
               avatar_url,
               bio,
+              slug,
               stripe_account_id,
               stripe_setup_complete
             )
@@ -51,6 +52,7 @@ export const useQRCodeFetch = () => {
               name,
               avatar_url,
               bio,
+              slug,
               stripe_account_id,
               stripe_setup_complete
             )
