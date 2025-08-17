@@ -18,9 +18,9 @@ interface CollapsibleSignupSectionProps {
 }
 
 const defaultDescriptions = {
-  arc: "Join the ARC program to get early access to upcoming releases and help shape the final version.",
-  beta: "Become a beta reader to provide feedback on works in progress and get exclusive early access.",
-  newsletter: "Subscribe to the newsletter for updates, exclusive content, and release announcements."
+  arc: "Join the advanced reader copy program to get early access to upcoming releases in exchange for feedback.",
+  beta: "Become a beta reader to provide feedback on works in progress and to help shape the final version.",
+  newsletter: "Subscribe to author updates and release announcements!"
 };
 
 const getIcon = (type: string) => {
