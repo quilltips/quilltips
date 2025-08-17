@@ -153,24 +153,20 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
               <Download className="h-3 w-3" />
             </Button>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
             <div className="text-2xl font-bold">{arcSignups?.length || 0}</div>
             <p className="text-xs text-muted-foreground">Total signups</p>
             
             {arcSignups && arcSignups.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <p className="text-sm font-medium">Recent signups:</p>
-                {arcSignups.slice(0, 3).map((signup, idx) => (
-                  <div key={idx} className="text-xs space-y-1">
+              <div className="mt-3 space-y-1">
+                {arcSignups.slice(0, 2).map((signup, idx) => (
+                  <div key={idx} className="text-xs">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{signup.reader_name}</span>
                       <Badge variant="outline" className="text-xs">
                         {signup.status}
                       </Badge>
                     </div>
-                    <p className="text-muted-foreground">
-                      {formatDistanceToNow(new Date(signup.created_at), { addSuffix: true })}
-                    </p>
                   </div>
                 ))}
               </div>
@@ -198,24 +194,20 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
               <Download className="h-3 w-3" />
             </Button>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
             <div className="text-2xl font-bold">{betaSignups?.length || 0}</div>
             <p className="text-xs text-muted-foreground">Total signups</p>
             
             {betaSignups && betaSignups.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <p className="text-sm font-medium">Recent signups:</p>
-                {betaSignups.slice(0, 3).map((signup, idx) => (
-                  <div key={idx} className="text-xs space-y-1">
+              <div className="mt-3 space-y-1">
+                {betaSignups.slice(0, 2).map((signup, idx) => (
+                  <div key={idx} className="text-xs">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{signup.reader_name}</span>
                       <Badge variant="outline" className="text-xs">
                         {signup.status}
                       </Badge>
                     </div>
-                    <p className="text-muted-foreground">
-                      {formatDistanceToNow(new Date(signup.created_at), { addSuffix: true })}
-                    </p>
                   </div>
                 ))}
               </div>
@@ -243,24 +235,20 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
               <Download className="h-3 w-3" />
             </Button>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
             <div className="text-2xl font-bold">{newsletterSignups?.length || 0}</div>
             <p className="text-xs text-muted-foreground">Total subscribers</p>
             
             {newsletterSignups && newsletterSignups.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <p className="text-sm font-medium">Recent subscribers:</p>
-                {newsletterSignups.slice(0, 3).map((signup, idx) => (
-                  <div key={idx} className="text-xs space-y-1">
+              <div className="mt-3 space-y-1">
+                {newsletterSignups.slice(0, 2).map((signup, idx) => (
+                  <div key={idx} className="text-xs">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{signup.subscriber_name || 'Anonymous'}</span>
                       <Badge variant={signup.is_active ? "default" : "secondary"} className="text-xs">
                         {signup.is_active ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
-                    <p className="text-muted-foreground">
-                      {formatDistanceToNow(new Date(signup.created_at), { addSuffix: true })}
-                    </p>
                   </div>
                 ))}
               </div>

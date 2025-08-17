@@ -86,8 +86,8 @@ export const CollapsibleSignupSection = ({
 
   return (
     <Card className="border border-primary/20 rounded-lg overflow-hidden">
-      <CardContent className="p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Reader Opportunities</h3>
+      <CardContent className="p-4 space-y-2">
+        <h3 className="text-lg font-semibold text-foreground mb-3">Reader Opportunities</h3>
         {signupOptions.map((option) => (
           <Collapsible 
             key={option.key}
@@ -97,25 +97,26 @@ export const CollapsibleSignupSection = ({
             <CollapsibleTrigger asChild>
               <Button 
                 variant="outline" 
-                className="w-full justify-between p-4 h-auto"
+                size="sm"
+                className="w-full justify-between p-3 h-auto"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   {getIcon(option.key)}
                   <div className="text-left">
-                    <div className="font-medium">{getButtonText(option.key)}</div>
-                    <div className="text-sm text-muted-foreground line-clamp-1">
+                    <div className="font-medium text-sm">{getButtonText(option.key)}</div>
+                    <div className="text-xs text-muted-foreground line-clamp-1">
                       {option.description}
                     </div>
                   </div>
                 </div>
                 {openSections[option.key] ? (
-                  <ChevronUp className="h-4 w-4" />
+                  <ChevronUp className="h-3 w-3" />
                 ) : (
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-3 w-3" />
                 )}
               </Button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-4">
+            <CollapsibleContent className="mt-2">
               {option.component}
             </CollapsibleContent>
           </Collapsible>

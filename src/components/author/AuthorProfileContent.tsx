@@ -89,17 +89,6 @@ export const AuthorProfileContent = ({
         />
       )}
 
-      {/* Reader Engagement Section - Collapsible Signups */}
-      <CollapsibleSignupSection
-        authorId={authorId}
-        arcEnabled={landingPageSettings?.arc_signup_enabled || false}
-        arcDescription={landingPageSettings?.arc_signup_description}
-        betaEnabled={landingPageSettings?.beta_reader_enabled || false}
-        betaDescription={landingPageSettings?.beta_reader_description}
-        newsletterEnabled={landingPageSettings?.newsletter_enabled || false}
-        newsletterDescription={landingPageSettings?.newsletter_description}
-      />
-
       {/* Books Section */}
       <Card className="border border-[#333333]/50 rounded-lg overflow-hidden" prominent>
         <CardHeader>
@@ -114,6 +103,17 @@ export const AuthorProfileContent = ({
           />
         </CardContent>
       </Card>
+
+      {/* Reader Engagement Section - Collapsible Signups */}
+      <CollapsibleSignupSection
+        authorId={authorId}
+        arcEnabled={landingPageSettings?.arc_signup_enabled || false}
+        arcDescription={landingPageSettings?.arc_signup_description}
+        betaEnabled={landingPageSettings?.beta_reader_enabled || false}
+        betaDescription={landingPageSettings?.beta_reader_description}
+        newsletterEnabled={landingPageSettings?.newsletter_enabled || false}
+        newsletterDescription={landingPageSettings?.newsletter_description}
+      />
   
       {/* Tip Feed Section */}
       <Card className="border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden" prominent>
