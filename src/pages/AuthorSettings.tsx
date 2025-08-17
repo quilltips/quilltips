@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileTab } from "@/components/settings/ProfileTab";
 import { AccountTab } from "@/components/settings/AccountTab";
 import { PaymentTab } from "@/components/settings/PaymentTab";
+import { LandingPageTab } from "@/components/settings/LandingPageTab";
 import { Settings } from "lucide-react";
 
 const AuthorSettings = () => {
@@ -127,6 +128,12 @@ const AuthorSettings = () => {
                 Profile
               </TabsTrigger>
               <TabsTrigger 
+                value="landing-page"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent"
+              >
+                Landing Page
+              </TabsTrigger>
+              <TabsTrigger 
                 value="account"
                 className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent"
               >
@@ -143,6 +150,13 @@ const AuthorSettings = () => {
             <TabsContent value="profile" className="mt-6">
               <ProfileTab 
                 profile={profile}
+                onChangeStatus={setHasUnsavedChanges}
+              />
+            </TabsContent>
+            
+            <TabsContent value="landing-page" className="mt-6">
+              <LandingPageTab 
+                profileId={profile.id}
                 onChangeStatus={setHasUnsavedChanges}
               />
             </TabsContent>

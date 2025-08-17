@@ -2,6 +2,12 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { AuthorPublicTipFeed } from "@/components/tips/AuthorPublicTipFeed";
+import { ReleaseCountdown } from "@/components/author/ReleaseCountdown";
+import { ARCSignupCard } from "@/components/author/ARCSignupCard";
+import { BetaReaderSignupCard } from "@/components/author/BetaReaderSignupCard";
+import { NewsletterSignupCard } from "@/components/author/NewsletterSignupCard";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { BookOpen } from "lucide-react";
 
 interface AuthorProfileContentProps {
@@ -11,17 +17,114 @@ interface AuthorProfileContentProps {
   hasStripeAccount?: boolean;
 }
 
+interface LandingPageSettings {
+  next_release_date: string | null;
+  next_release_title: string | null;
+  arc_signup_enabled: boolean;
+  arc_signup_description: string | null;
+  beta_reader_enabled: boolean;
+  beta_reader_description: string | null;
+  newsletter_enabled: boolean;
+  newsletter_description: string | null;
+}
+
 export const AuthorProfileContent = ({
   authorId,
   authorName,
   stripeSetupComplete = false,
   hasStripeAccount = false
 }: AuthorProfileContentProps) => {
+  const [landingPageSettings, setLandingPageSettings] = useState<LandingPageSettings | null>(null);
+  
   // Check if the author has completed Stripe onboarding
   const stripeOnboardingComplete = hasStripeAccount && stripeSetupComplete;
 
+  useEffect(() => {
+    const fetchLandingPageSettings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select(`
+            next_release_date,
+            next_release_title,
+            arc_signup_enabled,
+            arc_signup_description,
+            beta_reader_enabled,
+            beta_reader_description,
+            newsletter_enabled,
+            newsletter_description
+          `)
+          .eq('id', authorId)
+          .single();
+
+        if (error) throw error;
+        
+        setLandingPageSettings({
+          next_release_date: data.next_release_date || null,
+          next_release_title: data.next_release_title || null,
+          arc_signup_enabled: data.arc_signup_enabled || false,
+          arc_signup_description: data.arc_signup_description || null,
+          beta_reader_enabled: data.beta_reader_enabled || false,
+          beta_reader_description: data.beta_reader_description || null,
+          newsletter_enabled: data.newsletter_enabled || false,
+          newsletter_description: data.newsletter_description || null,
+        });
+      } catch (error) {
+        console.error('Error fetching landing page settings:', error);
+      }
+    };
+
+    fetchLandingPageSettings();
+  }, [authorId]);
+
+  // Show countdown if we have release date and title
+  const showCountdown = landingPageSettings?.next_release_date && 
+                       landingPageSettings?.next_release_title && 
+                       new Date(landingPageSettings.next_release_date) > new Date();
+
   return (
     <div className="max-w-5xl mx-auto space-y-8 px-4 py-8">
+      {/* Release Countdown - appears after bio, before everything else */}
+      {showCountdown && (
+        <ReleaseCountdown 
+          releaseDate={landingPageSettings!.next_release_date!}
+          bookTitle={landingPageSettings!.next_release_title!}
+        />
+      )}
+
+      {/* Reader Engagement Section - ARC, Beta, Newsletter */}
+      {(landingPageSettings?.arc_signup_enabled || 
+        landingPageSettings?.beta_reader_enabled || 
+        landingPageSettings?.newsletter_enabled) && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {landingPageSettings?.arc_signup_enabled && 
+             landingPageSettings?.arc_signup_description && (
+              <ARCSignupCard 
+                authorId={authorId}
+                description={landingPageSettings.arc_signup_description}
+              />
+            )}
+            
+            {landingPageSettings?.beta_reader_enabled && 
+             landingPageSettings?.beta_reader_description && (
+              <BetaReaderSignupCard 
+                authorId={authorId}
+                description={landingPageSettings.beta_reader_description}
+              />
+            )}
+            
+            {landingPageSettings?.newsletter_enabled && 
+             landingPageSettings?.newsletter_description && (
+              <NewsletterSignupCard 
+                authorId={authorId}
+                description={landingPageSettings.newsletter_description}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Books Section */}
       <Card className="border border-[#333333]/50 rounded-lg overflow-hidden" prominent>
         <CardHeader>
@@ -56,4 +159,4 @@ export const AuthorProfileContent = ({
       </p>
     </div>
   );
-}  
+}

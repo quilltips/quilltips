@@ -46,6 +46,129 @@ export type Database = {
           },
         ]
       }
+      arc_signups: {
+        Row: {
+          author_id: string
+          created_at: string
+          id: string
+          message: string | null
+          reader_email: string
+          reader_location: string | null
+          reader_name: string
+          status: string | null
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          reader_email: string
+          reader_location?: string | null
+          reader_name: string
+          status?: string | null
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          reader_email?: string
+          reader_location?: string | null
+          reader_name?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "arc_signups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      author_newsletter_signups: {
+        Row: {
+          author_id: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          subscriber_email: string
+          subscriber_name: string | null
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          subscriber_email: string
+          subscriber_name?: string | null
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          subscriber_email?: string
+          subscriber_name?: string | null
+          unsubscribed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "author_newsletter_signups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      beta_reader_signups: {
+        Row: {
+          author_id: string
+          created_at: string
+          favorite_genres: string | null
+          id: string
+          message: string | null
+          reader_email: string
+          reader_name: string
+          reading_experience: string | null
+          status: string | null
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          favorite_genres?: string | null
+          id?: string
+          message?: string | null
+          reader_email: string
+          reader_name: string
+          reading_experience?: string | null
+          status?: string | null
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          favorite_genres?: string | null
+          id?: string
+          message?: string | null
+          reader_email?: string
+          reader_name?: string
+          reading_experience?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beta_reader_signups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_analytics: {
         Row: {
           id: string
@@ -291,13 +414,21 @@ export type Database = {
       profiles: {
         Row: {
           admin_notes: string | null
+          arc_signup_description: string | null
+          arc_signup_enabled: boolean | null
           avatar_url: string | null
+          beta_reader_description: string | null
+          beta_reader_enabled: boolean | null
           bio: string | null
           created_at: string
           email: string | null
           flags: Json | null
           id: string
           name: string | null
+          newsletter_description: string | null
+          newsletter_enabled: boolean | null
+          next_release_date: string | null
+          next_release_title: string | null
           role: Database["public"]["Enums"]["app_role"] | null
           slug: string | null
           social_links: Json | null
@@ -310,13 +441,21 @@ export type Database = {
         }
         Insert: {
           admin_notes?: string | null
+          arc_signup_description?: string | null
+          arc_signup_enabled?: boolean | null
           avatar_url?: string | null
+          beta_reader_description?: string | null
+          beta_reader_enabled?: boolean | null
           bio?: string | null
           created_at?: string
           email?: string | null
           flags?: Json | null
           id: string
           name?: string | null
+          newsletter_description?: string | null
+          newsletter_enabled?: boolean | null
+          next_release_date?: string | null
+          next_release_title?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
           slug?: string | null
           social_links?: Json | null
@@ -329,13 +468,21 @@ export type Database = {
         }
         Update: {
           admin_notes?: string | null
+          arc_signup_description?: string | null
+          arc_signup_enabled?: boolean | null
           avatar_url?: string | null
+          beta_reader_description?: string | null
+          beta_reader_enabled?: boolean | null
           bio?: string | null
           created_at?: string
           email?: string | null
           flags?: Json | null
           id?: string
           name?: string | null
+          newsletter_description?: string | null
+          newsletter_enabled?: boolean | null
+          next_release_date?: string | null
+          next_release_title?: string | null
           role?: Database["public"]["Enums"]["app_role"] | null
           slug?: string | null
           social_links?: Json | null
