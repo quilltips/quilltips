@@ -3,12 +3,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { AuthorPublicTipFeed } from "@/components/tips/AuthorPublicTipFeed";
 import { ReleaseCountdown } from "@/components/author/ReleaseCountdown";
-import { ARCSignupCard } from "@/components/author/ARCSignupCard";
-import { BetaReaderSignupCard } from "@/components/author/BetaReaderSignupCard";
-import { NewsletterSignupCard } from "@/components/author/NewsletterSignupCard";
+import { CollapsibleSignupSection } from "@/components/author/CollapsibleSignupSection";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { BookOpen } from "lucide-react";
 
 interface AuthorProfileContentProps {
   authorId: string;
@@ -92,38 +89,16 @@ export const AuthorProfileContent = ({
         />
       )}
 
-      {/* Reader Engagement Section - ARC, Beta, Newsletter */}
-      {(landingPageSettings?.arc_signup_enabled || 
-        landingPageSettings?.beta_reader_enabled || 
-        landingPageSettings?.newsletter_enabled) && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {landingPageSettings?.arc_signup_enabled && 
-             landingPageSettings?.arc_signup_description && (
-              <ARCSignupCard 
-                authorId={authorId}
-                description={landingPageSettings.arc_signup_description}
-              />
-            )}
-            
-            {landingPageSettings?.beta_reader_enabled && 
-             landingPageSettings?.beta_reader_description && (
-              <BetaReaderSignupCard 
-                authorId={authorId}
-                description={landingPageSettings.beta_reader_description}
-              />
-            )}
-            
-            {landingPageSettings?.newsletter_enabled && 
-             landingPageSettings?.newsletter_description && (
-              <NewsletterSignupCard 
-                authorId={authorId}
-                description={landingPageSettings.newsletter_description}
-              />
-            )}
-          </div>
-        </div>
-      )}
+      {/* Reader Engagement Section - Collapsible Signups */}
+      <CollapsibleSignupSection
+        authorId={authorId}
+        arcEnabled={landingPageSettings?.arc_signup_enabled || false}
+        arcDescription={landingPageSettings?.arc_signup_description}
+        betaEnabled={landingPageSettings?.beta_reader_enabled || false}
+        betaDescription={landingPageSettings?.beta_reader_description}
+        newsletterEnabled={landingPageSettings?.newsletter_enabled || false}
+        newsletterDescription={landingPageSettings?.newsletter_description}
+      />
 
       {/* Books Section */}
       <Card className="border border-[#333333]/50 rounded-lg overflow-hidden" prominent>
