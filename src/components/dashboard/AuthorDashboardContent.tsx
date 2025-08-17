@@ -2,6 +2,7 @@
 import { AuthorQRCodesList } from "@/components/AuthorQRCodesList";
 import { TipHistory } from "@/components/TipHistory";
 import { TipStatsCard } from "@/components/dashboard/TipStatsCard";
+import { ReaderEngagementCard } from "@/components/dashboard/ReaderEngagementCard";
 
 interface AuthorDashboardContentProps {
   authorId: string;
@@ -16,9 +17,10 @@ export const AuthorDashboardContent = ({
 }: AuthorDashboardContentProps) => {
   return (
     <div className="space-y-6">
-      {/* Tip Stats Card */}
-      <div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TipStatsCard authorId={authorId} />
+        <ReaderEngagementCard authorId={authorId} />
       </div>
       
       {/* Grid layout for Tip feed and QR codes */}
