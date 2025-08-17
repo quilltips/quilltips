@@ -101,9 +101,6 @@ export const CollapsibleSignupSection = ({
                   {getIcon(option.key)}
                   <div className="text-left">
                     <div className="font-medium text-sm">{getButtonText(option.key)}</div>
-                    <div className="text-xs text-muted-foreground line-clamp-1">
-                      {option.description}
-                    </div>
                   </div>
                 </div>
                 {openSections[option.key] ? (

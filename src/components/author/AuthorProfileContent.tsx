@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { AuthorPublicTipFeed } from "@/components/tips/AuthorPublicTipFeed";
 import { CollapsibleSignupSection } from "@/components/author/CollapsibleSignupSection";
+import { ReleaseCountdown } from "@/components/author/ReleaseCountdown";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,6 +15,9 @@ interface AuthorProfileContentProps {
 }
 
 interface LandingPageSettings {
+  next_release_date: string | null;
+  next_release_title: string | null;
+  countdown_enabled: boolean;
   arc_signup_enabled: boolean;
   arc_signup_description: string | null;
   beta_reader_enabled: boolean;
@@ -39,6 +43,9 @@ export const AuthorProfileContent = ({
         const { data, error } = await supabase
           .from('public_profiles')
           .select(`
+            next_release_date,
+            next_release_title,
+            countdown_enabled,
             arc_signup_enabled,
             arc_signup_description,
             beta_reader_enabled,
@@ -52,6 +59,9 @@ export const AuthorProfileContent = ({
         if (error) throw error;
         
         setLandingPageSettings({
+          next_release_date: data.next_release_date || null,
+          next_release_title: data.next_release_title || null,
+          countdown_enabled: data.countdown_enabled ?? true,
           arc_signup_enabled: data.arc_signup_enabled || false,
           arc_signup_description: data.arc_signup_description || null,
           beta_reader_enabled: data.beta_reader_enabled || false,
@@ -94,6 +104,16 @@ export const AuthorProfileContent = ({
         newsletterEnabled={landingPageSettings?.newsletter_enabled || false}
         newsletterDescription={landingPageSettings?.newsletter_description}
       />
+
+      {/* Release Countdown */}
+      {landingPageSettings?.countdown_enabled && 
+       landingPageSettings?.next_release_date && 
+       landingPageSettings?.next_release_title && (
+        <ReleaseCountdown
+          bookTitle={landingPageSettings.next_release_title}
+          releaseDate={landingPageSettings.next_release_date}
+        />
+      )}
   
       {/* Tip Feed Section */}
       <Card className="border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden" prominent>

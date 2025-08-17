@@ -97,6 +97,7 @@ export const usePublicProfile = (identifier: string | undefined) => {
           // Include landing page settings
           next_release_date: profileData.next_release_date,
           next_release_title: profileData.next_release_title,
+          countdown_enabled: profileData.countdown_enabled,
           arc_signup_enabled: profileData.arc_signup_enabled,
           arc_signup_description: profileData.arc_signup_description,
           beta_reader_enabled: profileData.beta_reader_enabled,

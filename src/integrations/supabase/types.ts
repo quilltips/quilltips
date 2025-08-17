@@ -420,6 +420,7 @@ export type Database = {
           beta_reader_description: string | null
           beta_reader_enabled: boolean | null
           bio: string | null
+          countdown_enabled: boolean | null
           created_at: string
           email: string | null
           flags: Json | null
@@ -447,6 +448,7 @@ export type Database = {
           beta_reader_description?: string | null
           beta_reader_enabled?: boolean | null
           bio?: string | null
+          countdown_enabled?: boolean | null
           created_at?: string
           email?: string | null
           flags?: Json | null
@@ -474,6 +476,7 @@ export type Database = {
           beta_reader_description?: string | null
           beta_reader_enabled?: boolean | null
           bio?: string | null
+          countdown_enabled?: boolean | null
           created_at?: string
           email?: string | null
           flags?: Json | null
@@ -503,6 +506,7 @@ export type Database = {
           beta_reader_description: string | null
           beta_reader_enabled: boolean | null
           bio: string | null
+          countdown_enabled: boolean | null
           created_at: string | null
           id: string
           name: string | null
@@ -522,6 +526,7 @@ export type Database = {
           beta_reader_description?: string | null
           beta_reader_enabled?: boolean | null
           bio?: string | null
+          countdown_enabled?: boolean | null
           created_at?: string | null
           id: string
           name?: string | null
@@ -541,6 +546,7 @@ export type Database = {
           beta_reader_description?: string | null
           beta_reader_enabled?: boolean | null
           bio?: string | null
+          countdown_enabled?: boolean | null
           created_at?: string | null
           id?: string
           name?: string | null
@@ -953,6 +959,7 @@ export type Database = {
           beta_reader_description: string | null
           beta_reader_enabled: boolean | null
           bio: string | null
+          countdown_enabled: boolean | null
           created_at: string | null
           id: string
           name: string | null
@@ -979,6 +986,7 @@ export type Database = {
           beta_reader_description: string | null
           beta_reader_enabled: boolean | null
           bio: string | null
+          countdown_enabled: boolean | null
           created_at: string | null
           id: string
           name: string | null

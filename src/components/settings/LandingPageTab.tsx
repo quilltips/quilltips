@@ -18,6 +18,7 @@ interface LandingPageTabProps {
 interface LandingPageSettings {
   next_release_date: string | null;
   next_release_title: string | null;
+  countdown_enabled: boolean;
   arc_signup_enabled: boolean;
   arc_signup_description: string | null;
   beta_reader_enabled: boolean;
@@ -30,6 +31,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
   const [settings, setSettings] = useState<LandingPageSettings>({
     next_release_date: null,
     next_release_title: null,
+    countdown_enabled: true,
     arc_signup_enabled: false,
     arc_signup_description: null,
     beta_reader_enabled: false,
@@ -60,6 +62,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
         .select(`
           next_release_date,
           next_release_title,
+          countdown_enabled,
           arc_signup_enabled,
           arc_signup_description,
           beta_reader_enabled,
@@ -75,6 +78,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
       const fetchedSettings = {
         next_release_date: data.next_release_date || null,
         next_release_title: data.next_release_title || null,
+        countdown_enabled: data.countdown_enabled ?? true,
         arc_signup_enabled: data.arc_signup_enabled || false,
         arc_signup_description: data.arc_signup_description || null,
         beta_reader_enabled: data.beta_reader_enabled || false,
@@ -105,6 +109,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
         .update({
           next_release_date: settings.next_release_date,
           next_release_title: settings.next_release_title,
+          countdown_enabled: settings.countdown_enabled,
           arc_signup_enabled: settings.arc_signup_enabled,
           arc_signup_description: settings.arc_signup_description,
           beta_reader_enabled: settings.beta_reader_enabled,
@@ -167,32 +172,45 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="release-title">Book Title</Label>
-              <Input
-                id="release-title"
-                placeholder="Enter your upcoming book title"
-                value={settings.next_release_title || ''}
-                onChange={(e) => setSettings(prev => ({
-                  ...prev,
-                  next_release_title: e.target.value || null
-                }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="release-date">Release Date</Label>
-              <Input
-                id="release-date"
-                type="datetime-local"
-                value={formatDateForInput(settings.next_release_date)}
-                onChange={(e) => setSettings(prev => ({
-                  ...prev,
-                  next_release_date: e.target.value || null
-                }))}
-              />
-            </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="countdown-enabled"
+              checked={settings.countdown_enabled}
+              onCheckedChange={(checked) => setSettings(prev => ({
+                ...prev,
+                countdown_enabled: checked
+              }))}
+            />
+            <Label htmlFor="countdown-enabled">Enable countdown clock</Label>
           </div>
+          {settings.countdown_enabled && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="release-title">Book Title</Label>
+                <Input
+                  id="release-title"
+                  placeholder="Enter your upcoming book title"
+                  value={settings.next_release_title || ''}
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    next_release_title: e.target.value || null
+                  }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="release-date">Release Date</Label>
+                <Input
+                  id="release-date"
+                  type="datetime-local"
+                  value={formatDateForInput(settings.next_release_date)}
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    next_release_date: e.target.value || null
+                  }))}
+                />
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -23,6 +23,7 @@ export interface AuthorProfile {
   // Landing page settings (from public_profiles)
   next_release_date?: string | null;
   next_release_title?: string | null;
+  countdown_enabled?: boolean;
   arc_signup_enabled?: boolean;
   arc_signup_description?: string | null;
   beta_reader_enabled?: boolean;
