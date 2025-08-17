@@ -29,11 +29,15 @@ const getFirstName = (fullName: string): string => {
 
 const getSocialIcon = (label: string) => {
   const lowerLabel = label.toLowerCase();
-  if (lowerLabel.includes('twitter')) return <Twitter className="h-5 w-5 text-[#1DA1F2]" />;
-  if (lowerLabel.includes('facebook')) return <Facebook className="h-5 w-5 text-[#4267B2]" />;
-  if (lowerLabel.includes('instagram')) return <Instagram className="h-5 w-5 text-[#E1306C]" />;
-  if (lowerLabel.includes('tiktok')) return <Share2 className="h-5 w-5 text-black" />;
-  return <Globe className="h-5 w-5 text-gray-500" />;
+  const iconClass = "h-4 w-4 flex-shrink-0 flex items-center justify-center";
+  
+  if (lowerLabel.includes('twitter')) return <Twitter className={`${iconClass} text-[#1DA1F2]`} />;
+  if (lowerLabel.includes('facebook')) return <Facebook className={`${iconClass} text-[#4267B2]`} />;
+  if (lowerLabel.includes('instagram')) return <Instagram className={`${iconClass} text-[#E1306C]`} />;
+  if (lowerLabel.includes('tiktok')) return <Share2 className={`${iconClass} text-black`} />;
+  if (lowerLabel.includes('linkedin')) return <Globe className={`${iconClass} text-[#0077B5]`} />;
+  if (lowerLabel.includes('youtube')) return <Globe className={`${iconClass} text-[#FF0000]`} />;
+  return <Globe className={`${iconClass} text-gray-500`} />;
 };
 
 const getValidURL = (url: string): string => {
@@ -115,22 +119,36 @@ export const AuthorPublicProfileView = ({
   
       {/* Links Section */}
       {socialLinks.length > 0 && (
-        <Card className="mb-8 border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden">
-          <CardHeader>
-            <CardTitle className="text-xl text-[#333333]">Links</CardTitle>
+        <Card className="mb-8 border border-[#19363C]/50 shadow-sm rounded-xl overflow-hidden bg-transparent">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xl font-semibold text-[#333333] flex items-center gap-2">
+             
+              Links
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+          <CardContent className="pt-0">
+            <div className="space-y-3">
               {socialLinks.map((link, index) => (
                 <a 
                   key={index} 
                   href={getValidURL(link.url)}
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="flex items-center gap-2 hover:underline transition-colors group"
+                  className="flex items-center gap-3 px-3 py-3.5 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200"
                 >
-                  {getSocialIcon(link.label)}
-                  <span className="group-hover:underline">{link.url}</span>
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 group-hover:bg-gray-200 transition-colors duration-200 flex-shrink-0">
+                    <div className="flex items-center justify-center w-full h-full">
+                      {getSocialIcon(link.label)}
+                    </div>
+                  </div>
+                  <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors duration-200 truncate leading-relaxed py-0.5">
+                    {link.url.replace(/^https?:\/\//, '').replace(/^www\./, '')}
+                  </span>
+                  <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </div>
                 </a>
               ))}
             </div>

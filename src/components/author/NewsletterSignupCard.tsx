@@ -125,7 +125,7 @@ export const NewsletterSignupCard = ({ authorId, description }: NewsletterSignup
             className="w-full" 
             disabled={isSubmitting}
           >
-            {isSubmitting ? <LoadingSpinner /> : "Subscribe to Newsletter"}
+            {isSubmitting ? <LoadingSpinner /> : "Subscribe to author updates"}
           </Button>
         </form>
       </CardContent>

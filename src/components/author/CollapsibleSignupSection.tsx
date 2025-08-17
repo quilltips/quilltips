@@ -36,7 +36,7 @@ const getButtonText = (type: string) => {
   switch (type) {
     case 'arc': return "Sign up as an ARC reader!";
     case 'beta': return "Become a Beta reader!";
-    case 'newsletter': return "Sign up for updates!";
+    case 'newsletter': return "Sign up for author updates!";
     default: return "";
   }
 };

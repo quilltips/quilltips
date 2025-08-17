@@ -156,7 +156,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
       <div>
      
         <p className="pt-4 text-md text-[#333333]">
-          Enhance your public profile with these optional features!
+          Enhance your public profile with these optional features! Once enabled, these will be displayed on your public profile. Simply link to your public profile from your author website or social media.
         </p>
       </div>
 
@@ -165,7 +165,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
         <CardHeader>
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            <CardTitle>Next Release Countdown</CardTitle>
+            <CardTitle>Next Release Countdown Clock</CardTitle>
           </div>
           <CardDescription>
             Display a countdown timer for your upcoming book release
@@ -301,10 +301,10 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
         <CardHeader>
           <div className="flex items-center gap-2">
             <Mail className="h-5 w-5 text-primary" />
-            <CardTitle>Newsletter Signups</CardTitle>
+            <CardTitle>General Reader Signups</CardTitle>
           </div>
           <CardDescription>
-            Allow readers to subscribe to your personal newsletter
+            Allow readers to subscribe to your author updates (note, author is responsible for sending out their own updates, this is just an intake form)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -317,7 +317,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
                 newsletter_enabled: checked
               }))}
             />
-            <Label htmlFor="newsletter-enabled">Enable newsletter signups</Label>
+            <Label htmlFor="newsletter-enabled">Enable reader signups</Label>
           </div>
           {settings.newsletter_enabled && (
             <div className="space-y-2">

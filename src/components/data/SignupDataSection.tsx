@@ -176,7 +176,7 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
                 Beta Readers ({betaSignups?.length || 0})
               </TabsTrigger>
               <TabsTrigger value="newsletter">
-                Newsletter Signups ({newsletterSignups?.length || 0})
+                General Reader Signups ({newsletterSignups?.length || 0})
               </TabsTrigger>
             </TabsList>
 
