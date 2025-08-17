@@ -89,7 +89,7 @@ const QRCodeDetails = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => window.open(qrCode.buy_now_link, '_blank')}
-                      className="text-[#FFD166] border-[#19363C] bg-[#19363C] hover:bg-[#19363C]/80 hover:text-[#FFD166] text-xs px-3 py-1"
+                      className="bg-transparent border-border text-[#333333] hover:underline hover:bg-transparent text-xs px-3 py-1"
                     >
                       Buy Now!
                     </Button>
