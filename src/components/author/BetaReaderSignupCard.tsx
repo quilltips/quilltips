@@ -90,20 +90,17 @@ export const BetaReaderSignupCard = ({ authorId, description }: BetaReaderSignup
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <Users className="h-5 w-5 text-primary" />
-          <CardTitle>Become a Beta Reader</CardTitle>
-        </div>
+       
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="beta-name">Name *</Label>
+              <Label htmlFor="beta-name">Full Name *</Label>
               <Input
                 id="beta-name"
-                placeholder="Your full name"
+                placeholder=""
                 value={formData.reader_name}
                 onChange={(e) => setFormData(prev => ({ ...prev, reader_name: e.target.value }))}
                 required
@@ -114,7 +111,7 @@ export const BetaReaderSignupCard = ({ authorId, description }: BetaReaderSignup
               <Input
                 id="beta-email"
                 type="email"
-                placeholder="your.email@example.com"
+                placeholder=""
                 value={formData.reader_email}
                 onChange={(e) => setFormData(prev => ({ ...prev, reader_email: e.target.value }))}
                 required
@@ -126,30 +123,23 @@ export const BetaReaderSignupCard = ({ authorId, description }: BetaReaderSignup
             <Label htmlFor="reading-experience">Reading Experience</Label>
             <Input
               id="reading-experience"
-              placeholder="e.g., Avid reader, Former editor, Book blogger..."
+              placeholder=""
               value={formData.reading_experience}
               onChange={(e) => setFormData(prev => ({ ...prev, reading_experience: e.target.value }))}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="favorite-genres">Favorite Genres</Label>
-            <Input
-              id="favorite-genres"
-              placeholder="e.g., Fantasy, Romance, Mystery, Sci-Fi..."
-              value={formData.favorite_genres}
-              onChange={(e) => setFormData(prev => ({ ...prev, favorite_genres: e.target.value }))}
-            />
-          </div>
+       
 
           <div className="space-y-2">
             <Label htmlFor="beta-message">Why do you want to be a beta reader?</Label>
             <Textarea
               id="beta-message"
-              placeholder="Tell the author about your reading background and why you'd be a great beta reader..."
+              placeholder=""
               value={formData.message}
               onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
               rows={3}
+              
             />
           </div>
 

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Globe, Twitter, Facebook, Instagram, Share2 } from "lucide-react";
 import { TipForm } from "./TipForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ReleaseCountdown } from "@/components/author/ReleaseCountdown";
 
 interface SocialLink {
   url: string;
@@ -17,6 +18,8 @@ interface AuthorPublicProfileProps {
   socialLinks?: SocialLink[];
   authorId: string;
   joinedDate?: string;
+  releaseDate?: string | null;
+  releaseTitle?: string | null;
 }
 
 const getFirstName = (fullName: string): string => {
@@ -43,10 +46,17 @@ export const AuthorPublicProfileView = ({
   imageUrl,
   socialLinks = [],
   authorId,
-  joinedDate
+  joinedDate,
+  releaseDate,
+  releaseTitle
 }: AuthorPublicProfileProps) => {
   const [showTipDialog, setShowTipDialog] = useState(false);
   const firstName = getFirstName(name);
+  
+  // Show countdown if we have release date and title
+  const showCountdown = releaseDate && 
+                       releaseTitle && 
+                       new Date(releaseDate) > new Date();
   
   return (
     <div className="max-w-5xl mx-auto px-4 space-y-8">
@@ -91,6 +101,14 @@ export const AuthorPublicProfileView = ({
           </div>
         )}
       </div>
+
+      {/* Release Countdown - appears after bio, before links */}
+      {showCountdown && (
+        <ReleaseCountdown 
+          releaseDate={releaseDate!}
+          bookTitle={releaseTitle!}
+        />
+      )}
   
       {/* Links Section */}
       {socialLinks.length > 0 && (

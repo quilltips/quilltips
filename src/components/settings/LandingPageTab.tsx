@@ -149,9 +149,9 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium text-foreground">Landing Page Features</h3>
-        <p className="text-sm text-muted-foreground">
-          Configure optional features for your public profile to create a professional author landing page.
+     
+        <p className="pt-4 text-md text-[#333333]">
+          Enhance your public profile with these optional features!
         </p>
       </div>
 

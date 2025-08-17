@@ -34,9 +34,9 @@ const getIcon = (type: string) => {
 
 const getButtonText = (type: string) => {
   switch (type) {
-    case 'arc': return "Join ARC Program";
-    case 'beta': return "Become Beta Reader";
-    case 'newsletter': return "Subscribe to Newsletter";
+    case 'arc': return "Sign up as an ARC reader!";
+    case 'beta': return "Become a Beta reader!";
+    case 'newsletter': return "Sign up for updates!";
     default: return "";
   }
 };
@@ -63,19 +63,16 @@ export const CollapsibleSignupSection = ({
     {
       key: 'arc',
       enabled: arcEnabled,
-      description: arcDescription || defaultDescriptions.arc,
       component: <ARCSignupCard authorId={authorId} description={arcDescription || defaultDescriptions.arc} />
     },
     {
       key: 'beta',
       enabled: betaEnabled,
-      description: betaDescription || defaultDescriptions.beta,
       component: <BetaReaderSignupCard authorId={authorId} description={betaDescription || defaultDescriptions.beta} />
     },
     {
       key: 'newsletter',
       enabled: newsletterEnabled,
-      description: newsletterDescription || defaultDescriptions.newsletter,
       component: <NewsletterSignupCard authorId={authorId} description={newsletterDescription || defaultDescriptions.newsletter} />
     }
   ].filter(option => option.enabled);
@@ -85,9 +82,9 @@ export const CollapsibleSignupSection = ({
   }
 
   return (
-    <Card className="border border-primary/20 rounded-lg overflow-hidden">
+    <Card className="border border-[#333333]/50 rounded-lg overflow-hidden">
       <CardContent className="p-4 space-y-2">
-        <h3 className="text-lg font-semibold text-foreground mb-3">Reader Opportunities</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-3">Get Involved!</h3>
         {signupOptions.map((option) => (
           <Collapsible 
             key={option.key}
@@ -98,7 +95,7 @@ export const CollapsibleSignupSection = ({
               <Button 
                 variant="outline" 
                 size="sm"
-                className="w-full justify-between p-3 h-auto"
+                className="w-full justify-between p-3 h-auto border border-none hover:bg-transparent hover:shadow-none hover:underline"
               >
                 <div className="flex items-center gap-2">
                   {getIcon(option.key)}

@@ -93,10 +93,7 @@ export const NewsletterSignupCard = ({ authorId, description }: NewsletterSignup
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <Mail className="h-5 w-5 text-primary" />
-          <CardTitle>Stay Updated</CardTitle>
-        </div>
+      
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>

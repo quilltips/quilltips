@@ -55,10 +55,10 @@ export const ReleaseCountdown = ({ releaseDate, bookTitle }: ReleaseCountdownPro
   }
 
   return (
-    <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
+    <div className="bg-[#ffd166]/20 border border-[#333333]/50 rounded-lg p-4 mb-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-primary" />
+         
           <h3 className="font-medium text-foreground">
             Next Release: <span className="font-semibold">{bookTitle}</span>
           </h3>

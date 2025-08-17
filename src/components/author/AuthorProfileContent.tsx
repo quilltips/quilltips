@@ -2,7 +2,6 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { AuthorPublicTipFeed } from "@/components/tips/AuthorPublicTipFeed";
-import { ReleaseCountdown } from "@/components/author/ReleaseCountdown";
 import { CollapsibleSignupSection } from "@/components/author/CollapsibleSignupSection";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,8 +14,6 @@ interface AuthorProfileContentProps {
 }
 
 interface LandingPageSettings {
-  next_release_date: string | null;
-  next_release_title: string | null;
   arc_signup_enabled: boolean;
   arc_signup_description: string | null;
   beta_reader_enabled: boolean;
@@ -42,8 +39,6 @@ export const AuthorProfileContent = ({
         const { data, error } = await supabase
           .from('public_profiles')
           .select(`
-            next_release_date,
-            next_release_title,
             arc_signup_enabled,
             arc_signup_description,
             beta_reader_enabled,
@@ -57,8 +52,6 @@ export const AuthorProfileContent = ({
         if (error) throw error;
         
         setLandingPageSettings({
-          next_release_date: data.next_release_date || null,
-          next_release_title: data.next_release_title || null,
           arc_signup_enabled: data.arc_signup_enabled || false,
           arc_signup_description: data.arc_signup_description || null,
           beta_reader_enabled: data.beta_reader_enabled || false,
@@ -74,21 +67,8 @@ export const AuthorProfileContent = ({
     fetchLandingPageSettings();
   }, [authorId]);
 
-  // Show countdown if we have release date and title
-  const showCountdown = landingPageSettings?.next_release_date && 
-                       landingPageSettings?.next_release_title && 
-                       new Date(landingPageSettings.next_release_date) > new Date();
-
   return (
     <div className="max-w-5xl mx-auto space-y-8 px-4 py-8">
-      {/* Release Countdown - appears after bio, before everything else */}
-      {showCountdown && (
-        <ReleaseCountdown 
-          releaseDate={landingPageSettings!.next_release_date!}
-          bookTitle={landingPageSettings!.next_release_title!}
-        />
-      )}
-
       {/* Books Section */}
       <Card className="border border-[#333333]/50 rounded-lg overflow-hidden" prominent>
         <CardHeader>

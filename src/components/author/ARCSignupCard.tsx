@@ -88,20 +88,17 @@ export const ARCSignupCard = ({ authorId, description }: ARCSignupCardProps) => 
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
-          <CardTitle>Join the ARC Program</CardTitle>
-        </div>
+     
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="reader-name">Name *</Label>
+              <Label htmlFor="reader-name">Full Name *</Label>
               <Input
                 id="reader-name"
-                placeholder="Your full name"
+                placeholder=""
                 value={formData.reader_name}
                 onChange={(e) => setFormData(prev => ({ ...prev, reader_name: e.target.value }))}
                 required
@@ -112,7 +109,7 @@ export const ARCSignupCard = ({ authorId, description }: ARCSignupCardProps) => 
               <Input
                 id="reader-email"
                 type="email"
-                placeholder="your.email@example.com"
+                placeholder=""
                 value={formData.reader_email}
                 onChange={(e) => setFormData(prev => ({ ...prev, reader_email: e.target.value }))}
                 required
@@ -124,7 +121,7 @@ export const ARCSignupCard = ({ authorId, description }: ARCSignupCardProps) => 
             <Label htmlFor="reader-location">Location (Optional)</Label>
             <Input
               id="reader-location"
-              placeholder="City, Country"
+              placeholder=""
               value={formData.reader_location}
               onChange={(e) => setFormData(prev => ({ ...prev, reader_location: e.target.value }))}
             />
@@ -134,7 +131,7 @@ export const ARCSignupCard = ({ authorId, description }: ARCSignupCardProps) => 
             <Label htmlFor="arc-message">Why are you interested? (Optional)</Label>
             <Textarea
               id="arc-message"
-              placeholder="Tell the author why you'd like to be an ARC reader..."
+              placeholder=""
               value={formData.message}
               onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
               rows={3}
