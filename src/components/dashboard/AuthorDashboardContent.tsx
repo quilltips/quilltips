@@ -17,11 +17,11 @@ export const AuthorDashboardContent = ({
 }: AuthorDashboardContentProps) => {
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TipStatsCard authorId={authorId} />
-        <ReaderEngagementCard authorId={authorId} />
-      </div>
+      {/* Tips Stats Card */}
+      <TipStatsCard authorId={authorId} />
+      
+      {/* Reader Engagement Banner */}
+      <ReaderEngagementCard authorId={authorId} />
       
       {/* Grid layout for Tip feed and QR codes */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
