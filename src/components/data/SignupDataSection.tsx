@@ -3,7 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, BookOpen, Users, Mail } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 
@@ -132,130 +134,189 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
         <h2 className="text-2xl font-playfair font-medium">Reader Signups</h2>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ARC Signups */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              ARC Readers
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => downloadCSV(
-                arcSignups || [], 
-                'arc_signups',
-                ['Reader Name', 'Reader Email', 'Reader Location', 'Message', 'Status', 'Created At']
-              )}
-              disabled={!arcSignups?.length}
-            >
-              <Download className="h-3 w-3" />
-            </Button>
-          </CardHeader>
-          <CardContent className="pt-2">
-            <div className="text-2xl font-bold">{arcSignups?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Total signups</p>
-            
-            {arcSignups && arcSignups.length > 0 && (
-              <div className="mt-3 space-y-1">
-                {arcSignups.slice(0, 2).map((signup, idx) => (
-                  <div key={idx} className="text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{signup.reader_name}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {signup.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      <Card>
+        <CardContent className="p-6">
+          <Tabs defaultValue="arc" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="arc">
+                ARC Readers ({arcSignups?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="beta">
+                Beta Readers ({betaSignups?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="newsletter">
+                Newsletter Signups ({newsletterSignups?.length || 0})
+              </TabsTrigger>
+            </TabsList>
 
-        {/* Beta Reader Signups */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Beta Readers
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => downloadCSV(
-                betaSignups || [], 
-                'beta_reader_signups',
-                ['Reader Name', 'Reader Email', 'Reading Experience', 'Favorite Genres', 'Message', 'Status', 'Created At']
-              )}
-              disabled={!betaSignups?.length}
-            >
-              <Download className="h-3 w-3" />
-            </Button>
-          </CardHeader>
-          <CardContent className="pt-2">
-            <div className="text-2xl font-bold">{betaSignups?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Total signups</p>
-            
-            {betaSignups && betaSignups.length > 0 && (
-              <div className="mt-3 space-y-1">
-                {betaSignups.slice(0, 2).map((signup, idx) => (
-                  <div key={idx} className="text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{signup.reader_name}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {signup.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
+            {/* ARC Readers Tab */}
+            <TabsContent value="arc" className="mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium">ARC Reader Signups</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => downloadCSV(
+                    arcSignups || [], 
+                    'arc_signups',
+                    ['Reader Name', 'Reader Email', 'Reader Location', 'Message', 'Status', 'Created At']
+                  )}
+                  disabled={!arcSignups?.length}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download CSV
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              
+              {arcSignups && arcSignups.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Message</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {arcSignups.map((signup, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell className="font-medium">{signup.reader_name}</TableCell>
+                        <TableCell>{signup.reader_email}</TableCell>
+                        <TableCell>{signup.reader_location || '-'}</TableCell>
+                        <TableCell className="max-w-xs truncate">{signup.message || '-'}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{signup.status}</Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {formatDistanceToNow(new Date(signup.created_at), { addSuffix: true })}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className="text-center text-muted-foreground py-8">No ARC signups yet</p>
+              )}
+            </TabsContent>
 
-        {/* Newsletter Signups */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              Newsletter
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => downloadCSV(
-                newsletterSignups || [], 
-                'newsletter_signups',
-                ['Subscriber Name', 'Subscriber Email', 'Is Active', 'Created At', 'Unsubscribed At']
-              )}
-              disabled={!newsletterSignups?.length}
-            >
-              <Download className="h-3 w-3" />
-            </Button>
-          </CardHeader>
-          <CardContent className="pt-2">
-            <div className="text-2xl font-bold">{newsletterSignups?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Total subscribers</p>
-            
-            {newsletterSignups && newsletterSignups.length > 0 && (
-              <div className="mt-3 space-y-1">
-                {newsletterSignups.slice(0, 2).map((signup, idx) => (
-                  <div key={idx} className="text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{signup.subscriber_name || 'Anonymous'}</span>
-                      <Badge variant={signup.is_active ? "default" : "secondary"} className="text-xs">
-                        {signup.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
+            {/* Beta Readers Tab */}
+            <TabsContent value="beta" className="mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium">Beta Reader Signups</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => downloadCSV(
+                    betaSignups || [], 
+                    'beta_reader_signups',
+                    ['Reader Name', 'Reader Email', 'Reading Experience', 'Favorite Genres', 'Message', 'Status', 'Created At']
+                  )}
+                  disabled={!betaSignups?.length}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download CSV
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              
+              {betaSignups && betaSignups.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Experience</TableHead>
+                      <TableHead>Genres</TableHead>
+                      <TableHead>Message</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {betaSignups.map((signup, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell className="font-medium">{signup.reader_name}</TableCell>
+                        <TableCell>{signup.reader_email}</TableCell>
+                        <TableCell className="max-w-xs truncate">{signup.reading_experience || '-'}</TableCell>
+                        <TableCell className="max-w-xs truncate">{signup.favorite_genres || '-'}</TableCell>
+                        <TableCell className="max-w-xs truncate">{signup.message || '-'}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{signup.status}</Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {formatDistanceToNow(new Date(signup.created_at), { addSuffix: true })}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className="text-center text-muted-foreground py-8">No beta reader signups yet</p>
+              )}
+            </TabsContent>
+
+            {/* Newsletter Tab */}
+            <TabsContent value="newsletter" className="mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium">Newsletter Subscribers</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => downloadCSV(
+                    newsletterSignups || [], 
+                    'newsletter_signups',
+                    ['Subscriber Name', 'Subscriber Email', 'Is Active', 'Created At', 'Unsubscribed At']
+                  )}
+                  disabled={!newsletterSignups?.length}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download CSV
+                </Button>
+              </div>
+              
+              {newsletterSignups && newsletterSignups.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Subscribed</TableHead>
+                      <TableHead>Unsubscribed</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {newsletterSignups.map((signup, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell className="font-medium">{signup.subscriber_name || 'Anonymous'}</TableCell>
+                        <TableCell>{signup.subscriber_email}</TableCell>
+                        <TableCell>
+                          <Badge variant={signup.is_active ? "default" : "secondary"}>
+                            {signup.is_active ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {formatDistanceToNow(new Date(signup.created_at), { addSuffix: true })}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {signup.unsubscribed_at 
+                            ? formatDistanceToNow(new Date(signup.unsubscribed_at), { addSuffix: true })
+                            : '-'
+                          }
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className="text-center text-muted-foreground py-8">No newsletter subscribers yet</p>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };
