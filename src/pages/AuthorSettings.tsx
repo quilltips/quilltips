@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +10,6 @@ import { AccountTab } from "@/components/settings/AccountTab";
 import { PaymentTab } from "@/components/settings/PaymentTab";
 import { LandingPageTab } from "@/components/settings/LandingPageTab";
 import { Settings } from "lucide-react";
-
 const AuthorSettings = () => {
   const [profile, setProfile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,27 +18,30 @@ const AuthorSettings = () => {
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("profile");
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
 
   // Use the hook to prevent window/tab closing with unsaved changes
   usePreventNavigation(hasUnsavedChanges);
-
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const {
+          data: {
+            user
+          },
+          error: authError
+        } = await supabase.auth.getUser();
         if (authError) throw authError;
         if (!user) {
           navigate("/author/login");
           return;
         }
-
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .maybeSingle();
-
+        const {
+          data: profileData,
+          error: profileError
+        } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
         if (profileError) throw profileError;
         setProfile(profileData);
       } catch (error: any) {
@@ -48,14 +49,13 @@ const AuthorSettings = () => {
         toast({
           title: "Error",
           description: error?.message || "Failed to load profile",
-          variant: "destructive",
+          variant: "destructive"
         });
         navigate("/author/login");
       } finally {
         setIsLoading(false);
       }
     };
-
     checkAuth();
   }, [navigate, toast]);
 
@@ -65,14 +65,12 @@ const AuthorSettings = () => {
     const handleNavigation = (event: MouseEvent) => {
       // Only intercept navigation if there are unsaved changes
       if (!hasUnsavedChanges) return;
-      
       const target = event.target as HTMLElement;
       const closestLink = target.closest("a");
-      
       if (closestLink && closestLink.getAttribute("href")) {
         // Get the destination
         const href = closestLink.getAttribute("href");
-        
+
         // Only intercept internal navigation (not external links)
         if (href && !href.startsWith("http") && !href.startsWith("mailto:")) {
           event.preventDefault();
@@ -81,14 +79,11 @@ const AuthorSettings = () => {
         }
       }
     };
-
     document.addEventListener("click", handleNavigation);
-    
     return () => {
       document.removeEventListener("click", handleNavigation);
     };
   }, [hasUnsavedChanges]);
-
   const handleConfirmNavigation = () => {
     setShowDialog(false);
     if (pendingNavigation) {
@@ -97,22 +92,15 @@ const AuthorSettings = () => {
       setPendingNavigation(null);
     }
   };
-
   const handleCancelNavigation = () => {
     setShowDialog(false);
     setPendingNavigation(null);
   };
-
   if (isLoading) {
-    return (
-      <div className="text-center pt-24">Loading...</div>
-    );
+    return <div className="text-center pt-24">Loading...</div>;
   }
-
   if (!profile) return null;
-
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-24 pb-12">
         <h1 className="text-3xl font-playfair text-center mb-12 flex items-center justify-center gap-2">
           <Settings className="w-6 h-6" />
@@ -121,44 +109,24 @@ const AuthorSettings = () => {
         <div className="max-w-2xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="border-b w-full justify-start rounded-none bg-transparent p-0 h-auto">
-              <TabsTrigger 
-                value="profile"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent"
-              >
+              <TabsTrigger value="profile" className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent">
                 Profile
               </TabsTrigger>
-              <TabsTrigger 
-                value="landing-page"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent"
-              >
-                Landing Page
-              </TabsTrigger>
-              <TabsTrigger 
-                value="account"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent"
-              >
+              <TabsTrigger value="landing-page" className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent">Reader Engagement</TabsTrigger>
+              <TabsTrigger value="account" className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent">
                 Account
               </TabsTrigger>
-              <TabsTrigger 
-                value="payments"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent"
-              >
+              <TabsTrigger value="payments" className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#333333] data-[state=active]:text-[#333333] data-[state=active]:font-medium bg-transparent">
                 Payments
               </TabsTrigger>
             </TabsList>
             
             <TabsContent value="profile" className="mt-6">
-              <ProfileTab 
-                profile={profile}
-                onChangeStatus={setHasUnsavedChanges}
-              />
+              <ProfileTab profile={profile} onChangeStatus={setHasUnsavedChanges} />
             </TabsContent>
             
             <TabsContent value="landing-page" className="mt-6">
-              <LandingPageTab 
-                profileId={profile.id}
-                onChangeStatus={setHasUnsavedChanges}
-              />
+              <LandingPageTab profileId={profile.id} onChangeStatus={setHasUnsavedChanges} />
             </TabsContent>
             
             <TabsContent value="account" className="mt-6">
@@ -172,13 +140,7 @@ const AuthorSettings = () => {
         </div>
       </div>
 
-      <UnsavedChangesDialog
-        isOpen={showDialog}
-        onCancel={handleCancelNavigation}
-        onConfirm={handleConfirmNavigation}
-      />
-    </div>
-  );
+      <UnsavedChangesDialog isOpen={showDialog} onCancel={handleCancelNavigation} onConfirm={handleConfirmNavigation} />
+    </div>;
 };
-
 export default AuthorSettings;
