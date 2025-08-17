@@ -40,7 +40,7 @@ export const AuthorProfileContent = ({
     const fetchLandingPageSettings = async () => {
       try {
         const { data, error } = await supabase
-          .from('profiles')
+          .from('public_profiles')
           .select(`
             next_release_date,
             next_release_title,

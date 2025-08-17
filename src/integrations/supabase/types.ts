@@ -497,33 +497,57 @@ export type Database = {
       }
       public_profiles: {
         Row: {
+          arc_signup_description: string | null
+          arc_signup_enabled: boolean | null
           avatar_url: string | null
+          beta_reader_description: string | null
+          beta_reader_enabled: boolean | null
           bio: string | null
           created_at: string | null
           id: string
           name: string | null
+          newsletter_description: string | null
+          newsletter_enabled: boolean | null
+          next_release_date: string | null
+          next_release_title: string | null
           slug: string | null
           social_links: Json | null
           stripe_account_id: string | null
           stripe_setup_complete: boolean | null
         }
         Insert: {
+          arc_signup_description?: string | null
+          arc_signup_enabled?: boolean | null
           avatar_url?: string | null
+          beta_reader_description?: string | null
+          beta_reader_enabled?: boolean | null
           bio?: string | null
           created_at?: string | null
           id: string
           name?: string | null
+          newsletter_description?: string | null
+          newsletter_enabled?: boolean | null
+          next_release_date?: string | null
+          next_release_title?: string | null
           slug?: string | null
           social_links?: Json | null
           stripe_account_id?: string | null
           stripe_setup_complete?: boolean | null
         }
         Update: {
+          arc_signup_description?: string | null
+          arc_signup_enabled?: boolean | null
           avatar_url?: string | null
+          beta_reader_description?: string | null
+          beta_reader_enabled?: boolean | null
           bio?: string | null
           created_at?: string | null
           id?: string
           name?: string | null
+          newsletter_description?: string | null
+          newsletter_enabled?: boolean | null
+          next_release_date?: string | null
+          next_release_title?: string | null
           slug?: string | null
           social_links?: Json | null
           stripe_account_id?: string | null
@@ -923,11 +947,19 @@ export type Database = {
       get_public_profile_by_id: {
         Args: { profile_id: string }
         Returns: {
+          arc_signup_description: string | null
+          arc_signup_enabled: boolean | null
           avatar_url: string | null
+          beta_reader_description: string | null
+          beta_reader_enabled: boolean | null
           bio: string | null
           created_at: string | null
           id: string
           name: string | null
+          newsletter_description: string | null
+          newsletter_enabled: boolean | null
+          next_release_date: string | null
+          next_release_title: string | null
           slug: string | null
           social_links: Json | null
           stripe_account_id: string | null
@@ -941,11 +973,19 @@ export type Database = {
       get_public_profile_by_slug: {
         Args: { profile_slug: string }
         Returns: {
+          arc_signup_description: string | null
+          arc_signup_enabled: boolean | null
           avatar_url: string | null
+          beta_reader_description: string | null
+          beta_reader_enabled: boolean | null
           bio: string | null
           created_at: string | null
           id: string
           name: string | null
+          newsletter_description: string | null
+          newsletter_enabled: boolean | null
+          next_release_date: string | null
+          next_release_title: string | null
           slug: string | null
           social_links: Json | null
           stripe_account_id: string | null

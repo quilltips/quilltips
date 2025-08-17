@@ -17,13 +17,15 @@ export const usePublicProfile = (identifier: string | undefined) => {
         let profileData: any = null;
 
         if (isUUID(identifier)) {
-          // Try UUID lookup using RPC function (public_profiles)
-          const { data, error } = await supabase.rpc('get_public_profile_by_id', { 
-            profile_id: identifier 
-          });
+          // Try UUID lookup from public_profiles with all fields
+          const { data, error } = await supabase
+            .from('public_profiles')
+            .select('*')
+            .eq('id', identifier)
+            .maybeSingle();
 
-          if (!error && data && Array.isArray(data) && data.length > 0) {
-            profileData = data[0];
+          if (!error && data) {
+            profileData = data;
           }
 
           // Fallback: if no public profile, read from profiles directly
@@ -36,13 +38,15 @@ export const usePublicProfile = (identifier: string | undefined) => {
             if (!profErr && prof) profileData = prof;
           }
         } else {
-          // Try slug lookup first using RPC function
-          const { data: slugData, error: slugError } = await supabase.rpc('get_public_profile_by_slug', { 
-            profile_slug: identifier 
-          });
+          // Try slug lookup first from public_profiles
+          const { data: slugData, error: slugError } = await supabase
+            .from('public_profiles')
+            .select('*')
+            .eq('slug', identifier)
+            .maybeSingle();
 
-          if (!slugError && slugData && Array.isArray(slugData) && slugData.length > 0) {
-            profileData = slugData[0];
+          if (!slugError && slugData) {
+            profileData = slugData;
           }
 
           // Fallback: fuzzy name match in public_profiles
@@ -89,7 +93,16 @@ export const usePublicProfile = (identifier: string | undefined) => {
               }))
             : null,
           role: 'author',
-          created_at: profileData.created_at
+          created_at: profileData.created_at,
+          // Include landing page settings
+          next_release_date: profileData.next_release_date,
+          next_release_title: profileData.next_release_title,
+          arc_signup_enabled: profileData.arc_signup_enabled,
+          arc_signup_description: profileData.arc_signup_description,
+          beta_reader_enabled: profileData.beta_reader_enabled,
+          beta_reader_description: profileData.beta_reader_description,
+          newsletter_enabled: profileData.newsletter_enabled,
+          newsletter_description: profileData.newsletter_description
         };
       } catch (error) {
         console.error('Error fetching author:', error);
