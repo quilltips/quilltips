@@ -74,12 +74,26 @@ const QRCodeDetails = () => {
               </p>
               
               {/* Added publisher and release date info */}
-              <div className="mt-2 text-sm">
+              <div className="mt-2 text-sm space-y-1">
                 {qrCode.publisher && (
                   <p>Publisher: {qrCode.publisher}</p>
                 )}
                 {qrCode.release_date && (
                   <p>Released: {format(new Date(qrCode.release_date), 'MMMM yyyy')}</p>
+                )}
+                
+                {/* Buy Now button */}
+                {qrCode.buy_now_link && (
+                  <div className="pt-2">
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(qrCode.buy_now_link, '_blank')}
+                      className="text-[#FFD166] border-[#19363C] bg-[#19363C] hover:bg-[#19363C]/80 hover:text-[#FFD166] text-xs px-3 py-1"
+                    >
+                      Buy Now!
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
@@ -101,17 +115,6 @@ const QRCodeDetails = () => {
                     Tipping not available - author setting up payments
                   </p>
                 </div>
-              )}
-              
-              {/* Buy Now button */}
-              {qrCode.buy_now_link && (
-                <Button 
-                  variant="outline"
-                  onClick={() => window.open(qrCode.buy_now_link, '_blank')}
-                  className="w-full rounded-full py-6"
-                >
-                  Buy Now!
-                </Button>
               )}
             </>
           )}
