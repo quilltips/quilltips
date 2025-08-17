@@ -368,7 +368,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
               <Label htmlFor="newsletter-description">Newsletter Description</Label>
               <Textarea
                 id="newsletter-description"
-                placeholder="Describe what readers can expect from your newsletter..."
+                placeholder="Describe what readers can expect from your updates"
                 value={settings.newsletter_description || ''}
                 onChange={(e) => setSettings(prev => ({
                   ...prev,
