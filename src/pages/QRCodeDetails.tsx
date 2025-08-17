@@ -102,6 +102,17 @@ const QRCodeDetails = () => {
                   </p>
                 </div>
               )}
+              
+              {/* Buy Now button */}
+              {qrCode.buy_now_link && (
+                <Button 
+                  variant="outline"
+                  onClick={() => window.open(qrCode.buy_now_link, '_blank')}
+                  className="w-full rounded-full py-6"
+                >
+                  Buy Now!
+                </Button>
+              )}
             </>
           )}
 

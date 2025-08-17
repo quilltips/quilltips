@@ -1,17 +1,19 @@
 import { format } from "date-fns";
 import { Card } from "../ui/card";
-import { RefObject, useRef } from "react";
+import { RefObject, useRef, useState } from "react";
 import { StyledQRCode } from "./StyledQRCode";
 import { QRCodeDownloadOptions } from "./QRCodeDownloadOptions";
 import { toPng } from "html-to-image";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { useQRCheckout } from "@/hooks/use-qr-checkout";
-import { ShoppingCart, Share2 } from "lucide-react";
+import { ShoppingCart, Share2, Edit, Save, X } from "lucide-react";
 import { generateBrandedQRCodeSVG } from "./generateBrandedQRCodeSVG";
 import { OptimizedImage } from "../ui/optimized-image";
 import { BookCoverUpload } from "./BookCoverUpload";
 import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
+import { supabase } from "@/integrations/supabase/client";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -30,6 +32,7 @@ interface QRCodeStatsCardProps {
     publisher?: string | null;
     isbn?: string | null;
     release_date?: string | null;
+    buy_now_link?: string | null;
   } & QRCodeStats;
   qrCodeRef?: RefObject<HTMLDivElement>;
 }
@@ -42,6 +45,10 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     bookTitle: qrCode.book_title
   });
   const { updateCoverImage, imageRefreshKey } = useQRCodeDetailsPage();
+  
+  const [isEditingBuyNow, setIsEditingBuyNow] = useState(false);
+  const [buyNowLinkInput, setBuyNowLinkInput] = useState(qrCode.buy_now_link || "");
+  const [isSaving, setIsSaving] = useState(false);
 
   const downloadRef = useRef<HTMLDivElement>(null);
 
@@ -127,6 +134,41 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     }
   };
 
+  const handleSaveBuyNowLink = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('qr_codes')
+        .update({ buy_now_link: buyNowLinkInput || null })
+        .eq('id', qrCode.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Buy now link updated successfully",
+      });
+
+      setIsEditingBuyNow(false);
+      // Update the local qrCode object
+      qrCode.buy_now_link = buyNowLinkInput || null;
+    } catch (error) {
+      console.error("Error updating buy now link:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update buy now link",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setBuyNowLinkInput(qrCode.buy_now_link || "");
+    setIsEditingBuyNow(false);
+  };
+
   return (
     <div className="grid xl:grid-cols-[3fr_2fr] gap-7 mx-auto">
       {/* Left side - QR Code, Book Cover, and Book Details */}
@@ -185,14 +227,75 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                     <span className="font-sm">ISBN:</span> {qrCode.isbn}
                   </p>
                 )}
-                {qrCode.release_date && (
-                  <p className="text-base">
-                    <span className="font-sm">Release Date:</span>{' '}
-                    {format(new Date(qrCode.release_date), 'PPP')}
-                  </p>
-                )}
-              </div>
-            </div>
+                 {qrCode.release_date && (
+                   <p className="text-base">
+                     <span className="font-sm">Release Date:</span>{' '}
+                     {format(new Date(qrCode.release_date), 'PPP')}
+                   </p>
+                 )}
+               </div>
+
+               {/* Buy Now Link Edit Section */}
+               <div className="space-y-2 pt-2 border-t">
+                 <div className="flex items-center justify-between">
+                   <span className="text-sm font-medium">Buy Now Link:</span>
+                   {!isEditingBuyNow && (
+                     <Button
+                       variant="ghost"
+                       size="sm"
+                       onClick={() => setIsEditingBuyNow(true)}
+                     >
+                       <Edit className="h-3 w-3" />
+                     </Button>
+                   )}
+                 </div>
+                 
+                 {isEditingBuyNow ? (
+                   <div className="space-y-2">
+                     <Input
+                       value={buyNowLinkInput}
+                       onChange={(e) => setBuyNowLinkInput(e.target.value)}
+                       placeholder="Enter Amazon or website link"
+                       type="url"
+                     />
+                     <div className="flex gap-2">
+                       <Button
+                         variant="default"
+                         size="sm"
+                         onClick={handleSaveBuyNowLink}
+                         disabled={isSaving}
+                       >
+                         <Save className="h-3 w-3 mr-1" />
+                         {isSaving ? "Saving..." : "Save"}
+                       </Button>
+                       <Button
+                         variant="ghost"
+                         size="sm"
+                         onClick={handleCancelEdit}
+                       >
+                         <X className="h-3 w-3 mr-1" />
+                         Cancel
+                       </Button>
+                     </div>
+                   </div>
+                 ) : (
+                   <p className="text-sm text-muted-foreground">
+                     {qrCode.buy_now_link ? (
+                       <a 
+                         href={qrCode.buy_now_link} 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         className="text-blue-600 hover:underline"
+                       >
+                         {qrCode.buy_now_link}
+                       </a>
+                     ) : (
+                       "No buy now link set"
+                     )}
+                   </p>
+                 )}
+               </div>
+             </div>
           </div>
         </Card>
       </div>

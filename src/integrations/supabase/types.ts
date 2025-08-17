@@ -437,6 +437,7 @@ export type Database = {
           author_id: string
           average_tip: number | null
           book_title: string
+          buy_now_link: string | null
           cover_image: string | null
           created_at: string
           framed_qr_code_image_url: string | null
@@ -459,6 +460,7 @@ export type Database = {
           author_id: string
           average_tip?: number | null
           book_title: string
+          buy_now_link?: string | null
           cover_image?: string | null
           created_at?: string
           framed_qr_code_image_url?: string | null
@@ -481,6 +483,7 @@ export type Database = {
           author_id?: string
           average_tip?: number | null
           book_title?: string
+          buy_now_link?: string | null
           cover_image?: string | null
           created_at?: string
           framed_qr_code_image_url?: string | null

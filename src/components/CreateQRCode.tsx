@@ -24,6 +24,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const [isbn, setIsbn] = useState("");
   const [releaseDate, setReleaseDate] = useState<Date>();
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
+  const [buyNowLink, setBuyNowLink] = useState("");
   const [imageError, setImageError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -44,6 +45,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           isbn,
           release_date: releaseDate?.toISOString(),
           cover_image: coverImageUrl,
+          buy_now_link: buyNowLink || null,
           qr_code_status: 'pending'
         })
         .select()
@@ -135,6 +137,16 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             onChange={(e) => setIsbn(e.target.value)}
             placeholder=""
             required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Buy Now Link (Optional)</label>
+          <Input
+            value={buyNowLink}
+            onChange={(e) => setBuyNowLink(e.target.value)}
+            placeholder="Enter Amazon or your website link (optional)"
+            type="url"
           />
         </div>
 
