@@ -34,6 +34,7 @@ interface BlogPost {
   content: string;
   featured_image_url: string | null;
   published_at: string;
+  updated_at: string;
   view_count: number;
   read_time_minutes: number | null;
   meta_title: string | null;
@@ -84,6 +85,7 @@ export default function BlogPostPage() {
           content,
           featured_image_url,
           published_at,
+          updated_at,
           view_count,
           read_time_minutes,
           meta_title,
@@ -223,11 +225,42 @@ export default function BlogPostPage() {
   return (
     <>
       <Meta
-        title={post.meta_title || post.title}
+        title={`${post.meta_title || post.title} | Quilltips Blog`}
         description={post.meta_description || post.excerpt || "Read this blog post on Quilltips"}
         keywords={post.meta_keywords || ["blog", "writing", "publishing"]}
         image={generateOGImageUrl(post)}
         url={`https://quilltips.co/blog/${post.slug}`}
+        canonical={`https://quilltips.co/blog/${post.slug}`}
+        type="article"
+        publishedTime={post.published_at}
+        modifiedTime={post.updated_at}
+        author={post.author.name}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": post.title,
+          "description": post.meta_description || post.excerpt || "",
+          "image": generateOGImageUrl(post),
+          "author": {
+            "@type": "Person",
+            "name": post.author.name,
+            "url": post.author.avatar_url ? `https://quilltips.co/author/${post.author.name.toLowerCase().replace(/\s+/g, '-')}` : undefined
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Quilltips",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://quilltips.co/og-image.png"
+            }
+          },
+          "datePublished": post.published_at,
+          "dateModified": post.updated_at,
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://quilltips.co/blog/${post.slug}`
+          }
+        }}
       />
       
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
