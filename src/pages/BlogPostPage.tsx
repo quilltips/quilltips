@@ -59,6 +59,7 @@ interface RelatedPost {
   slug: string;
   excerpt: string | null;
   published_at: string;
+  featured_image_url: string | null;
   author: {
     name: string;
   };
@@ -125,6 +126,32 @@ export default function BlogPostPage() {
         referrer: document.referrer,
       }]);
     },
+  });
+
+  // Fetch related posts
+  const { data: relatedPosts, isLoading: loadingRelated } = useQuery({
+    queryKey: ['related-posts', post?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select(`
+          id,
+          title,
+          slug,
+          excerpt,
+          published_at,
+          featured_image_url,
+          author:public_profiles!blog_posts_author_public_profiles_fkey(name)
+        `)
+        .eq('status', 'published')
+        .neq('id', post!.id)
+        .order('published_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      return data as RelatedPost[];
+    },
+    enabled: !!post?.id,
   });
 
   // Track view when post loads
@@ -364,7 +391,7 @@ export default function BlogPostPage() {
               />
             </div>
 
-            {/* Related Posts Placeholder */}
+            {/* Related Posts */}
             <div className="border-t border-gray-200 pt-12">
               <div className="flex items-center gap-3 mb-8">
                 <BookOpen className="h-6 w-6 text-[#19363C]" />
@@ -372,16 +399,55 @@ export default function BlogPostPage() {
                   Related Posts
                 </h2>
               </div>
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 text-center">
-                <BookOpen className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">More Great Content Coming Soon!</h3>
-                <p className="text-gray-600 mb-6">
-                  We're working on bringing you more insightful posts about writing, publishing, and author success.
-                </p>
-                <Button onClick={() => navigate('/blog')} className="bg-[#19363C] hover:bg-[#0f2529]">
-                  Browse All Posts
-                </Button>
-              </div>
+              
+              {loadingRelated ? (
+                <div className="flex justify-center py-12">
+                  <LoadingSpinner />
+                </div>
+              ) : relatedPosts && relatedPosts.length > 0 ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {relatedPosts.map((relatedPost) => (
+                    <Card key={relatedPost.id} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white overflow-hidden">
+                      <Link to={`/blog/${relatedPost.slug}`} className="block">
+                        {relatedPost.featured_image_url && (
+                          <div className="aspect-video overflow-hidden">
+                            <img
+                              src={relatedPost.featured_image_url}
+                              alt={relatedPost.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )}
+                        <CardContent className="p-6">
+                          <h3 className="text-xl font-playfair font-bold text-[#19363C] mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+                            {relatedPost.title}
+                          </h3>
+                          {relatedPost.excerpt && (
+                            <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                              {relatedPost.excerpt}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between text-sm text-gray-500">
+                            <span className="font-medium">{relatedPost.author.name}</span>
+                            <span>{format(new Date(relatedPost.published_at), 'MMM d, yyyy')}</span>
+                          </div>
+                        </CardContent>
+                      </Link>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 text-center">
+                  <BookOpen className="h-12 w-12 text-blue-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">More Great Content Coming Soon!</h3>
+                  <p className="text-gray-600 mb-6">
+                    We're working on bringing you more insightful posts about writing, publishing, and author success.
+                  </p>
+                  <Button onClick={() => navigate('/blog')} className="bg-[#19363C] hover:bg-[#0f2529]">
+                    Browse All Posts
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </article>
