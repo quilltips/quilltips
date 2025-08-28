@@ -91,7 +91,7 @@ const BookQRCodesPage = () => {
             <h1 className="text-3xl font-playfair font-medium ">Quilltips Jars</h1>
             <Button 
               onClick={() => handleTabChange('new')} 
-              className="bg-[#FFD166] hover:bg-[#FFD166]/90  font-medium md:hidden"
+              className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium md:hidden"
             >
               <Plus className="h-4 w-4 mr-2" />
               New QR Code
