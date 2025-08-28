@@ -36,6 +36,12 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
     try {
       if (imageError) throw new Error(imageError);
 
+      // Process buy now link to ensure it has a protocol
+      let processedBuyNowLink = buyNowLink;
+      if (buyNowLink && !buyNowLink.match(/^https?:\/\//)) {
+        processedBuyNowLink = `https://${buyNowLink}`;
+      }
+
       const { data: qrCode, error: qrError } = await supabase
         .from('qr_codes')
         .insert({
@@ -45,7 +51,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           isbn,
           release_date: releaseDate?.toISOString(),
           cover_image: coverImageUrl,
-          buy_now_link: buyNowLink || null,
+          buy_now_link: processedBuyNowLink || null,
           qr_code_status: 'pending'
         })
         .select()
@@ -145,8 +151,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           <Input
             value={buyNowLink}
             onChange={(e) => setBuyNowLink(e.target.value)}
-            placeholder="Enter Amazon or your website link (optional)"
-            type="url"
+            placeholder=""
+            type="text"
           />
         </div>
 
