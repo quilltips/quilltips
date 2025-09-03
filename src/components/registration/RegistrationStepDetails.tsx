@@ -8,6 +8,10 @@ interface RegistrationStepDetailsProps {
   error: string | null;
   onAvatarSelected: (file: File | null) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  initialName?: string;
+  initialBio?: string;
+  initialSocialLinks?: { url: string; label: string }[];
+  initialAvatarPreview?: string;
 }
 
 export const RegistrationStepDetails = ({
@@ -15,6 +19,10 @@ export const RegistrationStepDetails = ({
   error,
   onAvatarSelected,
   onSubmit,
+  initialName,
+  initialBio,
+  initialSocialLinks,
+  initialAvatarPreview,
 }: RegistrationStepDetailsProps) => {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
@@ -31,6 +39,10 @@ export const RegistrationStepDetails = ({
       <AuthorRegistrationFields 
         isLoading={isLoading} 
         onAvatarSelected={onAvatarSelected}
+        initialName={initialName}
+        initialBio={initialBio}
+        initialSocialLinks={initialSocialLinks}
+        initialAvatarPreview={initialAvatarPreview}
       />
 
       <Button

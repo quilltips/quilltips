@@ -8,6 +8,7 @@ import { RegistrationStepInitial } from "./registration/RegistrationStepInitial"
 import { RegistrationStepOTP } from "./registration/RegistrationStepOTP";
 import { RegistrationStepDetails } from "./registration/RegistrationStepDetails";
 import { RegistrationStepStripe } from "./registration/RegistrationStepStripe";
+import { useEffect } from "react";
 
 type RegistrationStep = "initial" | "otp-verification" | "details" | "stripe-onboarding";
 
@@ -18,7 +19,29 @@ export const AuthorRegistrationForm = () => {
   const [registrationData, setRegistrationData] = useState<{
     email?: string;
     password?: string;
+    prefillName?: string;
+    prefillBio?: string;
+    prefillSocialLinks?: { url: string; label: string }[];
+    prefillAvatarDataUrl?: string;
   }>({});
+  // Load prefill data from localStorage on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('qt_registration_prefill');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setRegistrationData((prev) => ({
+          ...prev,
+          prefillName: parsed?.name || undefined,
+          prefillBio: parsed?.bio || undefined,
+          prefillSocialLinks: parsed?.socialLinks || undefined,
+          prefillAvatarDataUrl: parsed?.avatarDataUrl || undefined,
+        }));
+        // Clear prefill after loading to avoid stale data later
+        localStorage.removeItem('qt_registration_prefill');
+      }
+    } catch (_) {}
+  }, []);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -309,6 +332,10 @@ export const AuthorRegistrationForm = () => {
               error={error}
               onAvatarSelected={(file) => setAvatarFile(file)}
               onSubmit={handleDetailsSubmit}
+              initialName={registrationData.prefillName}
+              initialBio={registrationData.prefillBio}
+              initialSocialLinks={registrationData.prefillSocialLinks}
+              initialAvatarPreview={registrationData.prefillAvatarDataUrl}
             />
           </div>
         )}

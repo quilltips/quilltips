@@ -17,6 +17,10 @@ interface SocialLink {
 interface AuthorRegistrationFieldsProps {
   isLoading: boolean;
   onAvatarSelected: (file: File | null) => void;
+  initialName?: string;
+  initialBio?: string;
+  initialSocialLinks?: SocialLink[];
+  initialAvatarPreview?: string;
 }
 
 const identifySocialPlatform = (url: string): string => {
@@ -50,14 +54,14 @@ const truncateFilename = (filename: string, maxLength: number = 25): string => {
   return `${truncatedName}...${extension}`;
 };
 
-export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: AuthorRegistrationFieldsProps) => {
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected, initialName, initialBio, initialSocialLinks, initialAvatarPreview }: AuthorRegistrationFieldsProps) => {
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(initialSocialLinks || []);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(initialAvatarPreview || null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [newUrl, setNewUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [bioValue, setBioValue] = useState("");
+  const [bioValue, setBioValue] = useState(initialBio || "");
   const { toast } = useToast();
 
   const SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
@@ -202,6 +206,7 @@ export const AuthorRegistrationFields = ({ isLoading, onAvatarSelected }: Author
           required
           className="text-left"
           disabled={isLoading}
+          defaultValue={initialName}
         />
       </div>
 
