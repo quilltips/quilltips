@@ -7,7 +7,7 @@ const Pricing = () => {
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <div className="max-w-3xl mx-auto">
           <header className="mb-12">
-            <h1 className="text-4xl font-semibold">Sign up and build your author profile for free</h1>
+            <h1 className="text-4xl font-semibold">Sign up and publish your author profile for free</h1>
             <p className="text-xl md:text-2xl mt-3">Pay a one-time price of $35 for each book you add</p>
             <p className="text-xl md:text-2xl mt-3">No subscriptions or recurring charges</p>
           </header>
