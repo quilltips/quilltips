@@ -95,7 +95,7 @@ export const AuthorRegistrationForm = () => {
       }
 
       console.log("Verification code sent successfully");
-      setRegistrationData({ email, password });
+      setRegistrationData(prev => ({ ...prev, email, password }));
       setCurrentStep("otp-verification");
       
       toast({

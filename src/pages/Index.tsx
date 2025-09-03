@@ -349,6 +349,10 @@ const Index = () => {
                 try {
                   localStorage.setItem('qt_registration_prefill', JSON.stringify(payload));
                 } catch (_) {}
+                toast({
+                  title: "Info saved",
+                  description: "Continue to create account"
+                });
                 navigate('/author/register');
               }}
               className="flex flex-col gap-5 max-w-2xl"
