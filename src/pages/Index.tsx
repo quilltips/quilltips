@@ -45,14 +45,11 @@ const Index = () => {
   const closeImageModal = () => {
     setExpandedImage(null);
   };
-  const carouselImages = [
-    {
-      src: "/lovable-uploads/screenshots/about_author_qr.webp",
-      alt: "About the author example",
-      title: "About author"
-    },
-    
-    {
+  const carouselImages = [{
+    src: "/lovable-uploads/screenshots/about_author_qr.webp",
+    alt: "About the author example",
+    title: "About author"
+  }, {
     src: "/lovable-uploads/screenshots/crumble_screenshot.webp",
     alt: "Reader tip jar view",
     title: "Reader Tip Jar"
@@ -64,7 +61,7 @@ const Index = () => {
     src: "/lovable-uploads/screenshots/QT_dashboard.webp",
     alt: "Author dashboard view",
     title: "Author Dashboard"
-  } ];
+  }];
   useEffect(() => {
     if (!api) {
       return;
@@ -131,24 +128,14 @@ const Index = () => {
           {/* Right Visual - Product Demo Video */}
           <div className="flex-1 flex justify-center lg:justify-center max-w-sm lg:max-w-md">
             <div className="relative w-[220px] lg:w-[320px]">
-              <VideoPlayer
-                src="/lovable-uploads/quilltips-demo.mp4"
-                posterTime={2}
-                alt="Quilltips product demo video showing QR code scan and reader tipping and messaging interaction"
-                autoPlay={false}
-                muted={true}
-                loop={true}
-                aspectRatio="mobile"
-                objectFit="cover"
-                className="w-full plausible-event-name=watch-demo"
-              />
+              <VideoPlayer src="/lovable-uploads/quilltips-demo.mp4" posterTime={2} alt="Quilltips product demo video showing QR code scan and reader tipping and messaging interaction" autoPlay={false} muted={true} loop={true} aspectRatio="mobile" objectFit="cover" className="w-full plausible-event-name=watch-demo" />
             </div>
           </div>
         </div>
       </div>
 
-{/* Value Props */}
-<div className="mx-auto w-full max-w-6xl mt-32 px-4">
+      {/* Value Props */}
+      <div className="mx-auto w-full max-w-6xl mt-32 px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[{
             icon: <DollarSign className="w-8 h-8 text-[#19363C]" />,
@@ -196,32 +183,22 @@ const Index = () => {
           <div className="relative">
             <Carousel setApi={setApi} className="w-full">
               <CarouselContent>
-                {carouselImages.map((image, index) => (
-                  <CarouselItem key={index}>
+                {carouselImages.map((image, index) => <CarouselItem key={index}>
                     <div className="p-1">
-                      <div
-                        className="rounded-2xl bg-transparent p-3 cursor-pointer transition-all duration-200 hover:shadow-none"
-                        onClick={() => openImageModal(image.src, image.alt, image.title)}
-                      >
+                      <div className="rounded-2xl bg-transparent p-3 cursor-pointer transition-all duration-200 hover:shadow-none" onClick={() => openImageModal(image.src, image.alt, image.title)}>
                         <div className="w-full">
                           <img src={image.src} alt={image.alt} className="w-full h-[420px] lg:h-[460px] rounded-xl object-contain" />
                         </div>
                       </div>
                     </div>
-                  </CarouselItem>
-                ))}
+                  </CarouselItem>)}
               </CarouselContent>
             </Carousel>
             {/* Dot indicators */}
             <div className="flex justify-center space-x-2 mt-4">
-              {Array.from({ length: count }).map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-3 h-3 rounded-full transition-colors duration-200 plausible-event-name=carousel-images ${index + 1 === current ? 'bg-[#FFD166]' : 'bg-[#19363C]/20 hover:bg-[#19363C]/40'}`}
-                  onClick={() => api?.scrollTo(index)}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
+              {Array.from({
+                length: count
+              }).map((_, index) => <button key={index} className={`w-3 h-3 rounded-full transition-colors duration-200 plausible-event-name=carousel-images ${index + 1 === current ? 'bg-[#FFD166]' : 'bg-[#19363C]/20 hover:bg-[#19363C]/40'}`} onClick={() => api?.scrollTo(index)} aria-label={`Go to slide ${index + 1}`} />)}
             </div>
           </div>
         </div>
@@ -291,11 +268,7 @@ const Index = () => {
         <div className="grid md:grid-cols-2 gap-10 items-center">
           {/* Image left on desktop */}
           <div className="order-1 md:order-1 flex justify-center md:justify-start">
-            <img
-              src="/lovable-uploads/reader_quilltips.webp"
-              alt="Reader scanning a QR code to tip an author"
-              className="w-full max-w-[260px] md:max-w-[300px] rounded-xl"
-            />
+            <img src="/lovable-uploads/reader_quilltips.webp" alt="Reader scanning a QR code to tip an author" className="w-full max-w-[260px] md:max-w-[300px] rounded-xl" />
           </div>
           {/* Text right on desktop */}
           <div className="order-2 md:order-2">
@@ -326,37 +299,36 @@ const Index = () => {
 
           {/* Right: Inline prefill form */}
           <Card className="bg-transparent rounded-2xl p-6 md:p-8">
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const form = e.currentTarget as HTMLFormElement;
-                const formData = new FormData(form);
-                const name = String(formData.get('prefill_name') || '');
-                const bio = String(formData.get('prefill_bio') || '');
-                const file = (formData.get('prefill_avatar') as File | null) || null;
-
-                let avatarDataUrl: string | undefined = undefined;
-                if (file && file.size > 0) {
-                  avatarDataUrl = await new Promise<string>((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(String(reader.result));
-                    reader.onerror = () => reject(new Error('Failed to read image'));
-                    reader.readAsDataURL(file);
-                  });
-                }
-
-                const payload = { name, bio, avatarDataUrl };
-                try {
-                  localStorage.setItem('qt_registration_prefill', JSON.stringify(payload));
-                } catch (_) {}
-                toast({
-                  title: "Info saved",
-                  description: "Continue to create account"
+            <form onSubmit={async e => {
+              e.preventDefault();
+              const form = e.currentTarget as HTMLFormElement;
+              const formData = new FormData(form);
+              const name = String(formData.get('prefill_name') || '');
+              const bio = String(formData.get('prefill_bio') || '');
+              const file = formData.get('prefill_avatar') as File | null || null;
+              let avatarDataUrl: string | undefined = undefined;
+              if (file && file.size > 0) {
+                avatarDataUrl = await new Promise<string>((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onload = () => resolve(String(reader.result));
+                  reader.onerror = () => reject(new Error('Failed to read image'));
+                  reader.readAsDataURL(file);
                 });
-                navigate('/author/register');
-              }}
-              className="flex flex-col gap-5 max-w-2xl"
-            >
+              }
+              const payload = {
+                name,
+                bio,
+                avatarDataUrl
+              };
+              try {
+                localStorage.setItem('qt_registration_prefill', JSON.stringify(payload));
+              } catch (_) {}
+              toast({
+                title: "Info saved",
+                description: "Continue to create account"
+              });
+              navigate('/author/register');
+            }} className="flex flex-col gap-5 max-w-2xl">
               <div>
                 <label htmlFor="prefill_name" className="block text-sm font-medium text-[#333333] mb-1">Name</label>
                 <input id="prefill_name" name="prefill_name" className="w-full rounded-md bg-white text-[#19363C] px-3 py-2 border border-gray-300" />
@@ -386,9 +358,7 @@ const Index = () => {
       {/* Pricing (Figma-style) */}
       <div className="mx-auto w-full max-w-5xl mt-32 px-4">
         <h2 className="text-3xl md:text-4xl font-playfair font-semibold text-[#19363C] mb-4">Does this cost money?</h2>
-        <p className="text-lg md:text-xl text-[#19363C]/90 leading-relaxed max-w-3xl">
-          Sign up and create your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started.
-        </p>
+        <p className="text-lg md:text-xl text-[#19363C]/90 leading-relaxed max-w-3xl">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started.</p>
       </div>
 
       
