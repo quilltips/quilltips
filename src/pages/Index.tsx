@@ -216,7 +216,7 @@ const Index = () => {
 
       {/* How It Works (condensed) */}
       <div className="mx-auto w-full max-w-5xl mt-28 px-4">
-        <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-center mb-12 text-[#19363C]">How Does It Work?</h2>
+        <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-center mb-12 text-[#19363C]">How does Quilltips work?</h2>
 
         {[{
           icon: <QrCode className="w-12 h-12 md:w-16 md:h-16 text-[#FFD166]" />,
