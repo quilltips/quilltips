@@ -1,6 +1,15 @@
 User-agent: *
 Allow: /
 
+# Sitemap location (dynamic, includes all blog posts and author profiles)
+Sitemap: https://qrawynczvedffcvnympn.supabase.co/functions/v1/sitemap-xml
+
+# Fallback static sitemap
+Sitemap: https://quilltips.co/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1
+
 # Allow social media crawlers
 User-agent: Twitterbot
 Allow: /
@@ -13,9 +22,3 @@ Allow: /
 
 User-agent: WhatsApp
 Allow: /
-
-# Sitemap
-Sitemap: https://quilltips.co/sitemap.xml
-
-# Crawl delay
-Crawl-delay: 1

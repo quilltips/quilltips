@@ -30,7 +30,6 @@ import Pricing from "@/pages/Pricing";
 import AdminDashboard from "@/pages/AdminDashboard";
 import BlogPage from "@/pages/BlogPage";
 import BlogPostPage from "@/pages/BlogPostPage";
-import SitemapXML from "@/pages/SitemapXML";
 import { Navigate } from "react-router-dom";
 
 export const routes = [
@@ -73,9 +72,6 @@ export const routes = [
   // Blog routes
   { path: "/blog", component: BlogPage },
   { path: "/blog/:slug", component: BlogPostPage },
-  
-  // Dynamic sitemap
-  { path: "/sitemap.xml", component: SitemapXML },
   
   // Admin route
   { path: "/admin", component: AdminDashboard },

@@ -1,2 +1,5 @@
+# Sitemap served from edge function for dynamic content
+/sitemap.xml https://qrawynczvedffcvnympn.supabase.co/functions/v1/sitemap-xml 200
+
 # Fallback for SPA
-/* /index.html 200 
+/* /index.html 200
