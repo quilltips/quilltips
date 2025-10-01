@@ -134,8 +134,15 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Mission Statement */}
+      <div className="mx-auto w-full max-w-6xl mt-24 px-4">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-playfair font-medium text-center text-[#19363C]">
+          We help authors make a living from their work
+        </h2>
+      </div>
+
       {/* Value Props */}
-      <div className="mx-auto w-full max-w-6xl mt-32 px-4">
+      <div className="mx-auto w-full max-w-6xl mt-16 px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[{
             icon: <DollarSign className="w-8 h-8 text-[#19363C]" />,
