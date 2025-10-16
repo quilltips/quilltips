@@ -7,6 +7,7 @@ import { Badge } from "./ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { useSearch } from "@/hooks/use-search";
 import { getAuthorUrl } from "@/lib/url-utils";
+import { useSlugGeneration } from "@/hooks/use-slug-generation";
 
 interface SearchResult {
   id: string;
@@ -25,10 +26,12 @@ const SearchResultItem = memo(({ result, onNavigate }: { result: SearchResult, o
     return null;
   }
 
+  const { generateBookUrl } = useSlugGeneration();
+  
   return (
     <Link 
       key={result.id} 
-      to={`/book/${result.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`}
+      to={generateBookUrl(result.book_title)}
       className="block transition-transform hover:scale-102"
       onClick={onNavigate}
     >
@@ -110,6 +113,7 @@ export const Search = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   const navigate = useNavigate();
+  const { generateBookUrl } = useSlugGeneration();
 
   const {
     query,
@@ -192,7 +196,7 @@ export const Search = () => {
         {results?.books && results.books.length > 0 && (
           <div className="space-y-4 animate-slideUp">
             {results.books.map((result) => (
-              result ? <SearchResultItem key={result.id} result={result} onNavigate={() => handleResultClick(`/book/${result.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)} /> : null
+              result ? <SearchResultItem key={result.id} result={result} onNavigate={() => handleResultClick(generateBookUrl(result.book_title))} /> : null
             ))}
           </div>
         )}

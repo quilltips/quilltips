@@ -5,6 +5,7 @@ import { Card, CardContent } from "./ui/card";
 import { Loader2, Book, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
+import { getBookUrl } from "@/lib/url-utils";
 
 interface AuthorQRCodesProps {
   authorId: string;
@@ -62,7 +63,7 @@ export const AuthorQRCodes = ({
       {displayedQRCodes.map((qrCode) => (
         <Link 
           key={qrCode.id}
-          to={`/book/${qrCode.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`} 
+          to={getBookUrl(qrCode)} 
           className="block group"
         >
           <Card className="transition-all hover:bg-[white]/70 ">

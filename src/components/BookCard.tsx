@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSlugGeneration } from "@/hooks/use-slug-generation";
 
 interface BookCardProps {
   id: string;
@@ -34,10 +35,11 @@ export const BookCard = ({
   releaseDate,
 }: BookCardProps) => {
   const [showTipDialog, setShowTipDialog] = useState(false);
+  const { generateBookUrl, generateProfileUrl } = useSlugGeneration();
 
   return (
     <Card className="overflow-hidden group cursor-pointer">
-      <Link to={`/book/${title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`} className="block">
+      <Link to={generateBookUrl(title)} className="block">
         <div className="h-24 relative">
           <img
             src={coverImage || "/lovable-uploads/logo_nav.png"}
@@ -53,7 +55,7 @@ export const BookCard = ({
             <p className="text-xs ">
               by{" "}
               <Link 
-                to={`/author/${authorName.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`} 
+                to={generateProfileUrl(authorName)} 
                 onClick={(e) => e.stopPropagation()}
                 className="hover:underline"
               >

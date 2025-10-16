@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { getAuthorBookUrl } from "@/lib/url-utils";
 
 interface AuthorQRCodesListProps {
   authorId: string;
@@ -152,7 +153,7 @@ export const AuthorQRCodesList = ({
               <QRCodeCard 
                 key={qr.id} 
                 qrCode={qr} 
-                onNavigate={() => navigate(`/author/book/${qr.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}
+                onNavigate={() => navigate(getAuthorBookUrl(qr))}
               />
             ))}
           </div>

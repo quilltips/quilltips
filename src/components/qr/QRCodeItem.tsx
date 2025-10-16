@@ -4,6 +4,7 @@ import { Card } from "../ui/card";
 import { useNavigate } from "react-router-dom";
 import { OptimizedImage } from "../ui/optimized-image";
 import { ChevronRight } from "lucide-react";
+import { getAuthorBookUrl } from "@/lib/url-utils";
 
 interface QRCodeItemProps {
   qrCode: {
@@ -20,8 +21,7 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    const bookSlug = qrCode.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
-    navigate(`/author/book/${bookSlug}`);
+    navigate(getAuthorBookUrl(qrCode));
   };
 
   return (

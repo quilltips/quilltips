@@ -6,6 +6,7 @@ import { useSearch } from "@/hooks/use-search";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Search, User, Book, X } from "lucide-react";
+import { useSlugGeneration } from "@/hooks/use-slug-generation";
 
 interface MobileSearchProps {
   onNavigate?: () => void;
@@ -17,6 +18,7 @@ export function MobileSearch({ onNavigate, onClose }: MobileSearchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
+  const { generateProfileUrl, generateBookUrl } = useSlugGeneration();
   const {
     query,
     results,
@@ -105,7 +107,7 @@ export function MobileSearch({ onNavigate, onClose }: MobileSearchProps) {
                 <button
                   key={`author-${author.id}`}
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-accent/20 flex items-center gap-3 transition-colors"
-                  onClick={() => handleResultClick(`/author/${author.name?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}
+                  onClick={() => handleResultClick(generateProfileUrl(author.name || 'author'))}
                   type="button"
                 >
                   <div className="w-6 h-6 rounded-full bg-[#19363C] text-[#FFD166] flex items-center justify-center text-xs font-semibold">
@@ -124,7 +126,7 @@ export function MobileSearch({ onNavigate, onClose }: MobileSearchProps) {
                 <button
                   key={`book-${book.id}`}
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-accent/20 flex items-center gap-3 transition-colors"
-                  onClick={() => handleResultClick(`/book/${book.book_title?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}
+                  onClick={() => handleResultClick(generateBookUrl(book.book_title || 'book'))}
                   type="button"
                 >
                   <div className="w-6 h-6 rounded bg-muted flex items-center justify-center shrink-0">

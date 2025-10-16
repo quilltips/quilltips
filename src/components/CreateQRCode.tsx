@@ -46,7 +46,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         .from('qr_codes')
         .insert({
           author_id: authorId,
-          book_title: bookTitle,
+          book_title: bookTitle.trim(),
           publisher,
           isbn,
           release_date: releaseDate?.toISOString(),

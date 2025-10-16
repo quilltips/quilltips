@@ -8,11 +8,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSearch } from "@/hooks/use-search";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getAuthorUrl } from "@/lib/url-utils";
+import { useSlugGeneration } from "@/hooks/use-slug-generation";
 
 export const SearchBar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const { generateBookUrl } = useSlugGeneration();
   
   const {
     query,
@@ -114,7 +116,7 @@ export const SearchBar = () => {
                   {results?.books?.filter(book => book && book.id && book.author).map((book) => (
                     <Link
                       key={book.id}
-                      to={`/book/${book.book_title?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`}
+                      to={generateBookUrl(book.book_title || 'book')}
                       className="block p-2 hover:bg-accent"
                       onClick={handleClosePopover}
                     >

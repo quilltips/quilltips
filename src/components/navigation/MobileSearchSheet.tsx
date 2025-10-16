@@ -8,6 +8,7 @@ import { useSearch } from "@/hooks/use-search";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Search, User, Book } from "lucide-react";
+import { useSlugGeneration } from "@/hooks/use-slug-generation";
 
 interface MobileSearchSheetProps {
   onNavigate?: () => void;
@@ -18,6 +19,7 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
+  const { generateProfileUrl, generateBookUrl } = useSlugGeneration();
   const {
     query,
     results,
@@ -108,7 +110,7 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
                 <button
                   key={`author-${author.id}`}
                   className="w-full text-left px-4 py-3 rounded-lg hover:bg-accent/20 flex items-center gap-3 transition-colors"
-                  onClick={() => handleResultClick(`/author/${author.name?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}
+                  onClick={() => handleResultClick(generateProfileUrl(author.name || 'author'))}
                   type="button"
                 >
                   <div className="w-8 h-8 rounded-full bg-[#19363C] text-[#FFD166] flex items-center justify-center text-sm font-semibold">
@@ -127,7 +129,7 @@ export function MobileSearchSheet({ onNavigate }: MobileSearchSheetProps) {
                 <button
                   key={`book-${book.id}`}
                   className="w-full text-left px-4 py-3 rounded-lg hover:bg-accent/20 flex items-center gap-3 transition-colors"
-                  onClick={() => handleResultClick(`/book/${book.book_title?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}
+                  onClick={() => handleResultClick(generateBookUrl(book.book_title || 'book'))}
                   type="button"
                 >
                   <div className="w-8 h-8 rounded bg-muted flex items-center justify-center shrink-0">

@@ -26,26 +26,32 @@ export const useSlugGeneration = () => {
   };
 
   const generateProfileUrl = (name: string): string => {
-    const slug = name.toLowerCase()
+    const slug = name
+      .trim()
+      .toLowerCase()
       .replace(/[^a-zA-Z0-9\s]/g, '')
       .replace(/\s+/g, '-')
-      .trim();
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
     return `/author/${slug}`;
   };
 
   const generateBookUrl = (bookTitle: string): string => {
-    const slug = bookTitle.toLowerCase()
+    const slug = bookTitle
+      .trim()
+      .toLowerCase()
       .replace(/[^a-zA-Z0-9\s]/g, '')
       .replace(/\s+/g, '-')
-      .trim();
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
     return `/book/${slug}`;
   };
 
   const generateAuthorBookUrl = (bookTitle: string): string => {
-    const slug = bookTitle.toLowerCase()
+    const slug = bookTitle
+      .trim()
+      .toLowerCase()
       .replace(/[^a-zA-Z0-9\s]/g, '')
       .replace(/\s+/g, '-')
-      .trim();
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
     return `/author/book/${slug}`;
   };
 
