@@ -114,8 +114,8 @@ const Index = () => {
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-2 lg:pt-4">
               <RouterLink to="/author/register">
-                <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" data-plausible-event="create-account-hero">
-                  Create my QR code
+                <Button size="lg" className=" min-w-[180px] bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" data-plausible-event="create-account-hero">
+                  Sign up
                 </Button>
               </RouterLink>
               <RouterLink to="/how-it-works">
@@ -135,8 +135,7 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Featured Authors */}
-      <FeaturedAuthorsCarousel />
+   
 
       {/* Mission Statement */}
       <div className="mx-auto w-full max-w-6xl mt-24 px-4">
@@ -176,8 +175,15 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Featured Authors Banner */}
+      <div className="w-full bg-transparent py-2 mt-12 -mx-4 sm:-mx-6 lg:-mx-8">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FeaturedAuthorsCarousel />
+        </div>
+      </div>
+
       {/* What is Quilltips (Horizontal with carousel on right) */}
-      <div className="mx-auto w-full max-w-6xl mt-16 lg:mt-28 px-4">
+      <div className="mx-auto w-full max-w-6xl mt-12 lg:mt-24 px-4">
         <div className="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left: Copy */}
           <div className="space-y-6">

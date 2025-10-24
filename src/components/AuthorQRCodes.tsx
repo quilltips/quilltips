@@ -60,7 +60,7 @@ export const AuthorQRCodes = ({
 
   return (
     <div className="space-y-3">
-      {displayedQRCodes.map((qrCode) => (
+      {displayedQRCodes.map((qrCode, index) => (
         <Link 
           key={qrCode.id}
           to={getBookUrl(qrCode)} 
@@ -68,7 +68,7 @@ export const AuthorQRCodes = ({
         >
           <Card className="transition-all hover:bg-[white]/70 ">
             <CardContent className="p-1">
-              <div className="flex items-center gap-3 py-3 pb-4 pl-2 border-b hover:border-none">
+              <div className={`flex items-center gap-3 py-3 pb-4 pl-2 ${index < displayedQRCodes.length - 1 ? 'border-b' : ''} hover:border-none`}>
                 <div className="w-14 h-18 flex-shrink-0 rounded-sm overflow-hidden bg-white">
                   {qrCode.cover_image ? (
                     <img

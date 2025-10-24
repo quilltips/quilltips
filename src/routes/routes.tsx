@@ -30,6 +30,7 @@ import Pricing from "@/pages/Pricing";
 import AdminDashboard from "@/pages/AdminDashboard";
 import BlogPage from "@/pages/BlogPage";
 import BlogPostPage from "@/pages/BlogPostPage";
+import { VerifyEmail } from "@/pages/VerifyEmail";
 import { Navigate } from "react-router-dom";
 
 export const routes = [
@@ -52,6 +53,7 @@ export const routes = [
   
   { path: "/author/register", component: AuthorRegister },
   { path: "/author/login", component: AuthorLogin },
+  { path: "/author/verify-email", component: VerifyEmail },
   { path: "/author/reset-password", component: AuthorPasswordReset },
   { path: "/author/dashboard", component: AuthorDashboard },
   { path: "/author/settings", component: AuthorSettings },

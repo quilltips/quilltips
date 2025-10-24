@@ -14,16 +14,16 @@ export function getAuthorUrl(author: { id: string; slug?: string | null }) {
  * Generate a URL for a book/QR code
  * Prefers book slug if available, falls back to QR code ID
  */
-export function getBookUrl(qrCode: { id: string; book_slug?: string | null }) {
-  return qrCode.book_slug ? `/book/${qrCode.book_slug}` : `/qr/${qrCode.id}`;
+export function getBookUrl(qrCode: { id: string; slug?: string | null }) {
+  return qrCode.slug ? `/book/${qrCode.slug}` : `/qr/${qrCode.id}`;
 }
 
 /**
  * Generate a URL for an author's QR code (author dashboard view)
  * Prefers book slug if available, falls back to QR code ID
  */
-export function getAuthorBookUrl(qrCode: { id: string; book_slug?: string | null }) {
-  return qrCode.book_slug ? `/author/qr/${qrCode.book_slug}` : `/author/qr/${qrCode.id}`;
+export function getAuthorBookUrl(qrCode: { id: string; slug?: string | null }) {
+  return qrCode.slug ? `/author/qr/${qrCode.slug}` : `/author/qr/${qrCode.id}`;
 }
 
 /**
@@ -45,8 +45,8 @@ export function getCanonicalUrl(type: 'author' | 'book', data: any) {
         ? `https://quilltips.co/author/${data.slug}`
         : `https://quilltips.co/profile/${data.id}`;
     case 'book':
-      return data.book_slug 
-        ? `https://quilltips.co/book/${data.book_slug}`
+      return data.slug 
+        ? `https://quilltips.co/book/${data.slug}`
         : `https://quilltips.co/qr/${data.id}`;
     default:
       return '';

@@ -91,6 +91,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(user);
 
       if (user) {
+        // Check if user's email is verified
+        const isEmailVerified = user.email_confirmed_at !== null;
+        
+        if (!isEmailVerified) {
+          // User is not verified, redirect to verification page
+          console.log("User email not verified, redirecting to verification");
+          setUser(null);
+          setIsAuthor(false);
+          setIsAdmin(false);
+          
+          // Check if we're already on a verification page to avoid redirect loops
+          if (!location.pathname.includes('/verify-email')) {
+            navigate('/author/verify-email', { 
+              state: { email: user.email },
+              replace: true 
+            });
+          }
+          setIsLoading(false);
+          return;
+        }
+
         const profile = await fetchProfile(user.id);
         const userIsAuthor = profile?.role === 'author';
         const userIsAdmin = profile?.role === 'admin';
@@ -149,7 +170,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, [navigate, location.pathname, toast]);
 
-  if (isLoading) {
+  // Only show loading spinner for protected routes that require authentication
+  if (isLoading && isProtectedRoute(location.pathname)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />

@@ -42,6 +42,40 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         processedBuyNowLink = `https://${buyNowLink}`;
       }
 
+      // Ensure the user has a public_profiles record before creating QR code
+      const { data: existingPublicProfile, error: profileCheckError } = await supabase
+        .from('public_profiles')
+        .select('id')
+        .eq('id', authorId)
+        .maybeSingle();
+
+      if (profileCheckError) {
+        console.error("Error checking public profile:", profileCheckError);
+        throw new Error("Failed to verify author profile");
+      }
+
+      // If no public profile exists, create one
+      if (!existingPublicProfile) {
+        console.log("Creating public profile for author:", authorId);
+        const { error: createProfileError } = await supabase
+          .from('public_profiles')
+          .insert({
+            id: authorId,
+            name: 'New Author', // Will be updated when user completes profile
+            bio: null,
+            avatar_url: null,
+            social_links: null,
+            slug: null,
+            stripe_account_id: null,
+            stripe_setup_complete: false
+          });
+
+        if (createProfileError) {
+          console.error("Error creating public profile:", createProfileError);
+          throw new Error("Failed to create author profile");
+        }
+      }
+
       const { data: qrCode, error: qrError } = await supabase
         .from('qr_codes')
         .insert({

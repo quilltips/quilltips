@@ -136,6 +136,32 @@ serve(async (req) => {
       });
     }
 
+    // Find user by email and update their email_confirmed_at in Supabase Auth
+    const { data: users, error: userFetchError } = await supabase.auth.admin.listUsers();
+    
+    if (userFetchError) {
+      console.error("Error fetching users:", userFetchError);
+    } else {
+      const user = users.users.find(u => u.email === email);
+      if (user) {
+        const { error: userError } = await supabase.auth.admin.updateUserById(
+          user.id,
+          { 
+            email_confirm: true,
+            email_confirmed_at: new Date().toISOString()
+          }
+        );
+
+        if (userError) {
+          console.error("Error confirming user email:", userError);
+        } else {
+          console.log(`✅ User email confirmed in Supabase Auth for ${email}`);
+        }
+      } else {
+        console.error(`User not found for email: ${email}`);
+      }
+    }
+
     console.log(`✅ Code verified successfully for ${email}`);
     
     return new Response(JSON.stringify({
