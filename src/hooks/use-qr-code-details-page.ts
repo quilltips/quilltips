@@ -132,17 +132,17 @@ export const useQRCodeDetailsPage = () => {
 
   const { mutateAsync: updateCoverImage } = useMutation({
     mutationFn: async (imageUrl: string) => {
-      if (!identifier) {
-        console.error("QRCodeDetailsPage: No QR code ID provided");
-        throw new Error('QR code ID is required');
+      if (!qrCode?.id) {
+        console.error("QRCodeDetailsPage: No QR code ID available");
+        throw new Error('QR code must be loaded first');
       }
       
-      console.log(`Updating cover image for QR code ${identifier} to: ${imageUrl}`);
+      console.log(`Updating cover image for QR code ${qrCode.id} to: ${imageUrl}`);
       
       const { data, error } = await supabase
         .from('qr_codes')
         .update({ cover_image: imageUrl })
-        .eq('id', identifier)
+        .eq('id', qrCode.id)
         .select();
       
       if (error) {
@@ -195,26 +195,26 @@ export const useQRCodeDetailsPage = () => {
   });
 
   const { data: tipData } = useQuery({
-    queryKey: qrCodeQueryKeys.tips(identifier || ''),
+    queryKey: qrCodeQueryKeys.tips(qrCode?.id || ''),
     queryFn: async () => {
-      if (!identifier) return { tips: [], likes: [], comments: [] };
+      if (!qrCode?.id) return { tips: [], likes: [], comments: [] };
 
       const { data: tips, error: tipsError } = await supabase
         .from('tips')
         .select('id, amount, message, created_at, author_id, qr_code_id')
-        .eq('qr_code_id', identifier);
+        .eq('qr_code_id', qrCode.id);
       if (tipsError) throw tipsError;
 
       const { data: likes, error: likesError } = await supabase
         .from('tip_likes')
         .select('id, tip_id, author_id, created_at')
-        .eq('tip_id', identifier);
+        .eq('tip_id', qrCode.id);
       if (likesError) throw likesError;
 
       const { data: comments, error: commentsError } = await supabase
         .from('tip_comments')
         .select('id, tip_id, author_id, content, created_at')
-        .eq('tip_id', identifier);
+        .eq('tip_id', qrCode.id);
       if (commentsError) throw commentsError;
 
       return {
@@ -223,7 +223,7 @@ export const useQRCodeDetailsPage = () => {
         comments: comments || []
       } as TipData;
     },
-    enabled: !!identifier
+    enabled: !!qrCode?.id
   });
 
   const handleDownloadSVG = async () => {
