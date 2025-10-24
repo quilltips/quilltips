@@ -88,7 +88,7 @@ export const FeaturedAuthorsCarousel = () => {
                 : new Date().getFullYear();
 
               return (
-                <CarouselItem key={author.id} className="pl-2 md:pl-4 basis-1/2">
+                <CarouselItem key={author.id} className="pl-2 md:pl-4 basis-[calc(50%-0.5rem)]">
                   <AuthorCard
                     id={author.id}
                     name={author.name || "Anonymous Author"}
@@ -101,15 +101,9 @@ export const FeaturedAuthorsCarousel = () => {
             })}
           </CarouselContent>
           
-          {/* Dots indicator */}
-          <div className="flex justify-center mt-4 gap-2">
-            {authors.map((_, index) => (
-              <div
-                key={index}
-                className="h-2 w-2 rounded-full bg-muted"
-                aria-hidden="true"
-              />
-            ))}
+          <div className="flex justify-center mt-6">
+            <CarouselPrevious className="relative left-0 translate-x-0 translate-y-0" />
+            <CarouselNext className="relative right-0 translate-x-0 translate-y-0 ml-2" />
           </div>
         </Carousel>
       </div>
