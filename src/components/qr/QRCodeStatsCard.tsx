@@ -197,11 +197,11 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                 <div className="aspect-[2/3] rounded-lg overflow-hidden relative max-w-xs mx-auto md:mx-0">
                   <OptimizedImage
                     key={imageRefreshKey}
-                    src={qrCode.cover_image || "/lovable-uploads/logo_nav.png"}
+                    src={qrCode.cover_image || "/lovable-uploads/logo_nav.svg"}
                     alt={qrCode.book_title}
                     className="w-full h-full"
                     objectFit={qrCode.cover_image ? "cover" : "contain"}
-                    fallbackSrc="/lovable-uploads/logo_nav.png"
+                    fallbackSrc="/lovable-uploads/logo_nav.svg"
                   />
                   <BookCoverUpload 
                     qrCodeId={qrCode.id}
