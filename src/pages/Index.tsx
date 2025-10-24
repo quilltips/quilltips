@@ -12,6 +12,7 @@ import { Meta } from "@/components/Meta";
 import { Helmet } from "react-helmet-async";
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
+import { FeaturedAuthorsCarousel } from "@/components/FeaturedAuthorsCarousel";
 const Index = () => {
   const {
     user
@@ -133,6 +134,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Featured Authors */}
+      <FeaturedAuthorsCarousel />
 
       {/* Mission Statement */}
       <div className="mx-auto w-full max-w-6xl mt-24 px-4">
