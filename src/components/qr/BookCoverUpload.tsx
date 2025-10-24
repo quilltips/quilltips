@@ -142,20 +142,20 @@ export const BookCoverUpload = ({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
+              <Button
               type="button"
               variant="secondary"
               size="sm"
               onClick={() => document.getElementById('cover-upload')?.click()}
               disabled={isUploading || isProcessing}
-              className={placement === 'overlay' ? 'absolute bottom-2 right-2 z-10' : 'static mt-3'}
+              className={placement === 'overlay' ? 'absolute bottom-2 left-1/2 -translate-x-1/2 z-10' : 'static mt-3'}
             >
               {isUploading || isProcessing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
                   <ImagePlus className="h-3.5 w-3.5 mr-1" />
-                  <span>Upload</span>
+                  <span>Upload cover</span>
                 </>
               )}
             </Button>
