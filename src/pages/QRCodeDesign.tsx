@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Card } from "@/components/ui/card";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { BookCoverUpload } from "@/components/qr/BookCoverUpload";
+import { useState } from "react";
 
 const QRCodeDesign = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const qrCodeData = location.state?.qrCodeData;
+  const [coverImageUrl, setCoverImageUrl] = useState(qrCodeData?.cover_image || null);
 
   const { isGenerating, qrCodePreview } = useQRCodeGeneration({
     qrCodeData
@@ -96,10 +99,10 @@ const QRCodeDesign = () => {
                     
                     {/* Section #2: Right side with book cover */}
                     <div className="flex-1 flex justify-center items-center">
-                      <div className="h-full aspect-[2/3] max-w-[200px] bg-transparent rounded overflow-hidden">
-                        {qrCodeData.cover_image ? (
+                      <div className="relative h-full aspect-[2/3] max-w-[200px] bg-transparent rounded overflow-hidden">
+                        {coverImageUrl ? (
                           <OptimizedImage
-                            src={qrCodeData.cover_image}
+                            src={coverImageUrl}
                             alt={`Cover for ${qrCodeData.book_title}`}
                             className="w-full h-full"
                             objectFit="cover"
@@ -107,12 +110,23 @@ const QRCodeDesign = () => {
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gray-100">
                             <img
-                              src="/lovable-uploads/logo_nav.png"
+                              src="/lovable-uploads/logo_nav.svg"
                               alt="Quilltips Logo"
                               className="w-12 h-12 object-contain opacity-90"
                             />
                           </div>
                         )}
+                        <BookCoverUpload
+                          qrCodeId={qrCodeData.id}
+                          bookTitle={qrCodeData.book_title}
+                          coverImage={coverImageUrl}
+                          onUploadSuccess={(url) => {
+                            setCoverImageUrl(url);
+                            // Update the qrCodeData object to persist
+                            qrCodeData.cover_image = url;
+                          }}
+                          placement="overlay"
+                        />
                       </div>
                     </div>
                   </div>
