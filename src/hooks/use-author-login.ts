@@ -43,6 +43,31 @@ export const useAuthorLogin = () => {
         throw new Error("No user data returned");
       }
 
+      // Check if email is verified
+      if (!signInData.user.email_confirmed_at) {
+        console.log("User email not verified, sending verification code");
+        
+        // Send verification code
+        await supabase.functions.invoke('send-verification-code', {
+          body: { email, type: 'login' }
+        });
+        
+        // Sign them out
+        await supabase.auth.signOut();
+        
+        // Redirect to verification page
+        navigate('/author/verify-email', { 
+          state: { email, fromLogin: true }
+        });
+        
+        toast({
+          title: "Email Verification Required",
+          description: "Please verify your email to continue. We've sent you a new code."
+        });
+        
+        return;
+      }
+
       // Get the current session to verify it's valid
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError) {

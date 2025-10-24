@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CreateQRCode } from "@/components/CreateQRCode";
 import { useToast } from "@/hooks/use-toast";
 import { HowQRCodesWork } from "@/components/qr/HowQRCodesWork";
+import { EmailVerificationRequired } from "@/components/auth/EmailVerificationRequired";
 
 const CreateQRPage = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -36,6 +37,13 @@ const CreateQRPage = () => {
           throw new Error("Profile not found");
         }
 
+        // Check if email is verified
+        if (!user.email_confirmed_at) {
+          console.log("User email not verified, showing verification prompt");
+          setProfile({ ...profileData, emailVerified: false });
+          return;
+        }
+
         setProfile(profileData);
       } catch (error: any) {
         console.error("Auth error:", error);
@@ -56,6 +64,15 @@ const CreateQRPage = () => {
       <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="text-center">Loading...</div>
       </div>
+    );
+  }
+
+  // Show verification prompt if email not verified
+  if (profile.emailVerified === false) {
+    return (
+      <main className="container mx-auto px-4 pt-24 pb-12">
+        <EmailVerificationRequired />
+      </main>
     );
   }
 
