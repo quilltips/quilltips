@@ -17,7 +17,7 @@ export interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageEl
 export const OptimizedImage = ({
   src,
   alt,
-  fallbackSrc = "/lovable-uploads/logo_nav.png",
+  fallbackSrc = "/lovable-uploads/logo_nav.svg",
   className,
   sizes = "100vw",
   priority = false,

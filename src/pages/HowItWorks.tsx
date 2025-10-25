@@ -51,7 +51,7 @@ const HowItWorks = () => {
                 </h2>
               </div>
               <p className="text-lg text-[#333333]/80 leading-relaxed">
-                Sign up for Quilltips and complete Stripe onboarding to start receiving payments in less than 5 minutes.
+                Sign up for Quilltips and complete Stripe onboarding to start receiving payments in less than 5 minutes. Learn more about our <Link to="/pricing" className="text-[#333333] underline hover:text-[#333333]/80 transition-colors">pricing</Link> and <Link to="/about" className="text-[#333333] underline hover:text-[#333333]/80 transition-colors">mission</Link>.
               </p>
               <div className="pt-4">
                 <Link 

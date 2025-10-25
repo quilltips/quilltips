@@ -19,11 +19,11 @@ export const QRCodeHeader = ({ coverImage, bookTitle, publisher, releaseDate }: 
     <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-white rounded-lg shadow-sm">
       <div className="w-32 h-44 flex items-center justify-center rounded overflow-hidden shadow-md">
         <OptimizedImage
-          src={coverImage || "/lovable-uploads/logo_nav.png"}
+          src={coverImage || "/lovable-uploads/logo_nav.svg"}
           alt={`Cover for ${bookTitle}`}
           className="w-full h-full"
           objectFit={coverImage ? "cover" : "contain"}
-          fallbackSrc="/lovable-uploads/logo_nav.png"
+          fallbackSrc="/lovable-uploads/logo_nav.svg"
           sizes="128px"
         />
       </div>

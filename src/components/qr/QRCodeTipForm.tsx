@@ -14,6 +14,7 @@ interface QRCodeTipFormProps {
   authorFirstName: string;
   stripeSetupComplete?: boolean;
   hasStripeAccount?: boolean;
+  isQRCodePaid?: boolean;
   onNameChange: (value: string) => void;
   onMessageChange: (value: string) => void;
   onEmailChange: (value: string) => void;
@@ -33,6 +34,7 @@ export const QRCodeTipForm = ({
   authorFirstName,
   stripeSetupComplete = true,
   hasStripeAccount = true,
+  isQRCodePaid = true,
   onNameChange,
   onMessageChange,
   onEmailChange,
@@ -48,7 +50,7 @@ export const QRCodeTipForm = ({
           Send {authorFirstName} a tip!
         </h2>
         
-        {!stripeSetupComplete || !hasStripeAccount ? (
+        {!stripeSetupComplete || !hasStripeAccount || !isQRCodePaid ? (
           <div className="space-y-4">
             <div className="p-4 bg-muted rounded-lg border border-border text-center">
               <p className="text-sm text-muted-foreground mb-4">

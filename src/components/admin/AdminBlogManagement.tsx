@@ -207,8 +207,31 @@ export const AdminBlogManagement = () => {
           .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
           .substring(0, 50); // Limit length to prevent issues
         
-        // Add timestamp to ensure uniqueness
-        postFields.slug = `${baseSlug}-${Date.now()}`;
+        // Check for uniqueness and add number if needed
+        let finalSlug = baseSlug;
+        let counter = 1;
+        
+        // Check if slug exists in database
+        const { data: existingSlug } = await supabase
+          .from('blog_posts')
+          .select('slug')
+          .eq('slug', finalSlug)
+          .maybeSingle();
+        
+        // If slug exists, add number suffix
+        while (existingSlug) {
+          finalSlug = `${baseSlug}-${counter}`;
+          const { data: checkSlug } = await supabase
+            .from('blog_posts')
+            .select('slug')
+            .eq('slug', finalSlug)
+            .maybeSingle();
+          
+          if (!checkSlug) break;
+          counter++;
+        }
+        
+        postFields.slug = finalSlug;
       } else {
         // Ensure existing slug is also sanitized
         postFields.slug = postFields.slug

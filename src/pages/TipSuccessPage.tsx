@@ -25,11 +25,30 @@ const TipSuccessPage = () => {
       if (!authorId || !readerEmail) return;
       
       try {
-        // Fetch author details
+        // Fetch author details from public_profiles first
         const { data: authorData, error: authorError } = await supabase.rpc(
           'get_public_profile_by_id',
           { profile_id: authorId }
         );
+        
+        // If no slug in public_profiles, fetch from profiles table
+        let authorSlug = null;
+        if (authorData && authorData.length > 0) {
+          authorSlug = authorData[0].slug;
+        }
+        
+        // If still no slug, fetch directly from profiles table
+        if (!authorSlug) {
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('slug')
+            .eq('id', authorId)
+            .single();
+          
+          if (!profileError && profileData) {
+            authorSlug = profileData.slug;
+          }
+        }
         
         // Fetch reader name from email
         const { data: readerData, error: readerError } = await supabase
@@ -42,7 +61,7 @@ const TipSuccessPage = () => {
         
         if (authorData && authorData.length > 0) {
           setAuthorName(authorData[0].name || 'the author');
-          setAuthorSlug(authorData[0].slug);
+          setAuthorSlug(authorSlug);
         }
         
         if (readerData) {

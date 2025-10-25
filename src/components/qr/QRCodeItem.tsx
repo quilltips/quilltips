@@ -32,11 +32,11 @@ export const QRCodeItem = ({ qrCode }: QRCodeItemProps) => {
       <div className="p-4 flex items-center gap-3 border-b">
         <div className="flex-shrink-0 w-14 h-18 rounded-md flex items-center justify-center overflow-hidden">
           <OptimizedImage
-            src={qrCode.cover_image || "/lovable-uploads/logo_nav.png"}
+            src={qrCode.cover_image || "/lovable-uploads/logo_nav.svg"}
             alt={qrCode.book_title}
             className="w-full h-full rounded-md"
             objectFit={qrCode.cover_image ? "cover" : "contain"}
-            fallbackSrc="/lovable-uploads/logo_nav.png"
+            fallbackSrc="/lovable-uploads/logo_nav.svg"
           />
         </div>
         

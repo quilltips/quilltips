@@ -26,7 +26,7 @@ export function generateOGImageUrl(post: {
   }
   
   // Use static blog OG image as fallback
-  return 'https://quilltips.co/lovable-uploads/054843a4-9e8d-4b48-939e-5eb61ba32330.png';
+  return 'https://quilltips.co/og-image.png';
 }
 
 /**
@@ -40,5 +40,5 @@ export function getDefaultOGImageUrl() {
  * Get blog OG image URL
  */
 export function getBlogOGImageUrl() {
-  return 'https://quilltips.co/lovable-uploads/054843a4-9e8d-4b48-939e-5eb61ba32330.png';
+  return 'https://quilltips.co/og-image.png';
 }

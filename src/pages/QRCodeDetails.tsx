@@ -35,7 +35,8 @@ const QRCodeDetails = () => {
     setShowTipForm,
     authorFirstName,
     stripeSetupComplete,
-    hasStripeAccount
+    hasStripeAccount,
+    isQRCodePaid
   } = useQRCodeDetails();
 
   if (qrCodeLoading) {
@@ -53,11 +54,11 @@ const QRCodeDetails = () => {
           <div className="flex items-center space-x-6">
             <div className="w-32 aspect-[2/3] relative shrink-0 rounded-md overflow-hidden">
               <OptimizedImage
-                src={qrCode.cover_image || "/lovable-uploads/logo_nav.png"}
+                src={qrCode.cover_image || "/lovable-uploads/logo_nav.svg"}
                 alt={qrCode.book_title}
                 className="w-full h-full"
                 objectFit={qrCode.cover_image ? "cover" : "contain"}
-                fallbackSrc="/lovable-uploads/logo_nav.png"
+                fallbackSrc="/lovable-uploads/logo_nav.svg"
                 sizes="128px"
                 priority={true}
               />
@@ -102,7 +103,7 @@ const QRCodeDetails = () => {
           {/* Leave a tip button or message */}
           {!showTipForm && (
             <>
-              {stripeSetupComplete && hasStripeAccount ? (
+              {stripeSetupComplete && hasStripeAccount && isQRCodePaid ? (
                 <Button 
                   onClick={() => setShowTipForm(true)} 
                   className="w-full bg-[#FFD166] hover:bg-[#FFD166]/80 hover:shadow text-secondary-foreground rounded-full py-6"
@@ -131,6 +132,7 @@ const QRCodeDetails = () => {
               authorFirstName={authorFirstName}
               stripeSetupComplete={stripeSetupComplete}
               hasStripeAccount={hasStripeAccount}
+              isQRCodePaid={isQRCodePaid}
               onNameChange={setName}
               onMessageChange={setMessage}
               onEmailChange={setEmail}

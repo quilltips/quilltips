@@ -71,6 +71,43 @@ export default function BlogPostPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Handle redirects from old timestamp-based URLs
+  useEffect(() => {
+    const handleLegacyRedirect = async () => {
+      if (!slug) return;
+
+      // Check if this is an old timestamp-based slug
+      // Old format: "5-ways-to-build-community-as-an-indie-author-1759860493233"
+      // New format: "5-ways-to-build-community-as-an-indie-author"
+      const timestampPattern = /-\d{13}$/; // Ends with timestamp (13 digits)
+      
+      if (timestampPattern.test(slug)) {
+        try {
+          // Extract the clean slug by removing the timestamp
+          const cleanSlug = slug.replace(timestampPattern, '');
+          
+          // Check if a blog post exists with the clean slug
+          const { data: post, error } = await supabase
+            .from('blog_posts')
+            .select('slug, status')
+            .eq('slug', cleanSlug)
+            .eq('status', 'published')
+            .single();
+          
+          if (!error && post) {
+            // Redirect to the clean URL
+            navigate(`/blog/${cleanSlug}`, { replace: true });
+            return;
+          }
+        } catch (error) {
+          console.error('Error handling legacy blog redirect:', error);
+        }
+      }
+    };
+
+    handleLegacyRedirect();
+  }, [slug, navigate]);
+
   // Fetch blog post
   const { data: post, isLoading, error } = useQuery({
     queryKey: ['blog-post', slug],
@@ -225,7 +262,7 @@ export default function BlogPostPage() {
   return (
     <>
       <Meta
-        title={`${post.meta_title || post.title} | Quilltips Blog`}
+        title={post.meta_title || post.title}
         description={post.meta_description || post.excerpt || "Read this blog post on Quilltips"}
         keywords={post.meta_keywords || ["blog", "writing", "publishing"]}
         image={generateOGImageUrl(post)}

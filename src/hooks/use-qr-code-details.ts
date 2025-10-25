@@ -30,9 +30,10 @@ export const useQRCodeDetails = () => {
 
   const [showTipForm, setShowTipForm] = useState(false);
 
-  // Check if author has completed Stripe onboarding
+  // Check if author has completed Stripe onboarding AND QR code has been paid for
   const stripeSetupComplete = qrCode?.author?.stripe_setup_complete || false;
   const hasStripeAccount = !!(qrCode?.author?.stripe_account_id);
+  const isQRCodePaid = qrCode?.is_paid || false;
 
   return {
     id,
@@ -56,6 +57,7 @@ export const useQRCodeDetails = () => {
     setShowTipForm,
     authorFirstName,
     stripeSetupComplete,
-    hasStripeAccount
+    hasStripeAccount,
+    isQRCodePaid
   };
 };

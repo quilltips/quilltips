@@ -22,11 +22,11 @@ export const QRCodeBookDetails = ({ book }: QRCodeBookDetailsProps) => {
       {/* Book cover now displayed first and more prominently */}
       <div className="w-full md:w-1/4 aspect-[2/3] relative rounded-lg overflow-hidden">
         <OptimizedImage
-          src={book.cover_image || "/lovable-uploads/logo_nav.png"}
+          src={book.cover_image || "/lovable-uploads/logo_nav.svg"}
           alt={book.title}
           className="w-full h-full"
           objectFit={book.cover_image ? "cover" : "contain"}
-          fallbackSrc="/lovable-uploads/logo_nav.png"
+          fallbackSrc="/lovable-uploads/logo_nav.svg"
           sizes="(max-width: 768px) 100vw, 200px"
         />
       </div>

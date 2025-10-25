@@ -33,11 +33,11 @@ export const QRCodeInfoCard = ({ qrCode, isEditable = false }: QRCodeInfoCardPro
       <div className="aspect-[2/3] relative rounded-xl border border-muted">
         <OptimizedImage
           key={imageRefreshKey} // Force rerender when refreshKey changes
-          src={qrCode.cover_image || "/lovable-uploads/lovo_nav.png"}
+          src={qrCode.cover_image || "/lovable-uploads/logo_nav.svg"}
           alt={qrCode.book_title}
           className="w-full h-full rounded-xl"
           objectFit={qrCode.cover_image ? "cover" : "contain"}
-          fallbackSrc="/lovable-uploads/logo_nav.png"
+          fallbackSrc="/lovable-uploads/logo_nav.svg"
           sizes="(max-width: 768px) 100vw, 400px"
         />
         
