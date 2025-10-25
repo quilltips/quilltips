@@ -153,6 +153,75 @@ async function getOrCreateUnsubscribeToken(tipId) {
 // Generate email content based on notification type
 function generateEmailContent(type, data, token) {
   switch (type) {
+    case 'tip_receipt':
+      const formattedDate = new Date(data.timestamp).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      return {
+        subject: `Receipt for your $${data.amount} tip to ${data.authorName}`,
+        header: "Thank You for Your Support! 🎉",
+        mainMessage: `Thank you for tipping ${data.authorName}! Here's your receipt for your generous support.`,
+        additionalContent: `
+          <!-- Receipt Details Box -->
+          <div style="margin: 32px 0; padding: 24px; background-color: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px;">
+            <h3 style="font-family: 'Playfair Display', Georgia, serif; font-size: 20px; color: #19363C; margin: 0 0 20px 0; font-weight: 600;">Receipt Details</h3>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-size: 15px; width: 40%;">Date:</td>
+                <td style="padding: 8px 0; color: #19363C; font-size: 15px; font-weight: 500;">${formattedDate}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-size: 15px;">Recipient:</td>
+                <td style="padding: 8px 0; color: #19363C; font-size: 15px; font-weight: 500;">${data.authorName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-size: 15px;">Book:</td>
+                <td style="padding: 8px 0; color: #19363C; font-size: 15px; font-weight: 500;">${data.bookTitle || 'N/A'}</td>
+              </tr>
+              <tr style="border-top: 1px solid #e5e7eb;">
+                <td style="padding: 12px 0 8px 0; color: #6B7280; font-size: 15px;">Tip Amount:</td>
+                <td style="padding: 12px 0 8px 0; color: #19363C; font-size: 18px; font-weight: 700;">$${data.amount}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-size: 14px;">Transaction ID:</td>
+                <td style="padding: 8px 0; color: #6B7280; font-size: 13px; font-family: monospace;">${data.tipId.substring(0, 13)}...</td>
+              </tr>
+            </table>
+          </div>
+
+          ${data.message ? `
+          <!-- Your Message Box -->
+          <div style="margin: 24px 0; padding: 20px; background-color: #fffbeb; border-left: 4px solid #FFD166; border-radius: 8px;">
+            <p style="margin: 0 0 8px 0; font-weight: 600; color: #19363C; font-size: 15px;">Your message to ${data.authorName}:</p>
+            <p style="font-style: italic; margin: 0; font-size: 15px; color: #4A5568;">"${data.message}"</p>
+          </div>
+          ` : ''}
+
+          <!-- Confirmation Message -->
+          <div style="margin: 32px 0 0 0; padding: 20px; background-color: #f0fdf4; border-radius: 8px; text-align: center;">
+            <p style="margin: 0; font-size: 15px; color: #15803d; font-weight: 500;">
+              ✓ Your tip has been successfully sent to ${data.authorName}
+            </p>
+          </div>
+
+          <!-- Tax Information -->
+          <div style="margin: 24px 0 0 0; padding: 16px; background-color: #f9fafb; border-radius: 8px;">
+            <p style="margin: 0; font-size: 13px; color: #6B7280; line-height: 1.6;">
+              <strong>Note:</strong> This tip is a personal contribution and may not be tax-deductible. 
+              Quilltips facilitates the transaction between readers and authors. 
+              For questions about this receipt, contact us at <a href="mailto:hello@quilltips.co" style="color: #19363C; text-decoration: none; font-weight: 600;">hello@quilltips.co</a>
+            </p>
+          </div>
+        `,
+        cta: `View ${data.authorName}'s Profile`,
+        ctaUrl: `https://quilltips.co/${data.authorSlug || 'authors'}`
+      };
     case 'tip_liked':
       return {
         subject: `${data.authorName} liked your tip!`,

@@ -150,7 +150,7 @@ serve(async (req) => {
       }],
       payment_intent_data: {
         application_fee_amount: applicationFeeAmount,
-        receipt_email: email,
+        // Custom receipts sent via send-reader-notification instead
         metadata: {
           authorId,
           tipper_name: name,

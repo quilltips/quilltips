@@ -89,6 +89,51 @@ serve(async (req) => {
                 console.error("❌ Failed to send tip received email notification:", emailError);
                 // Continue processing - don't fail the webhook just because email failed
               }
+
+              // Send receipt to reader
+              if (readerEmail) {
+                // Get author details
+                const { data: authorData } = await supabase
+                  .from('profiles')
+                  .select('name, slug')
+                  .eq('id', tip.author_id)
+                  .single();
+                
+                try {
+                  console.log("📧 Sending receipt to reader:", readerEmail);
+                  
+                  const response = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-reader-notification`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`
+                    },
+                    body: JSON.stringify({
+                      type: 'tip_receipt',
+                      readerEmail: readerEmail,
+                      data: {
+                        tipId: tip.id,
+                        amount: tip.amount,
+                        authorName: authorData?.name || 'the author',
+                        authorSlug: authorData?.slug || '',
+                        bookTitle: tip.book_title || '',
+                        message: tip.message || '',
+                        timestamp: tip.created_at || new Date().toISOString()
+                      }
+                    })
+                  });
+                  
+                  if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("❌ Failed to send reader receipt:", response.status, errorText);
+                  } else {
+                    console.log("✅ Reader receipt sent successfully");
+                  }
+                } catch (emailError) {
+                  console.error("❌ Error sending reader receipt:", emailError);
+                  // Don't fail webhook if receipt email fails
+                }
+              }
             }
           }
           
