@@ -63,7 +63,7 @@ serve(async (req) => {
     }
 
     const stripe = new Stripe(stripeKey, {
-      apiVersion: '2023-10-16',
+      apiVersion: '2024-11-20',
       httpClient: Stripe.createFetchHttpClient(),
     });
 
@@ -137,6 +137,12 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
+      branding_settings: {
+        display_name: 'Quilltips',
+        // Replace 'file_xxxxx' with your Stripe logo file ID from Stripe Dashboard > Settings > Branding
+        // logo: 'file_xxxxx',
+        primary_color: '#FFD166',
+      },
       line_items: [{
         price_data: {
           currency: 'usd',
