@@ -373,9 +373,9 @@ const Index = () => {
 
 
       {/* Pricing (Figma-style) */}
-      <div className="mx-auto w-full max-w-5xl mt-32 px-4">
+      <div className="mx-auto w-full max-w-6xl mt-32 px-4">
         <h2 className="text-3xl md:text-4xl font-playfair font-semibold text-[#19363C] mb-4">Does this cost money?</h2>
-        <p className="text-lg md:text-xl text-[#19363C]/90 leading-relaxed max-w-3xl">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started.</p>
+        <p className="text-lg md:text-xl text-[#19363C]/90 leading-relaxed max-w-3xl">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started. <RouterLink to="/pricing" className="text-[#19363C] underline hover:no-underline">Read more about pricing</RouterLink>.</p>
       </div>
 
       

@@ -92,7 +92,7 @@ const FAQ = () => {
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="add-qr-to-book">
+              <AccordionItem value="separate-jar-for-book">
                 <AccordionTrigger>Do I need a separate Quilltips Jar for each book?</AccordionTrigger>
                 <AccordionContent>
                   Yes, each Quilltips Jar corresponds to a specific book and links to the individual book page in your public profile so that readers will know what they are tipping for. 
