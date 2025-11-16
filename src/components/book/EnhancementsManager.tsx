@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, X, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { VideoUpload } from "../upload/VideoUpload";
+import { CharacterImageUpload } from "../upload/CharacterImageUpload";
 
 interface Character {
   url: string;
@@ -200,38 +203,72 @@ export const EnhancementsManager = ({
           <CardDescription>Add a personal video message for your readers</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label>Video URL</Label>
-            <Input
-              placeholder="https://..."
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label>Thumbnail URL (optional)</Label>
-            <Input
-              placeholder="https://..."
-              value={videoThumbnail}
-              onChange={(e) => setVideoThumbnail(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label>Video Title (optional)</Label>
-            <Input
-              placeholder="Thank you for reading!"
-              value={videoTitle}
-              onChange={(e) => setVideoTitle(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label>Video Description (optional)</Label>
-            <Textarea
-              placeholder="A special message..."
-              value={videoDesc}
-              onChange={(e) => setVideoDesc(e.target.value)}
-            />
-          </div>
+          <Tabs defaultValue="upload" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="upload">Upload Video</TabsTrigger>
+              <TabsTrigger value="url">Enter URL</TabsTrigger>
+            </TabsList>
+            <TabsContent value="upload" className="space-y-4">
+              <div>
+                <Label>Video File</Label>
+                <VideoUpload
+                  onUploadSuccess={(url) => setVideoUrl(url)}
+                  currentVideoUrl={videoUrl}
+                  onRemove={() => setVideoUrl("")}
+                />
+              </div>
+              <div>
+                <Label>Video Title (optional)</Label>
+                <Input
+                  placeholder="Thank you for reading!"
+                  value={videoTitle}
+                  onChange={(e) => setVideoTitle(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Video Description (optional)</Label>
+                <Textarea
+                  placeholder="A special message..."
+                  value={videoDesc}
+                  onChange={(e) => setVideoDesc(e.target.value)}
+                />
+              </div>
+            </TabsContent>
+            <TabsContent value="url" className="space-y-4">
+              <div>
+                <Label>Video URL</Label>
+                <Input
+                  placeholder="https://..."
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Thumbnail URL (optional)</Label>
+                <Input
+                  placeholder="https://..."
+                  value={videoThumbnail}
+                  onChange={(e) => setVideoThumbnail(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Video Title (optional)</Label>
+                <Input
+                  placeholder="Thank you for reading!"
+                  value={videoTitle}
+                  onChange={(e) => setVideoTitle(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Video Description (optional)</Label>
+                <Textarea
+                  placeholder="A special message..."
+                  value={videoDesc}
+                  onChange={(e) => setVideoDesc(e.target.value)}
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 
@@ -271,11 +308,27 @@ export const EnhancementsManager = ({
                 value={char.name}
                 onChange={(e) => updateCharacter(idx, "name", e.target.value)}
               />
-              <Input
-                placeholder="Image URL"
-                value={char.url}
-                onChange={(e) => updateCharacter(idx, "url", e.target.value)}
-              />
+              <Tabs defaultValue="upload" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="upload">Upload Image</TabsTrigger>
+                  <TabsTrigger value="url">Enter URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="space-y-2">
+                  <CharacterImageUpload
+                    onUploadSuccess={(url) => updateCharacter(idx, "url", url)}
+                    currentImageUrl={char.url}
+                    onRemove={() => updateCharacter(idx, "url", "")}
+                    characterName={char.name}
+                  />
+                </TabsContent>
+                <TabsContent value="url" className="space-y-2">
+                  <Input
+                    placeholder="Image URL"
+                    value={char.url}
+                    onChange={(e) => updateCharacter(idx, "url", e.target.value)}
+                  />
+                </TabsContent>
+              </Tabs>
               <Textarea
                 placeholder="Description (optional)"
                 value={char.description || ""}

@@ -15,6 +15,7 @@ import { BookCoverUpload } from "./BookCoverUpload";
 import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
 import { supabase } from "@/integrations/supabase/client";
 import { EnhancementsManager } from "../book/EnhancementsManager";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 interface QRCodeStats {
   total_tips: number | null;
