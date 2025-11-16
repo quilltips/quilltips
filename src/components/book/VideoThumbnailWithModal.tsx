@@ -9,6 +9,17 @@ interface VideoThumbnailWithModalProps {
   description?: string;
 }
 
+const isYouTubeUrl = (url: string) => {
+  return url.includes('youtube.com') || url.includes('youtu.be');
+};
+
+const getYouTubeEmbedUrl = (url: string) => {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  const videoId = match && match[2].length === 11 ? match[2] : null;
+  return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
+};
+
 export const VideoThumbnailWithModal = ({
   videoUrl,
   thumbnailUrl,
@@ -16,6 +27,7 @@ export const VideoThumbnailWithModal = ({
   description,
 }: VideoThumbnailWithModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const isYouTube = isYouTubeUrl(videoUrl);
 
   return (
     <>
@@ -50,12 +62,21 @@ export const VideoThumbnailWithModal = ({
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-4xl p-0">
-          <video
-            src={videoUrl}
-            controls
-            autoPlay
-            className="w-full aspect-video"
-          />
+          {isYouTube ? (
+            <iframe
+              src={getYouTubeEmbedUrl(videoUrl)}
+              className="w-full aspect-video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <video
+              src={videoUrl}
+              controls
+              autoPlay
+              className="w-full aspect-video"
+            />
+          )}
           {(title || description) && (
             <div className="p-6 space-y-2">
               {title && <h3 className="text-xl font-semibold">{title}</h3>}

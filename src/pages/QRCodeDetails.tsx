@@ -114,7 +114,7 @@ const QRCodeDetails = () => {
           {/* Tip and Message buttons */}
           {!showTipForm && !showMessageForm && (
             <div className="flex gap-3">
-              {stripeSetupComplete && hasStripeAccount && isQRCodePaid ? (
+              {stripeSetupComplete && hasStripeAccount && isQRCodePaid && qrCode.tipping_enabled !== false ? (
                 <>
                   <Button 
                     onClick={() => setShowTipForm(true)} 
@@ -148,7 +148,7 @@ const QRCodeDetails = () => {
               authorId={qrCode.author_id}
               authorName={qrCode.author?.name}
               bookTitle={qrCode.book_title}
-              qrCodeId={id}
+              qrCodeId={qrCode.id}
               onCancel={() => setShowMessageForm(false)}
               onSuccess={() => setShowMessageForm(false)}
             />
