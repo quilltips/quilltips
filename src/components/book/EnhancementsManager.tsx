@@ -218,6 +218,14 @@ export const EnhancementsManager = ({
                 />
               </div>
               <div>
+                <Label>Thumbnail URL (optional)</Label>
+                <Input
+                  placeholder="https://... or leave empty for auto-generated"
+                  value={videoThumbnail}
+                  onChange={(e) => setVideoThumbnail(e.target.value)}
+                />
+              </div>
+              <div>
                 <Label>Video Title (optional)</Label>
                 <Input
                   placeholder="Thank you for reading!"
@@ -246,7 +254,7 @@ export const EnhancementsManager = ({
               <div>
                 <Label>Thumbnail URL (optional)</Label>
                 <Input
-                  placeholder="https://..."
+                  placeholder="https://... or leave empty for auto-generated"
                   value={videoThumbnail}
                   onChange={(e) => setVideoThumbnail(e.target.value)}
                 />

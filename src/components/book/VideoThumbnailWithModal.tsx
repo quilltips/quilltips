@@ -20,6 +20,13 @@ const getYouTubeEmbedUrl = (url: string) => {
   return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
 };
 
+const getYouTubeThumbnail = (url: string) => {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  const videoId = match && match[2].length === 11 ? match[2] : null;
+  return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+};
+
 export const VideoThumbnailWithModal = ({
   videoUrl,
   thumbnailUrl,
@@ -28,6 +35,9 @@ export const VideoThumbnailWithModal = ({
 }: VideoThumbnailWithModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const isYouTube = isYouTubeUrl(videoUrl);
+  
+  // Auto-generate YouTube thumbnail if not provided
+  const displayThumbnail = thumbnailUrl || (isYouTube ? getYouTubeThumbnail(videoUrl) : null);
 
   return (
     <>
@@ -35,9 +45,9 @@ export const VideoThumbnailWithModal = ({
         className="relative cursor-pointer group rounded-lg overflow-hidden"
         onClick={() => setIsOpen(true)}
       >
-        {thumbnailUrl ? (
+        {displayThumbnail ? (
           <img
-            src={thumbnailUrl}
+            src={displayThumbnail}
             alt={title || "Video thumbnail"}
             className="w-full h-48 object-cover"
           />

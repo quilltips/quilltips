@@ -56,7 +56,7 @@ serve(async (req) => {
     `;
 
     const emailHtml = generateEmailHtml({
-      header: `📬 New Message from ${displayName}`,
+      header: `New Message from ${displayName}`,
       message: `Hi ${authorData.name || 'there'},`,
       additionalContent: messageContent,
       cta: "View in Dashboard",
