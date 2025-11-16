@@ -8,6 +8,7 @@ import { useQRCodeDetails } from "@/hooks/use-qr-code-details";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { QRCodeTipForm } from "@/components/qr/QRCodeTipForm";
+import { MessageForm } from "@/components/MessageForm";
 import { Link } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { getAuthorUrl } from "@/lib/url-utils";
@@ -16,7 +17,7 @@ import { CollapsibleBookDescription } from "@/components/book/CollapsibleBookDes
 import { CharacterArtCarousel } from "@/components/book/CharacterArtCarousel";
 import { BookRecommendationsCarousel } from "@/components/book/BookRecommendationsCarousel";
 import { AuthorOtherBooksCarousel } from "@/components/book/AuthorOtherBooksCarousel";
-import { Mail } from "lucide-react";
+import { useState } from "react";
 
 const QRCodeDetails = () => {
   const {
@@ -44,6 +45,8 @@ const QRCodeDetails = () => {
     hasStripeAccount,
     isQRCodePaid
   } = useQRCodeDetails();
+
+  const [showMessageForm, setShowMessageForm] = useState(false);
 
   if (qrCodeLoading) {
     return <QRCodeLoading />;
@@ -107,7 +110,7 @@ const QRCodeDetails = () => {
           </div>
             
           {/* Tip and Message buttons */}
-          {!showTipForm && (
+          {!showTipForm && !showMessageForm && (
             <div className="flex gap-3">
               {stripeSetupComplete && hasStripeAccount && isQRCodePaid ? (
                 <>
@@ -115,28 +118,37 @@ const QRCodeDetails = () => {
                     onClick={() => setShowTipForm(true)} 
                     className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 py-6 text-lg font-semibold"
                   >
-                    Send a Tip 💰
+                    Leave a tip
                   </Button>
                   <Button 
-                    onClick={() => {
-                      setAmount('0');
-                      setShowTipForm(true);
-                    }} 
+                    onClick={() => setShowMessageForm(true)} 
                     variant="outline"
                     className="flex-1 py-6 text-lg font-semibold"
                   >
-                    <Mail className="mr-2 h-5 w-5" />
-                    Send Message
+                    Send a message
                   </Button>
                 </>
               ) : (
-                <div className="w-full p-4 bg-muted rounded-lg border border-border text-center">
-                  <p className="text-sm text-muted-foreground">
-                    Tipping not available - author setting up payments
-                  </p>
-                </div>
+                <Button 
+                  onClick={() => setShowMessageForm(true)} 
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-6 text-lg font-semibold"
+                >
+                  Send a message
+                </Button>
               )}
             </div>
+          )}
+
+          {/* Message form (conditionally rendered) */}
+          {showMessageForm && (
+            <MessageForm
+              authorId={qrCode.author_id}
+              authorName={qrCode.author?.name}
+              bookTitle={qrCode.book_title}
+              qrCodeId={id}
+              onCancel={() => setShowMessageForm(false)}
+              onSuccess={() => setShowMessageForm(false)}
+            />
           )}
 
           {/* Tip form (conditionally rendered) */}
@@ -163,7 +175,7 @@ const QRCodeDetails = () => {
           )}
           
           {/* Book Enhancements Section */}
-          {!showTipForm && (
+          {!showTipForm && !showMessageForm && (
             <div className="space-y-8">
               {/* Thank You Video */}
               {qrCode.thank_you_video_url && (
