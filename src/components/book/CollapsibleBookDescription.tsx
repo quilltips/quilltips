@@ -16,7 +16,7 @@ export const CollapsibleBookDescription = ({
   return (
     <div className="space-y-3">
       <div
-        className={`text-muted-foreground whitespace-pre-wrap ${
+        className={`whitespace-pre-wrap ${
           !isExpanded ? "line-clamp-3" : ""
         }`}
       >

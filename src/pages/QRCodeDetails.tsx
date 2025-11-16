@@ -118,14 +118,15 @@ const QRCodeDetails = () => {
                 <>
                   <Button 
                     onClick={() => setShowTipForm(true)} 
-                    className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 py-6 text-lg font-semibold"
+                    className="flex-1 py-6 text-lg font-semibold"
+                    style={{ backgroundColor: '#FFD166', color: '#333333' }}
                   >
                     Leave a tip
                   </Button>
                   <Button 
                     onClick={() => setShowMessageForm(true)} 
                     variant="outline"
-                    className="flex-1 py-6 text-lg font-semibold"
+                    className="flex-1 py-6 text-lg font-semibold hover:bg-accent"
                   >
                     Send a message
                   </Button>
@@ -182,13 +183,13 @@ const QRCodeDetails = () => {
           {!showTipForm && !showMessageForm && (
             <div className="space-y-8">
               {/* Thank You Video */}
-              {qrCode.thank_you_video_url && (
+              {(qrCode.thank_you_video_url || qrCode.video_title) && (
                 <div className="space-y-3">
                   <h3 className="text-xl font-playfair text-foreground">A Message from the Author</h3>
                   <VideoThumbnailWithModal
-                    videoUrl={qrCode.thank_you_video_url}
+                    videoUrl={qrCode.thank_you_video_url || qrCode.video_title || ''}
                     thumbnailUrl={qrCode.thank_you_video_thumbnail || undefined}
-                    title={qrCode.video_title || undefined}
+                    title={qrCode.video_title && !qrCode.thank_you_video_url ? undefined : qrCode.video_title || undefined}
                     description={qrCode.video_description || undefined}
                   />
                 </div>
@@ -196,8 +197,7 @@ const QRCodeDetails = () => {
               
               {/* Book Description */}
               {qrCode.book_description && (
-                <div className="rounded-lg border border-border p-6 space-y-3">
-                  <h3 className="text-xl font-playfair text-foreground">About This Book</h3>
+                <div className="rounded-lg border border-border p-6">
                   <CollapsibleBookDescription description={qrCode.book_description} />
                 </div>
               )}
