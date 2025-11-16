@@ -87,6 +87,60 @@ export type Database = {
           },
         ]
       }
+      author_book_recommendations: {
+        Row: {
+          author_id: string
+          buy_link: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          qr_code_id: string | null
+          recommendation_text: string | null
+          recommended_book_author: string
+          recommended_book_cover_url: string | null
+          recommended_book_title: string
+        }
+        Insert: {
+          author_id: string
+          buy_link?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          qr_code_id?: string | null
+          recommendation_text?: string | null
+          recommended_book_author: string
+          recommended_book_cover_url?: string | null
+          recommended_book_title: string
+        }
+        Update: {
+          author_id?: string
+          buy_link?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          qr_code_id?: string | null
+          recommendation_text?: string | null
+          recommended_book_author?: string
+          recommended_book_cover_url?: string | null
+          recommended_book_title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "author_book_recommendations_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "author_book_recommendations_qr_code_id_fkey"
+            columns: ["qr_code_id"]
+            isOneToOne: false
+            referencedRelation: "qr_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       author_newsletter_signups: {
         Row: {
           author_id: string
@@ -613,8 +667,10 @@ export type Database = {
         Row: {
           author_id: string
           average_tip: number | null
+          book_description: string | null
           book_title: string
           buy_now_link: string | null
+          character_images: Json | null
           cover_image: string | null
           created_at: string
           framed_qr_code_image_url: string | null
@@ -629,15 +685,21 @@ export type Database = {
           slug: string | null
           stripe_session_id: string | null
           template: string
+          thank_you_video_thumbnail: string | null
+          thank_you_video_url: string | null
           total_amount: number | null
           total_tips: number | null
           uniqode_qr_code_id: string | null
+          video_description: string | null
+          video_title: string | null
         }
         Insert: {
           author_id: string
           average_tip?: number | null
+          book_description?: string | null
           book_title: string
           buy_now_link?: string | null
+          character_images?: Json | null
           cover_image?: string | null
           created_at?: string
           framed_qr_code_image_url?: string | null
@@ -652,15 +714,21 @@ export type Database = {
           slug?: string | null
           stripe_session_id?: string | null
           template?: string
+          thank_you_video_thumbnail?: string | null
+          thank_you_video_url?: string | null
           total_amount?: number | null
           total_tips?: number | null
           uniqode_qr_code_id?: string | null
+          video_description?: string | null
+          video_title?: string | null
         }
         Update: {
           author_id?: string
           average_tip?: number | null
+          book_description?: string | null
           book_title?: string
           buy_now_link?: string | null
+          character_images?: Json | null
           cover_image?: string | null
           created_at?: string
           framed_qr_code_image_url?: string | null
@@ -675,9 +743,13 @@ export type Database = {
           slug?: string | null
           stripe_session_id?: string | null
           template?: string
+          thank_you_video_thumbnail?: string | null
+          thank_you_video_url?: string | null
           total_amount?: number | null
           total_tips?: number | null
           uniqode_qr_code_id?: string | null
+          video_description?: string | null
+          video_title?: string | null
         }
         Relationships: [
           {
