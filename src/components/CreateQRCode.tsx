@@ -9,11 +9,14 @@ import { useNavigate } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, AlertCircle, Loader2, ImagePlus, ChevronDown, Plus, X, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BookCoverUpload } from "./qr/BookCoverUpload";
+import { VideoUpload } from "./upload/VideoUpload";
+import { CharacterImageUpload } from "./upload/CharacterImageUpload";
 import { z } from "zod";
 
 interface CreateQRCodeProps {
@@ -346,51 +349,86 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             {/* Thank You Video */}
             <div className="space-y-4 p-4 border rounded-lg bg-background">
               <h4 className="font-semibold text-sm">Thank You Video</h4>
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <label className="text-xs font-medium">Video URL</label>
-                  <Input
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                    placeholder="https://..."
-                    type="url"
-                  />
-                  {enhancementErrors.videoUrl && (
-                    <p className="text-xs text-red-500">{enhancementErrors.videoUrl}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-medium">Thumbnail URL (optional)</label>
-                  <Input
-                    value={videoThumbnail}
-                    onChange={(e) => setVideoThumbnail(e.target.value)}
-                    placeholder="https://..."
-                    type="url"
-                  />
-                  {enhancementErrors.videoThumbnail && (
-                    <p className="text-xs text-red-500">{enhancementErrors.videoThumbnail}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-medium">Video Title (optional)</label>
-                  <Input
-                    value={videoTitle}
-                    onChange={(e) => setVideoTitle(e.target.value)}
-                    placeholder="Thank you for reading!"
-                    maxLength={100}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-medium">Video Description (optional)</label>
-                  <Textarea
-                    value={videoDescription}
-                    onChange={(e) => setVideoDescription(e.target.value)}
-                    placeholder="A special message..."
-                    rows={2}
-                    maxLength={500}
-                  />
-                </div>
-              </div>
+              <Tabs defaultValue="upload" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="upload">Upload Video</TabsTrigger>
+                  <TabsTrigger value="url">Enter URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium">Video File</label>
+                    <VideoUpload
+                      onUploadSuccess={(url) => setVideoUrl(url)}
+                      currentVideoUrl={videoUrl}
+                      onRemove={() => setVideoUrl("")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium">Video Title (optional)</label>
+                    <Input
+                      value={videoTitle}
+                      onChange={(e) => setVideoTitle(e.target.value)}
+                      placeholder="Thank you for reading!"
+                      maxLength={100}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium">Video Description (optional)</label>
+                    <Textarea
+                      value={videoDescription}
+                      onChange={(e) => setVideoDescription(e.target.value)}
+                      placeholder="A special message..."
+                      rows={2}
+                      maxLength={500}
+                    />
+                  </div>
+                </TabsContent>
+                <TabsContent value="url" className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium">Video URL</label>
+                    <Input
+                      value={videoUrl}
+                      onChange={(e) => setVideoUrl(e.target.value)}
+                      placeholder="https://..."
+                      type="url"
+                    />
+                    {enhancementErrors.videoUrl && (
+                      <p className="text-xs text-red-500">{enhancementErrors.videoUrl}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium">Thumbnail URL (optional)</label>
+                    <Input
+                      value={videoThumbnail}
+                      onChange={(e) => setVideoThumbnail(e.target.value)}
+                      placeholder="https://..."
+                      type="url"
+                    />
+                    {enhancementErrors.videoThumbnail && (
+                      <p className="text-xs text-red-500">{enhancementErrors.videoThumbnail}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium">Video Title (optional)</label>
+                    <Input
+                      value={videoTitle}
+                      onChange={(e) => setVideoTitle(e.target.value)}
+                      placeholder="Thank you for reading!"
+                      maxLength={100}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium">Video Description (optional)</label>
+                    <Textarea
+                      value={videoDescription}
+                      onChange={(e) => setVideoDescription(e.target.value)}
+                      placeholder="A special message..."
+                      rows={2}
+                      maxLength={500}
+                    />
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
 
             {/* Book Description */}
@@ -441,19 +479,33 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                         </p>
                       )}
                     </div>
-                    <div className="space-y-2">
-                      <Input
-                        placeholder="Image URL"
-                        value={char.url}
-                        onChange={(e) => updateCharacter(idx, "url", e.target.value)}
-                        type="url"
-                      />
-                      {enhancementErrors[`character_${idx}_url`] && (
-                        <p className="text-xs text-red-500">
-                          {enhancementErrors[`character_${idx}_url`]}
-                        </p>
-                      )}
-                    </div>
+                    <Tabs defaultValue="upload" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="upload">Upload Image</TabsTrigger>
+                        <TabsTrigger value="url">Enter URL</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="upload" className="space-y-2">
+                        <CharacterImageUpload
+                          onUploadSuccess={(url) => updateCharacter(idx, "url", url)}
+                          currentImageUrl={char.url}
+                          onRemove={() => updateCharacter(idx, "url", "")}
+                          characterName={char.name}
+                        />
+                      </TabsContent>
+                      <TabsContent value="url" className="space-y-2">
+                        <Input
+                          placeholder="Image URL"
+                          value={char.url}
+                          onChange={(e) => updateCharacter(idx, "url", e.target.value)}
+                          type="url"
+                        />
+                        {enhancementErrors[`character_${idx}_url`] && (
+                          <p className="text-xs text-red-500">
+                            {enhancementErrors[`character_${idx}_url`]}
+                          </p>
+                        )}
+                      </TabsContent>
+                    </Tabs>
                     <div className="space-y-2">
                       <Textarea
                         placeholder="Description (optional)"
