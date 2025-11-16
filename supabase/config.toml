@@ -58,3 +58,6 @@ verify_jwt = false
 
 [functions.sitemap-xml]
 verify_jwt = false
+
+[functions.send-message-to-author]
+verify_jwt = false
