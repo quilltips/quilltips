@@ -687,6 +687,7 @@ export type Database = {
           template: string
           thank_you_video_thumbnail: string | null
           thank_you_video_url: string | null
+          tipping_enabled: boolean
           total_amount: number | null
           total_tips: number | null
           uniqode_qr_code_id: string | null
@@ -716,6 +717,7 @@ export type Database = {
           template?: string
           thank_you_video_thumbnail?: string | null
           thank_you_video_url?: string | null
+          tipping_enabled?: boolean
           total_amount?: number | null
           total_tips?: number | null
           uniqode_qr_code_id?: string | null
@@ -745,6 +747,7 @@ export type Database = {
           template?: string
           thank_you_video_thumbnail?: string | null
           thank_you_video_url?: string | null
+          tipping_enabled?: boolean
           total_amount?: number | null
           total_tips?: number | null
           uniqode_qr_code_id?: string | null

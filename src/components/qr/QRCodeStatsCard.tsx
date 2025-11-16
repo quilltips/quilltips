@@ -43,6 +43,7 @@ interface QRCodeStatsCardProps {
     book_description?: string | null;
     character_images?: any;
     recommendations?: any[];
+    tipping_enabled?: boolean;
   } & QRCodeStats;
   qrCodeRef?: RefObject<HTMLDivElement>;
 }
@@ -179,6 +180,36 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     setIsEditingBuyNow(false);
   };
 
+  const handleTippingToggle = async () => {
+    const newValue = qrCode.tipping_enabled === false;
+    
+    try {
+      const { error } = await supabase
+        .from('qr_codes')
+        .update({ tipping_enabled: newValue })
+        .eq('id', qrCode.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Tipping setting updated",
+        description: newValue 
+          ? "Readers can now leave tips for this book" 
+          : "Tipping disabled - readers can only send messages",
+      });
+
+      // Refresh the page data
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating tipping setting:", error);
+      toast({
+        title: "Update failed",
+        description: "Could not update tipping setting. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="grid xl:grid-cols-[3fr_2fr] gap-7 mx-auto">
       {/* Left side - QR Code, Book Cover, and Book Details */}
@@ -303,11 +334,32 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                        "No buy now link set"
                      )}
                    </p>
-                 )}
-               </div>
-             </div>
-          </div>
-        </Card>
+                  )}
+                </div>
+
+                {/* Tipping Enable/Disable Toggle */}
+                <div className="space-y-2 pt-2 border-t">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <span className="text-sm font-medium">Enable Tipping</span>
+                      <p className="text-xs text-muted-foreground">
+                        When disabled, readers can only send messages (no tips)
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={qrCode.tipping_enabled !== false}
+                        onChange={handleTippingToggle}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+           </div>
+         </Card>
 
         {/* Enhancements Section */}
         <Card className="p-4 md:p-5">
