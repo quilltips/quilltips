@@ -75,7 +75,7 @@ export const MessageForm = ({
 
       if (dbError) {
         console.error("Error storing message:", dbError);
-        // Don't throw - email was sent successfully
+        throw dbError;
       }
 
       toast.success("Your message has been sent to the author!");
