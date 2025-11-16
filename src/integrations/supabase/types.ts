@@ -915,10 +915,7 @@ export type Database = {
         Args: { tip_uuid: string; token_value: string }
         Returns: boolean
       }
-      cleanup_expired_verification_codes: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_expired_verification_codes: { Args: never; Returns: undefined }
       create_qr_code: {
         Args: {
           author_id: string
@@ -938,18 +935,9 @@ export type Database = {
         Args: { base_slug: string; qr_id?: string }
         Returns: string
       }
-      generate_slug: {
-        Args: { title: string }
-        Returns: string
-      }
-      generate_url_slug: {
-        Args: { input_text: string }
-        Returns: string
-      }
-      get_blog_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      generate_slug: { Args: { title: string }; Returns: string }
+      generate_url_slug: { Args: { input_text: string }; Returns: string }
+      get_blog_stats: { Args: never; Returns: Json }
       get_public_profile_by_id: {
         Args: { profile_id: string }
         Returns: {
@@ -972,6 +960,12 @@ export type Database = {
           stripe_account_id: string | null
           stripe_setup_complete: boolean | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "public_profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_public_profile_by_name: {
         Args: { profile_name: string }
@@ -999,27 +993,21 @@ export type Database = {
           stripe_account_id: string | null
           stripe_setup_complete: boolean | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "public_profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
-      get_qr_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_tip_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_user_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_qr_stats: { Args: never; Returns: Json }
+      get_tip_stats: { Args: never; Returns: Json }
+      get_user_stats: { Args: never; Returns: Json }
       has_email_been_sent: {
         Args: { email_type: string; user_id: string }
         Returns: boolean
       }
-      increment_blog_view: {
-        Args: { post_id: string }
-        Returns: undefined
-      }
+      increment_blog_view: { Args: { post_id: string }; Returns: undefined }
       insert_public_profile: {
         Args: {
           profile_avatar_url: string
@@ -1030,18 +1018,12 @@ export type Database = {
         }
         Returns: undefined
       }
-      is_admin: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
+      is_admin: { Args: { user_id: string }; Returns: boolean }
       record_email_sent: {
         Args: { email_type: string; user_id: string }
         Returns: undefined
       }
-      test_pg_net_extension: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      test_pg_net_extension: { Args: never; Returns: undefined }
       unsubscribe_tip: {
         Args: { tip_uuid: string; unsubscribe_token: string }
         Returns: boolean
