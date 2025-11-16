@@ -23,6 +23,8 @@ export const useQRCodeDetails = () => {
     setName,
     email,
     setEmail,
+    isPrivate,
+    setIsPrivate,
     isLoading,
     handleSubmit,
     authorFirstName
@@ -51,6 +53,8 @@ export const useQRCodeDetails = () => {
     setName,
     email,
     setEmail,
+    isPrivate,
+    setIsPrivate,
     isLoading,
     handleSubmit,
     showTipForm,

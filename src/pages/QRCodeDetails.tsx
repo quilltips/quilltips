@@ -36,6 +36,8 @@ const QRCodeDetails = () => {
     setName,
     email,
     setEmail,
+    isPrivate,
+    setIsPrivate,
     isLoading,
     handleSubmit,
     showTipForm,
@@ -159,6 +161,7 @@ const QRCodeDetails = () => {
               email={email}
               amount={amount}
               customAmount={customAmount}
+              isPrivate={isPrivate}
               isLoading={isLoading}
               authorFirstName={authorFirstName}
               stripeSetupComplete={stripeSetupComplete}
@@ -169,6 +172,7 @@ const QRCodeDetails = () => {
               onEmailChange={setEmail}
               onAmountChange={setAmount}
               onCustomAmountChange={setCustomAmount}
+              onPrivateChange={setIsPrivate}
               onSubmit={handleSubmit}
               onCancel={() => setShowTipForm(false)}
             />

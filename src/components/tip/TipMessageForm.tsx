@@ -2,25 +2,30 @@
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import { Checkbox } from "../ui/checkbox";
 
 interface TipMessageFormProps {
   name: string;
   message: string;
   email: string;
+  isPrivate?: boolean;
   authorFirstName?: string;
   onNameChange: (value: string) => void;
   onMessageChange: (value: string) => void;
   onEmailChange: (value: string) => void;
+  onPrivateChange?: (value: boolean) => void;
 }
 
 export const TipMessageForm = ({
   name,
   message,
   email,
+  isPrivate = false,
   authorFirstName = "the author",
   onNameChange,
   onMessageChange,
   onEmailChange,
+  onPrivateChange,
 }: TipMessageFormProps) => {
   return (
     <div className="space-y-6">
@@ -58,6 +63,22 @@ export const TipMessageForm = ({
           rows={3}
         />
       </div>
+
+      {onPrivateChange && (
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="private"
+            checked={isPrivate}
+            onCheckedChange={onPrivateChange}
+          />
+          <Label 
+            htmlFor="private" 
+            className="text-sm font-normal cursor-pointer"
+          >
+            Keep this tip private (only visible to you and the author)
+          </Label>
+        </div>
+      )}
     </div>
   );
 };
