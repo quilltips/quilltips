@@ -14,6 +14,7 @@ import { OptimizedImage } from "../ui/optimized-image";
 import { BookCoverUpload } from "./BookCoverUpload";
 import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
 import { supabase } from "@/integrations/supabase/client";
+import { EnhancementsManager } from "../book/EnhancementsManager";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -25,6 +26,7 @@ interface QRCodeStats {
 interface QRCodeStatsCardProps {
   qrCode: {
     id: string;
+    author_id: string;
     book_title: string;
     slug?: string | null;
     is_paid?: boolean;
@@ -33,6 +35,13 @@ interface QRCodeStatsCardProps {
     isbn?: string | null;
     release_date?: string | null;
     buy_now_link?: string | null;
+    thank_you_video_url?: string | null;
+    thank_you_video_thumbnail?: string | null;
+    video_title?: string | null;
+    video_description?: string | null;
+    book_description?: string | null;
+    character_images?: any;
+    recommendations?: any[];
   } & QRCodeStats;
   qrCodeRef?: RefObject<HTMLDivElement>;
 }
@@ -296,6 +305,29 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                  )}
                </div>
              </div>
+          </div>
+        </Card>
+
+        {/* Enhancements Section */}
+        <Card className="p-4 md:p-5">
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Book Enhancements</h3>
+            <p className="text-sm text-muted-foreground">
+              Add extra content to make your book page more engaging for readers
+            </p>
+            <EnhancementsManager
+              qrCodeId={qrCode.id}
+              authorId={qrCode.author_id}
+              initialData={{
+                thank_you_video_url: qrCode.thank_you_video_url,
+                thank_you_video_thumbnail: qrCode.thank_you_video_thumbnail,
+                video_title: qrCode.video_title,
+                video_description: qrCode.video_description,
+                book_description: qrCode.book_description,
+                character_images: qrCode.character_images,
+              }}
+              recommendations={qrCode.recommendations}
+            />
           </div>
         </Card>
       </div>

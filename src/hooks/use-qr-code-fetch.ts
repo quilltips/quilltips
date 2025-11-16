@@ -32,6 +32,7 @@ export const useQRCodeFetch = () => {
           .select(`
             *,
             author:public_profiles!author_id (
+              id,
               name,
               avatar_url,
               bio,
@@ -49,6 +50,7 @@ export const useQRCodeFetch = () => {
           .select(`
             *,
             author:public_profiles!author_id (
+              id,
               name,
               avatar_url,
               bio,
@@ -63,8 +65,30 @@ export const useQRCodeFetch = () => {
 
       if (qrError) throw qrError;
       if (!qrData) throw new Error('QR code not found');
+      
+      // Fetch author's other books
+      const { data: otherBooks } = await supabase
+        .from('qr_codes')
+        .select('id, book_title, cover_image, slug')
+        .eq('author_id', qrData.author_id)
+        .eq('is_paid', true)
+        .order('created_at', { ascending: false });
+      
+      // Fetch author's recommendations
+      const { data: recommendations } = await supabase
+        .from('author_book_recommendations')
+        .select('*')
+        .eq('qr_code_id', qrData.id)
+        .order('display_order', { ascending: true });
+
       console.log("QRCodeFetch: QR code data loaded:", qrData);
-      return qrData;
+      
+      return {
+        ...qrData,
+        otherBooks: otherBooks || [],
+        recommendations: recommendations || []
+      };
+
     },
     staleTime: 60000, // 1 minute stale time
     enabled: !!identifier,
