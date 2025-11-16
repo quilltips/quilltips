@@ -3,18 +3,35 @@ import { useState, useRef } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, AlertCircle, Loader2, ImagePlus } from "lucide-react";
+import { CalendarIcon, AlertCircle, Loader2, ImagePlus, ChevronDown, Plus, X, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BookCoverUpload } from "./qr/BookCoverUpload";
+import { z } from "zod";
 
 interface CreateQRCodeProps {
   authorId: string;
+}
+
+// Validation schema
+const urlSchema = z.string().url().or(z.literal(""));
+const characterSchema = z.object({
+  url: z.string().url({ message: "Invalid image URL" }),
+  name: z.string().min(1, { message: "Character name is required" }).max(100),
+  description: z.string().max(500).optional(),
+});
+
+interface Character {
+  url: string;
+  name: string;
+  description?: string;
 }
 
 export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
@@ -29,12 +46,76 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  // Enhancement fields
+  const [isEnhancementsOpen, setIsEnhancementsOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoThumbnail, setVideoThumbnail] = useState("");
+  const [videoTitle, setVideoTitle] = useState("");
+  const [videoDescription, setVideoDescription] = useState("");
+  const [bookDescription, setBookDescription] = useState("");
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [enhancementErrors, setEnhancementErrors] = useState<Record<string, string>>({});
+
+  const addCharacter = () => {
+    setCharacters([...characters, { url: "", name: "", description: "" }]);
+  };
+
+  const updateCharacter = (index: number, field: keyof Character, value: string) => {
+    const updated = [...characters];
+    updated[index] = { ...updated[index], [field]: value };
+    setCharacters(updated);
+  };
+
+  const removeCharacter = (index: number) => {
+    setCharacters(characters.filter((_, i) => i !== index));
+  };
+
+  const validateEnhancements = () => {
+    const errors: Record<string, string> = {};
+
+    // Validate video URL if provided
+    if (videoUrl) {
+      const result = urlSchema.safeParse(videoUrl);
+      if (!result.success) {
+        errors.videoUrl = "Please enter a valid video URL";
+      }
+    }
+
+    // Validate video thumbnail if provided
+    if (videoThumbnail) {
+      const result = urlSchema.safeParse(videoThumbnail);
+      if (!result.success) {
+        errors.videoThumbnail = "Please enter a valid thumbnail URL";
+      }
+    }
+
+    // Validate characters
+    characters.forEach((char, index) => {
+      if (char.url || char.name || char.description) {
+        const result = characterSchema.safeParse(char);
+        if (!result.success) {
+          result.error.errors.forEach((err) => {
+            errors[`character_${index}_${err.path[0]}`] = err.message;
+          });
+        }
+      }
+    });
+
+    setEnhancementErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
       if (imageError) throw new Error(imageError);
+
+      // Validate enhancements if any are filled
+      if (isEnhancementsOpen && !validateEnhancements()) {
+        throw new Error("Please fix the errors in the enhancements section");
+      }
 
       // Process buy now link to ensure it has a protocol
       let processedBuyNowLink = buyNowLink;
@@ -76,6 +157,11 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         }
       }
 
+      // Filter out incomplete characters
+      const validCharacters = characters.filter(
+        (char) => char.url && char.name
+      );
+
       const { data: qrCode, error: qrError } = await supabase
         .from('qr_codes')
         .insert({
@@ -86,7 +172,14 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           release_date: releaseDate?.toISOString(),
           cover_image: coverImageUrl,
           buy_now_link: processedBuyNowLink || null,
-          qr_code_status: 'pending'
+          qr_code_status: 'pending',
+          // Enhancement fields
+          thank_you_video_url: videoUrl || null,
+          thank_you_video_thumbnail: videoThumbnail || null,
+          video_title: videoTitle || null,
+          video_description: videoDescription || null,
+          book_description: bookDescription || null,
+          character_images: validCharacters.length > 0 ? (validCharacters as any) : null,
         })
         .select()
         .single();
@@ -224,6 +317,172 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             Recommended size: 600×900 pixels. Max: 10MB.
           </p>
         </div>
+
+        {/* Enhancements Section */}
+        <Collapsible open={isEnhancementsOpen} onOpenChange={setIsEnhancementsOpen} className="border rounded-lg p-4 bg-muted/30">
+          <CollapsibleTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full flex items-center justify-between hover:bg-transparent p-0"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <span className="text-base font-semibold">Book Enhancements (Optional)</span>
+              </div>
+              <ChevronDown
+                className={cn(
+                  "h-5 w-5 transition-transform",
+                  isEnhancementsOpen && "transform rotate-180"
+                )}
+              />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-6 mt-4">
+            <p className="text-sm text-muted-foreground">
+              Add extra content to make your book page more engaging for readers
+            </p>
+
+            {/* Thank You Video */}
+            <div className="space-y-4 p-4 border rounded-lg bg-background">
+              <h4 className="font-semibold text-sm">Thank You Video</h4>
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <label className="text-xs font-medium">Video URL</label>
+                  <Input
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                    placeholder="https://..."
+                    type="url"
+                  />
+                  {enhancementErrors.videoUrl && (
+                    <p className="text-xs text-red-500">{enhancementErrors.videoUrl}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium">Thumbnail URL (optional)</label>
+                  <Input
+                    value={videoThumbnail}
+                    onChange={(e) => setVideoThumbnail(e.target.value)}
+                    placeholder="https://..."
+                    type="url"
+                  />
+                  {enhancementErrors.videoThumbnail && (
+                    <p className="text-xs text-red-500">{enhancementErrors.videoThumbnail}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium">Video Title (optional)</label>
+                  <Input
+                    value={videoTitle}
+                    onChange={(e) => setVideoTitle(e.target.value)}
+                    placeholder="Thank you for reading!"
+                    maxLength={100}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium">Video Description (optional)</label>
+                  <Textarea
+                    value={videoDescription}
+                    onChange={(e) => setVideoDescription(e.target.value)}
+                    placeholder="A special message..."
+                    rows={2}
+                    maxLength={500}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Book Description */}
+            <div className="space-y-4 p-4 border rounded-lg bg-background">
+              <h4 className="font-semibold text-sm">Book Description</h4>
+              <div className="space-y-2">
+                <Textarea
+                  value={bookDescription}
+                  onChange={(e) => setBookDescription(e.target.value)}
+                  placeholder="Enter a detailed description of your book..."
+                  rows={4}
+                  maxLength={2000}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {bookDescription.length}/2000 characters
+                </p>
+              </div>
+            </div>
+
+            {/* Character Gallery */}
+            <div className="space-y-4 p-4 border rounded-lg bg-background">
+              <h4 className="font-semibold text-sm">Character Gallery</h4>
+              <div className="space-y-3">
+                {characters.map((char, idx) => (
+                  <div key={idx} className="p-3 border rounded-md space-y-3 bg-muted/30">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium">Character {idx + 1}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeCharacter(idx)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Character name"
+                        value={char.name}
+                        onChange={(e) => updateCharacter(idx, "name", e.target.value)}
+                        maxLength={100}
+                      />
+                      {enhancementErrors[`character_${idx}_name`] && (
+                        <p className="text-xs text-red-500">
+                          {enhancementErrors[`character_${idx}_name`]}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Image URL"
+                        value={char.url}
+                        onChange={(e) => updateCharacter(idx, "url", e.target.value)}
+                        type="url"
+                      />
+                      {enhancementErrors[`character_${idx}_url`] && (
+                        <p className="text-xs text-red-500">
+                          {enhancementErrors[`character_${idx}_url`]}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Textarea
+                        placeholder="Description (optional)"
+                        value={char.description || ""}
+                        onChange={(e) => updateCharacter(idx, "description", e.target.value)}
+                        rows={2}
+                        maxLength={500}
+                      />
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addCharacter}
+                  className="w-full"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Character
+                </Button>
+              </div>
+            </div>
+
+            <p className="text-xs text-muted-foreground italic">
+              Note: Book recommendations can be added later from your dashboard
+            </p>
+          </CollapsibleContent>
+        </Collapsible>
 
         <Button
           type="submit"
