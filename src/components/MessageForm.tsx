@@ -70,7 +70,7 @@ export const MessageForm = ({
           reader_email: email,
           book_title: bookTitle,
           is_private: true,
-          status: 'completed'
+          status: 'complete'
         });
 
       if (dbError) {
