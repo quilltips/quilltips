@@ -59,7 +59,7 @@ const QRCodeDetails = () => {
   }
 
   return (
-      <main className="container mx-auto px-4 pt-8 pb-12 space-y-8">
+      <main className="container mx-auto px-4 pt-8 pb-12 space-y-12">
         <div className="max-w-md mx-auto space-y-8">
           {/* Book details card with horizontal layout */}
           <div className="flex items-center space-x-6">
@@ -126,7 +126,7 @@ const QRCodeDetails = () => {
                   <Button 
                     onClick={() => setShowMessageForm(true)} 
                     variant="outline"
-                    className="flex-1 py-6 text-lg font-semibold hover:bg-accent"
+                    className="flex-1 py-6 text-lg font-semibold hover:shadow"
                   >
                     Send a message
                   </Button>
@@ -134,7 +134,7 @@ const QRCodeDetails = () => {
               ) : (
                 <Button 
                   onClick={() => setShowMessageForm(true)} 
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-6 text-lg font-semibold"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow py-6 text-lg font-semibold"
                 >
                   Send a message
                 </Button>
@@ -181,7 +181,7 @@ const QRCodeDetails = () => {
           
           {/* Book Enhancements Section */}
           {!showTipForm && !showMessageForm && (
-            <div className="space-y-8">
+            <div className="space-y-12">
               {/* Thank You Video */}
               {(qrCode.thank_you_video_url || qrCode.video_title) && (
                 <div className="space-y-3">
@@ -197,8 +197,11 @@ const QRCodeDetails = () => {
               
               {/* Book Description */}
               {qrCode.book_description && (
-                <div className="rounded-lg border border-border p-6">
-                  <CollapsibleBookDescription description={qrCode.book_description} />
+                <div className="space-y-3">
+                  <h3 className="text-xl font-playfair">Description</h3>
+                  <div className="rounded-lg border border-border p-6">
+                    <CollapsibleBookDescription description={qrCode.book_description} />
+                  </div>
                 </div>
               )}
               
