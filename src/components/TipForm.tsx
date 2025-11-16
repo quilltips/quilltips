@@ -35,6 +35,8 @@ export const TipForm = ({
     setName,
     email,
     setEmail,
+    isPrivate,
+    setIsPrivate,
     isLoading,
     handleSubmit,
     authorFirstName
@@ -69,10 +71,12 @@ export const TipForm = ({
           name={name}
           message={message}
           email={email}
+          isPrivate={isPrivate}
           authorFirstName={authorFirstName}
           onNameChange={setName}
           onMessageChange={setMessage}
           onEmailChange={setEmail}
+          onPrivateChange={setIsPrivate}
         />
 
         <TipAmountSelector

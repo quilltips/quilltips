@@ -44,7 +44,7 @@ export const MessageForm = ({
 
     try {
       // Call edge function to send message notification
-      const { error } = await supabase.functions.invoke('send-message-to-author', {
+      const { error: emailError } = await supabase.functions.invoke('send-message-to-author', {
         body: {
           authorId,
           authorName,
@@ -56,7 +56,27 @@ export const MessageForm = ({
         }
       });
 
-      if (error) throw error;
+      if (emailError) throw emailError;
+
+      // Store message in tips table (always private, amount = 0)
+      const { error: dbError } = await supabase
+        .from('tips')
+        .insert({
+          author_id: authorId,
+          qr_code_id: qrCodeId,
+          amount: 0,
+          message,
+          reader_name: name || 'Anonymous',
+          reader_email: email,
+          book_title: bookTitle,
+          is_private: true,
+          status: 'completed'
+        });
+
+      if (dbError) {
+        console.error("Error storing message:", dbError);
+        // Don't throw - email was sent successfully
+      }
 
       toast.success("Your message has been sent to the author!");
       setName("");

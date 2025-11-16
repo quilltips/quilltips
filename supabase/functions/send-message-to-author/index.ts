@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
+import { generateEmailHtml } from "../send-email-notification/quilltips-email-template.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -42,51 +43,25 @@ serve(async (req) => {
     const displayName = readerName || 'A reader';
     const bookInfo = bookTitle ? ` about "${bookTitle}"` : '';
 
-    const emailHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
-            .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
-            .header { background-color: #19363C; padding: 30px 20px; text-align: center; }
-            .header h1 { color: #FFD166; margin: 0; font-size: 24px; }
-            .content { padding: 40px 30px; }
-            .message-box { background-color: #f9f9f9; border-left: 4px solid #FFD166; padding: 20px; margin: 20px 0; border-radius: 4px; }
-            .message-box p { margin: 0; white-space: pre-wrap; }
-            .footer { background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #666; }
-            .footer a { color: #19363C; text-decoration: none; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>📬 New Message from a Reader</h1>
-            </div>
-            <div class="content">
-              <p>Hi ${authorData.name || 'there'},</p>
-              <p><strong>${displayName}</strong> sent you a message${bookInfo}:</p>
-              
-              <div class="message-box">
-                <p>${message}</p>
-              </div>
+    const messageContent = `
+      <p style="margin-bottom: 20px;"><strong>${displayName}</strong> sent you a message${bookInfo}:</p>
+      
+      <div style="background-color: #f9f9f9; border-left: 4px solid #FFD166; padding: 20px; margin: 20px 0; border-radius: 4px;">
+        <p style="margin: 0; white-space: pre-wrap;">${message}</p>
+      </div>
 
-              ${readerEmail ? `<p><strong>Reply to:</strong> <a href="mailto:${readerEmail}">${readerEmail}</a></p>` : ''}
-              
-              <p style="margin-top: 30px;">This message was sent through your Quilltips QR code${bookInfo}.</p>
-            </div>
-            <div class="footer">
-              <p>
-                <a href="https://quilltips.co">Quilltips</a> | 
-                Connecting authors with readers
-              </p>
-            </div>
-          </div>
-        </body>
-      </html>
+      ${readerEmail ? `<p style="margin-top: 20px;"><strong>Reply to:</strong> <a href="mailto:${readerEmail}" style="color: #19363C;">${readerEmail}</a></p>` : ''}
+      
+      <p style="margin-top: 30px; color: #666;">This message was sent through your Quilltips QR code${bookInfo}.</p>
     `;
+
+    const emailHtml = generateEmailHtml({
+      header: `📬 New Message from ${displayName}`,
+      message: `Hi ${authorData.name || 'there'},`,
+      additionalContent: messageContent,
+      cta: "View in Dashboard",
+      ctaUrl: "https://quilltips.co/dashboard"
+    });
 
     const emailResponse = await resend.emails.send({
       from: "Quilltips <notifications@quilltips.co>",

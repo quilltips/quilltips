@@ -10,6 +10,7 @@ interface QRCodeTipFormProps {
   email: string;
   amount: string;
   customAmount: string;
+  isPrivate?: boolean;
   isLoading: boolean;
   authorFirstName: string;
   stripeSetupComplete?: boolean;
@@ -20,6 +21,7 @@ interface QRCodeTipFormProps {
   onEmailChange: (value: string) => void;
   onAmountChange: (value: string) => void;
   onCustomAmountChange: (value: string) => void;
+  onPrivateChange?: (value: boolean) => void;
   onSubmit: (e: React.FormEvent) => Promise<void> | void;
   onCancel: () => void;
 }
@@ -30,6 +32,7 @@ export const QRCodeTipForm = ({
   email,
   amount,
   customAmount,
+  isPrivate = false,
   isLoading,
   authorFirstName,
   stripeSetupComplete = true,
@@ -40,6 +43,7 @@ export const QRCodeTipForm = ({
   onEmailChange,
   onAmountChange,
   onCustomAmountChange,
+  onPrivateChange,
   onSubmit,
   onCancel
 }: QRCodeTipFormProps) => {
@@ -71,10 +75,12 @@ export const QRCodeTipForm = ({
             name={name}
             message={message}
             email={email}
+            isPrivate={isPrivate}
             authorFirstName={authorFirstName}
             onNameChange={onNameChange}
             onMessageChange={onMessageChange}
             onEmailChange={onEmailChange}
+            onPrivateChange={onPrivateChange}
           />
 
           <TipAmountSelector

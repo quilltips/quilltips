@@ -14,9 +14,9 @@ serve(async (req) => {
   }
 
   try {
-    const { amount, authorId, message, name, email, bookTitle, qrCodeId } = await req.json();
+    const { amount, authorId, message, name, email, bookTitle, qrCodeId, isPrivate } = await req.json();
 
-    console.log('Creating checkout session with params:', { amount, authorId, message, name, email, bookTitle, qrCodeId });
+    console.log('Creating checkout session with params:', { amount, authorId, message, name, email, bookTitle, qrCodeId, isPrivate });
 
     // Create Supabase admin client
     const supabaseAdmin = createClient(
@@ -158,6 +158,7 @@ serve(async (req) => {
           message,
           bookTitle,
           qrCodeId,
+          isPrivate: isPrivate || false,
         },
       },
       customer_email: email,
@@ -189,7 +190,8 @@ serve(async (req) => {
         stripe_session_id: session.id,
         status: 'pending',
         reader_name: name || null,
-        reader_email: email || null  // Store the reader's email
+        reader_email: email || null,  // Store the reader's email
+        is_private: isPrivate || false
       });
 
     if (tipError) {

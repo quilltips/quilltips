@@ -8,6 +8,7 @@ export const useTipSubmission = (qrCode: any) => {
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -42,6 +43,7 @@ export const useTipSubmission = (qrCode: any) => {
           email,
           bookTitle: qrCode.book_title,
           qrCodeId: qrCode.id,
+          isPrivate,
         },
       });
 
@@ -89,6 +91,8 @@ export const useTipSubmission = (qrCode: any) => {
     setName,
     email,
     setEmail,
+    isPrivate,
+    setIsPrivate,
     isLoading,
     handleSubmit,
     authorFirstName

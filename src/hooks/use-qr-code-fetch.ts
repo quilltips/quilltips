@@ -71,7 +71,6 @@ export const useQRCodeFetch = () => {
         .from('qr_codes')
         .select('id, book_title, cover_image, slug')
         .eq('author_id', qrData.author_id)
-        .eq('is_paid', true)
         .order('created_at', { ascending: false });
       
       // Fetch author's recommendations
