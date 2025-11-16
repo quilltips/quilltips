@@ -58,7 +58,7 @@ export const MessageForm = ({
 
       if (error) throw error;
 
-      toast.success("Message sent successfully!");
+      toast.success("Your message has been sent to the author!");
       setName("");
       setEmail("");
       setMessage("");
