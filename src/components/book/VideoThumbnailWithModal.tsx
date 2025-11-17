@@ -84,7 +84,8 @@ export const VideoThumbnailWithModal = ({
               src={videoUrl}
               controls
               autoPlay
-              className="w-full aspect-video"
+              className="w-full max-h-[80vh] object-contain"
+              style={{ maxWidth: '100%' }}
             />
           )}
           {(title || description) && (
