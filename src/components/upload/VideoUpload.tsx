@@ -35,8 +35,9 @@ export const VideoUpload = ({ onUploadSuccess, currentVideoUrl, onRemove }: Vide
     if (file.size > maxSize) {
       toast({
         title: "File too large",
-        description: "Video must be less than 150MB",
+        description: "For videos over 150MB, please upload to YouTube and paste the link instead. This ensures faster loading for your readers.",
         variant: "destructive",
+        duration: 6000,
       });
       return;
     }
