@@ -20,6 +20,13 @@ export type QRCode = {
   is_paid: boolean;
   tipping_enabled?: boolean | null;
   slug?: string | null;
+  buy_now_link?: string | null;
+  thank_you_video_url?: string | null;
+  thank_you_video_thumbnail?: string | null;
+  video_title?: string | null;
+  video_description?: string | null;
+  book_description?: string | null;
+  character_images?: any;
   author?: {
     name: string | null;
     avatar_url: string | null;
@@ -87,6 +94,13 @@ export const useQRCodeDetailsPage = () => {
             is_paid,
             tipping_enabled,
             slug,
+            buy_now_link,
+            thank_you_video_url,
+            thank_you_video_thumbnail,
+            video_title,
+            video_description,
+            book_description,
+            character_images,
             author:public_profiles!author_id (
               name,
               avatar_url,
@@ -114,6 +128,13 @@ export const useQRCodeDetailsPage = () => {
             is_paid,
             tipping_enabled,
             slug,
+            buy_now_link,
+            thank_you_video_url,
+            thank_you_video_thumbnail,
+            video_title,
+            video_description,
+            book_description,
+            character_images,
             author:public_profiles!author_id (
               name,
               avatar_url,
