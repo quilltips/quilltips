@@ -22,10 +22,12 @@ export const BookRecommendationsCarousel = ({
     return null;
   }
 
+  const firstName = authorName.split(' ')[0];
+
   return (
     <div className="space-y-4">
       <h3 className="text-xl font-playfair text-foreground">
-        {authorName} Recommends
+        {firstName} also recommends these books!
       </h3>
       <ul className="space-y-2 list-disc list-inside">
         {recommendations.map((rec) => (
