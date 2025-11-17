@@ -30,12 +30,12 @@ export const VideoUpload = ({ onUploadSuccess, currentVideoUrl, onRemove }: Vide
       return;
     }
 
-    // Validate file size (max 100MB)
-    const maxSize = 100 * 1024 * 1024;
+    // Validate file size (max 150MB)
+    const maxSize = 150 * 1024 * 1024;
     if (file.size > maxSize) {
       toast({
         title: "File too large",
-        description: "Video must be less than 100MB",
+        description: "Video must be less than 150MB",
         variant: "destructive",
       });
       return;
