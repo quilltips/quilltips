@@ -310,7 +310,7 @@ export const EnhancementsManager = ({
                 </Button>
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`book-title-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Book title</Label>
+                <Label htmlFor={`book-title-${idx}`} className="text-lg font-medium text-white">Book title</Label>
                 <Input
                   id={`book-title-${idx}`}
                   value={rec.recommended_book_title}
@@ -319,7 +319,7 @@ export const EnhancementsManager = ({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`buy-link-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Buy link (Amazon, Goodreads, etc.)</Label>
+                <Label htmlFor={`buy-link-${idx}`} className="text-lg font-medium text-white">Link</Label>
                 <Input
                   id={`buy-link-${idx}`}
                   value={rec.buy_link || ""}
@@ -333,8 +333,7 @@ export const EnhancementsManager = ({
             </div>
           ))}
           <Button variant="outline" onClick={addRecommendation} className="w-full" style={{ borderColor: '#333333', color: '#333333' }}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Recommendation
+            <Plus className="h-4 w-4" />
           </Button>
         </CardContent>
       </Card>
