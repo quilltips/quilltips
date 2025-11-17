@@ -1,11 +1,4 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { BookRecommendationCard } from "./BookRecommendationCard";
+import { ExternalLink } from "lucide-react";
 
 interface Recommendation {
   id: string;
@@ -34,27 +27,25 @@ export const BookRecommendationsCarousel = ({
       <h3 className="text-xl font-playfair text-foreground">
         {authorName} Recommends
       </h3>
-      <Carousel className="w-full">
-        <CarouselContent>
-          {recommendations.map((rec) => (
-            <CarouselItem key={rec.id} className="md:basis-1/2 lg:basis-1/3">
-              <BookRecommendationCard
-                title={rec.recommended_book_title}
-                author={rec.recommended_book_author}
-                coverUrl={rec.recommended_book_cover_url || undefined}
-                buyLink={rec.buy_link || undefined}
-                recommendation={rec.recommendation_text || undefined}
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        {recommendations.length > 1 && (
-          <>
-            <CarouselPrevious />
-            <CarouselNext />
-          </>
-        )}
-      </Carousel>
+      <ul className="space-y-2 list-disc list-inside">
+        {recommendations.map((rec) => (
+          <li key={rec.id} className="text-foreground">
+            {rec.buy_link ? (
+              <a
+                href={rec.buy_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline inline-flex items-center gap-1"
+              >
+                {rec.recommended_book_title}
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            ) : (
+              <span>{rec.recommended_book_title}</span>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
