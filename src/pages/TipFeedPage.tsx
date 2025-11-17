@@ -35,7 +35,7 @@ const TipFeedPage = () => {
     retry: false,
     meta: {
       errorHandler: (error: Error) => {
-        console.error("Tip Feed page error:", error);
+        console.error("Feed page error:", error);
         toast({
           title: "Error",
           description: error.message || "Failed to load profile",
@@ -61,7 +61,7 @@ const TipFeedPage = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Your tip activity</h1>
+            <h1 className="text-3xl font-playfair font-medium text-[#2D3748]">Your Activity</h1>
           </div>
 
           <div className="bg-transparent border border-black rounded-xl p-6 shadow-sm">

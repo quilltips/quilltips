@@ -92,7 +92,7 @@ export const MessageForm = ({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-background rounded-xl shadow-lg overflow-hidden">
+    <Card className="w-full max-w-md mx-auto bg-background rounded-xl shadow-none overflow-hidden">
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         <h2 className="text-2xl font-bold text-left">
           Send {authorFirstName} a message
@@ -133,8 +133,8 @@ export const MessageForm = ({
             id="message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder={`Tell ${authorFirstName} what you thought about the book!`}
-            className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary resize-none"
+            placeholder={``}
+            className="w-full px-4 py-3 rounded-lg border border-[#333333] focus:ring-2 focus:ring-primary resize-none"
             rows={4}
             required
           />

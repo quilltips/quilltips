@@ -51,7 +51,7 @@ export const TipStatsCard = ({ authorId }: TipStatsCardProps) => {
     <Card className="overflow-hidden h-full">
       <CardContent className="p-6 bg-[#19363C] text-white h-full">
         <div className="space-y-6">
-          <h2 className="text-2xl font-playfair">Tips</h2>
+          <h2 className="text-2xl font-playfair">Activity</h2>
           
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-1">
@@ -59,7 +59,7 @@ export const TipStatsCard = ({ authorId }: TipStatsCardProps) => {
                 ${data?.totalAmount.toFixed(0) || '0'}
               </div>
               <div className="text-xs text-white/80">
-                Dollars received
+                Tips received
               </div>
             </div>
             

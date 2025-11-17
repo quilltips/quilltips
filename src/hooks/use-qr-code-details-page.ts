@@ -18,6 +18,8 @@ export type QRCode = {
   average_tip: number | null;
   last_tip_date: string | null;
   is_paid: boolean;
+  tipping_enabled?: boolean | null;
+  slug?: string | null;
   author?: {
     name: string | null;
     avatar_url: string | null;
@@ -83,6 +85,8 @@ export const useQRCodeDetailsPage = () => {
             average_tip, 
             last_tip_date, 
             is_paid,
+            tipping_enabled,
+            slug,
             author:public_profiles!author_id (
               name,
               avatar_url,
@@ -108,6 +112,8 @@ export const useQRCodeDetailsPage = () => {
             average_tip, 
             last_tip_date, 
             is_paid,
+            tipping_enabled,
+            slug,
             author:public_profiles!author_id (
               name,
               avatar_url,

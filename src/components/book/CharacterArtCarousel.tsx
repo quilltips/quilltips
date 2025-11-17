@@ -11,7 +11,7 @@ import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface Character {
   url: string;
-  name: string;
+  name?: string;
   description?: string;
 }
 
@@ -38,11 +38,13 @@ export const CharacterArtCarousel = ({ characters }: CharacterArtCarouselProps) 
               >
                 <OptimizedImage
                   src={character.url}
-                  alt={character.name}
+                  alt={character.name || "Character art"}
                   className="w-full aspect-square object-cover rounded-lg"
                 />
                 <div className="space-y-1">
-                  <h4 className="font-semibold text-foreground">{character.name}</h4>
+                  {character.name && (
+                    <h4 className="font-semibold text-foreground">{character.name}</h4>
+                  )}
                   {character.description && (
                     <p className="text-sm text-muted-foreground">{character.description}</p>
                   )}

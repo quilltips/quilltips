@@ -170,13 +170,13 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
           <Tabs defaultValue="arc" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="arc">
-                ARC Readers ({arcSignups?.length || 0})
+                ARC ({arcSignups?.length || 0})
               </TabsTrigger>
               <TabsTrigger value="beta">
-                Beta Readers ({betaSignups?.length || 0})
+                Beta ({betaSignups?.length || 0})
               </TabsTrigger>
               <TabsTrigger value="newsletter">
-                General Reader Signups ({newsletterSignups?.length || 0})
+                General ({newsletterSignups?.length || 0})
               </TabsTrigger>
             </TabsList>
 

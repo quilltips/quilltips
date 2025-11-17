@@ -3,21 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Loader2, X } from "lucide-react";
+import { Upload, Loader2, X, HelpCircle } from "lucide-react";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CharacterImageUploadProps {
   onUploadSuccess: (url: string) => void;
   currentImageUrl?: string;
   onRemove?: () => void;
-  characterName?: string;
 }
 
 export const CharacterImageUpload = ({ 
   onUploadSuccess, 
   currentImageUrl, 
-  onRemove,
-  characterName 
+  onRemove
 }: CharacterImageUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
@@ -95,19 +94,21 @@ export const CharacterImageUpload = ({
         <div className="relative w-full aspect-square max-w-[200px] border rounded-lg overflow-hidden">
           <OptimizedImage
             src={currentImageUrl}
-            alt={characterName || "Character"}
+            alt="Character"
             className="w-full h-full object-cover"
           />
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center">
         <Button
           type="button"
           variant="outline"
           size="sm"
           disabled={isUploading}
           onClick={() => document.getElementById(uploadId)?.click()}
+          className="relative"
+          style={{ borderColor: '#333333', color: '#333333' }}
         >
           {isUploading ? (
             <>
@@ -128,10 +129,22 @@ export const CharacterImageUpload = ({
             variant="ghost"
             size="sm"
             onClick={onRemove}
+            style={{ color: '#333333' }}
           >
             <X className="h-4 w-4" />
           </Button>
         )}
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircle className="h-4 w-4 cursor-help" style={{ color: '#333333' }} />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[250px]">
+              <p>Supported formats: JPEG, PNG, WebP, GIF (max 10MB)</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <Input
@@ -141,10 +154,6 @@ export const CharacterImageUpload = ({
         onChange={handleFileUpload}
         className="hidden"
       />
-      
-      <p className="text-xs text-muted-foreground">
-        Supported formats: JPEG, PNG, WebP, GIF (max 10MB)
-      </p>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { Card } from "../ui/card";
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useRef, useState, useEffect } from "react";
 import { StyledQRCode } from "./StyledQRCode";
 import { QRCodeDownloadOptions } from "./QRCodeDownloadOptions";
 import { toPng } from "html-to-image";
@@ -8,14 +8,16 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useQRCheckout } from "@/hooks/use-qr-checkout";
-import { ShoppingCart, Share2, Edit, Save, X } from "lucide-react";
+import { ShoppingCart, Share2, Edit, Save, X, ExternalLink } from "lucide-react";
 import { generateBrandedQRCodeSVG } from "./generateBrandedQRCodeSVG";
 import { OptimizedImage } from "../ui/optimized-image";
 import { BookCoverUpload } from "./BookCoverUpload";
-import { useQRCodeDetailsPage } from "@/hooks/use-qr-code-details-page";
+import { useQRCodeDetailsPage, qrCodeQueryKeys } from "@/hooks/use-qr-code-details-page";
 import { supabase } from "@/integrations/supabase/client";
 import { EnhancementsManager } from "../book/EnhancementsManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -50,18 +52,26 @@ interface QRCodeStatsCardProps {
 
 export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const isPaid = qrCode.is_paid !== false;
   const { isCheckingOut, handleCheckout } = useQRCheckout({
     qrCodeId: qrCode.id,
     bookTitle: qrCode.book_title
   });
-  const { updateCoverImage, imageRefreshKey } = useQRCodeDetailsPage();
+  const { updateCoverImage, imageRefreshKey, id } = useQRCodeDetailsPage();
   
   const [isEditingBuyNow, setIsEditingBuyNow] = useState(false);
   const [buyNowLinkInput, setBuyNowLinkInput] = useState(qrCode.buy_now_link || "");
   const [isSaving, setIsSaving] = useState(false);
 
   const downloadRef = useRef<HTMLDivElement>(null);
+
+  // Sync buyNowLinkInput when qrCode.buy_now_link changes
+  useEffect(() => {
+    if (!isEditingBuyNow) {
+      setBuyNowLinkInput(qrCode.buy_now_link || "");
+    }
+  }, [qrCode.buy_now_link, isEditingBuyNow]);
 
   // Use slug if available, fallback to old format for backward compatibility
   const bookSlug = qrCode.slug || qrCode.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
@@ -155,14 +165,24 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
       if (error) throw error;
 
+      // Optimistically update the local state
+      if (id) {
+        queryClient.setQueryData(qrCodeQueryKeys.detail(id), (old: any) => ({
+          ...old,
+          buy_now_link: buyNowLinkInput || null
+        }));
+      }
+
+      // Invalidate queries to refetch
+      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id || '') });
+      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+
       toast({
         title: "Success",
         description: "Buy now link updated successfully",
       });
 
       setIsEditingBuyNow(false);
-      // Update the local qrCode object
-      qrCode.buy_now_link = buyNowLinkInput || null;
     } catch (error) {
       console.error("Error updating buy now link:", error);
       toast({
@@ -181,7 +201,8 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
   };
 
   const handleTippingToggle = async () => {
-    const newValue = qrCode.tipping_enabled === false;
+    // Toggle the value: if currently false, set to true; otherwise set to false
+    const newValue = qrCode.tipping_enabled === false ? true : false;
     
     try {
       const { error } = await supabase
@@ -191,15 +212,24 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
       if (error) throw error;
 
+      // Optimistically update the local state
+      if (id) {
+        queryClient.setQueryData(qrCodeQueryKeys.detail(id), (old: any) => ({
+          ...old,
+          tipping_enabled: newValue
+        }));
+      }
+
+      // Invalidate queries to refetch
+      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id || '') });
+      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+
       toast({
         title: "Tipping setting updated",
         description: newValue 
           ? "Readers can now leave tips for this book" 
           : "Tipping disabled - readers can only send messages",
       });
-
-      // Refresh the page data
-      window.location.reload();
     } catch (error) {
       console.error("Error updating tipping setting:", error);
       toast({
@@ -257,7 +287,18 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             {/* Book Details */}
             <div className="space-y-2 pt-2">
               <div className="space-y-2">
-                <p className="text-base font-bold">{qrCode.book_title}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-bold">{qrCode.book_title}</p>
+                  <Link
+                    to={bookSlug ? `/book/${bookSlug}` : `/qr/${qrCode.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className=" hover:text-primary transition-colors"
+                    title="View public book page"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Link>
+                </div>
                 {qrCode.publisher && (
                   <p className="text-base">
                     <span className="font-sm">Publisher:</span> {qrCode.publisher}
@@ -342,7 +383,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <span className="text-sm font-medium">Enable Tipping</span>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs">
                         When disabled, readers can only send messages (no tips)
                       </p>
                     </div>
@@ -362,20 +403,14 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
          </Card>
 
         {/* Enhancements Section */}
-        <Card className="p-4 md:p-5">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Book Enhancements</h3>
-            <p className="text-sm text-muted-foreground">
-              Add extra content to make your book page more engaging for readers
-            </p>
+        <Card className="p-4 md:p-5 pt-6">
+          <div className="space-y-6 md:space-y-6">
+            <h3 className="text-xl font-semibold mb-4 md:mb-0">Book Enhancements</h3>
             <EnhancementsManager
               qrCodeId={qrCode.id}
               authorId={qrCode.author_id}
               initialData={{
                 thank_you_video_url: qrCode.thank_you_video_url,
-                thank_you_video_thumbnail: qrCode.thank_you_video_thumbnail,
-                video_title: qrCode.video_title,
-                video_description: qrCode.video_description,
                 book_description: qrCode.book_description,
                 character_images: qrCode.character_images,
               }}

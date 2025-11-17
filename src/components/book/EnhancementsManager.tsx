@@ -1,29 +1,26 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, X, Upload } from "lucide-react";
+import { Plus, X, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoUpload } from "../upload/VideoUpload";
 import { CharacterImageUpload } from "../upload/CharacterImageUpload";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Character {
   url: string;
-  name: string;
   description?: string;
 }
 
 interface Recommendation {
   id?: string;
   recommended_book_title: string;
-  recommended_book_author: string;
-  recommended_book_cover_url?: string;
   buy_link?: string;
-  recommendation_text?: string;
   display_order: number;
 }
 
@@ -32,9 +29,6 @@ interface EnhancementsManagerProps {
   authorId: string;
   initialData?: {
     thank_you_video_url?: string;
-    thank_you_video_thumbnail?: string;
-    video_title?: string;
-    video_description?: string;
     book_description?: string;
     character_images?: Character[];
   };
@@ -51,26 +45,26 @@ export const EnhancementsManager = ({
 }: EnhancementsManagerProps) => {
   const { toast } = useToast();
   const [videoUrl, setVideoUrl] = useState(initialData?.thank_you_video_url || "");
-  const [videoThumbnail, setVideoThumbnail] = useState(initialData?.thank_you_video_thumbnail || "");
-  const [videoTitle, setVideoTitle] = useState(initialData?.video_title || "");
-  const [videoDesc, setVideoDesc] = useState(initialData?.video_description || "");
   const [bookDesc, setBookDesc] = useState(initialData?.book_description || "");
   const [characters, setCharacters] = useState<Character[]>(initialData?.character_images || []);
   const [recs, setRecs] = useState<Recommendation[]>(recommendations);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Determine default tab for video: if videoUrl exists and is from storage bucket, show upload tab, otherwise show URL tab
+  const defaultVideoTab = videoUrl && videoUrl.includes('/book-videos/') ? 'upload' : (videoUrl ? 'url' : 'upload');
 
   const saveEnhancements = async () => {
     setIsSaving(true);
     try {
+      // Filter out characters without URLs (empty characters)
+      const validCharacters = characters.filter(char => char.url && char.url.trim() !== "");
+      
       const { error } = await supabase
         .from('qr_codes')
         .update({
           thank_you_video_url: videoUrl || null,
-          thank_you_video_thumbnail: videoThumbnail || null,
-          video_title: videoTitle || null,
-          video_description: videoDesc || null,
           book_description: bookDesc || null,
-          character_images: characters as any,
+          character_images: validCharacters.length > 0 ? validCharacters as any : null,
         })
         .eq('id', qrCodeId);
 
@@ -94,7 +88,7 @@ export const EnhancementsManager = ({
   };
 
   const addCharacter = () => {
-    setCharacters([...characters, { url: "", name: "", description: "" }]);
+    setCharacters([...characters, { url: "", description: "" }]);
   };
 
   const updateCharacter = (index: number, field: keyof Character, value: string) => {
@@ -112,10 +106,7 @@ export const EnhancementsManager = ({
       ...recs,
       {
         recommended_book_title: "",
-        recommended_book_author: "",
-        recommended_book_cover_url: "",
         buy_link: "",
-        recommendation_text: "",
         display_order: recs.length,
       },
     ]);
@@ -155,10 +146,7 @@ export const EnhancementsManager = ({
           .from('author_book_recommendations')
           .update({
             recommended_book_title: rec.recommended_book_title,
-            recommended_book_author: rec.recommended_book_author,
-            recommended_book_cover_url: rec.recommended_book_cover_url || null,
             buy_link: rec.buy_link || null,
-            recommendation_text: rec.recommendation_text || null,
             display_order: rec.display_order,
           })
           .eq('id', rec.id);
@@ -171,10 +159,8 @@ export const EnhancementsManager = ({
             author_id: authorId,
             qr_code_id: qrCodeId,
             recommended_book_title: rec.recommended_book_title,
-            recommended_book_author: rec.recommended_book_author,
-            recommended_book_cover_url: rec.recommended_book_cover_url || null,
+            recommended_book_author: "", // Empty string as default since we're simplifying the form
             buy_link: rec.buy_link || null,
-            recommendation_text: rec.recommendation_text || null,
             display_order: rec.display_order,
           })
           .select()
@@ -195,84 +181,48 @@ export const EnhancementsManager = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 md:space-y-6">
       {/* Video Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Thank You Video</CardTitle>
-          <CardDescription>Add a personal video message for your readers</CardDescription>
+      <Card className="border rounded-lg" style={{ backgroundColor: '#19363c' }}>
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="text-sm md:text-base" style={{ color: '#ffd166' }}>Thank You Video</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Tabs defaultValue="upload" className="w-full">
+        <CardContent className="space-y-4 pt-0">
+          <Tabs defaultValue={defaultVideoTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="upload">Upload Video</TabsTrigger>
-              <TabsTrigger value="url">Enter URL</TabsTrigger>
+              <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Video</TabsTrigger>
+              <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
             </TabsList>
-            <TabsContent value="upload" className="space-y-4">
+            <TabsContent value="upload" className="space-y-4 pt-2">
               <div>
-                <Label>Video File</Label>
+                <div className="flex items-center gap-2 mb-2">
+                  <Label className="text-xs font-medium" style={{ color: '#333333' }}>Video File</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 cursor-help" style={{ color: '#333333' }} />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[250px]">
+                        <p>Supported formats: MP4, WebM, OGG, MOV (max 100MB)</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <VideoUpload
                   onUploadSuccess={(url) => setVideoUrl(url)}
                   currentVideoUrl={videoUrl}
                   onRemove={() => setVideoUrl("")}
                 />
               </div>
-              <div>
-                <Label>Thumbnail URL (optional)</Label>
-                <Input
-                  placeholder="https://... or leave empty for auto-generated"
-                  value={videoThumbnail}
-                  onChange={(e) => setVideoThumbnail(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Video Title (optional)</Label>
-                <Input
-                  placeholder="Thank you for reading!"
-                  value={videoTitle}
-                  onChange={(e) => setVideoTitle(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Video Description (optional)</Label>
-                <Textarea
-                  placeholder="A special message..."
-                  value={videoDesc}
-                  onChange={(e) => setVideoDesc(e.target.value)}
-                />
-              </div>
             </TabsContent>
-            <TabsContent value="url" className="space-y-4">
+            <TabsContent value="url" className="space-y-4 pt-2">
               <div>
-                <Label>Video URL</Label>
+                <Label style={{ color: '#333333' }}>Video URL</Label>
                 <Input
                   placeholder="https://..."
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Thumbnail URL (optional)</Label>
-                <Input
-                  placeholder="https://... or leave empty for auto-generated"
-                  value={videoThumbnail}
-                  onChange={(e) => setVideoThumbnail(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Video Title (optional)</Label>
-                <Input
-                  placeholder="Thank you for reading!"
-                  value={videoTitle}
-                  onChange={(e) => setVideoTitle(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Video Description (optional)</Label>
-                <Textarea
-                  placeholder="A special message..."
-                  value={videoDesc}
-                  onChange={(e) => setVideoDesc(e.target.value)}
+                  className="bg-white text-[#19363c]"
                 />
               </div>
             </TabsContent>
@@ -281,52 +231,44 @@ export const EnhancementsManager = ({
       </Card>
 
       {/* Book Description */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Book Description</CardTitle>
-          <CardDescription>Add a detailed description of your book</CardDescription>
+      <Card className="border rounded-lg" style={{ backgroundColor: '#19363c' }}>
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="text-sm md:text-base" style={{ color: '#ffd166' }}>Book Description</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <Textarea
             placeholder="Enter book description..."
             value={bookDesc}
             onChange={(e) => setBookDesc(e.target.value)}
+            className="bg-white text-[#19363c]"
             rows={6}
           />
         </CardContent>
       </Card>
 
       {/* Character Art */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Character Gallery</CardTitle>
-          <CardDescription>Showcase your characters with images and descriptions</CardDescription>
+      <Card className="border rounded-lg" style={{ backgroundColor: '#19363c' }}>
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="text-sm md:text-base" style={{ color: '#ffd166' }}>Character Art</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-0">
           {characters.map((char, idx) => (
-            <div key={idx} className="p-4 border rounded-lg space-y-3">
-              <div className="flex justify-between items-center">
-                <Label>Character {idx + 1}</Label>
-                <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)}>
+            <div key={idx} className="p-4 border rounded-lg space-y-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+              <div className="flex justify-end">
+                <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)} style={{ color: '#333333' }}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              <Input
-                placeholder="Character name"
-                value={char.name}
-                onChange={(e) => updateCharacter(idx, "name", e.target.value)}
-              />
-              <Tabs defaultValue="upload" className="w-full">
+              <Tabs defaultValue={char.url && char.url.includes('/character-images/') ? 'upload' : (char.url ? 'url' : 'upload')} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="upload">Upload Image</TabsTrigger>
-                  <TabsTrigger value="url">Enter URL</TabsTrigger>
+                  <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Image</TabsTrigger>
+                  <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
                 </TabsList>
                 <TabsContent value="upload" className="space-y-2">
                   <CharacterImageUpload
                     onUploadSuccess={(url) => updateCharacter(idx, "url", url)}
                     currentImageUrl={char.url}
                     onRemove={() => updateCharacter(idx, "url", "")}
-                    characterName={char.name}
                   />
                 </TabsContent>
                 <TabsContent value="url" className="space-y-2">
@@ -334,6 +276,7 @@ export const EnhancementsManager = ({
                     placeholder="Image URL"
                     value={char.url}
                     onChange={(e) => updateCharacter(idx, "url", e.target.value)}
+                    className="bg-white text-[#19363c]"
                   />
                 </TabsContent>
               </Tabs>
@@ -342,10 +285,11 @@ export const EnhancementsManager = ({
                 value={char.description || ""}
                 onChange={(e) => updateCharacter(idx, "description", e.target.value)}
                 rows={2}
+                className="bg-white text-[#19363c]"
               />
             </div>
           ))}
-          <Button variant="outline" onClick={addCharacter} className="w-full">
+          <Button variant="outline" onClick={addCharacter} className="w-full" style={{ borderColor: '#333333', color: '#333333' }}>
             <Plus className="mr-2 h-4 w-4" />
             Add Character
           </Button>
@@ -353,59 +297,49 @@ export const EnhancementsManager = ({
       </Card>
 
       {/* Recommendations */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Book Recommendations</CardTitle>
-          <CardDescription>Recommend books to your readers</CardDescription>
+      <Card className="border rounded-lg" style={{ backgroundColor: '#19363c' }}>
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="text-sm md:text-base" style={{ color: '#ffd166' }}>Book Recommendations</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-0">
           {recs.map((rec, idx) => (
-            <div key={idx} className="p-4 border rounded-lg space-y-3">
-              <div className="flex justify-between items-center">
-                <Label>Recommendation {idx + 1}</Label>
-                <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)}>
+            <div key={idx} className="p-4 border rounded-lg space-y-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+              <div className="flex justify-end">
+                <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)} style={{ color: '#333333' }}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              <Input
-                placeholder="Book title"
-                value={rec.recommended_book_title}
-                onChange={(e) => updateRecommendation(idx, "recommended_book_title", e.target.value)}
-              />
-              <Input
-                placeholder="Author name"
-                value={rec.recommended_book_author}
-                onChange={(e) => updateRecommendation(idx, "recommended_book_author", e.target.value)}
-              />
-              <Input
-                placeholder="Cover image URL (optional)"
-                value={rec.recommended_book_cover_url || ""}
-                onChange={(e) => updateRecommendation(idx, "recommended_book_cover_url", e.target.value)}
-              />
-              <Input
-                placeholder="Buy link (optional)"
-                value={rec.buy_link || ""}
-                onChange={(e) => updateRecommendation(idx, "buy_link", e.target.value)}
-              />
-              <Textarea
-                placeholder="Your recommendation (optional)"
-                value={rec.recommendation_text || ""}
-                onChange={(e) => updateRecommendation(idx, "recommendation_text", e.target.value)}
-                rows={2}
-              />
-              <Button onClick={() => saveRecommendation(idx)} variant="outline" size="sm" className="w-full">
+              <div className="space-y-2">
+                <Label htmlFor={`book-title-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Book title</Label>
+                <Input
+                  id={`book-title-${idx}`}
+                  value={rec.recommended_book_title}
+                  onChange={(e) => updateRecommendation(idx, "recommended_book_title", e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`buy-link-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Buy link (Amazon, Goodreads, etc.)</Label>
+                <Input
+                  id={`buy-link-${idx}`}
+                  value={rec.buy_link || ""}
+                  onChange={(e) => updateRecommendation(idx, "buy_link", e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
+                />
+              </div>
+              <Button onClick={() => saveRecommendation(idx)} variant="outline" size="sm" className="w-full" style={{ borderColor: '#333333', color: '#19363c', backgroundColor: '#ffd166' }}>
                 Save Recommendation
               </Button>
             </div>
           ))}
-          <Button variant="outline" onClick={addRecommendation} className="w-full">
+          <Button variant="outline" onClick={addRecommendation} className="w-full" style={{ borderColor: '#333333', color: '#333333' }}>
             <Plus className="mr-2 h-4 w-4" />
             Add Recommendation
           </Button>
         </CardContent>
       </Card>
 
-      <Button onClick={saveEnhancements} disabled={isSaving} className="w-full">
+      <Button onClick={saveEnhancements} disabled={isSaving} className="w-full bg-[#ffd166] text-[#333333] mt-4 md:mt-0">
         {isSaving ? "Saving..." : "Save All Enhancements"}
       </Button>
     </div>

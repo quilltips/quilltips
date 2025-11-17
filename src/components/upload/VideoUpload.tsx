@@ -88,6 +88,7 @@ export const VideoUpload = ({ onUploadSuccess, currentVideoUrl, onRemove }: Vide
           variant="outline"
           disabled={isUploading}
           className="relative"
+          style={{ borderColor: '#333333', color: '#333333' }}
           onClick={() => document.getElementById('video-upload')?.click()}
         >
           {isUploading ? (
@@ -109,6 +110,7 @@ export const VideoUpload = ({ onUploadSuccess, currentVideoUrl, onRemove }: Vide
             variant="ghost"
             size="sm"
             onClick={onRemove}
+            style={{ color: '#333333' }}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -124,14 +126,10 @@ export const VideoUpload = ({ onUploadSuccess, currentVideoUrl, onRemove }: Vide
       />
 
       {currentVideoUrl && (
-        <div className="text-xs text-muted-foreground">
+        <div className="text-xs" style={{ color: '#333333' }}>
           Current video: {currentVideoUrl.split('/').pop()?.substring(0, 30)}...
         </div>
       )}
-      
-      <p className="text-xs text-muted-foreground">
-        Supported formats: MP4, WebM, OGG, MOV (max 100MB)
-      </p>
     </div>
   );
 };

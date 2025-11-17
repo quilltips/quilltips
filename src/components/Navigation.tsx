@@ -59,7 +59,7 @@ export const Navigation = () => {
           Dashboard
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/author/tip-feed')}>
-          Tip feed
+          Feed
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/author/book-qr-codes?tab=all')}>
           Book QR codes
@@ -228,7 +228,7 @@ export const Navigation = () => {
               className="px-4 py-2 hover:bg-accent/10 rounded-md"
               onClick={closeMobileMenu}
             >
-              Tip feed
+              Feed
             </Link>
             <Link 
               to="/author/book-qr-codes?tab=all" 

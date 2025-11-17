@@ -59,8 +59,8 @@ const QRCodeDetails = () => {
   }
 
   return (
-      <main className="container mx-auto px-4 pt-8 pb-12 space-y-12">
-        <div className="max-w-md mx-auto space-y-8">
+      <main className="container mx-auto px-4 pt-8 pb-12">
+        <div className="max-w-md mx-auto space-y-10 sm:space-y-12">
           {/* Book details card with horizontal layout */}
           <div className="flex items-center space-x-6">
             <div className="w-32 aspect-[2/3] relative shrink-0 rounded-md overflow-hidden">
@@ -118,7 +118,7 @@ const QRCodeDetails = () => {
                 <>
                   <Button 
                     onClick={() => setShowTipForm(true)} 
-                    className="flex-1 py-6 text-lg font-semibold"
+                    className="flex-1 py-6 text-md font-medium"
                     style={{ backgroundColor: '#FFD166', color: '#333333' }}
                   >
                     Leave a tip
@@ -126,7 +126,7 @@ const QRCodeDetails = () => {
                   <Button 
                     onClick={() => setShowMessageForm(true)} 
                     variant="outline"
-                    className="flex-1 py-6 text-lg font-semibold hover:shadow"
+                    className="flex-1 py-6 text-md font-medium hover:bg-transparent hover:shadow"
                   >
                     Send a message
                   </Button>
@@ -181,10 +181,10 @@ const QRCodeDetails = () => {
           
           {/* Book Enhancements Section - Only show if QR code is paid */}
           {!showTipForm && !showMessageForm && qrCode.is_paid && (
-            <div className="space-y-12">
+            <div className="space-y-16 sm:space-y-20">
               {/* Thank You Video */}
               {(qrCode.thank_you_video_url || qrCode.video_title) && (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <h3 className="text-xl font-playfair text-foreground">A Message from the Author</h3>
                   <VideoThumbnailWithModal
                     videoUrl={qrCode.thank_you_video_url || qrCode.video_title || ''}
@@ -197,9 +197,9 @@ const QRCodeDetails = () => {
               
               {/* Book Description */}
               {qrCode.book_description && (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <h3 className="text-xl font-playfair">Description</h3>
-                  <div className="rounded-lg border border-border p-6">
+                  <div className="rounded-lg p-6">
                     <CollapsibleBookDescription description={qrCode.book_description} />
                   </div>
                 </div>
@@ -232,9 +232,9 @@ const QRCodeDetails = () => {
             </div>
           )}
           
-          {/* Tip feed section */}
-          <div className="rounded-lg border border-border p-6 space-y-6">
-            <h2 className="text-2xl font-semibold">Tip feed</h2>
+          {/* Feed section */}
+          <div className="rounded-lg border border-border p-6 space-y-6 pt-10 sm:pt-12">
+            <h2 className="text-2xl font-semibold">Feed</h2>
             <PublicTipHistory qrCodeId={qrCode.id} />
           </div>
         </div>

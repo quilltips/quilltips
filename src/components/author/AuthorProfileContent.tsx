@@ -97,10 +97,10 @@ export const AuthorProfileContent = ({
 
 
   
-      {/* Tip Feed Section */}
+      {/* Feed Section */}
       <Card className="border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden" prominent>
         <CardHeader>
-          <CardTitle className="text-xl text-[#2D3748]">Tip feed</CardTitle>
+          <CardTitle className="text-xl text-[#2D3748]">Feed</CardTitle>
         </CardHeader>
         <CardContent>
           <AuthorPublicTipFeed authorId={authorId} />

@@ -58,8 +58,8 @@ export const TipMessageForm = ({
           id="message"
           value={message}
           onChange={(e) => onMessageChange(e.target.value)}
-          placeholder={`Tell ${authorFirstName} what you liked about this book!`}
-          className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary resize-none"
+          placeholder={``}
+          className="w-full px-4 py-3 rounded-lg border border-[#333333] focus:ring-2 focus:ring-primary resize-none"
           rows={3}
         />
       </div>

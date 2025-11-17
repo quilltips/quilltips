@@ -99,37 +99,34 @@ export const ReaderEngagementCard = ({ authorId }: ReaderEngagementCardProps) =>
       className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
       onClick={handleClick}
     >
-      <CardContent className="p-4 bg-[#FFD166] text-[#19363C]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div>
-              <h2 className="text-lg font-playfair font-medium">Reader Engagement</h2>
-              <p className="text-sm opacity-80">Click to view details and download data</p>
+      <CardContent className="p-3 sm:p-4 md:p-6 bg-[#FFD166] text-[#19363C]">
+        <div className="flex items-center justify-between gap-3 sm:gap-4 md:gap-6">
+          <div className="flex-shrink-0">
+            <h2 className="text-base sm:text-lg md:text-xl font-playfair font-medium">Reader Engagement</h2>
+          </div>
+          
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 justify-end">
+            <div className="text-center">
+              <div className="text-xl sm:text-2xl md:text-3xl font-bold">{data?.totalSignups || '0'}</div>
+              <div className="text-[10px] sm:text-xs opacity-80 whitespace-nowrap">Total signups</div>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="text-center">
-                <div className="text-xl font-bold">{data?.totalSignups || '0'}</div>
-                <div className="text-xs opacity-80">Total signups</div>
+            <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+              <div className="flex items-center gap-1">
+                <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="font-semibold">{data?.totalARC || '0'}</span>
               </div>
-              
-              <div className="flex items-center gap-3 text-sm">
-                <div className="flex items-center gap-1">
-                  <BookOpen className="h-3 w-3" />
-                  <span className="font-semibold">{data?.totalARC || '0'}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Users className="h-3 w-3" />
-                  <span className="font-semibold">{data?.totalBeta || '0'}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Mail className="h-3 w-3" />
-                  <span className="font-semibold">{data?.totalNewsletter || '0'}</span>
-                </div>
+              <div className="flex items-center gap-1">
+                <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="font-semibold">{data?.totalBeta || '0'}</span>
               </div>
-              
-              <div className="text-xs opacity-80">ARC / Beta / Newsletter</div>
+              <div className="flex items-center gap-1">
+                <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="font-semibold">{data?.totalNewsletter || '0'}</span>
+              </div>
             </div>
+            
+            <div className="text-[10px] sm:text-xs opacity-80 whitespace-nowrap hidden sm:block">ARC / Beta / Newsletter</div>
           </div>
         </div>
       </CardContent>

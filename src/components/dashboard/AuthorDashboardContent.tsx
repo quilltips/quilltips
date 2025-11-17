@@ -23,14 +23,14 @@ export const AuthorDashboardContent = ({
       {/* Reader Engagement Banner */}
       <ReaderEngagementCard authorId={authorId} />
       
-      {/* Grid layout for Tip feed and QR codes */}
+      {/* Grid layout for Feed and QR codes */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="border border-[#333333] rounded-xl p-4 bg-transparent">
           <TipHistory 
             authorId={authorId} 
             limit={5} 
             isDashboard={true} 
-            customTitle="Tip feed"
+            customTitle="Feed"
           />
         </div>
         

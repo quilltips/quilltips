@@ -126,7 +126,7 @@ const BookQRCodesPage = () => {
                   <QrCode className="h-14 w-14 mx-auto mb-6 text-[#19363c]" />
                   <h3 className="text-3xl font-bold mb-2">Create a new Quilltips Jar</h3>
                   <p className="">
-                    Set up your virtual tip jar for an upcoming book.
+                    Set up your virtual space for an upcoming book.
                   </p>
                 </div>
                 

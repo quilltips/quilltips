@@ -4,6 +4,7 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { Label } from "./ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
@@ -12,7 +13,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, AlertCircle, Loader2, ImagePlus, ChevronDown, Plus, X, Sparkles } from "lucide-react";
+import { CalendarIcon, AlertCircle, Loader2, ImagePlus, ChevronDown, Plus, X, Sparkles, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { BookCoverUpload } from "./qr/BookCoverUpload";
 import { VideoUpload } from "./upload/VideoUpload";
@@ -27,14 +29,18 @@ interface CreateQRCodeProps {
 const urlSchema = z.string().url().or(z.literal(""));
 const characterSchema = z.object({
   url: z.string().url({ message: "Invalid image URL" }),
-  name: z.string().min(1, { message: "Character name is required" }).max(100),
   description: z.string().max(500).optional(),
 });
 
 interface Character {
   url: string;
-  name: string;
   description?: string;
+}
+
+interface Recommendation {
+  recommended_book_title: string;
+  buy_link?: string;
+  display_order: number;
 }
 
 export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
@@ -52,15 +58,13 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   // Enhancement fields
   const [isEnhancementsOpen, setIsEnhancementsOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
-  const [videoThumbnail, setVideoThumbnail] = useState("");
-  const [videoTitle, setVideoTitle] = useState("");
-  const [videoDescription, setVideoDescription] = useState("");
   const [bookDescription, setBookDescription] = useState("");
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [enhancementErrors, setEnhancementErrors] = useState<Record<string, string>>({});
 
   const addCharacter = () => {
-    setCharacters([...characters, { url: "", name: "", description: "" }]);
+    setCharacters([...characters, { url: "", description: "" }]);
   };
 
   const updateCharacter = (index: number, field: keyof Character, value: string) => {
@@ -71,6 +75,27 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
 
   const removeCharacter = (index: number) => {
     setCharacters(characters.filter((_, i) => i !== index));
+  };
+
+  const addRecommendation = () => {
+    setRecommendations([
+      ...recommendations,
+      {
+        recommended_book_title: "",
+        buy_link: "",
+        display_order: recommendations.length,
+      },
+    ]);
+  };
+
+  const updateRecommendation = (index: number, field: keyof Recommendation, value: string | number) => {
+    const updated = [...recommendations];
+    updated[index] = { ...updated[index], [field]: value };
+    setRecommendations(updated);
+  };
+
+  const removeRecommendation = (index: number) => {
+    setRecommendations(recommendations.filter((_, i) => i !== index));
   };
 
   const validateEnhancements = () => {
@@ -84,17 +109,9 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
       }
     }
 
-    // Validate video thumbnail if provided
-    if (videoThumbnail) {
-      const result = urlSchema.safeParse(videoThumbnail);
-      if (!result.success) {
-        errors.videoThumbnail = "Please enter a valid thumbnail URL";
-      }
-    }
-
     // Validate characters
     characters.forEach((char, index) => {
-      if (char.url || char.name || char.description) {
+      if (char.url || char.description) {
         const result = characterSchema.safeParse(char);
         if (!result.success) {
           result.error.errors.forEach((err) => {
@@ -160,9 +177,14 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         }
       }
 
-      // Filter out incomplete characters
+      // Filter out characters without URLs (empty characters)
       const validCharacters = characters.filter(
-        (char) => char.url && char.name
+        (char) => char.url && char.url.trim() !== ""
+      );
+
+      // Filter out recommendations without book titles
+      const validRecommendations = recommendations.filter(
+        (rec) => rec.recommended_book_title && rec.recommended_book_title.trim() !== ""
       );
 
       const { data: qrCode, error: qrError } = await supabase
@@ -178,9 +200,6 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           qr_code_status: 'pending',
           // Enhancement fields
           thank_you_video_url: videoUrl || null,
-          thank_you_video_thumbnail: videoThumbnail || null,
-          video_title: videoTitle || null,
-          video_description: videoDescription || null,
           book_description: bookDescription || null,
           character_images: validCharacters.length > 0 ? (validCharacters as any) : null,
         })
@@ -193,6 +212,27 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           throw new Error('A QR code with this ISBN already exists');
         }
         throw qrError;
+      }
+
+      // Save recommendations if any were provided
+      if (validRecommendations.length > 0) {
+        const recommendationsToInsert = validRecommendations.map((rec, idx) => ({
+          author_id: authorId,
+          qr_code_id: qrCode.id,
+          recommended_book_title: rec.recommended_book_title,
+          recommended_book_author: "", // Empty string as default since we're simplifying the form
+          buy_link: rec.buy_link || null,
+          display_order: idx,
+        }));
+
+        const { error: recError } = await supabase
+          .from('author_book_recommendations')
+          .insert(recommendationsToInsert);
+
+        if (recError) {
+          console.error("Error saving recommendations:", recError);
+          // Don't throw - recommendations are optional, continue with navigation
+        }
       }
 
       toast({
@@ -322,7 +362,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         </div>
 
         {/* Enhancements Section */}
-        <Collapsible open={isEnhancementsOpen} onOpenChange={setIsEnhancementsOpen} className="border rounded-lg p-4 bg-muted/30">
+        <Collapsible open={isEnhancementsOpen} onOpenChange={setIsEnhancementsOpen} className=" rounded-lg p-4 bg-muted/30">
           <CollapsibleTrigger asChild>
             <Button
               type="button"
@@ -342,98 +382,57 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-6 mt-4">
-            <p className="text-sm text-muted-foreground">
-              Add extra content to make your book page more engaging for readers
-            </p>
-
             {/* Thank You Video */}
-            <div className="space-y-4 p-4 border rounded-lg bg-background">
-              <h4 className="font-semibold text-sm">Thank You Video</h4>
+            <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Thank You Video</h4>
               <Tabs defaultValue="upload" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="upload">Upload Video</TabsTrigger>
-                  <TabsTrigger value="url">Enter URL</TabsTrigger>
+                <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Video</TabsTrigger>
+                <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
                 </TabsList>
                 <TabsContent value="upload" className="space-y-3">
                   <div className="space-y-2">
-                    <label className="text-xs font-medium">Video File</label>
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-medium" style={{ color: '#333333' }}>Video File</label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-4 w-4 cursor-help" style={{ color: '#333333' }} />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[250px]">
+                            <p>Supported formats: MP4, WebM, OGG, MOV (max 100MB)</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <VideoUpload
                       onUploadSuccess={(url) => setVideoUrl(url)}
                       currentVideoUrl={videoUrl}
                       onRemove={() => setVideoUrl("")}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium">Video Title (optional)</label>
-                    <Input
-                      value={videoTitle}
-                      onChange={(e) => setVideoTitle(e.target.value)}
-                      placeholder="Thank you for reading!"
-                      maxLength={100}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium">Video Description (optional)</label>
-                    <Textarea
-                      value={videoDescription}
-                      onChange={(e) => setVideoDescription(e.target.value)}
-                      placeholder="A special message..."
-                      rows={2}
-                      maxLength={500}
-                    />
-                  </div>
                 </TabsContent>
                 <TabsContent value="url" className="space-y-3">
                   <div className="space-y-2">
-                    <label className="text-xs font-medium">Video URL</label>
+                    <label className="text-xs font-medium" style={{ color: '#333333' }}>Video URL</label>
                     <Input
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
                       placeholder="https://..."
                       type="url"
+                      className="bg-white text-[#19363c]"
                     />
                     {enhancementErrors.videoUrl && (
-                      <p className="text-xs text-red-500">{enhancementErrors.videoUrl}</p>
+                      <p className="text-xs text-red-400">{enhancementErrors.videoUrl}</p>
                     )}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium">Thumbnail URL (optional)</label>
-                    <Input
-                      value={videoThumbnail}
-                      onChange={(e) => setVideoThumbnail(e.target.value)}
-                      placeholder="https://..."
-                      type="url"
-                    />
-                    {enhancementErrors.videoThumbnail && (
-                      <p className="text-xs text-red-500">{enhancementErrors.videoThumbnail}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium">Video Title (optional)</label>
-                    <Input
-                      value={videoTitle}
-                      onChange={(e) => setVideoTitle(e.target.value)}
-                      placeholder="Thank you for reading!"
-                      maxLength={100}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium">Video Description (optional)</label>
-                    <Textarea
-                      value={videoDescription}
-                      onChange={(e) => setVideoDescription(e.target.value)}
-                      placeholder="A special message..."
-                      rows={2}
-                      maxLength={500}
-                    />
                   </div>
                 </TabsContent>
               </Tabs>
             </div>
 
             {/* Book Description */}
-            <div className="space-y-4 p-4 border rounded-lg bg-background">
-              <h4 className="font-semibold text-sm">Book Description</h4>
+            <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Book Description</h4>
               <div className="space-y-2">
                 <Textarea
                   value={bookDescription}
@@ -441,55 +440,42 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                   placeholder="Enter a detailed description of your book..."
                   rows={4}
                   maxLength={2000}
+                  className="bg-white text-[#19363c]"
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs" style={{ color: '#333333' }}>
                   {bookDescription.length}/2000 characters
                 </p>
               </div>
             </div>
 
-            {/* Character Gallery */}
-            <div className="space-y-4 p-4 border rounded-lg bg-background">
-              <h4 className="font-semibold text-sm">Character Gallery</h4>
+            {/* Character Art */}
+            <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Character Art</h4>
               <div className="space-y-3">
                 {characters.map((char, idx) => (
-                  <div key={idx} className="p-3 border rounded-md space-y-3 bg-muted/30">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-medium">Character {idx + 1}</span>
+                  <div key={idx} className="p-3 border rounded-md space-y-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+                    <div className="flex justify-end">
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => removeCharacter(idx)}
                         className="h-6 w-6 p-0"
+                        style={{ color: '#333333' }}
                       >
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
-                    <div className="space-y-2">
-                      <Input
-                        placeholder="Character name"
-                        value={char.name}
-                        onChange={(e) => updateCharacter(idx, "name", e.target.value)}
-                        maxLength={100}
-                      />
-                      {enhancementErrors[`character_${idx}_name`] && (
-                        <p className="text-xs text-red-500">
-                          {enhancementErrors[`character_${idx}_name`]}
-                        </p>
-                      )}
-                    </div>
                     <Tabs defaultValue="upload" className="w-full">
                       <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="upload">Upload Image</TabsTrigger>
-                        <TabsTrigger value="url">Enter URL</TabsTrigger>
+                      <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Image</TabsTrigger>
+                      <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
                       </TabsList>
                       <TabsContent value="upload" className="space-y-2">
                         <CharacterImageUpload
                           onUploadSuccess={(url) => updateCharacter(idx, "url", url)}
                           currentImageUrl={char.url}
                           onRemove={() => updateCharacter(idx, "url", "")}
-                          characterName={char.name}
                         />
                       </TabsContent>
                       <TabsContent value="url" className="space-y-2">
@@ -498,9 +484,10 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                           value={char.url}
                           onChange={(e) => updateCharacter(idx, "url", e.target.value)}
                           type="url"
+                          className="bg-white text-[#19363c]"
                         />
                         {enhancementErrors[`character_${idx}_url`] && (
-                          <p className="text-xs text-red-500">
+                          <p className="text-xs text-red-400">
                             {enhancementErrors[`character_${idx}_url`]}
                           </p>
                         )}
@@ -513,6 +500,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                         onChange={(e) => updateCharacter(idx, "description", e.target.value)}
                         rows={2}
                         maxLength={500}
+                        className="bg-white text-[#19363c]"
                       />
                     </div>
                   </div>
@@ -523,6 +511,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                   size="sm"
                   onClick={addCharacter}
                   className="w-full"
+                  style={{ borderColor: '#333333', color: '#333333' }}
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Add Character
@@ -530,9 +519,57 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
               </div>
             </div>
 
-            <p className="text-xs text-muted-foreground italic">
-              Note: Book recommendations can be added later from your dashboard
-            </p>
+            {/* Book Recommendations */}
+            <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Book Recommendations</h4>
+              <div className="space-y-4">
+                {recommendations.map((rec, idx) => (
+                  <div key={idx} className="p-4 border rounded-lg space-y-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeRecommendation(idx)}
+                        className="h-6 w-6 p-0"
+                        style={{ color: '#333333' }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`book-title-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Book title</Label>
+                      <Input
+                        id={`book-title-${idx}`}
+                        value={rec.recommended_book_title}
+                        onChange={(e) => updateRecommendation(idx, "recommended_book_title", e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`buy-link-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Buy link (Amazon, Goodreads, etc.)</Label>
+                      <Input
+                        id={`buy-link-${idx}`}
+                        value={rec.buy_link || ""}
+                        onChange={(e) => updateRecommendation(idx, "buy_link", e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
+                      />
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addRecommendation}
+                  className="w-full"
+                  style={{ borderColor: '#333333', color: '#333333' }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Recommendation
+                </Button>
+              </div>
+            </div>
           </CollapsibleContent>
         </Collapsible>
 
