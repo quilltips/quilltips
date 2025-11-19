@@ -38,9 +38,9 @@ export const Layout = ({ children }: LayoutProps) => {
   }, [location.pathname, cleanup]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden w-full">
       <Navigation />
-      <main className="flex-grow pt-20">
+      <main className="flex-grow pt-20 w-full">
         {children}
       </main>
       <Footer />

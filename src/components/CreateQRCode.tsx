@@ -438,7 +438,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                   value={bookDescription}
                   onChange={(e) => setBookDescription(e.target.value)}
                   placeholder="Enter a detailed description of your book..."
-                  rows={4}
+                  rows={6}
                   maxLength={2000}
                   className="bg-white text-[#19363c]"
                 />
@@ -450,7 +450,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
 
             {/* Character Art */}
             <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Character Art</h4>
+              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Character or Book Art</h4>
               <div className="space-y-3">
                 {characters.map((char, idx) => (
                   <div key={idx} className="p-3 border rounded-md space-y-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>

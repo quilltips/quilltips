@@ -415,6 +415,13 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                 character_images: qrCode.character_images,
               }}
               recommendations={qrCode.recommendations}
+              onUpdate={() => {
+                // Invalidate queries to refresh the QR code data
+                if (id) {
+                  queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id) });
+                }
+                queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+              }}
             />
           </div>
         </Card>

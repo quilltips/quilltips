@@ -9,7 +9,7 @@ interface CollapsibleBookDescriptionProps {
 
 export const CollapsibleBookDescription = ({
   description,
-  maxLines = 3,
+  maxLines = 6,
 }: CollapsibleBookDescriptionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
@@ -33,7 +33,7 @@ export const CollapsibleBookDescription = ({
       <div
         ref={contentRef}
         className={`whitespace-pre-wrap ${
-          !isExpanded ? "line-clamp-3" : ""
+          !isExpanded ? "line-clamp-6" : ""
         }`}
       >
         {description}

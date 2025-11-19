@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Play } from "lucide-react";
 
@@ -34,13 +34,79 @@ export const VideoThumbnailWithModal = ({
   description,
 }: VideoThumbnailWithModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [generatedThumbnail, setGeneratedThumbnail] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const isYouTube = isYouTubeUrl(videoUrl);
   
-  // Auto-generate YouTube thumbnail if not provided
-  const displayThumbnail = thumbnailUrl || (isYouTube ? getYouTubeThumbnail(videoUrl) : null);
+  // Generate thumbnail from uploaded video (non-YouTube)
+  useEffect(() => {
+    if (!videoUrl || isYouTube || thumbnailUrl) return;
+    
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    
+    if (!video || !canvas) return;
+
+    const generateThumbnail = () => {
+      try {
+        video.currentTime = 1; // Try to get frame at 1 second
+      } catch (error) {
+        console.error("Error setting video time:", error);
+      }
+    };
+
+    const captureFrame = () => {
+      if (canvas && video && video.readyState >= 2) {
+        try {
+          const ctx = canvas.getContext('2d');
+          if (ctx && video.videoWidth > 0 && video.videoHeight > 0) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const thumbnailDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            setGeneratedThumbnail(thumbnailDataUrl);
+          }
+        } catch (error) {
+          console.error("Error capturing video frame:", error);
+        }
+      }
+    };
+
+    video.addEventListener('loadedmetadata', generateThumbnail);
+    video.addEventListener('seeked', captureFrame);
+    video.addEventListener('loadeddata', () => {
+      if (video.readyState >= 2) {
+        generateThumbnail();
+      }
+    });
+
+    return () => {
+      video.removeEventListener('loadedmetadata', generateThumbnail);
+      video.removeEventListener('seeked', captureFrame);
+      video.removeEventListener('loadeddata', generateThumbnail);
+    };
+  }, [videoUrl, isYouTube, thumbnailUrl]);
+  
+  // Auto-generate YouTube thumbnail if not provided, or use generated thumbnail for uploaded videos
+  const displayThumbnail = thumbnailUrl || (isYouTube ? getYouTubeThumbnail(videoUrl) : generatedThumbnail);
 
   return (
     <>
+      {/* Hidden video and canvas for thumbnail generation */}
+      {!isYouTube && !thumbnailUrl && (
+        <>
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            className="hidden"
+            preload="metadata"
+            crossOrigin="anonymous"
+          />
+          <canvas ref={canvasRef} className="hidden" />
+        </>
+      )}
+      
       <div
         className="relative cursor-pointer group rounded-lg overflow-hidden"
         onClick={() => setIsOpen(true)}
@@ -62,13 +128,6 @@ export const VideoThumbnailWithModal = ({
           </div>
         </div>
       </div>
-      
-      {(title || description) && (
-        <div className="mt-3 space-y-1">
-          {title && <h4 className="font-semibold text-foreground">{title}</h4>}
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
-        </div>
-      )}
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-4xl p-0">
@@ -87,12 +146,6 @@ export const VideoThumbnailWithModal = ({
               className="w-full max-h-[80vh] object-contain"
               style={{ maxWidth: '100%' }}
             />
-          )}
-          {(title || description) && (
-            <div className="p-6 space-y-2">
-              {title && <h3 className="text-xl font-semibold">{title}</h3>}
-              {description && <p className="text-muted-foreground">{description}</p>}
-            </div>
           )}
         </DialogContent>
       </Dialog>

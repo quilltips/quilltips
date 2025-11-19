@@ -207,8 +207,8 @@ const QRCodeDetails = () => {
               
               {/* Character Art */}
               {qrCode.character_images && Array.isArray(qrCode.character_images) && qrCode.character_images.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-playfair text-foreground">Character Gallery</h3>
+                <div className="space-y-6 -mt-8 sm:-mt-10">
+                  <h3 className="text-xl font-playfair text-foreground">Book Art</h3>
                   <CharacterArtCarousel characters={qrCode.character_images} />
                 </div>
               )}

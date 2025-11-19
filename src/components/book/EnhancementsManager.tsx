@@ -249,13 +249,13 @@ export const EnhancementsManager = ({
       {/* Character Art */}
       <Card className="border rounded-lg" style={{ backgroundColor: '#19363c' }}>
         <CardHeader className="pb-3 md:pb-6">
-          <CardTitle className="text-sm md:text-base" style={{ color: '#ffd166' }}>Character Art</CardTitle>
+          <CardTitle className="text-sm md:text-base" style={{ color: '#ffd166' }}>Character or Book Art</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 pt-0">
           {characters.map((char, idx) => (
             <div key={idx} className="p-4 border rounded-lg space-y-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
               <div className="flex justify-end">
-                <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)} style={{ color: '#333333' }}>
+                <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)} className="text-white hover:text-white">
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -298,19 +298,19 @@ export const EnhancementsManager = ({
 
       {/* Recommendations */}
       <Card className="border rounded-lg" style={{ backgroundColor: '#19363c' }}>
-        <CardHeader className="pb-3 md:pb-6">
+        <CardHeader className="pb-2 md:pb-3">
           <CardTitle className="text-sm md:text-base" style={{ color: '#ffd166' }}>Book Recommendations</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 pt-0">
           {recs.map((rec, idx) => (
             <div key={idx} className="p-4 border rounded-lg space-y-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-              <div className="flex justify-end">
-                <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)} style={{ color: '#333333' }}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
               <div className="space-y-2">
-                <Label htmlFor={`book-title-${idx}`} className="text-lg font-medium text-white">Book title</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor={`book-title-${idx}`} className="text-lg font-medium text-white">Book title</Label>
+                  <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)} className="h-auto p-1 text-white hover:text-white">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
                 <Input
                   id={`book-title-${idx}`}
                   value={rec.recommended_book_title}
