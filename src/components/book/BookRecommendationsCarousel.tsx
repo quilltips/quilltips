@@ -40,10 +40,14 @@ export const BookRecommendationsCarousel = ({
                 className="hover:underline inline-flex items-center gap-1"
               >
                 {rec.recommended_book_title}
+                {rec.recommended_book_author && ` by ${rec.recommended_book_author}`}
                 <ExternalLink className="h-3 w-3" />
               </a>
             ) : (
-              <span>{rec.recommended_book_title}</span>
+              <span>
+                {rec.recommended_book_title}
+                {rec.recommended_book_author && ` by ${rec.recommended_book_author}`}
+              </span>
             )}
           </li>
         ))}

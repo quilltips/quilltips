@@ -143,7 +143,7 @@ export const MessageForm = ({
         <div className="flex flex-row-reverse justify-between items-center gap-4 mt-6">
           <Button 
             type="submit" 
-            className="bg-primary text-primary-foreground hover:bg-primary/90 py-3 px-7 rounded-full transition-colors"
+            className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] py-3 px-7 rounded-full transition-colors"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -161,7 +161,7 @@ export const MessageForm = ({
               type="button" 
               variant="outline" 
               onClick={onCancel}
-              className="border-gray-300 text-gray-700 rounded-full"
+              className="border-gray-300 text-gray-700 rounded-full hover:bg-transparent"
             >
               Cancel
             </Button>

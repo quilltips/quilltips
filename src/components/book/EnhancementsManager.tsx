@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ interface Character {
 interface Recommendation {
   id?: string;
   recommended_book_title: string;
+  recommended_book_author?: string;
   buy_link?: string;
   display_order: number;
 }
@@ -49,6 +50,74 @@ export const EnhancementsManager = ({
   const [characters, setCharacters] = useState<Character[]>(initialData?.character_images || []);
   const [recs, setRecs] = useState<Recommendation[]>(recommendations);
   const [isSaving, setIsSaving] = useState(false);
+  const recommendationsRef = useRef<Recommendation[]>(recommendations);
+  
+  // Sync recommendations when prop changes (e.g., after query refresh)
+  // But preserve locally added items (those without IDs) that haven't been saved yet
+  useEffect(() => {
+    if (recommendations !== undefined) {
+      // Check if recommendations actually changed (by comparing IDs or content)
+      const currentIds = recommendations.map(r => r.id).filter(Boolean).sort().join(',');
+      const prevIds = recommendationsRef.current?.map(r => r.id).filter(Boolean).sort().join(',') || '';
+      
+      // Only sync if IDs actually changed or if this is the first time (prevIds is empty)
+      const hasChanged = currentIds !== prevIds || 
+                        (recommendationsRef.current === undefined && recommendations.length > 0) ||
+                        (recommendationsRef.current?.length !== recommendations.length && recommendations.length > 0);
+      
+      if (hasChanged) {
+        console.log("Syncing recommendations from props, prev:", recommendationsRef.current, "new:", recommendations);
+        // Recommendations changed - merge with local unsaved items
+        setRecs(prevRecs => {
+          const localUnsavedItems = prevRecs.filter(r => !r.id);
+          const merged = [...recommendations, ...localUnsavedItems];
+          console.log("Merged recommendations:", merged);
+          return merged;
+        });
+        recommendationsRef.current = recommendations;
+      }
+    }
+  }, [recommendations]);
+  
+  // Sync initialData when it changes
+  useEffect(() => {
+    if (initialData) {
+      console.log("Syncing initialData - character_images:", initialData.character_images);
+      setVideoUrl(initialData.thank_you_video_url || "");
+      setBookDesc(initialData.book_description || "");
+      // Only sync characters if initialData actually has different data (by comparing lengths and URLs)
+      setCharacters(prevChars => {
+        const newChars = initialData.character_images || [];
+        
+        // Separate local characters into: saved (match initialData), pending (have URL but not in saved), and unsaved (empty URL)
+        const savedUrls = new Set(newChars.map(c => c.url).filter(Boolean));
+        const savedChars = prevChars.filter(c => c.url && savedUrls.has(c.url));
+        const pendingChars = prevChars.filter(c => c.url && c.url.trim() !== "" && !savedUrls.has(c.url));
+        const unsavedChars = prevChars.filter(c => !c.url || c.url.trim() === "");
+        
+        // Check if saved data has changed by comparing URLs
+        const prevSavedUrls = savedChars.map(c => c.url).sort().join(',');
+        const newSavedUrls = newChars.map(c => c.url).filter(Boolean).sort().join(',');
+        
+        // If saved data has changed, update saved characters from initialData
+        if (prevSavedUrls !== newSavedUrls) {
+          console.log("Updating saved characters from initialData:", newChars);
+          // Merge: new saved characters + pending characters (uploaded but not saved) + unsaved characters (empty)
+          return [...newChars, ...pendingChars, ...unsavedChars];
+        }
+        
+        // If saved data hasn't changed, preserve pending and unsaved characters
+        if (pendingChars.length > 0 || unsavedChars.length > 0) {
+          console.log("Preserving pending/unsaved characters - pending:", pendingChars.length, "unsaved:", unsavedChars.length);
+          // Merge: saved characters (from newChars or prev) + pending + unsaved
+          return [...newChars, ...pendingChars, ...unsavedChars];
+        }
+        
+        // No change needed
+        return prevChars;
+      });
+    }
+  }, [initialData]);
   
   // Determine default tab for video: if videoUrl exists and is from storage bucket, show upload tab, otherwise show URL tab
   const defaultVideoTab = videoUrl && videoUrl.includes('/book-videos/') ? 'upload' : (videoUrl ? 'url' : 'upload');
@@ -59,16 +128,22 @@ export const EnhancementsManager = ({
       // Filter out characters without URLs (empty characters)
       const validCharacters = characters.filter(char => char.url && char.url.trim() !== "");
       
-      const { error } = await supabase
+      console.log("Saving enhancements - characters:", validCharacters);
+      console.log("Character images count:", validCharacters.length);
+      
+      const { data, error } = await supabase
         .from('qr_codes')
         .update({
           thank_you_video_url: videoUrl || null,
           book_description: bookDesc || null,
           character_images: validCharacters.length > 0 ? validCharacters as any : null,
         })
-        .eq('id', qrCodeId);
+        .eq('id', qrCodeId)
+        .select('character_images');
 
       if (error) throw error;
+      
+      console.log("Save successful - returned character_images:", data?.[0]?.character_images);
 
       toast({
         title: "Success",
@@ -102,14 +177,20 @@ export const EnhancementsManager = ({
   };
 
   const addRecommendation = () => {
-    setRecs([
-      ...recs,
-      {
-        recommended_book_title: "",
-        buy_link: "",
-        display_order: recs.length,
-      },
-    ]);
+    console.log("addRecommendation called, current recs:", recs);
+    setRecs(prevRecs => {
+      const newRecs = [
+        ...prevRecs,
+        {
+          recommended_book_title: "",
+          recommended_book_author: "",
+          buy_link: "",
+          display_order: prevRecs.length,
+        },
+      ];
+      console.log("New recs after adding:", newRecs);
+      return newRecs;
+    });
   };
 
   const updateRecommendation = (index: number, field: keyof Recommendation, value: string | number) => {
@@ -146,6 +227,7 @@ export const EnhancementsManager = ({
           .from('author_book_recommendations')
           .update({
             recommended_book_title: rec.recommended_book_title,
+            recommended_book_author: rec.recommended_book_author || "",
             buy_link: rec.buy_link || null,
             display_order: rec.display_order,
           })
@@ -159,7 +241,7 @@ export const EnhancementsManager = ({
             author_id: authorId,
             qr_code_id: qrCodeId,
             recommended_book_title: rec.recommended_book_title,
-            recommended_book_author: "", // Empty string as default since we're simplifying the form
+            recommended_book_author: rec.recommended_book_author || "",
             buy_link: rec.buy_link || null,
             display_order: rec.display_order,
           })
@@ -291,7 +373,7 @@ export const EnhancementsManager = ({
           ))}
           <Button variant="outline" onClick={addCharacter} className="w-full" style={{ borderColor: '#333333', color: '#333333' }}>
             <Plus className="mr-2 h-4 w-4" />
-            Add Character
+            Add Art
           </Button>
         </CardContent>
       </Card>
@@ -315,6 +397,15 @@ export const EnhancementsManager = ({
                   id={`book-title-${idx}`}
                   value={rec.recommended_book_title}
                   onChange={(e) => updateRecommendation(idx, "recommended_book_title", e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`book-author-${idx}`} className="text-lg font-medium text-white">Author name</Label>
+                <Input
+                  id={`book-author-${idx}`}
+                  value={rec.recommended_book_author || ""}
+                  onChange={(e) => updateRecommendation(idx, "recommended_book_author", e.target.value)}
                   className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
                 />
               </div>

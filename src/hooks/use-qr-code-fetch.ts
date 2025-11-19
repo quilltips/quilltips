@@ -81,6 +81,8 @@ export const useQRCodeFetch = () => {
         .order('display_order', { ascending: true });
 
       console.log("QRCodeFetch: QR code data loaded:", qrData);
+      console.log("QRCodeFetch: character_images:", qrData.character_images);
+      console.log("QRCodeFetch: character_images count:", Array.isArray(qrData.character_images) ? qrData.character_images.length : 'not an array');
       
       return {
         ...qrData,

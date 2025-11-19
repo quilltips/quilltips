@@ -18,6 +18,7 @@ import { CharacterArtCarousel } from "@/components/book/CharacterArtCarousel";
 import { BookRecommendationsCarousel } from "@/components/book/BookRecommendationsCarousel";
 import { AuthorOtherBooksCarousel } from "@/components/book/AuthorOtherBooksCarousel";
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 
 const QRCodeDetails = () => {
   const {
@@ -220,6 +221,24 @@ const QRCodeDetails = () => {
                   authorName={qrCode.author?.name || 'this author'}
                   currentBookId={qrCode.id}
                 />
+              )}
+              
+              {/* Author Bio Preview */}
+              {qrCode.author && qrCode.author.bio && (
+                <div className="space-y-2 py-2">
+                  <p className="text-sm ">
+                    {qrCode.author.bio.length > 100 
+                      ? `${qrCode.author.bio.substring(0, 100)}...` 
+                      : qrCode.author.bio}
+                  </p>
+                  <Link
+                    to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author.slug })}
+                    className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary transition-colors group"
+                  >
+                    View author profile
+                    <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+                </div>
               )}
               
               {/* Author Recommendations */}

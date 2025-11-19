@@ -39,6 +39,7 @@ interface Character {
 
 interface Recommendation {
   recommended_book_title: string;
+  recommended_book_author?: string;
   buy_link?: string;
   display_order: number;
 }
@@ -82,6 +83,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
       ...recommendations,
       {
         recommended_book_title: "",
+        recommended_book_author: "",
         buy_link: "",
         display_order: recommendations.length,
       },
@@ -220,7 +222,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           author_id: authorId,
           qr_code_id: qrCode.id,
           recommended_book_title: rec.recommended_book_title,
-          recommended_book_author: "", // Empty string as default since we're simplifying the form
+          recommended_book_author: rec.recommended_book_author || "",
           buy_link: rec.buy_link || null,
           display_order: idx,
         }));
@@ -543,6 +545,15 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                         id={`book-title-${idx}`}
                         value={rec.recommended_book_title}
                         onChange={(e) => updateRecommendation(idx, "recommended_book_title", e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`book-author-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Author name</Label>
+                      <Input
+                        id={`book-author-${idx}`}
+                        value={rec.recommended_book_author || ""}
+                        onChange={(e) => updateRecommendation(idx, "recommended_book_author", e.target.value)}
                         className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
                       />
                     </div>
