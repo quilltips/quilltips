@@ -10,8 +10,7 @@ import { ImageModal } from "@/components/ui/image-modal";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { Meta } from "@/components/Meta";
 import { Helmet } from "react-helmet-async";
-import { useState, useEffect } from "react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
+import { useState } from "react";
 import { FeaturedAuthorsCarousel } from "@/components/FeaturedAuthorsCarousel";
 const Index = () => {
   const {
@@ -26,9 +25,6 @@ const Index = () => {
     alt: string;
     title: string;
   } | null>(null);
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
   const handleCreateQRCode = () => {
     if (!user) {
       navigate("/author/login");
@@ -63,16 +59,6 @@ const Index = () => {
     alt: "Author dashboard view",
     title: "Author Dashboard"
   }];
-  useEffect(() => {
-    if (!api) {
-      return;
-    }
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
   return <>
     <Meta title="Quilltips – Engage readers with QR codes on your books" description="Quilltips lets readers support authors by scanning a QR code on their book and sending a tip with a personal message." url="https://quilltips.co" image="https://quilltips.co/og-image.png" jsonLd={[{
       "@context": "https://schema.org",
@@ -101,64 +87,85 @@ const Index = () => {
     <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
       {/* Hero Section */}
       <div className="mx-auto w-full max-w-6xl">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 py-8 lg:py-2">
-          {/* Left Content */}
-          <div className="flex-1 text-center lg:text-left space-y-6 lg:space-y-10 max-w-xl">
-            <div className="space-y-6 lg:space-y-8">
-              <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-7xl text-[#333333] leading-tight">
-                A better QR code for your books
-              </h1>
-             
-              <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Earn more from your work, connect with your biggest fans, and link back to your website and socials.</p>
-            </div>
+        <div className="flex flex-col items-center justify-center text-center py-2 lg:py-12">
+          <div className="space-y-6 lg:space-y-8 max-w-4xl">
+            <h1 className="font-playfair font-medium text-5xl sm:text-6xl lg:text-7xl text-[#333333] leading-tight">
+              A homepage for your book
+            </h1>
+           
+            <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Share bonus content, get tips & messages, connect with readers—all via your Quilltips QR code.</p>
+          </div>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-2 lg:pt-4">
-              <RouterLink to="/author/register">
-                <Button size="lg" className=" min-w-[180px] bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" data-plausible-event="create-account-hero">
-                  Sign up
-                </Button>
-              </RouterLink>
-              <RouterLink to="/how-it-works">
-                <Button variant="outline" size="lg" className="border-[#333333] text-[#333333] hover:shadow-lg font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 hover:bg-transparent plausible-event-name=how-it-works">
-                  See how it works
-                </Button>
-              </RouterLink>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6 lg:pt-8">
+            <RouterLink to="/author/register">
+              <Button size="lg" className="min-w-[180px] bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 plausible-event-name=create-account-hero" data-plausible-event="create-account-hero">
+                Sign up
+              </Button>
+            </RouterLink>
+            <RouterLink to="/how-it-works">
+              <Button variant="outline" size="lg" className="border-[#333333] text-[#333333] hover:shadow-lg font-medium text-lg px-8 py-4 h-auto rounded-full transition-all duration-200 hover:bg-transparent plausible-event-name=how-it-works">
+                See how it works
+              </Button>
+            </RouterLink>
+          </div>
+
+          {/* Social Proof Section - Compact */}
+          <div className="w-full pt-6 lg:pt-8">
+            <div className="w-full bg-transparent py-2">
+              <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                <FeaturedAuthorsCarousel compact={true} showFirstNameOnly={true} />
+              </div>
             </div>
           </div>
 
-          {/* Right Visual - Product Demo Video */}
-          <div className="flex-1 flex justify-center lg:justify-center max-w-sm lg:max-w-md">
-            <div className="relative w-[220px] lg:w-[320px]">
-              <VideoPlayer src="/lovable-uploads/quilltips-demo.mp4" posterTime={2} alt="Quilltips product demo video showing QR code scan and reader tipping and messaging interaction" autoPlay={false} muted={true} loop={true} aspectRatio="mobile" objectFit="cover" className="w-full plausible-event-name=watch-demo" />
+          {/* Problem Section with Video */}
+          <div className="w-full pt-6 lg:pt-8">
+            <div className="mx-auto w-full max-w-6xl">
+              <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
+                {/* Left: Problem Copy */}
+                <div className="space-y-4 text-left">
+                  <h2 className="text-3xl sm:text-4xl font-playfair font-bold text-[#333333] leading-[1.2]">Many <span className="text-[#FFD166] bg-[#19363C] px-3 py-0.5 rounded inline-block align-middle">authors</span> struggle to connect with their readers</h2>
+                  <p className="font-lato text-lg sm:text-lg text-[#333333] leading-relaxed font-bold">
+                    Quilltips is on a mission to change that.
+                  </p>
+                  <p className="font-lato text-base sm:text-lg text-[#333333] leading-relaxed">
+                    With Quilltips, authors can create a hub for their book, share thank-you videos, upload character art, and receiving tips and messages directly from readers. Readers can access your book page through QR codes printed right on your back cover.
+                  </p>
+                </div>
+                {/* Right: Product Demo Video */}
+                <div className="flex justify-center">
+                  <div className="relative w-[220px] lg:w-[320px]">
+                    <VideoPlayer src="/lovable-uploads/quilltips-demo.mp4" posterTime={2} alt="Quilltips product demo video showing QR code scan and reader tipping and messaging interaction" autoPlay={false} muted={true} loop={true} aspectRatio="mobile" objectFit="cover" className="w-full plausible-event-name=watch-demo" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-   
-
       {/* Mission Statement */}
       <div className="mx-auto w-full max-w-6xl mt-24 px-4">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-playfair font-medium text-center text-[#19363C]">
-          We help authors make a living from their work
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-playfair font-medium text-center text-[#19363C]">
+          We help authors engage with their biggest fans
         </h2>
       </div>
 
       {/* Value Props */}
-      <div className="mx-auto w-full max-w-6xl mt-16 px-4">
+      <div className="mx-auto w-full max-w-6xl mt-12 mb-36 px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[{
+            icon: <BookOpen className="w-8 h-8 text-[#19363C]" />,
+            title: "Enhance your reader's experience",
+            text: "Thank your readers with a video, share extra book content, and write them back when they message you."
+          }, {
             icon: <DollarSign className="w-8 h-8 text-[#19363C]" />,
-            title: "Earn More From Your Books",
+            title: "Earn more from your work",
             text: "Give readers an easy way to support you directly, even with used books and library copies."
           }, {
-            icon: <MessageSquare className="w-8 h-8 text-[#19363C]" />,
-            title: "Connect With Your Readers",
-            text: "Receive messages from fans and build your email list with each tip your books generate."
-          }, {
             icon: <LinkIcon className="w-8 h-8 text-[#19363C]" />,
-            title: "Promote Your Platform",
-            text: "Link to your website and socials - all from one centralized place."
+            title: "Grow your platform",
+            text: "Link to your website and socials and add reader signup forms - all from one centralized place."
           }].map(({
             icon,
             title,
@@ -175,142 +182,99 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Featured Authors Banner */}
-      <div className="w-full bg-transparent py-2 mt-12 -mx-4 sm:-mx-6 lg:-mx-8">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FeaturedAuthorsCarousel />
+      {/* Overview Section - Video */}
+      <div className="mx-auto w-full max-w-6xl mt-16 px-4">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
+          {/* Left: Image */}
+          <div className="flex justify-center order-2 md:order-1">
+            <div className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-200 hover:shadow-lg" onClick={() => openImageModal(carouselImages[0].src, carouselImages[0].alt, carouselImages[0].title)}>
+              <img src={carouselImages[0].src} alt={carouselImages[0].alt} className="w-full max-w-sm rounded-xl object-contain" />
+            </div>
+          </div>
+          {/* Right: Copy */}
+          <div className="space-y-4 order-1 md:order-2 text-left md:text-right">
+            <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">
+             Upload a thank-you video
+            </h2>
+           
+            <p className="text-base sm:text-lg text-[#333333]">
+              It's like a hidden easter egg for your readers once they've finished your book
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* What is Quilltips (Horizontal with carousel on right) */}
-      <div className="mx-auto w-full max-w-6xl mt-12 lg:mt-24 px-4">
-        <div className="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
+      {/* Tipping Section */}
+      <div className="mx-auto w-full max-w-6xl mt-12 px-4">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
           {/* Left: Copy */}
-          <div className="space-y-6">
-            <h2 className="text-4xl sm:text-5xl font-playfair font-bold text-[#333333] leading-[1.2]">Many <span className="text-[#FFD166] bg-[#19363C] px-3 py-0.5 rounded inline-block align-middle">authors</span> struggle to connect with their readers</h2>
-            <p className="font-lato text-xl sm:text-xl text-[#333333] leading-relaxed font-bold">
-              Quilltips is on a mission to change that.
+          <div className="space-y-4 text-left">
+            <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">
+              Link with Stripe and allow readers to send tips
+            </h2>
+            <p className="text-lg sm:text-xl text-[#333333] font-medium">
+              They'll appreciate the chance to support your work
             </p>
-            <p className="font-lato text-lg sm:text-xl text-[#19363C]/80 leading-relaxed">
-              With Quilltips QR codes and author profiles, your readers can send you tips and messages, you can build your email list, and link back to your website and socials. All in less than 5 minutes.
-            </p>
-       
           </div>
-          {/* Right: Carousel */}
-          <div className="relative">
-            <Carousel setApi={setApi} className="w-full">
-              <CarouselContent>
-                {carouselImages.map((image, index) => <CarouselItem key={index}>
-                    <div className="p-1">
-                      <div className="rounded-2xl bg-transparent p-3 cursor-pointer transition-all duration-200 hover:shadow-none" onClick={() => openImageModal(image.src, image.alt, image.title)}>
-                        <div className="w-full">
-                          <img src={image.src} alt={image.alt} className="w-full h-[420px] lg:h-[460px] rounded-xl object-contain" />
-                        </div>
-                      </div>
-                    </div>
-                  </CarouselItem>)}
-              </CarouselContent>
-            </Carousel>
-            {/* Dot indicators */}
-            <div className="flex justify-center space-x-2 mt-4">
-              {Array.from({
-                length: count
-              }).map((_, index) => <button key={index} className={`w-3 h-3 rounded-full transition-colors duration-200 plausible-event-name=carousel-images ${index + 1 === current ? 'bg-[#FFD166]' : 'bg-[#19363C]/20 hover:bg-[#19363C]/40'}`} onClick={() => api?.scrollTo(index)} aria-label={`Go to slide ${index + 1}`} />)}
+          {/* Right: Image */}
+          <div className="flex justify-center">
+            <div className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-200 hover:shadow-lg" onClick={() => openImageModal(carouselImages[1].src, carouselImages[1].alt, carouselImages[1].title)}>
+              <img src={carouselImages[1].src} alt={carouselImages[1].alt} className="w-full max-w-sm rounded-xl object-contain" />
             </div>
           </div>
-        </div>
-        {/* CTA below section */}
-        <div className="flex justify-center mt-10">
-          <RouterLink to="/author/register">
-            <Button size="lg" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium px-10 py-4 h-auto rounded-full plausible-event-name=create-account-after-what">
-              Create an account
-            </Button>
-          </RouterLink>
         </div>
       </div>
 
-      
-
-      {/* How It Works (condensed) */}
-      <div className="mx-auto w-full max-w-5xl mt-28 px-4">
-        <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-center mb-12 text-[#19363C]">How does Quilltips work?</h2>
-
-        {[{
-          icon: <QrCode className="w-12 h-12 md:w-16 md:h-16 text-[#FFD166]" />,
-          title: "Step 1. Create your Profile and Quilltips Jar",
-          text: "Publish your author profile and create a virtual tip jar, accessible through a QR code. Download the code to print on the cover or inside the jacket of your next book. Link your bank account with Stripe.",
-          reverse: false
-        }, {
-          icon: <Users className="w-12 h-12 md:w-16 md:h-16 text-[#FFD166]" />,
-          title: "Step 2. Meet your readers",
-          text: "Readers scan the QR code to open your virtual tip jar and leave tips and messages. From your profile, readers can find links to your website and social media accounts.",
-          reverse: true
-        }, {
-          icon: <BookOpen className="w-12 h-12 md:w-16 md:h-16 text-[#FFD166]" />,
-          title: "Step 3. Build support",
-          text: "Grow your e-mail list and understand your audience with Quilltips' Data dashboard. Add countdown clocks and reader signup forms to your profile to boost your next launch.",
-          reverse: false
-        }].map(({
-          icon,
-          title,
-          text,
-          reverse
-        }, idx) => <div key={idx} className={`flex flex-col-reverse md:flex-row ${reverse ? "md:flex-row-reverse" : ""} items-center gap-8 mb-16`}>
-            {/* Text */}
-            <div className="text-center md:text-left max-w-lg space-y-4">
-              <h3 className="font-semibold text-2xl text-[#19363C]">{title}</h3>
-              <p className="text-[#19363C]/80 leading-relaxed">{text}</p>
+      {/* Messaging Section */}
+      <div className="mx-auto w-full max-w-6xl mt-12 px-4">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
+          {/* Left: Image */}
+          <div className="flex justify-center order-2 md:order-1">
+            <div className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-200 hover:shadow-lg" onClick={() => openImageModal(carouselImages[2].src, carouselImages[2].alt, carouselImages[2].title)}>
+              <img src={carouselImages[2].src} alt={carouselImages[2].alt} className="w-full max-w-sm rounded-xl object-contain" />
             </div>
-
-            {/* Icon */}
-            <div className="flex justify-center md:justify-start">
-              <div className="w-28 h-28 md:w-40 md:h-40 bg-[#19363C] rounded-full flex items-center justify-center">
-               {icon}
-              </div>
-            </div>
-          </div>)}
-
-        <div className="flex justify-center mt-16">
-          <RouterLink to="/how-it-works">
-            <Button variant="outline" className="rounded-full px-10 border-[#19363C] text-[#19363C] hover:bg-transparent hover:shadow-lg plausible-event-name=how-it-works" data-plausible-event="how-it-works">
-              Learn more
-            </Button>
-          </RouterLink>
-        </div>
-      </div>
-
-     
-      {/* For Readers (horizontal) */}
-      <div className="mx-auto w-full max-w-6xl mt-24 px-4">
-        <div className="grid md:grid-cols-2 gap-10 items-center">
-          {/* Image left on desktop */}
-          <div className="order-1 md:order-1 flex justify-center md:justify-start">
-            <img src="/lovable-uploads/reader_quilltips.webp" alt="Reader scanning a QR code to tip an author" className="w-full max-w-[260px] md:max-w-[300px] rounded-xl" />
           </div>
-          {/* Text right on desktop */}
-          <div className="order-2 md:order-2">
-            <h2 className="text-4xl sm:text-5xl font-playfair font-medium mb-6 text-[#19363C]">Readers simply scan and submit</h2>
-            <p className="text-lg sm:text-xl mb-8 text-[#19363C]/80 leading-relaxed">
-              Readers can use Quilltips quickly and easily -- just scan the QR code on your book or search for it on Quilltips, add a message, and send a tip! No accounts or sign-up required.
+          {/* Right: Copy */}
+          <div className="space-y-4 order-1 md:order-2 text-left md:text-right">
+            <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">
+              Hear directly from readers, like and reply to their messages
+            </h2>
+            <p className="text-lg sm:text-xl text-[#333333] font-medium">
+              It's like signing autographs from your couch
             </p>
           </div>
         </div>
       </div>
 
- {/* Author Profile Promo with Prefill Form (horizontal) */}
- <div className="mx-auto w-full max-w-6xl mt-20 px-4">
-        <div className="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
+      {/* Bonus Content Section */}
+      <div className="mx-auto w-full max-w-6xl mt-12 px-4">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
+          {/* Left: Copy */}
+          <div className="space-y-4 text-left">
+            <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">
+              Add art and book recommendations to delight your fans even more
+            </h2>
+          </div>
+          {/* Right: Image */}
+          <div className="flex justify-center">
+            <div className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-200 hover:shadow-lg" onClick={() => openImageModal(carouselImages[3].src, carouselImages[3].alt, carouselImages[3].title)}>
+              <img src={carouselImages[3].src} alt={carouselImages[3].alt} className="w-full max-w-sm rounded-xl object-contain" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Author Profile Promo with Prefill Form (horizontal) */}
+ <div className="mx-auto w-full max-w-6xl mt-12 px-4">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
           {/* Left: Copy */}
           <div>
-            <h2 className="text-3xl md:text-4xl font-playfair font-medium mb-4 text-[#19363C]">
-              Dreading building your author website? 
+            <h2 className="text-2xl md:text-3xl font-playfair font-medium mb-3 text-[#333333]">
+              Link back to your website and socials
             </h2>
             
-            <p className="text-lg md:text-xl text-[#333333] mb-4">
-              Use your Quilltips author profile instead.
-            </p>
-            <p className="text-lg md:text-xl text-[#333333]">
-              Upload a bio & headshot, list your books, add reader signup forms, and link to your socials and e-commerce pages. The best part? It's completely free.
+            <p className="text-base md:text-lg text-[#333333]">
+              Build your email list with easy reader signup forms
             </p>
           </div>
 
@@ -371,20 +335,37 @@ const Index = () => {
         </div>
       </div>
 
-
-      {/* Pricing (Figma-style) */}
-      <div className="mx-auto w-full max-w-6xl mt-32 px-4">
-        <h2 className="text-3xl md:text-4xl font-playfair font-semibold text-[#19363C] mb-4">Does this cost money?</h2>
-        <p className="text-lg md:text-xl text-[#19363C]/90 leading-relaxed max-w-3xl">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started. <RouterLink to="/pricing" className="text-[#19363C] underline hover:no-underline">Read more about pricing</RouterLink>.</p>
+      {/* For Readers (horizontal) */}
+      <div className="mx-auto w-full max-w-6xl mt-16 px-4">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
+          {/* Image left on desktop */}
+          <div className="order-1 md:order-1 flex justify-center md:justify-start">
+            <img src="/lovable-uploads/reader_quilltips.webp" alt="Reader scanning a QR code to tip an author" className="w-full max-w-[240px] md:max-w-[280px] rounded-xl" />
+          </div>
+          {/* Text right on desktop */}
+          <div className="order-2 md:order-2">
+            <h2 className="text-3xl sm:text-4xl font-playfair font-medium mb-4 text-[#19363C]">Readers simply scan and submit</h2>
+            <p className="text-base sm:text-lg text-[#19363C]/80 leading-relaxed">
+              Readers can use Quilltips quickly and easily -- just scan the QR code on your book or search for it on Quilltips! No accounts or sign-up required.
+            </p>
+          </div>
+        </div>
       </div>
 
-      
+
+
+      {/* Pricing (Figma-style) */}
+      <div className="mx-auto w-full max-w-6xl mt-20 px-4">
+        <h2 className="text-2xl md:text-3xl font-playfair font-semibold text-[#19363C] mb-3">Does this cost money?</h2>
+        <p className="text-base md:text-lg text-[#19363C]/90 leading-relaxed max-w-3xl">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started. <RouterLink to="/pricing" className="text-[#19363C] underline hover:no-underline">Read more about pricing</RouterLink>.</p>
+      </div>
+
 
       {/* Final Call to Action */}
-      <div className="mx-auto w-full max-w-6xl mt-20 text-center px-4 py-20">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <h2 className="text-4xl sm:text-5xl font-playfair font-medium text-[#333333]">Ready to get started?</h2>
-          <p className="text-lg sm:text-xl text-[#333333]/80">Create an account to connect with readers and collect tips!</p>
+      <div className="mx-auto w-full max-w-6xl mt-16 text-center px-4 py-12">
+        <div className="max-w-3xl mx-auto space-y-4">
+          <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">Ready to get started?</h2>
+          <p className="text-base sm:text-lg text-[#333333]/80">Create an account to connect with readers and collect tips!</p>
         </div>
         <div className="flex items-center justify-center gap-4 mt-10 flex-wrap">
           <RouterLink to="/author/register">

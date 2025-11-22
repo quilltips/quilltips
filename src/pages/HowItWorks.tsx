@@ -23,8 +23,8 @@ const HowItWorks = () => {
   return (
     <>
     <Meta
-      title="Quilltips - Turn Your Book Into An Asset"
-      description="Learn how to turn your book into a revenue-generating asset with Quilltips QR codes. Simple steps to connect with readers and earn tips."
+      title="Quilltips - How it works"
+      description="Learn how to engage with your readers through QR codes on your books. Simple steps to enhance your reader experience and grow your platform."
       url="https://quilltips.co/how-it-works"
     />
 
@@ -33,10 +33,10 @@ const HowItWorks = () => {
         {/* Hero Section */}
         <div className="text-center mb-24">
           <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-10 text-[#333333]">
-            Connect with your readers
+            How Quilltips Works
           </h1>
           <p className="text-xl md:text-2xl text-[#333333] max-w-3xl mx-auto leading-relaxed">
-            Create a Quilltips Jar, add the QR code to your book and give your readers a way to say thanks
+            Create a Quilltips Jar, add the QR code to your book and enhance your reader experience
           </p>
         </div>
 
@@ -51,7 +51,7 @@ const HowItWorks = () => {
                 </h2>
               </div>
               <p className="text-lg text-[#333333]/80 leading-relaxed">
-                Sign up for Quilltips and complete Stripe onboarding to start receiving payments in less than 5 minutes. Learn more about our <Link to="/pricing" className="text-[#333333] underline hover:text-[#333333]/80 transition-colors">pricing</Link> and <Link to="/about" className="text-[#333333] underline hover:text-[#333333]/80 transition-colors">mission</Link>.
+                Sign up for Quilltips and complete Stripe onboarding to enable tips from your fanbase (optional). Learn more about our <Link to="/pricing" className="text-[#333333] underline hover:text-[#333333]/80 transition-colors">pricing</Link> and <Link to="/about" className="text-[#333333] underline hover:text-[#333333]/80 transition-colors">mission</Link>.
               </p>
               <div className="pt-4">
                 <Link 
@@ -84,7 +84,7 @@ const HowItWorks = () => {
                 </h2>
               </div>
               <p className="text-lg text-[#333333]/80 leading-relaxed">
-                Create a custom QR code for each of your books. Each code links to your personalized Quilltips Jar where readers can leave tips and messages.
+                Create a custom QR code for each of your books. Each code links to your personalized Quilltips Jar where readers can see more about your book, message you, leave a tip and more. You can configure your Quilltips Jar to include a thank-you video, character art, and book recommendations during the creation process or afterwards from your dashboard.
               </p>
               
             </div>

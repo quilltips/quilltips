@@ -6,14 +6,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 
 const FEATURED_AUTHOR_IDS = [
+  "485c1a1f-5bf0-4c0d-b51c-c97af069fabd", // Gabriel Nardi-Huffman
   "2964531d-4ba6-4b61-8716-8c63a80f3cae", // Tyler Tarter
   "55056f35-3a44-4d79-8558-69e003be17b0", // Kelly Schweiger
   "51c62b82-f4ed-42d2-83e5-8d73d77482a4", // T.M. Thomas
   "e14f7979-c1ca-4a91-9eb7-df4098759bac", // Frank Eugene Dukes Jr
   "3f6b03df-9231-451c-ac2e-491fe9be584c", // Melize Smit
-  "485c1a1f-5bf0-4c0d-b51c-c97af069fabd", // Gabriel Nardi-Huffman
   "757201a7-8ca4-4801-8bdb-ad62c168146a", // Kitty Laroux
-
 ];
 
 interface AuthorProfile {
@@ -24,7 +23,12 @@ interface AuthorProfile {
   created_at: string | null;
 }
 
-export const FeaturedAuthorsCarousel = () => {
+interface FeaturedAuthorsCarouselProps {
+  compact?: boolean;
+  showFirstNameOnly?: boolean;
+}
+
+export const FeaturedAuthorsCarousel = ({ compact = false, showFirstNameOnly = false }: FeaturedAuthorsCarouselProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
@@ -61,24 +65,21 @@ export const FeaturedAuthorsCarousel = () => {
 
   if (isLoading) {
     return (
-      <section className="mx-auto w-full max-w-6xl mt-16 px-4" aria-label="Featured authors">
-        <h2 className="text-2xl sm:text-3xl font-playfair font-semibold text-center text-foreground mb-8">
-          Trusted by authors of all genres
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+      <>
+        <div className={`grid ${compact ? 'grid-cols-4 md:grid-cols-5 lg:grid-cols-5 gap-2 md:gap-3' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6'}`}>
           {[...Array(FEATURED_AUTHOR_IDS.length)].map((_, i) => (
-            <div key={i} className="bg-card border border-border rounded-2xl p-6">
-              <div className="flex flex-col items-center space-y-4">
-                <Skeleton className="h-20 w-20 md:h-24 md:w-24 rounded-full" />
-                <div className="space-y-2 w-full">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-3 w-16 mx-auto" />
+            <div key={i} className={`bg-card border border-border rounded-2xl ${compact ? 'p-3' : 'p-6'}`}>
+              <div className={`flex flex-col items-center ${compact ? 'space-y-2' : 'space-y-4'}`}>
+                <Skeleton className={`rounded-full ${compact ? 'h-10 w-10' : 'h-20 w-20 md:h-24 md:w-24'}`} />
+                <div className={`w-full ${compact ? 'space-y-1' : 'space-y-2'}`}>
+                  <Skeleton className={`w-full ${compact ? 'h-3' : 'h-4'}`} />
+                  <Skeleton className={`mx-auto ${compact ? 'h-2 w-12' : 'h-3 w-16'}`} />
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </section>
+      </>
     );
   }
 
@@ -87,9 +88,7 @@ export const FeaturedAuthorsCarousel = () => {
   }
 
   return (
-    <section className="mx-auto w-full max-w-6xl mt-12 px-4" aria-label="Featured authors">
-    
-
+    <>
       {/* Auto-scrolling Carousel for all screen sizes */}
       <Carousel
         setApi={setApi}
@@ -99,31 +98,33 @@ export const FeaturedAuthorsCarousel = () => {
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-2 md:-ml-4">
+        <CarouselContent className={`${compact ? '-ml-1 md:-ml-2' : '-ml-2 md:-ml-4'}`}>
           {authors.map((author) => {
             const joinedYear = author.created_at 
               ? new Date(author.created_at).getFullYear()
               : new Date().getFullYear();
 
             return (
-              <CarouselItem key={author.id} className="pl-2 md:pl-4 basis-[calc(50%-0.5rem)] md:basis-[calc(33.333%-0.5rem)] lg:basis-[calc(20%-0.5rem)]">
+              <CarouselItem key={author.id} className={`${compact ? 'pl-1 md:pl-2 basis-[calc(25%-0.25rem)] md:basis-[calc(25%-0.5rem)] lg:basis-[calc(20%-0.5rem)]' : 'pl-2 md:pl-4 basis-[calc(50%-0.5rem)] md:basis-[calc(33.333%-0.5rem)] lg:basis-[calc(20%-0.5rem)]'}`}>
                 <AuthorCard
                   id={author.id}
                   name={author.name || "Anonymous Author"}
                   avatarUrl={author.avatar_url}
                   slug={author.slug}
                   joinedYear={joinedYear}
+                  compact={compact}
+                  showFirstNameOnly={showFirstNameOnly}
                 />
               </CarouselItem>
             );
           })}
         </CarouselContent>
         
-        <div className="flex justify-center mt-6">
-          <CarouselPrevious className="relative left-0 translate-x-0 translate-y-0" />
-          <CarouselNext className="relative right-0 translate-x-0 translate-y-0 ml-2" />
+        <div className={`flex justify-center ${compact ? 'mt-3' : 'mt-6'}`}>
+          <CarouselPrevious className={`relative left-0 translate-x-0 translate-y-0 ${compact ? 'h-6 w-6' : ''}`} />
+          <CarouselNext className={`relative right-0 translate-x-0 translate-y-0 ml-2 ${compact ? 'h-6 w-6' : ''}`} />
         </div>
       </Carousel>
-    </section>
+    </>
   );
 };

@@ -5,7 +5,7 @@ import { Meta } from "@/components/Meta"; // 👈 Add this import
 
 const About = () => {
   return <>
-    <Meta title="About Quilltips – Built to Support Authors" description="Quilltips helps authors earn more by connecting them directly with readers who want to show appreciation with a tip." url="https://quilltips.co/about" />
+    <Meta title="About Quilltips – Built to Support Authors" description="Quilltips connects authors and readers by establishing a hub for their books that readers can access through QR codes." url="https://quilltips.co/about" />
 
     <main className="container mx-auto px-4 py-24 flex-grow">
       <div className="max-w-2xl mx-auto prose prose-lg" style={{
@@ -18,8 +18,9 @@ const About = () => {
 
 
         <section className="mb-12 mt-20">
-          <h2 className="text-2xl font-semibold mb-4">A way to say "thanks" to all the great authors out there</h2>
-          <p>Quilltips was founded to give readers a way to say thanks to the authors of books they love and to help bring those author-reader connections to life by allowing readers to easily send tips and message to authors. With royalties on new books hovering around 10% for published authors, and royalties on used books and library copies 0%, authors receive only a minute share of the value they create with their stories despite their books circulating for decades after the first sale.</p>
+          <h2 className="text-2xl font-semibold mb-4">Bringing authors and readers together</h2>
+          <p>Quilltips was created to deepen connections between authors and readers. Despite the huge value and enjoyment that books provide, too often the author and reader sit many layers apart. Our goal is to create a seamless way for readers to dive deeper into the books they love and to connect with and support the authors who write them. </p>
+          <p>The idea that drove Quilltips to launch was to take something very simple - a QR code on the back of a book - and to use that to enrich the reader experience and to help authors grow their platform.  </p>
         </section>
 
         <section className="mb-12">
