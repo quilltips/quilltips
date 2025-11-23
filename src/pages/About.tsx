@@ -18,29 +18,30 @@ const About = () => {
 
 
         <section className="mb-12 mt-20">
-          <h2 className="text-2xl font-semibold mb-4">Bringing authors and readers together</h2>
-          <p>Quilltips was created to deepen connections between authors and readers. Despite the huge value and enjoyment that books provide, too often the author and reader sit many layers apart. Our goal is to create a seamless way for readers to dive deeper into the books they love and to connect with and support the authors who write them. </p>
+          <h2 className="text-2xl font-semibold mb-8 pb-4">Bringing authors and readers together</h2>
+          <p>Quilltips was created to deepen connections between authors and readers. Despite the huge value and enjoyment that books provide, the author and reader often sit many layers apart. Our goal is to create a seamless way for readers to dive deeper into the books they love and to connect with and support the authors who write them. </p>
           <p>The idea that drove Quilltips to launch was to take something very simple - a QR code on the back of a book - and to use that to enrich the reader experience and to help authors grow their platform.  </p>
-        </section>
 
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4">The Hidden Reality of Used Book Sales</h2>
           <p>
-            The used book market is huge and growing thanks to convenient e-commerce distribution from the likes of Amazon. With a more accessible price point and environmental sustainability benefits, the used book market is amazing, except for the fact that only the platforms and sellers make money on these transactions. <strong>Quilltips wants to give readers the power to voice their appreciation and connect directly with the authors of their favorite titles, while improving author economics in a completely voluntary way.</strong>
+            The upshot of putting powerful QR codes on physical books with the Quilltips platform behind it is that those books are now a live window between the reader and author. Authors can also learn more about the when, where, and why of their fanbase. 
           </p>
-        </section>
-
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4">Connecting Authors with Their Readers</h2>
-          <p>
-            The upshot of putting powerful QR codes on physical books and adding a platform behind it is that those books are now a live window between the reader and author and a tool for readers to voice support and appreciation. They can also give authors a view into the when, where, and why of their reader base. Authors can use Quilltips QR codes to convert their offline book into a digital asset. 
-          </p>
-          <br></br>
-          <p>
-            With Quilltips, Authors can create Quilltips Jars for each of their books, allowing them to receive tips and messages from their readers, respond directly to those tips, direct readers to their author website and socials, and build their e-mail list. 
-          </p>
+       
         
         </section>
+
+       
+      
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4 pb-4">The Hidden Reality of Used Book Sales</h2>
+          <p>
+            The used book market is huge and growing thanks to convenient e-commerce distribution from the likes of Amazon. With a more accessible price point and environmental sustainability benefits, the used book market is amazing, except for the fact that only the platforms and sellers make money on these transactions. 
+          </p>
+          <p>
+          Quilltips wants to give readers the power to voice their appreciation and connect directly with the authors of their favorite titles, while improving author economics in a completely voluntary way.
+          </p>
+        </section>
+
+       
           
           
         <section className="mb-12">

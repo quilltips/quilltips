@@ -32,12 +32,12 @@ export const AuthorCard = ({ id, name, avatarUrl, slug, joinedYear, compact = fa
           </Avatar>
           
           <div className={`text-center w-full ${compact ? 'space-y-1' : 'space-y-2'}`}>
-            <h3 className={`font-semibold text-muted-foreground line-clamp-2 leading-tight ${compact ? 'text-xs' : 'text-sm'}`}>
+            <h3 className={`font-regular line-clamp-2 leading-tight ${compact ? 'text-xs' : 'text-sm'}`}>
               {displayName}
             </h3>
             
-            <Badge variant="secondary" className={`text-muted-foreground ${compact ? 'text-[10px] px-1.5 py-0.5' : 'text-xs'}`}>
-              <span className="hidden md:inline">Joined </span>{joinedYear}
+            <Badge variant="secondary" className={`text-muted-foreground bg-transparent font-medium ${compact ? 'text-[10px] px-1.5 py-0.5' : 'text-xs'}`}>
+              <span className="hidden md:inline">Joined&nbsp;</span>{joinedYear}
             </Badge>
           </div>
         </div>

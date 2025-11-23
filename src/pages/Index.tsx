@@ -129,7 +129,7 @@ const Index = () => {
                     Quilltips is on a mission to change that.
                   </p>
                   <p className="font-lato text-base sm:text-lg text-[#333333] leading-relaxed">
-                    With Quilltips, authors can create a hub for their book, share thank-you videos, upload character art, and receiving tips and messages directly from readers. Readers can access your book page through QR codes printed right on your back cover.
+                    With Quilltips, authors can create a hub for their book, share thank-you videos, upload character art, and receive tips and messages directly from readers. Readers can access that book page through QR codes printed right on the book's back cover.
                   </p>
                 </div>
                 {/* Right: Product Demo Video */}
@@ -210,7 +210,7 @@ const Index = () => {
           {/* Left: Copy */}
           <div className="space-y-4 text-left">
             <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">
-              Link with Stripe and allow readers to send tips
+              Connect with Stripe and allow readers to send tips
             </h2>
             <p className="text-lg sm:text-xl text-[#333333] font-medium">
               They'll appreciate the chance to support your work
@@ -267,19 +267,8 @@ const Index = () => {
       {/* Author Profile Promo with Prefill Form (horizontal) */}
  <div className="mx-auto w-full max-w-6xl mt-12 px-4">
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
-          {/* Left: Copy */}
-          <div>
-            <h2 className="text-2xl md:text-3xl font-playfair font-medium mb-3 text-[#333333]">
-              Link back to your website and socials
-            </h2>
-            
-            <p className="text-base md:text-lg text-[#333333]">
-              Build your email list with easy reader signup forms
-            </p>
-          </div>
-
-          {/* Right: Inline prefill form */}
-          <Card className="bg-transparent rounded-2xl p-6 md:p-8">
+          {/* Left: Inline prefill form */}
+          <Card className="bg-transparent rounded-2xl p-6 md:p-8 order-1 md:order-1">
             <form onSubmit={async e => {
               e.preventDefault();
               const form = e.currentTarget as HTMLFormElement;
@@ -332,22 +321,32 @@ const Index = () => {
               </div>
             </form>
           </Card>
+          {/* Right: Copy */}
+          <div className="order-2 md:order-2 text-left md:text-right">
+            <h2 className="text-2xl md:text-3xl font-playfair font-medium mb-3 text-[#333333]">
+              Link back to your website and socials
+            </h2>
+            
+            <p className="text-base md:text-lg text-[#333333]">
+              Build your email list with easy reader signup forms
+            </p>
+          </div>
         </div>
       </div>
 
       {/* For Readers (horizontal) */}
       <div className="mx-auto w-full max-w-6xl mt-16 px-4">
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
-          {/* Image left on desktop */}
-          <div className="order-1 md:order-1 flex justify-center md:justify-start">
-            <img src="/lovable-uploads/reader_quilltips.webp" alt="Reader scanning a QR code to tip an author" className="w-full max-w-[240px] md:max-w-[280px] rounded-xl" />
-          </div>
-          {/* Text right on desktop */}
-          <div className="order-2 md:order-2">
+          {/* Text left on desktop */}
+          <div className="order-1 md:order-1">
             <h2 className="text-3xl sm:text-4xl font-playfair font-medium mb-4 text-[#19363C]">Readers simply scan and submit</h2>
             <p className="text-base sm:text-lg text-[#19363C]/80 leading-relaxed">
               Readers can use Quilltips quickly and easily -- just scan the QR code on your book or search for it on Quilltips! No accounts or sign-up required.
             </p>
+          </div>
+          {/* Image right on desktop */}
+          <div className="order-2 md:order-2 flex justify-center md:justify-end">
+            <img src="/lovable-uploads/reader_quilltips.webp" alt="Reader scanning a QR code to tip an author" className="w-full max-w-[240px] md:max-w-[280px] rounded-xl" />
           </div>
         </div>
       </div>
@@ -356,8 +355,15 @@ const Index = () => {
 
       {/* Pricing (Figma-style) */}
       <div className="mx-auto w-full max-w-6xl mt-20 px-4">
-        <h2 className="text-2xl md:text-3xl font-playfair font-semibold text-[#19363C] mb-3">Does this cost money?</h2>
-        <p className="text-base md:text-lg text-[#19363C]/90 leading-relaxed max-w-3xl">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started. <RouterLink to="/pricing" className="text-[#19363C] underline hover:no-underline">Read more about pricing</RouterLink>.</p>
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
+          {/* Left: Empty spacer to maintain alternating pattern */}
+          <div className="order-1 md:order-1"></div>
+          {/* Right: Pricing text */}
+          <div className="order-2 md:order-2 text-left md:text-right">
+            <h2 className="text-2xl md:text-3xl font-playfair font-semibold text-[#19363C] mb-3">Does this cost money?</h2>
+            <p className="text-base md:text-lg text-[#19363C]/90 leading-relaxed">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started. <RouterLink to="/pricing" className="text-[#19363C] underline hover:no-underline">Read more about pricing</RouterLink>.</p>
+          </div>
+        </div>
       </div>
 
 
