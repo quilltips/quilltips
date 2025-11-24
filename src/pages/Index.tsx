@@ -49,13 +49,6 @@ const Index = () => {
       imageTitle: "Upload a thank-you video"
     },
     {
-      title: "Connect with Stripe to receive tips",
-      description: "They'll appreciate the chance to support your work",
-      image: "/lovable-uploads/screenshots/tipping-1.webp",
-      imageAlt: "Reader tipping interface",
-      imageTitle: "Connect with Stripe"
-    },
-    {
       title: "Like and reply to reader messages",
       description: "It's like signing autographs from your couch",
       image: "/lovable-uploads/screenshots/message-reply-1.webp",
@@ -63,16 +56,23 @@ const Index = () => {
       imageTitle: "Hear directly from readers"
     },
     {
+      title: "Connect with Stripe to receive tips (optional)",
+      description: "They'll appreciate the chance to support your work",
+      image: "/lovable-uploads/screenshots/tipping-1.webp",
+      imageAlt: "Reader tipping interface",
+      imageTitle: "Connect with Stripe"
+    },
+    {
       title: "Add character art and book recommendations",
       description: "Delight your fans even more",
-      image: "/lovable-uploads/screenshots/QT_dashboard.webp",
+      image: "/lovable-uploads/screenshots/character-art-recs.webp",
       imageAlt: "Author dashboard with art and recommendations",
       imageTitle: "Add art and book recommendations"
     },
     {
       title: "Link to your website and socials",
       description: "Build your email list with easy reader signup forms",
-      image: "/lovable-uploads/screenshots/reader-signups-1.webp",
+      image: "/lovable-uploads/screenshots/links-section.webp",
       imageAlt: "Reader signup forms",
       imageTitle: "Link back to your website"
     }
@@ -145,7 +145,7 @@ const Index = () => {
               A homepage for your book
             </h1>
            
-            <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Share bonus content, get tips & messages, connect with readers—all via your Quilltips QR code.</p>
+            <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Share bonus content, get tips & messages, and connect with readers. All via your Quilltips QR code.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6 lg:pt-8">
@@ -321,8 +321,11 @@ const Index = () => {
       {/* Pricing (Figma-style) */}
       <div className="mx-auto w-full max-w-4xl mt-20 px-4">
         <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-playfair font-semibold text-[#19363C] mb-3">Does this cost money?</h2>
-          <p className="text-base md:text-lg text-[#19363C]/90 leading-relaxed max-w-2xl mx-auto">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started. <RouterLink to="/pricing" className="text-[#19363C] underline hover:no-underline">Read more about pricing</RouterLink>.</p>
+          <h2 className="text-3xl md:text-4xl font-playfair font-semibold text-[#19363C] mb-5">Does this cost money?</h2>
+        </div>
+        <div className="flex items-start gap-4 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-[#19363C]/90 leading-relaxed text-left flex-1">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started. <RouterLink to="/pricing" className="text-[#19363C] underline hover:no-underline">Read more about pricing</RouterLink>.</p>
+         
         </div>
       </div>
 

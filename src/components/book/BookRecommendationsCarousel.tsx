@@ -37,14 +37,16 @@ export const BookRecommendationsCarousel = ({
                 href={rec.buy_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline inline-flex items-center gap-1"
+                className="hover:underline inline-flex flex-wrap items-center gap-1"
               >
-                {rec.recommended_book_title}
-                {rec.recommended_book_author && ` by ${rec.recommended_book_author}`}
-                <ExternalLink className="h-3 w-3" />
+                <span className="break-words">
+                  {rec.recommended_book_title}
+                  {rec.recommended_book_author && ` by ${rec.recommended_book_author}`}
+                </span>
+                <ExternalLink className="h-3 w-3 flex-shrink-0" />
               </a>
             ) : (
-              <span>
+              <span className="break-words">
                 {rec.recommended_book_title}
                 {rec.recommended_book_author && ` by ${rec.recommended_book_author}`}
               </span>
