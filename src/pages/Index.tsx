@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { QrCode, MessageSquare, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight } from "lucide-react";
+import { QrCode, MessageSquare, DollarSign, Link as LinkIcon, BookOpen, Users, ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +12,7 @@ import { Meta } from "@/components/Meta";
 import { Helmet } from "react-helmet-async";
 import { useState } from "react";
 import { FeaturedAuthorsCarousel } from "@/components/FeaturedAuthorsCarousel";
+import backCoverExample from "@/assets/back_cover_example.png";
 const Index = () => {
   const {
     user
@@ -25,6 +26,57 @@ const Index = () => {
     alt: string;
     title: string;
   } | null>(null);
+  const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
+  const [activeReaderImageIndex, setActiveReaderImageIndex] = useState(0);
+  
+  const readerImages = [
+    {
+      src: "/lovable-uploads/screenshots/about_author_qr.webp",
+      alt: "Reader scanning a QR code to tip an author"
+    },
+    {
+      src: backCoverExample,
+      alt: "Book back cover with QR code"
+    }
+  ];
+  
+  const features = [
+    {
+      title: "Upload a thank you video",
+      description: "It's like a hidden easter egg for your readers once they've finished your book",
+      image: "/lovable-uploads/screenshots/book-page-1.webp",
+      imageAlt: "Book page with thank you video",
+      imageTitle: "Upload a thank-you video"
+    },
+    {
+      title: "Connect with Stripe to receive tips",
+      description: "They'll appreciate the chance to support your work",
+      image: "/lovable-uploads/screenshots/tipping-1.webp",
+      imageAlt: "Reader tipping interface",
+      imageTitle: "Connect with Stripe"
+    },
+    {
+      title: "Like and reply to reader messages",
+      description: "It's like signing autographs from your couch",
+      image: "/lovable-uploads/screenshots/message-reply-1.webp",
+      imageAlt: "Message reply interface",
+      imageTitle: "Hear directly from readers"
+    },
+    {
+      title: "Add character art and book recommendations",
+      description: "Delight your fans even more",
+      image: "/lovable-uploads/screenshots/QT_dashboard.webp",
+      imageAlt: "Author dashboard with art and recommendations",
+      imageTitle: "Add art and book recommendations"
+    },
+    {
+      title: "Link to your website and socials",
+      description: "Build your email list with easy reader signup forms",
+      image: "/lovable-uploads/screenshots/reader-signups-1.webp",
+      imageAlt: "Reader signup forms",
+      imageTitle: "Link back to your website"
+    }
+  ];
   const handleCreateQRCode = () => {
     if (!user) {
       navigate("/author/login");
@@ -182,154 +234,46 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Overview Section - Video */}
-      <div className="mx-auto w-full max-w-6xl mt-16 px-4">
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
-          {/* Left: Image */}
-          <div className="flex justify-center order-2 md:order-1">
-            <div className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-200 hover:shadow-lg" onClick={() => openImageModal(carouselImages[0].src, carouselImages[0].alt, carouselImages[0].title)}>
-              <img src={carouselImages[0].src} alt={carouselImages[0].alt} className="w-full max-w-sm rounded-xl object-contain" />
-            </div>
-          </div>
-          {/* Right: Copy */}
-          <div className="space-y-4 order-1 md:order-2 text-left md:text-right">
-            <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">
-             Upload a thank-you video
-            </h2>
-           
-            <p className="text-base sm:text-lg text-[#333333]">
-              It's like a hidden easter egg for your readers once they've finished your book
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Tipping Section */}
-      <div className="mx-auto w-full max-w-6xl mt-12 px-4">
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
-          {/* Left: Copy */}
-          <div className="space-y-4 text-left">
-            <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">
-              Connect with Stripe and allow readers to send tips
-            </h2>
-            <p className="text-lg sm:text-xl text-[#333333] font-medium">
-              They'll appreciate the chance to support your work
-            </p>
-          </div>
-          {/* Right: Image */}
-          <div className="flex justify-center">
-            <div className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-200 hover:shadow-lg" onClick={() => openImageModal(carouselImages[1].src, carouselImages[1].alt, carouselImages[1].title)}>
-              <img src={carouselImages[1].src} alt={carouselImages[1].alt} className="w-full max-w-sm rounded-xl object-contain" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Messaging Section */}
-      <div className="mx-auto w-full max-w-6xl mt-12 px-4">
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
-          {/* Left: Image */}
-          <div className="flex justify-center order-2 md:order-1">
-            <div className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-200 hover:shadow-lg" onClick={() => openImageModal(carouselImages[2].src, carouselImages[2].alt, carouselImages[2].title)}>
-              <img src={carouselImages[2].src} alt={carouselImages[2].alt} className="w-full max-w-sm rounded-xl object-contain" />
-            </div>
-          </div>
-          {/* Right: Copy */}
-          <div className="space-y-4 order-1 md:order-2 text-left md:text-right">
-            <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">
-              Hear directly from readers, like and reply to their messages
-            </h2>
-            <p className="text-lg sm:text-xl text-[#333333] font-medium">
-              It's like signing autographs from your couch
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Bonus Content Section */}
-      <div className="mx-auto w-full max-w-6xl mt-12 px-4">
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
-          {/* Left: Copy */}
-          <div className="space-y-4 text-left">
-            <h2 className="text-3xl sm:text-4xl font-playfair font-medium text-[#333333]">
-              Add art and book recommendations to delight your fans even more
-            </h2>
-          </div>
-          {/* Right: Image */}
-          <div className="flex justify-center">
-            <div className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-200 hover:shadow-lg" onClick={() => openImageModal(carouselImages[3].src, carouselImages[3].alt, carouselImages[3].title)}>
-              <img src={carouselImages[3].src} alt={carouselImages[3].alt} className="w-full max-w-sm rounded-xl object-contain" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Author Profile Promo with Prefill Form (horizontal) */}
- <div className="mx-auto w-full max-w-6xl mt-12 px-4">
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
-          {/* Left: Inline prefill form */}
-          <Card className="bg-transparent rounded-2xl p-6 md:p-8 order-1 md:order-1">
-            <form onSubmit={async e => {
-              e.preventDefault();
-              const form = e.currentTarget as HTMLFormElement;
-              const formData = new FormData(form);
-              const name = String(formData.get('prefill_name') || '');
-              const bio = String(formData.get('prefill_bio') || '');
-              const file = formData.get('prefill_avatar') as File | null || null;
-              let avatarDataUrl: string | undefined = undefined;
-              if (file && file.size > 0) {
-                avatarDataUrl = await new Promise<string>((resolve, reject) => {
-                  const reader = new FileReader();
-                  reader.onload = () => resolve(String(reader.result));
-                  reader.onerror = () => reject(new Error('Failed to read image'));
-                  reader.readAsDataURL(file);
-                });
-              }
-              const payload = {
-                name,
-                bio,
-                avatarDataUrl
-              };
-              try {
-                localStorage.setItem('qt_registration_prefill', JSON.stringify(payload));
-              } catch (_) {}
-              toast({
-                title: "Info saved",
-                description: "Continue to create account"
-              });
-              navigate('/author/register');
-            }} className="flex flex-col gap-5 max-w-2xl">
-              <div>
-                <label htmlFor="prefill_name" className="block text-sm font-medium text-[#333333] mb-1">Name</label>
-                <input id="prefill_name" name="prefill_name" className="w-full rounded-md bg-white text-[#19363C] px-3 py-2 border border-gray-300" />
+      {/* Features Carousel Section */}
+      <div className="mx-auto w-full max-w-5xl mt-16 px-4">
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Left: Feature Tiles */}
+          <div className="flex flex-col justify-center space-y-3 min-h-[530px]">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                onClick={() => setActiveFeatureIndex(index)}
+                className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
+                  activeFeatureIndex === index
+                    ? "bg-[#19363C] text-[#FFD166]"
+                    : "bg-transparent text-[#333333] hover:bg-gray-100"
+                }`}
+              >
+                <h3 className={`font-playfair font-semibold text-xl ${
+                  activeFeatureIndex === index ? "text-[#FFD166]" : "text-[#333333]"
+                }`}>
+                  {feature.title}
+                </h3>
               </div>
-
-              <div>
-                <label htmlFor="prefill_bio" className="block text-sm font-medium text-[#333333] mb-1">Bio</label>
-                <textarea id="prefill_bio" name="prefill_bio" className="w-full rounded-md bg-white text-[#19363C] px-3 py-2 min-h-[90px] border border-gray-300"></textarea>
-              </div>
-
-              <div>
-                <label htmlFor="prefill_avatar" className="block text-sm font-medium text-[#333333] mb-1">Headshot (optional)</label>
-                <input id="prefill_avatar" name="prefill_avatar" type="file" accept="image/*" className="block w-full text-sm text-[#333333] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 file:text-sm file:font-semibold file:bg-white file:text-[#19363C] hover:file:bg-white/90" />
-              </div>
-
-              <div className="pt-1">
-                <Button type="submit" className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#19363C] rounded-full px-6">
-                  Continue to create account
-                </Button>
-              </div>
-            </form>
-          </Card>
-          {/* Right: Copy */}
-          <div className="order-2 md:order-2 text-left md:text-right">
-            <h2 className="text-2xl md:text-3xl font-playfair font-medium mb-3 text-[#333333]">
-              Link back to your website and socials
-            </h2>
-            
-            <p className="text-base md:text-lg text-[#333333]">
-              Build your email list with easy reader signup forms
-            </p>
+            ))}
+          </div>
+          
+          {/* Right: Image Carousel */}
+          <div className="flex justify-center items-center min-h-[530px]">
+            <div 
+              className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-300 hover:shadow-lg"
+              onClick={() => openImageModal(
+                features[activeFeatureIndex].image,
+                features[activeFeatureIndex].imageAlt,
+                features[activeFeatureIndex].imageTitle
+              )}
+            >
+              <img 
+                src={features[activeFeatureIndex].image} 
+                alt={features[activeFeatureIndex].imageAlt} 
+                className="w-full max-w-[370px] md:max-w-[425px] max-h-[530px] rounded-lg object-contain transition-opacity duration-300" 
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -344,9 +288,30 @@ const Index = () => {
               Readers can use Quilltips quickly and easily -- just scan the QR code on your book or search for it on Quilltips! No accounts or sign-up required.
             </p>
           </div>
-          {/* Image right on desktop */}
-          <div className="order-2 md:order-2 flex justify-center md:justify-end">
-            <img src="/lovable-uploads/reader_quilltips.webp" alt="Reader scanning a QR code to tip an author" className="w-full max-w-[240px] md:max-w-[280px] rounded-xl" />
+          {/* Image carousel right on desktop */}
+          <div className="order-2 md:order-2 flex flex-col items-center md:items-end">
+            <img 
+              src={readerImages[activeReaderImageIndex].src} 
+              alt={readerImages[activeReaderImageIndex].alt} 
+              className="w-full max-w-[320px] md:max-w-[375px] rounded-xl transition-opacity duration-300" 
+            />
+            {/* Navigation arrows underneath */}
+            <div className="flex justify-center items-center gap-2 mt-3">
+              <button
+                onClick={() => setActiveReaderImageIndex((prev) => (prev - 1 + readerImages.length) % readerImages.length)}
+                className="h-6 w-6 rounded-full border border-gray-300 bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-200"
+                aria-label="Previous image"
+              >
+                <ArrowLeft className="h-4 w-4 text-[#19363C]" />
+              </button>
+              <button
+                onClick={() => setActiveReaderImageIndex((prev) => (prev + 1) % readerImages.length)}
+                className="h-6 w-6 rounded-full border border-gray-300 bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-200"
+                aria-label="Next image"
+              >
+                <ArrowRight className="h-4 w-4 text-[#19363C]" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -354,15 +319,10 @@ const Index = () => {
 
 
       {/* Pricing (Figma-style) */}
-      <div className="mx-auto w-full max-w-6xl mt-20 px-4">
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
-          {/* Left: Empty spacer to maintain alternating pattern */}
-          <div className="order-1 md:order-1"></div>
-          {/* Right: Pricing text */}
-          <div className="order-2 md:order-2 text-left md:text-right">
-            <h2 className="text-2xl md:text-3xl font-playfair font-semibold text-[#19363C] mb-3">Does this cost money?</h2>
-            <p className="text-base md:text-lg text-[#19363C]/90 leading-relaxed">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started. <RouterLink to="/pricing" className="text-[#19363C] underline hover:no-underline">Read more about pricing</RouterLink>.</p>
-          </div>
+      <div className="mx-auto w-full max-w-4xl mt-20 px-4">
+        <div className="text-center">
+          <h2 className="text-3xl md:text-4xl font-playfair font-semibold text-[#19363C] mb-3">Does this cost money?</h2>
+          <p className="text-base md:text-lg text-[#19363C]/90 leading-relaxed max-w-2xl mx-auto">Sign up and publish your author profile for free. Pay a one-time $35 price for each QR code you create. No hidden charges or subscriptions. No credit card required to get started. <RouterLink to="/pricing" className="text-[#19363C] underline hover:no-underline">Read more about pricing</RouterLink>.</p>
         </div>
       </div>
 
