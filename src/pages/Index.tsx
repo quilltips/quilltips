@@ -145,7 +145,7 @@ const Index = () => {
               A homepage for your book
             </h1>
            
-            <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium">Share bonus content, get tips & messages, and connect with readers. All via your Quilltips QR code.</p>
+            <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium max-w-3xl mx-auto">Engage readers with bonus content, get tips & messages, and build your email list. All via your Quilltips QR code.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6 lg:pt-8">
