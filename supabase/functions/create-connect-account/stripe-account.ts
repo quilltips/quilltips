@@ -1,5 +1,5 @@
 
-import { Stripe } from "npm:stripe@14.21.0";
+import { Stripe } from "stripe";
 
 export interface StripeAccountResponse {
   accountId: string;

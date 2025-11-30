@@ -69,43 +69,47 @@ export const TipLikeButton = ({
           console.log('Like notification response:', notificationResponse);
 
           // Handle different notification outcomes
+          const contentType = tipAmount === 0 ? 'message' : 'tip';
+          
           if (notificationResponse?.success) {
             if (notificationResponse.skipped) {
               toast({
                 title: "Like successful",
-                description: "You've successfully liked this tip.",
+                description: `You've successfully liked this ${contentType}.`,
               });
             } else if (notificationResponse.sent) {
               toast({
                 title: "Like successful",
-                description: "You've liked this tip and the reader has been notified.",
+                description: `You've liked this ${contentType} and the reader has been notified.`,
               });
             } else {
               toast({
                 title: "Like successful",
-                description: "You've successfully liked this tip.",
+                description: `You've successfully liked this ${contentType}.`,
               });
             }
           } else {
             // Notification failed but like was successful
             toast({
               title: "Like successful",
-              description: "You've liked this tip, but we couldn't notify the reader.",
+              description: `You've liked this ${contentType}, but we couldn't notify the reader.`,
             });
           }
         } catch (notifyError) {
           console.error('Failed to send reader notification:', notifyError);
           // Like successful, but notification failed
+          const contentType = tipAmount === 0 ? 'message' : 'tip';
           toast({
             title: "Like successful",
-            description: "You've liked this tip, but we couldn't notify the reader.",
+            description: `You've liked this ${contentType}, but we couldn't notify the reader.`,
           });
         }
       } else {
         // No reader email available
+        const contentType = tipAmount === 0 ? 'message' : 'tip';
         toast({
           title: "Like successful",
-          description: "You've successfully liked this tip.",
+          description: `You've successfully liked this ${contentType}.`,
         });
       }
     } catch (error: any) {
