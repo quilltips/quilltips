@@ -223,27 +223,33 @@ function generateEmailContent(type, data, token) {
         ctaUrl: `https://quilltips.co/${data.authorSlug || 'authors'}`
       };
     case 'tip_liked':
+      const isMessage = data.amount === 0;
+      const contentType = isMessage ? 'message' : 'tip';
+      
       return {
-        subject: `${data.authorName} liked your tip!`,
-        header: "Your tip was liked! 💛",
-        mainMessage: `${data.authorName} has liked your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
+        subject: `${data.authorName} liked your ${contentType}!`,
+        header: `Your ${contentType} was liked! 💛`,
+        mainMessage: `${data.authorName} has liked your ${contentType}${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
         additionalContent: data.message ? `
           <div style="margin: 20px 0; padding: 20px; background-color: #f9f9f9; border-left: 4px solid #FFD166; border-radius: 8px;">
             <p style="font-style: italic; margin: 0; font-size: 16px; color: #4A5568;">"${data.message}"</p>
-            <p style="font-size: 14px; color: #6B7280; margin: 12px 0 0 0; font-weight: 500;">Your tip: $${data.amount}</p>
+            ${!isMessage ? `<p style="font-size: 14px; color: #6B7280; margin: 12px 0 0 0; font-weight: 500;">Your tip: $${data.amount}</p>` : ''}
           </div>
         ` : ''
       };
     case 'tip_commented':
+      const isCommentMessage = data.amount === 0;
+      const commentContentType = isCommentMessage ? 'message' : 'tip';
+      
       return {
-        subject: `${data.authorName} commented on your tip!`,
-        header: "New comment on your tip! 💬",
-        mainMessage: `${data.authorName} has commented on your tip${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
+        subject: `${data.authorName} commented on your ${commentContentType}!`,
+        header: `New comment on your ${commentContentType}! 💬`,
+        mainMessage: `${data.authorName} has commented on your ${commentContentType}${data.bookTitle ? ` for "${data.bookTitle}"` : ""}!`,
         additionalContent: `
           ${data.message ? `
             <div style="margin: 20px 0; padding: 20px; background-color: #f9f9f9; border-left: 4px solid #FFD166; border-radius: 8px;">
               <p style="font-style: italic; margin: 0; font-size: 16px; color: #4A5568;">"${data.message}"</p>
-              <p style="font-size: 14px; color: #6B7280; margin: 12px 0 0 0; font-weight: 500;">Your tip: $${data.amount}</p>
+              ${!isCommentMessage ? `<p style="font-size: 14px; color: #6B7280; margin: 12px 0 0 0; font-weight: 500;">Your tip: $${data.amount}</p>` : ''}
             </div>
           ` : ''}
           <div style="margin: 20px 0; padding: 20px; background-color: #f0f9ff; border-left: 4px solid #19363C; border-radius: 8px;">
