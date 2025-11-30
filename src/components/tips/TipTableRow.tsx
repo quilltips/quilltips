@@ -77,19 +77,32 @@ export const TipTableRow = ({
           <div className="space-y-1">
             <p className="text-md">
               <span className="">{firstName}</span>
-              {" sent "}
-              <span className="">${tip.amount}</span>
-              {tip.book_title && (
-                <> for <span className="italic font-bold">{tip.book_title}</span></>
+              {tip.amount && tip.amount > 0 ? (
+                <>
+                  {" sent "}
+                  <span className="">${tip.amount}</span>
+                  {tip.book_title && (
+                    <> for <span className="italic font-bold">{tip.book_title}</span></>
+                  )}
+                </>
+              ) : (
+                <>
+                  {" sent a message"}
+                  {tip.book_title && (
+                    <> for <span className="italic font-bold">{tip.book_title}</span></>
+                  )}
+                </>
               )}
             </p>
             
             <TipMessagePreview message={tip.message} />
             
-           
+            <p className="text-sm font-medium text-gray-500">
+              {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
+            </p>
             
           </div>
-          <div className="flex justify-between items-center ">
+          <div className="flex justify-start items-center">
           {user && (
             <div onClick={(e) => e.stopPropagation()} className="mt-1">
               <TipInteractionButtons
@@ -107,9 +120,6 @@ export const TipTableRow = ({
               />
             </div>
           )}
-           <p className="text-sm font-medium ">
-              {formatDistanceToNow(new Date(tip.created_at), { addSuffix: true })}
-            </p>
             </div>
 
         </div>

@@ -10,9 +10,21 @@ import { ImageModal } from "@/components/ui/image-modal";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { Meta } from "@/components/Meta";
 import { Helmet } from "react-helmet-async";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { FeaturedAuthorsCarousel } from "@/components/FeaturedAuthorsCarousel";
 import backCoverExample from "@/assets/back_cover_example.png";
+
+const FEATURED_AUTHOR_IDS = [
+  "485c1a1f-5bf0-4c0d-b51c-c97af069fabd", // Gabriel Nardi-Huffman
+  "2964531d-4ba6-4b61-8716-8c63a80f3cae", // Tyler Tarter
+  "55056f35-3a44-4d79-8558-69e003be17b0", // Kelly Schweiger
+  "51c62b82-f4ed-42d2-83e5-8d73d77482a4", // T.M. Thomas
+  "e14f7979-c1ca-4a91-9eb7-df4098759bac", // Frank Eugene Dukes Jr
+  "3f6b03df-9231-451c-ac2e-491fe9be584c", // Melize Smit
+  "757201a7-8ca4-4801-8bdb-ad62c168146a", // Kitty Laroux
+];
 const Index = () => {
   const {
     user
@@ -21,6 +33,7 @@ const Index = () => {
     toast
   } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [expandedImage, setExpandedImage] = useState<{
     src: string;
     alt: string;
@@ -28,6 +41,27 @@ const Index = () => {
   } | null>(null);
   const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
   const [activeReaderImageIndex, setActiveReaderImageIndex] = useState(0);
+
+  // Prefetch featured authors data to prevent loading lag
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["featured-authors"],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("public_profiles")
+          .select("id, name, avatar_url, slug, created_at")
+          .in("id", FEATURED_AUTHOR_IDS);
+
+        if (error) throw error;
+        
+        // Sort by the order in FEATURED_AUTHOR_IDS
+        return (data || []).sort((a, b) => 
+          FEATURED_AUTHOR_IDS.indexOf(a.id) - FEATURED_AUTHOR_IDS.indexOf(b.id)
+        );
+      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+  }, [queryClient]);
   
   const readerImages = [
     {
@@ -112,7 +146,7 @@ const Index = () => {
     title: "Author Dashboard"
   }];
   return <>
-    <Meta title="Quilltips – Engage readers with QR codes on your books" description="Quilltips lets readers support authors by scanning a QR code on their book and sending a tip with a personal message." url="https://quilltips.co" image="https://quilltips.co/og-image.png" jsonLd={[{
+    <Meta title="Quilltips – Engage readers with QR codes on your books" description="Quilltips helps authors engage their readers through QR codes on their books." url="https://quilltips.co" image="https://quilltips.co/og-image.png" jsonLd={[{
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Quilltips",

@@ -102,32 +102,28 @@ const PublicProfilePage = () => {
     );
   }
 
+  const canonicalUrl = getCanonicalUrl('author', author);
+  const authorDescription = author.bio 
+    ? (author.bio.length > 160 ? author.bio.substring(0, 157) + '...' : author.bio)
+    : `Support ${author.name} by tipping them for their work on Quilltips.`;
+
   return (
     <>
       <Meta
         title={`${author.name} – Author on Quilltips`}
-        description={`Support ${author.name} by tipping them for their work.`}
-        url={getCanonicalUrl('author', author)}
+        description={authorDescription}
+        url={canonicalUrl}
+        canonical={canonicalUrl}
+        image={author.avatar_url || 'https://quilltips.co/og-image.png'}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Person",
           name: author.name,
-          url: getCanonicalUrl('author', author),
-          description: author.bio || "Author on Quilltips"
+          url: canonicalUrl,
+          description: authorDescription,
+          image: author.avatar_url || undefined
         }}
-
-
       />
-
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Person",
-          name: author.name,
-          url: getCanonicalUrl('author', author),
-          description: author.bio || "Author on Quilltips"
-        })}
-      </script>
 
 
 

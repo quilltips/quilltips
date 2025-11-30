@@ -15,6 +15,13 @@ interface Author {
   updated_at: string;
 }
 
+interface Book {
+  id: string;
+  slug: string | null;
+  updated_at: string;
+  is_paid: boolean;
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -46,6 +53,17 @@ Deno.serve(async (req) => {
 
     if (authorsError) {
       console.error('Error fetching authors:', authorsError);
+    }
+
+    // Fetch all published books/QR codes (only paid ones that are public)
+    const { data: books, error: booksError } = await supabase
+      .from('qr_codes')
+      .select('id, slug, updated_at, is_paid')
+      .eq('is_paid', true)
+      .order('updated_at', { ascending: false });
+
+    if (booksError) {
+      console.error('Error fetching books:', booksError);
     }
 
     // Static pages with priority and change frequency
@@ -101,10 +119,27 @@ Deno.serve(async (req) => {
         const lastmod = new Date(author.updated_at).toISOString().split('T')[0];
         xml += `
   <url>
-    <loc>https://quilltips.co/${author.slug}</loc>
+    <loc>https://quilltips.co/author/${author.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>`;
+      });
+    }
+
+    // Add book/QR code pages
+    if (books && books.length > 0) {
+      books.forEach((book: Book) => {
+        const lastmod = new Date(book.updated_at).toISOString().split('T')[0];
+        const url = book.slug 
+          ? `https://quilltips.co/book/${book.slug}`
+          : `https://quilltips.co/qr/${book.id}`;
+        xml += `
+  <url>
+    <loc>${url}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>`;
       });
     }

@@ -11,7 +11,7 @@ import { QRCodeTipForm } from "@/components/qr/QRCodeTipForm";
 import { MessageForm } from "@/components/MessageForm";
 import { Link } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
-import { getAuthorUrl } from "@/lib/url-utils";
+import { getAuthorUrl, getCanonicalUrl, getBookUrl } from "@/lib/url-utils";
 import { VideoThumbnailWithModal } from "@/components/book/VideoThumbnailWithModal";
 import { CollapsibleBookDescription } from "@/components/book/CollapsibleBookDescription";
 import { CharacterArtCarousel } from "@/components/book/CharacterArtCarousel";
@@ -19,6 +19,7 @@ import { BookRecommendationsCarousel } from "@/components/book/BookRecommendatio
 import { AuthorOtherBooksCarousel } from "@/components/book/AuthorOtherBooksCarousel";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
+import { Meta } from "@/components/Meta";
 
 const QRCodeDetails = () => {
   const {
@@ -59,7 +60,40 @@ const QRCodeDetails = () => {
     return <QRCodeNotFound />;
   }
 
+  const canonicalUrl = getCanonicalUrl('book', qrCode);
+  const bookDescription = qrCode.book_description 
+    ? (qrCode.book_description.length > 160 ? qrCode.book_description.substring(0, 157) + '...' : qrCode.book_description)
+    : `Support ${qrCode.author?.name || 'the author'} by tipping them for ${qrCode.book_title} on Quilltips.`;
+  const ogImage = qrCode.cover_image || 'https://quilltips.co/og-image.png';
+
   return (
+    <>
+      <Meta
+        title={`${qrCode.book_title} by ${qrCode.author?.name || 'Unknown Author'} – Quilltips`}
+        description={bookDescription}
+        url={canonicalUrl}
+        canonical={canonicalUrl}
+        image={ogImage}
+        type="website"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Book",
+          "name": qrCode.book_title,
+          "author": {
+            "@type": "Person",
+            "name": qrCode.author?.name || "Unknown Author",
+            "url": qrCode.author ? getCanonicalUrl('author', qrCode.author) : undefined
+          },
+          "url": canonicalUrl,
+          "image": qrCode.cover_image,
+          "publisher": qrCode.publisher ? {
+            "@type": "Organization",
+            "name": qrCode.publisher
+          } : undefined,
+          "datePublished": qrCode.release_date || undefined,
+          "description": bookDescription
+        }}
+      />
       <main className="container mx-auto px-4 pt-8 pb-12">
         <div className="max-w-md mx-auto space-y-10 sm:space-y-12">
           {/* Book details card with horizontal layout */}
@@ -264,6 +298,7 @@ const QRCodeDetails = () => {
           bookTitle={qrCode.book_title}
         />
       </main>
+    </>
   );
 };
 

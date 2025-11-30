@@ -3,9 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from '@/components/ui/dialog';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from './auth/AuthProvider';
@@ -163,13 +160,6 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-md mx-auto max-h-[90vh] sm:max-h-[85vh] flex flex-col">
-        <DialogHeader className="flex-shrink-0 pb-4">
-          <DialogTitle className="text-lg font-playfair">Tip Details</DialogTitle>
-          <DialogDescription>
-            View tip details and add comments to connect with your reader.
-          </DialogDescription>
-        </DialogHeader>
-
         <ScrollArea ref={scrollAreaRef} className="flex-1 -mx-6 px-6">
           <div className="space-y-6">
             {/* Tip content that matches TipTableRow */}
@@ -180,10 +170,21 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                 <div className="space-y-1">
                   <p className="text-md">
                     <span className="">{firstName}</span>
-                    {" sent "}
-                    <span className="">${tip.amount}</span>
-                    {tip.book_title && (
-                      <> for <span className="italic">{tip.book_title}</span></>
+                    {tip.amount && tip.amount > 0 ? (
+                      <>
+                        {" sent "}
+                        <span className="">${tip.amount}</span>
+                        {tip.book_title && (
+                          <> for <span className="italic">{tip.book_title}</span></>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {" sent a message"}
+                        {tip.book_title && (
+                          <> for <span className="italic">{tip.book_title}</span></>
+                        )}
+                      </>
                     )}
                   </p>
                   
@@ -197,7 +198,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
               </div>
             </div>
 
-            <div className="border-b border-gray-200"></div>
+            <div className="border-b border-gray-100"></div>
 
             {/* Comments section */}
             <div className="space-y-4">
@@ -207,7 +208,7 @@ export const TipDetailsDialog = ({ isOpen, onClose, tip }: TipDetailsDialogProps
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Write a comment..."
-                    className="w-full text-sm min-h-[80px] resize-none"
+                    className="w-full text-sm min-h-[80px] resize-none border-gray-200 focus-visible:border-gray-300 focus-visible:ring-1 focus-visible:ring-gray-200"
                   />
                   <Button 
                     onClick={handleSubmitComment}

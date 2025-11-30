@@ -136,35 +136,39 @@ const HowItWorks = () => {
               <div className="flex items-center gap-4 mb-6">
                
                 <h2 className="text-3xl md:text-4xl font-playfair font-medium text-[#19363C]">
-                  Receive tips and messages, build your email list, and link readers to your website and socials
+                  Engage with your readers 
                 </h2>
               </div>
               <p className="text-lg text-[#19363C]/80 leading-relaxed">
-                Readers scan your QR code to leave tips and messages about your book. Use your Quilltips profile to link to your website and social media, growing your audience with every interaction.
+                Readers scan your QR code to learn more about your book and to leave tips and messages. Use your Quilltips profile to link to your website and socials, growing your audience with every interaction.
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-[#FFD166] rounded-full"></div>
-                  <span className="text-[#19363C]">Tips from readers to support your work</span>
+                  <span className="text-[#19363C]">Share a video with your readers</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-[#FFD166] rounded-full"></div>
-                  <span className="text-[#19363C]">Direct messages and feedback from real readers</span>
+                  <span className="text-[#19363C]">Like and reply to messages from your fans and allow them to thank you with tips</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-[#FFD166] rounded-full"></div>
-                  <span className="text-[#19363C]">Email list growth</span>
+                  <span className="text-[#19363C]">Grow your email list with reader signups</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-[#FFD166] rounded-full"></div>
-                  <span className="text-[#19363C]">Social media and website traffic</span>
+                  <span className="text-[#19363C]">Link back to your website and socials</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-[#FFD166] rounded-full"></div>
+                  <span className="text-[#19363C]">...and more!</span>
                 </div>
               </div>
             </div>
             <div className="md:order-1 flex justify-center">
               <div className="w-full max-w-md">
                 <img 
-                  src="/lovable-uploads/screenshots/public_profile_screenshot.webp"
+                  src="/lovable-uploads/screenshots/book-page-1.webp"
                   alt="Dashboard showing tips and messages from readers"
                   className="w-full rounded-2xl border border-[#333333]/30"
                 />
