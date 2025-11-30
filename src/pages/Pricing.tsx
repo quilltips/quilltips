@@ -19,8 +19,8 @@ const Pricing = () => {
               <p className=" mb-2">One-time fee includes:</p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>Custom QR code generation</li>
-                <li>Author profile setup</li>
-                <li>Unlimited tip collection</li>
+                <li>Bonus content for your readers</li>
+                <li>Unlimited scans, built-in messaging and tipping functionality</li>
                 <li>Analytics dashboard</li>
               </ul>
             </div>

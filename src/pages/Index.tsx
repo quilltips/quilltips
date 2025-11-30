@@ -247,7 +247,7 @@ const Index = () => {
           }, {
             icon: <DollarSign className="w-8 h-8 text-[#19363C]" />,
             title: "Earn more from your work",
-            text: "Give readers an easy way to support you directly, even with used books and library copies."
+            text: "Give readers an easy way to support you directly through voluntary tips."
           }, {
             icon: <LinkIcon className="w-8 h-8 text-[#19363C]" />,
             title: "Grow your platform",

@@ -373,7 +373,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             >
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" />
-                <span className="text-base font-semibold">Book Enhancements (Optional)</span>
+                <span className="text-base font-semibold">Bonus Content (Optional)</span>
               </div>
               <ChevronDown
                 className={cn(

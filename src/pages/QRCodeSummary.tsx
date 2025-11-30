@@ -233,19 +233,19 @@ const QRCodeSummary = () => {
                     <ul className="space-y-2 text-[#333333]">
                       <li className="flex items-start">
                         <span className="text-[#FFD166] mr-2">✓</span>
-                        <span>Custom QR code for "{qrCode.book_title}"</span>
+                        <span>Custom QR code for "{qrCode.book_title}," downloadable in multiple formats (PNG, SVG)</span>
                       </li>
                       <li className="flex items-start">
                         <span className="text-[#FFD166] mr-2">✓</span>
-                        <span>Unlimited scans and tips from readers</span>
+                        <span>Built-in messaging and tipping functionality</span>
                       </li>
                       <li className="flex items-start">
                         <span className="text-[#FFD166] mr-2">✓</span>
-                        <span>Downloadable in multiple formats (PNG, SVG)</span>
+                        <span>Bonus content for your readers</span>
                       </li>
                       <li className="flex items-start">
                         <span className="text-[#FFD166] mr-2">✓</span>
-                        <span>Reader analytics and message history</span>
+                        <span>Data dashboard and analytics</span>
                       </li>
                     </ul>
                   </div>
