@@ -121,7 +121,7 @@ export const AccountCredentials = () => {
   };
 
   return (
-    <div className="space-y-6 border rounded-md p-6 bg-white">
+    <div className="space-y-6">
       <h2 className="text-xl font-medium">Account Settings</h2>
       
       {error && (
@@ -215,7 +215,6 @@ export const AccountCredentials = () => {
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Enter current password"
               required
             />
           </div>
@@ -227,7 +226,6 @@ export const AccountCredentials = () => {
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Enter new password"
               required
             />
           </div>
@@ -239,27 +237,27 @@ export const AccountCredentials = () => {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm new password"
               required
             />
           </div>
           
           <div className="flex flex-col md:flex-row gap-4 pt-2">
             <Button 
+              type="submit" 
+              variant="default"
+              disabled={isLoading || !currentPassword || !newPassword || !confirmPassword} 
+              className="px-8 py-2 h-auto rounded-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166] hover:shadow-md"
+            >
+              {isLoading ? "Updating..." : "Update Password"}
+            </Button>
+            <Button 
               type="button" 
               variant="outline" 
               onClick={cancelPasswordChange}
-              className="px-8 py-2 h-auto rounded-full"
+              className="px-8 py-2 h-auto rounded-full hover:bg-transparent hover:shadow-md"
               disabled={isLoading}
             >
               Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={isLoading || !currentPassword || !newPassword || !confirmPassword} 
-              className="px-8 py-2 h-auto rounded-full bg-secondary text-primary hover:bg-secondary/90 font-medium"
-            >
-              {isLoading ? "Updating..." : "Update Password"}
             </Button>
           </div>
         </form>

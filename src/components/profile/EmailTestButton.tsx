@@ -86,7 +86,7 @@ export const EmailTestButton = ({ profileId }: EmailTestButtonProps) => {
           variant="outline"
           onClick={handleSendTestEmail}
           disabled={isSending}
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto hover:shadow-md hover:bg-transparent"
         >
           {isSending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -101,7 +101,7 @@ export const EmailTestButton = ({ profileId }: EmailTestButtonProps) => {
           variant="outline"
           onClick={handleSendAccountCreatedEmail}
           disabled={isCreatedSending}
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto hover:bg-transparent hover:shadow-md"
         >
           {isCreatedSending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

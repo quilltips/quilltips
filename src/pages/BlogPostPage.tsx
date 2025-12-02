@@ -413,11 +413,12 @@ export default function BlogPostPage() {
 
             {/* Featured Image */}
             {post.featured_image_url && (
-              <div className="mb-12">
+              <div className="mb-12 flex justify-center">
                 <img
                   src={post.featured_image_url}
                   alt={post.title}
-                  className="w-full h-auto rounded-2xl shadow-xl"
+                  className="max-w-full max-h-[600px] rounded-2xl shadow-xl"
+                  style={{ width: 'auto', height: 'auto' }}
                 />
               </div>
             )}
