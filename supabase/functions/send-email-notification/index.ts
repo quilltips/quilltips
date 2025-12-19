@@ -2,7 +2,7 @@
 console.log("send-email edge function is open!");
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@2.0.0";
+import { Resend } from "resend";
 import { generateEmailHtml } from "./quilltips-email-template.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
