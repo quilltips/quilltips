@@ -50,7 +50,48 @@ export const EnhancementsManager = ({
   const [characters, setCharacters] = useState<Character[]>(initialData?.character_images || []);
   const [recs, setRecs] = useState<Recommendation[]>(recommendations);
   const [isSaving, setIsSaving] = useState(false);
+  const [isVideoSaving, setIsVideoSaving] = useState(false);
   const recommendationsRef = useRef<Recommendation[]>(recommendations);
+
+  // Auto-save video URL to database
+  const saveVideoUrl = async (url: string | null) => {
+    setIsVideoSaving(true);
+    try {
+      const { error } = await supabase
+        .from('qr_codes')
+        .update({ thank_you_video_url: url })
+        .eq('id', qrCodeId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: url ? "Video saved successfully" : "Video removed successfully",
+      });
+      onUpdate?.();
+    } catch (error) {
+      console.error("Error saving video:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save video",
+        variant: "destructive",
+      });
+    } finally {
+      setIsVideoSaving(false);
+    }
+  };
+
+  // Handle video upload success - auto-save
+  const handleVideoUploadSuccess = (url: string) => {
+    setVideoUrl(url);
+    saveVideoUrl(url);
+  };
+
+  // Handle video removal - auto-save
+  const handleVideoRemove = () => {
+    setVideoUrl("");
+    saveVideoUrl(null);
+  };
   
   // Sync recommendations when prop changes (e.g., after query refresh)
   // But preserve locally added items (those without IDs) that haven't been saved yet
@@ -291,21 +332,35 @@ export const EnhancementsManager = ({
                   </TooltipProvider>
                 </div>
                 <VideoUpload
-                  onUploadSuccess={(url) => setVideoUrl(url)}
+                  onUploadSuccess={handleVideoUploadSuccess}
                   currentVideoUrl={videoUrl}
-                  onRemove={() => setVideoUrl("")}
+                  onRemove={handleVideoRemove}
                 />
+                {isVideoSaving && (
+                  <p className="text-xs" style={{ color: '#ffd166' }}>Saving...</p>
+                )}
               </div>
             </TabsContent>
             <TabsContent value="url" className="space-y-4 pt-2">
-              <div>
+              <div className="space-y-2">
                 <Label style={{ color: '#333333' }}>Video URL</Label>
-                <Input
-                  placeholder="https://..."
-                  value={videoUrl}
-                  onChange={(e) => setVideoUrl(e.target.value)}
-                  className="bg-white text-[#19363c]"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="https://..."
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                    className="bg-white text-[#19363c] flex-1"
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => saveVideoUrl(videoUrl || null)}
+                    disabled={isVideoSaving}
+                    style={{ backgroundColor: '#ffd166', color: '#19363c' }}
+                    className="hover:opacity-90"
+                  >
+                    {isVideoSaving ? 'Saving...' : 'Save'}
+                  </Button>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
