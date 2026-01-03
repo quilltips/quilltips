@@ -82,7 +82,7 @@ serve(async (req) => {
         <p style="margin: 0; white-space: pre-wrap;">${message}</p>
       </div>
       
-      <p style="margin-top: 30px; color: #666;">If the author replies, they will respond directly to your email address.</p>
+      <p style="margin-top: 30px; color: #666;">You will receive a notification if the author replies!</p>
     `;
 
     const readerEmailHtml = generateEmailHtml({
