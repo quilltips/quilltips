@@ -44,7 +44,7 @@ export const MessageForm = ({
 
     try {
       // Call edge function to send message notification and store in database
-      const { error: emailError } = await supabase.functions.invoke('send-message-to-author', {
+      const { data, error: emailError } = await supabase.functions.invoke('send-message-to-author', {
         body: {
           authorId,
           authorName,
@@ -57,6 +57,7 @@ export const MessageForm = ({
       });
 
       if (emailError) throw emailError;
+      if (data?.error) throw new Error(data.error);
 
       toast.success("Your message has been sent to the author!");
       setName("");

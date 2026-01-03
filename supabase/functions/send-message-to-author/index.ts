@@ -43,6 +43,7 @@ serve(async (req) => {
     const displayName = readerName || 'A reader';
     const bookInfo = bookTitle ? ` about "${bookTitle}"` : '';
 
+    // Send email to author
     const messageContent = `
       <p style="margin-bottom: 20px;"><strong>${displayName}</strong> sent you a message${bookInfo}:</p>
       
@@ -72,6 +73,34 @@ serve(async (req) => {
     });
 
     console.log(`✅ Email sent successfully to ${authorData.email}`);
+
+    // Send confirmation email to reader
+    const readerConfirmationContent = `
+      <p style="margin-bottom: 20px;">Your message has been delivered to <strong>${authorData.name || 'the author'}</strong>${bookInfo}.</p>
+      
+      <div style="background-color: #f9f9f9; border-left: 4px solid #FFD166; padding: 20px; margin: 20px 0; border-radius: 4px;">
+        <p style="margin: 0; white-space: pre-wrap;">${message}</p>
+      </div>
+      
+      <p style="margin-top: 30px; color: #666;">If the author replies, they will respond directly to your email address.</p>
+    `;
+
+    const readerEmailHtml = generateEmailHtml({
+      header: "Message Sent!",
+      message: `Hi ${displayName},`,
+      additionalContent: readerConfirmationContent,
+      cta: "Explore Quilltips",
+      ctaUrl: "https://quilltips.co"
+    });
+
+    await resend.emails.send({
+      from: "Quilltips <notifications@quilltips.co>",
+      to: readerEmail,
+      subject: `Your message to ${authorData.name || 'the author'} was sent!`,
+      html: readerEmailHtml
+    });
+
+    console.log(`✅ Confirmation email sent to reader ${readerEmail}`);
 
     // Store message in tips table (amount = 0, always private)
     const { error: dbError } = await supabase

@@ -93,7 +93,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
     return (
       <div className="text-center py-8">
         <p className="text-muted-foreground">
-          No tips yet. Be the first to leave a tip!
+          Nothing here yet... be the first to engage!
         </p>
       </div>
     );
