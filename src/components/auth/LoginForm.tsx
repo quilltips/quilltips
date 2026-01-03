@@ -18,7 +18,7 @@ export const LoginForm = ({ isLoading, error, onSubmit, onResetClick }: LoginFor
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold text-[#2D3748]">Author Login</h2>
         <p className="">
-          Welcome back! Sign in to manage your profile and tips
+          Welcome back! Sign in to manage your profile.
         </p>
       </div>
 

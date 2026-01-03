@@ -485,7 +485,7 @@ export const EnhancementsManager = ({
       </Card>
 
       <Button onClick={saveEnhancements} disabled={isSaving} className="w-full bg-[#ffd166] text-[#333333] mt-4 md:mt-0">
-        {isSaving ? "Saving..." : "Save All Enhancements"}
+        {isSaving ? "Saving..." : "Save All Bonus Content"}
       </Button>
     </div>
   );

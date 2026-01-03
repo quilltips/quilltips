@@ -405,7 +405,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         {/* Enhancements Section */}
         <Card className="p-4 md:p-5 pt-6">
           <div className="space-y-6 md:space-y-6">
-            <h3 className="text-xl font-semibold mb-4 md:mb-0">Book Enhancements</h3>
+            <h3 className="text-xl font-semibold mb-4 md:mb-0">Bonus Content</h3>
             <EnhancementsManager
               qrCodeId={qrCode.id}
               authorId={qrCode.author_id}

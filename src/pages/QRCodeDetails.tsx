@@ -214,7 +214,7 @@ const QRCodeDetails = () => {
             />
           )}
           
-          {/* Book Enhancements Section - Only show if QR code is paid */}
+          {/* Book Bonus Content Section - Only show if QR code is paid */}
           {!showTipForm && !showMessageForm && qrCode.is_paid && (
             <div className="space-y-16 sm:space-y-20">
               {/* Thank You Video */}
