@@ -71,7 +71,29 @@ serve(async (req) => {
       html: emailHtml
     });
 
-    console.log(`✅ Message sent successfully to ${authorData.email}`);
+    console.log(`✅ Email sent successfully to ${authorData.email}`);
+
+    // Store message in tips table (amount = 0, always private)
+    const { error: dbError } = await supabase
+      .from('tips')
+      .insert({
+        author_id: authorId,
+        qr_code_id: qrCodeId || null,
+        amount: 0,
+        message,
+        reader_name: displayName,
+        reader_email: readerEmail,
+        book_title: bookTitle || null,
+        is_private: true,
+        status: 'complete'
+      });
+
+    if (dbError) {
+      console.error("Error storing message in database:", dbError);
+      // Don't throw - email was sent successfully, just log the DB error
+    } else {
+      console.log(`✅ Message stored in database`);
+    }
 
     return new Response(JSON.stringify({
       success: true,
