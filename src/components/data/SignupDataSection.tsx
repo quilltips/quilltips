@@ -79,7 +79,7 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
     enabled: !!profileSettings?.newsletter_enabled
   });
 
-  // Fetch Book Club invites
+  // Fetch Book Club invites - always fetch to show existing data even if disabled at profile level
   const { data: bookClubSignups, isLoading: bookClubLoading } = useQuery({
     queryKey: ['book-club-signups', authorId],
     queryFn: async () => {
@@ -91,8 +91,7 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
       
       if (error) throw error;
       return data || [];
-    },
-    enabled: !!profileSettings?.book_club_enabled
+    }
   });
 
   const downloadCSV = (data: any[], filename: string, headers: string[]) => {
