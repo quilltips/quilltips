@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -6,8 +5,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Badge } from "@/components/ui/badge";
 import { VideoThumbnailWithModal } from "./VideoThumbnailWithModal";
+import { Heart, Mic, Video } from "lucide-react";
 
 export interface BookVideo {
   url: string;
@@ -19,10 +18,18 @@ interface VideoCarouselProps {
   videos: BookVideo[];
 }
 
-const VIDEO_TYPE_LABELS: Record<BookVideo["type"], string> = {
-  "thank-you": "Thank You",
-  "interview": "Interview",
-  "other": "Video",
+const VideoTypeIcon = ({ type }: { type: BookVideo["type"] }) => {
+  const iconProps = { className: "h-4 w-4 text-muted-foreground" };
+  
+  switch (type) {
+    case "thank-you":
+      return <Heart {...iconProps} />;
+    case "interview":
+      return <Mic {...iconProps} />;
+    case "other":
+    default:
+      return <Video {...iconProps} />;
+  }
 };
 
 export const VideoCarousel = ({ videos }: VideoCarouselProps) => {
@@ -35,13 +42,13 @@ export const VideoCarousel = ({ videos }: VideoCarouselProps) => {
     const video = videos[0];
     return (
       <div className="space-y-2">
-        <Badge variant="secondary" className="mb-2">
-          {VIDEO_TYPE_LABELS[video.type]}
-        </Badge>
         <VideoThumbnailWithModal
           videoUrl={video.url}
           description={video.description}
         />
+        <div className="flex justify-end">
+          <VideoTypeIcon type={video.type} />
+        </div>
       </div>
     );
   }
@@ -52,13 +59,13 @@ export const VideoCarousel = ({ videos }: VideoCarouselProps) => {
         {videos.map((video, index) => (
           <CarouselItem key={index} className="md:basis-1/2">
             <div className="space-y-2">
-              <Badge variant="secondary">
-                {VIDEO_TYPE_LABELS[video.type]}
-              </Badge>
               <VideoThumbnailWithModal
                 videoUrl={video.url}
                 description={video.description}
               />
+              <div className="flex justify-end">
+                <VideoTypeIcon type={video.type} />
+              </div>
             </div>
           </CarouselItem>
         ))}
