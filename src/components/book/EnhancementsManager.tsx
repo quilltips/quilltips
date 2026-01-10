@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
 import { Plus, X, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +36,10 @@ interface EnhancementsManagerProps {
     book_description?: string;
     character_images?: Character[];
     book_videos?: BookVideo[];
+    letter_to_readers?: string;
+    arc_signup_enabled?: boolean;
+    beta_reader_enabled?: boolean;
+    newsletter_enabled?: boolean;
   };
   recommendations?: Recommendation[];
   onUpdate?: () => void;
@@ -67,11 +72,17 @@ export const EnhancementsManager = ({
   
   const [videos, setVideos] = useState<BookVideo[]>(getInitialVideos());
   const [bookDesc, setBookDesc] = useState(initialData?.book_description || "");
+  const [letterToReaders, setLetterToReaders] = useState(initialData?.letter_to_readers || "");
   const [characters, setCharacters] = useState<Character[]>(initialData?.character_images || []);
   const [recs, setRecs] = useState<Recommendation[]>(recommendations);
   const [isSaving, setIsSaving] = useState(false);
   const [isVideoSaving, setIsVideoSaving] = useState(false);
   const recommendationsRef = useRef<Recommendation[]>(recommendations);
+  
+  // Signup form toggles
+  const [arcSignupEnabled, setArcSignupEnabled] = useState(initialData?.arc_signup_enabled || false);
+  const [betaReaderEnabled, setBetaReaderEnabled] = useState(initialData?.beta_reader_enabled || false);
+  const [newsletterEnabled, setNewsletterEnabled] = useState(initialData?.newsletter_enabled || false);
 
   const saveVideos = async (videosToSave: BookVideo[]) => {
     setIsVideoSaving(true);
@@ -182,6 +193,10 @@ export const EnhancementsManager = ({
       });
       
       setBookDesc(initialData.book_description || "");
+      setLetterToReaders(initialData.letter_to_readers || "");
+      setArcSignupEnabled(initialData.arc_signup_enabled || false);
+      setBetaReaderEnabled(initialData.beta_reader_enabled || false);
+      setNewsletterEnabled(initialData.newsletter_enabled || false);
       setCharacters(prevChars => {
         const newChars = initialData.character_images || [];
         const savedUrls = new Set(newChars.map(c => c.url).filter(Boolean));
@@ -208,7 +223,11 @@ export const EnhancementsManager = ({
           book_videos: validVideos.length > 0 ? validVideos as any : null,
           thank_you_video_url: validVideos.length > 0 ? validVideos[0].url : null,
           book_description: bookDesc || null,
+          letter_to_readers: letterToReaders || null,
           character_images: validCharacters.length > 0 ? validCharacters as any : null,
+          arc_signup_enabled: arcSignupEnabled,
+          beta_reader_enabled: betaReaderEnabled,
+          newsletter_enabled: newsletterEnabled,
         })
         .eq('id', qrCodeId);
 
@@ -331,7 +350,7 @@ export const EnhancementsManager = ({
       {/* Video Section */}
       <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
         <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-sm font-medium" style={{ color: '#ffd166' }}>Upload a video for your readers</CardTitle>
+          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Upload a video for your readers</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 px-4 pb-4">
           {videos.map((video, idx) => (
@@ -373,7 +392,7 @@ export const EnhancementsManager = ({
                           <HelpCircle className="h-3 w-3 cursor-help" style={{ color: '#666666' }} />
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[200px]">
-                          <p className="text-xs">MP4, WebM, OGG, MOV (max 150MB)</p>
+                          <p className="text-xs">MP4, WebM, OGG, MOV (max 225MB)</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -422,17 +441,33 @@ export const EnhancementsManager = ({
             </div>
           ))}
           
-          <Button variant="ghost" onClick={addVideo} className="w-full h-8 text-xs border border-dashed" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#ffd166' }}>
+          <Button variant="ghost" onClick={addVideo} className="w-full h-8 text-xs border border-dashed font-medium" style={{ borderColor: '#ffd166', color: '#ffd166' }}>
             <Plus className="mr-1.5 h-3 w-3" />
             Add Video
           </Button>
         </CardContent>
       </Card>
 
+      {/* Letter to Readers */}
+      <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
+        <CardHeader className="pb-2 pt-4 px-4">
+          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Letter to Readers</CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 pb-4">
+          <Textarea
+            placeholder="Write a personal note to your readers..."
+            value={letterToReaders}
+            onChange={(e) => setLetterToReaders(e.target.value)}
+            className="text-sm bg-white border-gray-200 min-h-[100px]"
+            style={{ color: '#333333' }}
+          />
+        </CardContent>
+      </Card>
+
       {/* Book Description */}
       <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
         <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-sm font-medium" style={{ color: '#ffd166' }}>Book Description</CardTitle>
+          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Book Description</CardTitle>
         </CardHeader>
         <CardContent className="px-4 pb-4">
           <Textarea
@@ -448,7 +483,7 @@ export const EnhancementsManager = ({
       {/* Character Art */}
       <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
         <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-sm font-medium" style={{ color: '#ffd166' }}>Character or Book Art</CardTitle>
+          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Character or Book Art</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 px-4 pb-4">
           {characters.map((char, idx) => (
@@ -490,17 +525,56 @@ export const EnhancementsManager = ({
               />
             </div>
           ))}
-          <Button variant="ghost" onClick={addCharacter} className="w-full h-8 text-xs border border-dashed" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#ffd166' }}>
+          <Button variant="ghost" onClick={addCharacter} className="w-full h-8 text-xs border border-dashed font-medium" style={{ borderColor: '#ffd166', color: '#ffd166' }}>
             <Plus className="mr-1.5 h-3 w-3" />
             Add Art
           </Button>
         </CardContent>
       </Card>
 
+      {/* Signup Forms */}
+      <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
+        <CardHeader className="pb-2 pt-4 px-4">
+          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Reader Signup Forms</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 px-4 pb-4">
+          <div className="p-3 rounded-md space-y-3" style={{ backgroundColor: '#f8f6f2' }}>
+            <p className="text-xs" style={{ color: '#666666' }}>Enable signup forms on this book page. Signups will appear in your author dashboard.</p>
+            
+            <div className="flex items-center justify-between">
+              <Label htmlFor="arc-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>ARC Reader Signup</Label>
+              <Switch
+                id="arc-signup"
+                checked={arcSignupEnabled}
+                onCheckedChange={setArcSignupEnabled}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <Label htmlFor="beta-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Beta Reader Signup</Label>
+              <Switch
+                id="beta-signup"
+                checked={betaReaderEnabled}
+                onCheckedChange={setBetaReaderEnabled}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <Label htmlFor="newsletter-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Newsletter Signup</Label>
+              <Switch
+                id="newsletter-signup"
+                checked={newsletterEnabled}
+                onCheckedChange={setNewsletterEnabled}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Recommendations */}
       <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
         <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-sm font-medium" style={{ color: '#ffd166' }}>Book Recommendations</CardTitle>
+          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Book Recommendations</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 px-4 pb-4">
           {recs.map((rec, idx) => (
@@ -536,7 +610,7 @@ export const EnhancementsManager = ({
               </Button>
             </div>
           ))}
-          <Button variant="ghost" onClick={addRecommendation} className="w-full h-8 text-xs border border-dashed" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#ffd166' }}>
+          <Button variant="ghost" onClick={addRecommendation} className="w-full h-8 text-xs border border-dashed font-medium" style={{ borderColor: '#ffd166', color: '#ffd166' }}>
             <Plus className="mr-1.5 h-3 w-3" />
             Add Recommendation
           </Button>
