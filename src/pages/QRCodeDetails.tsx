@@ -1,5 +1,4 @@
 
-import { Layout } from "@/components/Layout";
 import { QRCodePublisherInvite } from "@/components/qr/QRCodePublisherInvite";
 import { PublicTipHistory } from "@/components/tips/PublicTipHistory";
 import { QRCodeLoading } from "@/components/qr/QRCodeLoading";
@@ -11,7 +10,8 @@ import { QRCodeTipForm } from "@/components/qr/QRCodeTipForm";
 import { MessageForm } from "@/components/MessageForm";
 import { Link } from "react-router-dom";
 import { OptimizedImage } from "@/components/ui/optimized-image";
-import { getAuthorUrl, getCanonicalUrl, getBookUrl } from "@/lib/url-utils";
+import { getAuthorUrl, getCanonicalUrl } from "@/lib/url-utils";
+import { VideoCarousel, BookVideo } from "@/components/book/VideoCarousel";
 import { VideoThumbnailWithModal } from "@/components/book/VideoThumbnailWithModal";
 import { CollapsibleBookDescription } from "@/components/book/CollapsibleBookDescription";
 import { CharacterArtCarousel } from "@/components/book/CharacterArtCarousel";
@@ -217,18 +217,42 @@ const QRCodeDetails = () => {
           {/* Book Bonus Content Section - Only show if QR code is paid */}
           {!showTipForm && !showMessageForm && qrCode.is_paid && (
             <div className="space-y-16 sm:space-y-20">
-              {/* Thank You Video */}
-              {(qrCode.thank_you_video_url || qrCode.video_title) && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-playfair text-foreground">A Message from the Author</h3>
-                  <VideoThumbnailWithModal
-                    videoUrl={qrCode.thank_you_video_url || qrCode.video_title || ''}
-                    thumbnailUrl={qrCode.thank_you_video_thumbnail || undefined}
-                    title={qrCode.video_title && !qrCode.thank_you_video_url ? undefined : qrCode.video_title || undefined}
-                    description={qrCode.video_description || undefined}
-                  />
-                </div>
-              )}
+              {/* Videos Section */}
+              {(() => {
+                // Check for new multi-video system first
+                const bookVideos = qrCode.book_videos as BookVideo[] | null;
+                const hasMultipleVideos = bookVideos && Array.isArray(bookVideos) && bookVideos.length > 0;
+                
+                // Fallback to legacy single video
+                const hasLegacyVideo = !hasMultipleVideos && (qrCode.thank_you_video_url || qrCode.video_title);
+                
+                if (hasMultipleVideos) {
+                  return (
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-playfair text-foreground">
+                        {bookVideos.length === 1 ? "A Message from the Author" : "Videos"}
+                      </h3>
+                      <VideoCarousel videos={bookVideos} />
+                    </div>
+                  );
+                }
+                
+                if (hasLegacyVideo) {
+                  return (
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-playfair text-foreground">A Message from the Author</h3>
+                      <VideoThumbnailWithModal
+                        videoUrl={qrCode.thank_you_video_url || qrCode.video_title || ''}
+                        thumbnailUrl={qrCode.thank_you_video_thumbnail || undefined}
+                        title={qrCode.video_title && !qrCode.thank_you_video_url ? undefined : qrCode.video_title || undefined}
+                        description={qrCode.video_description || undefined}
+                      />
+                    </div>
+                  );
+                }
+                
+                return null;
+              })()}
               
               {/* Book Description */}
               {qrCode.book_description && (

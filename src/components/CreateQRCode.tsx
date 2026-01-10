@@ -11,6 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, AlertCircle, Loader2, ImagePlus, ChevronDown, Plus, X, Sparkles, HelpCircle } from "lucide-react";
@@ -37,12 +38,24 @@ interface Character {
   description?: string;
 }
 
+interface BookVideo {
+  url: string;
+  type: "thank-you" | "interview" | "other";
+  description?: string;
+}
+
 interface Recommendation {
   recommended_book_title: string;
   recommended_book_author?: string;
   buy_link?: string;
   display_order: number;
 }
+
+const VIDEO_TYPE_OPTIONS = [
+  { value: "thank-you", label: "Thank-You Video" },
+  { value: "interview", label: "Interview" },
+  { value: "other", label: "Other" },
+] as const;
 
 export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const navigate = useNavigate();
@@ -58,11 +71,26 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
 
   // Enhancement fields
   const [isEnhancementsOpen, setIsEnhancementsOpen] = useState(false);
-  const [videoUrl, setVideoUrl] = useState("");
+  const [videos, setVideos] = useState<BookVideo[]>([]);
   const [bookDescription, setBookDescription] = useState("");
   const [characters, setCharacters] = useState<Character[]>([]);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [enhancementErrors, setEnhancementErrors] = useState<Record<string, string>>({});
+
+  // Video management functions
+  const addVideo = () => {
+    setVideos([...videos, { url: "", type: "thank-you" }]);
+  };
+
+  const updateVideo = (index: number, field: keyof BookVideo, value: string) => {
+    const updated = [...videos];
+    updated[index] = { ...updated[index], [field]: value };
+    setVideos(updated);
+  };
+
+  const removeVideo = (index: number) => {
+    setVideos(videos.filter((_, i) => i !== index));
+  };
 
   const addCharacter = () => {
     setCharacters([...characters, { url: "", description: "" }]);
@@ -103,13 +131,15 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const validateEnhancements = () => {
     const errors: Record<string, string> = {};
 
-    // Validate video URL if provided
-    if (videoUrl) {
-      const result = urlSchema.safeParse(videoUrl);
-      if (!result.success) {
-        errors.videoUrl = "Please enter a valid video URL";
+    // Validate video URLs if provided
+    videos.forEach((video, index) => {
+      if (video.url) {
+        const result = urlSchema.safeParse(video.url);
+        if (!result.success) {
+          errors[`video_${index}_url`] = "Please enter a valid video URL";
+        }
       }
-    }
+    });
 
     // Validate characters
     characters.forEach((char, index) => {
@@ -189,6 +219,9 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         (rec) => rec.recommended_book_title && rec.recommended_book_title.trim() !== ""
       );
 
+      // Filter out videos without URLs
+      const validVideos = videos.filter(v => v.url && v.url.trim() !== "");
+
       const { data: qrCode, error: qrError } = await supabase
         .from('qr_codes')
         .insert({
@@ -201,7 +234,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           buy_now_link: processedBuyNowLink || null,
           qr_code_status: 'pending',
           // Enhancement fields
-          thank_you_video_url: videoUrl || null,
+          book_videos: validVideos.length > 0 ? validVideos as any : null,
+          thank_you_video_url: validVideos.length > 0 ? validVideos[0].url : null, // Legacy field for backwards compatibility
           book_description: bookDescription || null,
           character_images: validCharacters.length > 0 ? (validCharacters as any) : null,
         })
@@ -384,52 +418,113 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-6 mt-4">
-            {/* Thank You Video */}
+            {/* Videos Section */}
             <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Thank You Video</h4>
-              <Tabs defaultValue="upload" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Video</TabsTrigger>
-                <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
-                </TabsList>
-                <TabsContent value="upload" className="space-y-3">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <label className="text-xs font-medium" style={{ color: '#333333' }}>Video File</label>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <HelpCircle className="h-4 w-4 cursor-help" style={{ color: '#333333' }} />
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-[250px]">
-                            <p>Supported formats: MP4, WebM, OGG, MOV (max 100MB)</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <VideoUpload
-                      onUploadSuccess={(url) => setVideoUrl(url)}
-                      currentVideoUrl={videoUrl}
-                      onRemove={() => setVideoUrl("")}
-                    />
+              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Upload a video for your readers</h4>
+              
+              {videos.map((video, idx) => (
+                <div key={idx} className="p-4 border rounded-lg space-y-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+                  <div className="flex justify-between items-start">
+                    <Label className="text-sm font-medium" style={{ color: '#ffd166' }}>Video {idx + 1}</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeVideo(idx)}
+                      className="h-6 w-6 p-0"
+                      style={{ color: '#333333' }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
                   </div>
-                </TabsContent>
-                <TabsContent value="url" className="space-y-3">
+                  
+                  {/* Video Type Selector */}
                   <div className="space-y-2">
-                    <label className="text-xs font-medium" style={{ color: '#333333' }}>Video URL</label>
+                    <Label className="text-xs" style={{ color: '#333333' }}>Video Type</Label>
+                    <RadioGroup
+                      value={video.type}
+                      onValueChange={(value) => updateVideo(idx, "type", value)}
+                      className="flex flex-wrap gap-4"
+                    >
+                      {VIDEO_TYPE_OPTIONS.map((option) => (
+                        <div key={option.value} className="flex items-center space-x-2">
+                          <RadioGroupItem value={option.value} id={`create-video-type-${idx}-${option.value}`} className="border-white text-white" />
+                          <Label htmlFor={`create-video-type-${idx}-${option.value}`} className="text-sm cursor-pointer" style={{ color: '#333333' }}>
+                            {option.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </div>
+                  
+                  <Tabs defaultValue="upload" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Video</TabsTrigger>
+                      <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="upload" className="space-y-3">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <label className="text-xs font-medium" style={{ color: '#333333' }}>Video File</label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="h-4 w-4 cursor-help" style={{ color: '#333333' }} />
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-[250px]">
+                                <p>Supported formats: MP4, WebM, OGG, MOV (max 150MB)</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <VideoUpload
+                          onUploadSuccess={(url) => updateVideo(idx, "url", url)}
+                          currentVideoUrl={video.url}
+                          onRemove={() => updateVideo(idx, "url", "")}
+                        />
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="url" className="space-y-3">
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium" style={{ color: '#333333' }}>Video URL</label>
+                        <Input
+                          value={video.url}
+                          onChange={(e) => updateVideo(idx, "url", e.target.value)}
+                          placeholder="https://..."
+                          type="url"
+                          className="bg-white text-[#19363c]"
+                        />
+                        {enhancementErrors[`video_${idx}_url`] && (
+                          <p className="text-xs text-red-400">{enhancementErrors[`video_${idx}_url`]}</p>
+                        )}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                  
+                  {/* Video Description */}
+                  <div className="space-y-2">
+                    <Label className="text-xs" style={{ color: '#333333' }}>Description (optional)</Label>
                     <Input
-                      value={videoUrl}
-                      onChange={(e) => setVideoUrl(e.target.value)}
-                      placeholder="https://..."
-                      type="url"
+                      placeholder="Brief description of this video..."
+                      value={video.description || ""}
+                      onChange={(e) => updateVideo(idx, "description", e.target.value)}
                       className="bg-white text-[#19363c]"
                     />
-                    {enhancementErrors.videoUrl && (
-                      <p className="text-xs text-red-400">{enhancementErrors.videoUrl}</p>
-                    )}
                   </div>
-                </TabsContent>
-              </Tabs>
+                </div>
+              ))}
+              
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addVideo}
+                className="w-full"
+                style={{ borderColor: '#333333', color: '#333333' }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Video
+              </Button>
             </div>
 
             {/* Book Description */}
