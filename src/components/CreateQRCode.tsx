@@ -417,62 +417,58 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
               />
             </Button>
           </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-6 mt-4">
+          <CollapsibleContent className="space-y-4 mt-4">
             {/* Videos Section */}
-            <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Upload a video for your readers</h4>
-              
-              {videos.map((video, idx) => (
-                <div key={idx} className="p-4 border rounded-lg space-y-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-                  <div className="flex justify-between items-start">
-                    <Label className="text-sm font-medium" style={{ color: '#ffd166' }}>Video {idx + 1}</Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeVideo(idx)}
-                      className="h-6 w-6 p-0"
-                      style={{ color: '#333333' }}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  
-                  {/* Video Type Selector */}
-                  <div className="space-y-2">
-                    <Label className="text-xs" style={{ color: '#333333' }}>Video Type</Label>
+            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="text-sm font-medium mb-3" style={{ color: '#ffd166' }}>Upload a video for your readers</h4>
+              <div className="space-y-3">
+                {videos.map((video, idx) => (
+                  <div key={idx} className="p-3 rounded-md space-y-3" style={{ backgroundColor: '#f8f6f2' }}>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium" style={{ color: '#333333' }}>Video {idx + 1}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeVideo(idx)}
+                        className="h-6 w-6 p-0 hover:bg-transparent"
+                        style={{ color: '#333333' }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    
+                    {/* Video Type Selector */}
                     <RadioGroup
                       value={video.type}
                       onValueChange={(value) => updateVideo(idx, "type", value)}
-                      className="flex flex-wrap gap-4"
+                      className="flex flex-wrap gap-3"
                     >
                       {VIDEO_TYPE_OPTIONS.map((option) => (
-                        <div key={option.value} className="flex items-center space-x-2">
-                          <RadioGroupItem value={option.value} id={`create-video-type-${idx}-${option.value}`} className="border-white text-white" />
-                          <Label htmlFor={`create-video-type-${idx}-${option.value}`} className="text-sm cursor-pointer" style={{ color: '#333333' }}>
+                        <div key={option.value} className="flex items-center space-x-1.5">
+                          <RadioGroupItem value={option.value} id={`create-video-type-${idx}-${option.value}`} className="h-3 w-3" style={{ borderColor: '#333333' }} />
+                          <Label htmlFor={`create-video-type-${idx}-${option.value}`} className="text-xs cursor-pointer" style={{ color: '#333333' }}>
                             {option.label}
                           </Label>
                         </div>
                       ))}
                     </RadioGroup>
-                  </div>
-                  
-                  <Tabs defaultValue="upload" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Video</TabsTrigger>
-                      <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="upload" className="space-y-3">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <label className="text-xs font-medium" style={{ color: '#333333' }}>Video File</label>
+                    
+                    <Tabs defaultValue="upload" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2 h-8">
+                        <TabsTrigger value="upload" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>Upload</TabsTrigger>
+                        <TabsTrigger value="url" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>URL</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="upload" className="mt-2">
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <span className="text-xs" style={{ color: '#333333' }}>Video File</span>
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <HelpCircle className="h-4 w-4 cursor-help" style={{ color: '#333333' }} />
+                                <HelpCircle className="h-3 w-3 cursor-help" style={{ color: '#666666' }} />
                               </TooltipTrigger>
-                              <TooltipContent className="max-w-[250px]">
-                                <p>Supported formats: MP4, WebM, OGG, MOV (max 150MB)</p>
+                              <TooltipContent className="max-w-[200px]">
+                                <p className="text-xs">MP4, WebM, OGG, MOV (max 150MB)</p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -482,196 +478,182 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                           currentVideoUrl={video.url}
                           onRemove={() => updateVideo(idx, "url", "")}
                         />
-                      </div>
-                    </TabsContent>
-                    <TabsContent value="url" className="space-y-3">
-                      <div className="space-y-2">
-                        <label className="text-xs font-medium" style={{ color: '#333333' }}>Video URL</label>
+                      </TabsContent>
+                      <TabsContent value="url" className="mt-2">
                         <Input
                           value={video.url}
                           onChange={(e) => updateVideo(idx, "url", e.target.value)}
                           placeholder="https://..."
                           type="url"
-                          className="bg-white text-[#19363c]"
+                          className="h-8 text-xs bg-white border-gray-200"
+                          style={{ color: '#333333' }}
                         />
                         {enhancementErrors[`video_${idx}_url`] && (
-                          <p className="text-xs text-red-400">{enhancementErrors[`video_${idx}_url`]}</p>
+                          <p className="text-xs text-red-500 mt-1">{enhancementErrors[`video_${idx}_url`]}</p>
                         )}
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                  
-                  {/* Video Description */}
-                  <div className="space-y-2">
-                    <Label className="text-xs" style={{ color: '#333333' }}>Description (optional)</Label>
+                      </TabsContent>
+                    </Tabs>
+                    
                     <Input
-                      placeholder="Brief description of this video..."
+                      placeholder="Description (optional)"
                       value={video.description || ""}
                       onChange={(e) => updateVideo(idx, "description", e.target.value)}
-                      className="bg-white text-[#19363c]"
+                      className="h-8 text-xs bg-white border-gray-200"
+                      style={{ color: '#333333' }}
                     />
                   </div>
-                </div>
-              ))}
-              
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addVideo}
-                className="w-full"
-                style={{ borderColor: '#333333', color: '#333333' }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Video
-              </Button>
-            </div>
-
-            {/* Book Description */}
-            <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Book Description</h4>
-              <div className="space-y-2">
-                <Textarea
-                  value={bookDescription}
-                  onChange={(e) => setBookDescription(e.target.value)}
-                  placeholder="Enter a detailed description of your book..."
-                  rows={6}
-                  maxLength={2000}
-                  className="bg-white text-[#19363c]"
-                />
-                <p className="text-xs" style={{ color: '#333333' }}>
-                  {bookDescription.length}/2000 characters
-                </p>
+                ))}
+                
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={addVideo}
+                  className="w-full h-8 text-xs border border-dashed"
+                  style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#ffd166' }}
+                >
+                  <Plus className="mr-1.5 h-3 w-3" />
+                  Add Video
+                </Button>
               </div>
             </div>
 
+            {/* Book Description */}
+            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="text-sm font-medium mb-3" style={{ color: '#ffd166' }}>Book Description</h4>
+              <Textarea
+                value={bookDescription}
+                onChange={(e) => setBookDescription(e.target.value)}
+                placeholder="Enter a detailed description of your book..."
+                rows={4}
+                maxLength={2000}
+                className="text-sm bg-white border-gray-200 min-h-[100px]"
+                style={{ color: '#333333' }}
+              />
+              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                {bookDescription.length}/2000 characters
+              </p>
+            </div>
+
             {/* Character Art */}
-            <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Character or Book Art</h4>
+            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="text-sm font-medium mb-3" style={{ color: '#ffd166' }}>Character or Book Art</h4>
               <div className="space-y-3">
                 {characters.map((char, idx) => (
-                  <div key={idx} className="p-3 border rounded-md space-y-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+                  <div key={idx} className="p-3 rounded-md space-y-2" style={{ backgroundColor: '#f8f6f2' }}>
                     <div className="flex justify-end">
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => removeCharacter(idx)}
-                        className="h-6 w-6 p-0"
+                        className="h-6 w-6 p-0 hover:bg-transparent"
                         style={{ color: '#333333' }}
                       >
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
                     <Tabs defaultValue="upload" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Image</TabsTrigger>
-                      <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
+                      <TabsList className="grid w-full grid-cols-2 h-8">
+                        <TabsTrigger value="upload" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>Upload</TabsTrigger>
+                        <TabsTrigger value="url" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>URL</TabsTrigger>
                       </TabsList>
-                      <TabsContent value="upload" className="space-y-2">
+                      <TabsContent value="upload" className="mt-2">
                         <CharacterImageUpload
                           onUploadSuccess={(url) => updateCharacter(idx, "url", url)}
                           currentImageUrl={char.url}
                           onRemove={() => updateCharacter(idx, "url", "")}
                         />
                       </TabsContent>
-                      <TabsContent value="url" className="space-y-2">
+                      <TabsContent value="url" className="mt-2">
                         <Input
                           placeholder="Image URL"
                           value={char.url}
                           onChange={(e) => updateCharacter(idx, "url", e.target.value)}
                           type="url"
-                          className="bg-white text-[#19363c]"
+                          className="h-8 text-xs bg-white border-gray-200"
+                          style={{ color: '#333333' }}
                         />
                         {enhancementErrors[`character_${idx}_url`] && (
-                          <p className="text-xs text-red-400">
-                            {enhancementErrors[`character_${idx}_url`]}
-                          </p>
+                          <p className="text-xs text-red-500 mt-1">{enhancementErrors[`character_${idx}_url`]}</p>
                         )}
                       </TabsContent>
                     </Tabs>
-                    <div className="space-y-2">
-                      <Textarea
-                        placeholder="Description (optional)"
-                        value={char.description || ""}
-                        onChange={(e) => updateCharacter(idx, "description", e.target.value)}
-                        rows={2}
-                        maxLength={500}
-                        className="bg-white text-[#19363c]"
-                      />
-                    </div>
+                    <Textarea
+                      placeholder="Description (optional)"
+                      value={char.description || ""}
+                      onChange={(e) => updateCharacter(idx, "description", e.target.value)}
+                      rows={2}
+                      maxLength={500}
+                      className="text-xs bg-white border-gray-200"
+                      style={{ color: '#333333' }}
+                    />
                   </div>
                 ))}
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={addCharacter}
-                  className="w-full"
-                  style={{ borderColor: '#333333', color: '#333333' }}
+                  className="w-full h-8 text-xs border border-dashed"
+                  style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#ffd166' }}
                 >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Character
+                  <Plus className="mr-1.5 h-3 w-3" />
+                  Add Art
                 </Button>
               </div>
             </div>
 
             {/* Book Recommendations */}
-            <div className="space-y-4 p-4 border rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="font-semibold text-xs md:text-sm" style={{ color: '#ffd166' }}>Book Recommendations</h4>
-              <div className="space-y-4">
+            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="text-sm font-medium mb-3" style={{ color: '#ffd166' }}>Book Recommendations</h4>
+              <div className="space-y-3">
                 {recommendations.map((rec, idx) => (
-                  <div key={idx} className="p-4 border rounded-lg space-y-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-                    <div className="flex justify-end">
+                  <div key={idx} className="p-3 rounded-md space-y-2" style={{ backgroundColor: '#f8f6f2' }}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium" style={{ color: '#333333' }}>Book title</span>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => removeRecommendation(idx)}
-                        className="h-6 w-6 p-0"
+                        className="h-6 w-6 p-0 hover:bg-transparent"
                         style={{ color: '#333333' }}
                       >
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`book-title-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Book title</Label>
-                      <Input
-                        id={`book-title-${idx}`}
-                        value={rec.recommended_book_title}
-                        onChange={(e) => updateRecommendation(idx, "recommended_book_title", e.target.value)}
-                        className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`book-author-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Author name</Label>
-                      <Input
-                        id={`book-author-${idx}`}
-                        value={rec.recommended_book_author || ""}
-                        onChange={(e) => updateRecommendation(idx, "recommended_book_author", e.target.value)}
-                        className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`buy-link-${idx}`} className="text-lg font-medium" style={{ color: '#333333' }}>Buy link (Amazon, Goodreads, etc.)</Label>
-                      <Input
-                        id={`buy-link-${idx}`}
-                        value={rec.buy_link || ""}
-                        onChange={(e) => updateRecommendation(idx, "buy_link", e.target.value)}
-                        className="w-full px-4 py-3 rounded-lg border bg-white text-[#19363c] focus:ring-2 focus:ring-[#ffd166]"
-                      />
-                    </div>
+                    <Input
+                      value={rec.recommended_book_title}
+                      onChange={(e) => updateRecommendation(idx, "recommended_book_title", e.target.value)}
+                      className="h-8 text-xs bg-white border-gray-200"
+                      style={{ color: '#333333' }}
+                    />
+                    <span className="text-xs font-medium block pt-1" style={{ color: '#333333' }}>Author name</span>
+                    <Input
+                      value={rec.recommended_book_author || ""}
+                      onChange={(e) => updateRecommendation(idx, "recommended_book_author", e.target.value)}
+                      className="h-8 text-xs bg-white border-gray-200"
+                      style={{ color: '#333333' }}
+                    />
+                    <span className="text-xs font-medium block pt-1" style={{ color: '#333333' }}>Buy link</span>
+                    <Input
+                      value={rec.buy_link || ""}
+                      onChange={(e) => updateRecommendation(idx, "buy_link", e.target.value)}
+                      className="h-8 text-xs bg-white border-gray-200"
+                      style={{ color: '#333333' }}
+                    />
                   </div>
                 ))}
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={addRecommendation}
-                  className="w-full"
-                  style={{ borderColor: '#333333', color: '#333333' }}
+                  className="w-full h-8 text-xs border border-dashed"
+                  style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#ffd166' }}
                 >
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="mr-1.5 h-3 w-3" />
                   Add Recommendation
                 </Button>
               </div>
