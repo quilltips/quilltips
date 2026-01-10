@@ -665,8 +665,10 @@ export type Database = {
       }
       qr_codes: {
         Row: {
+          arc_signup_enabled: boolean | null
           author_id: string
           average_tip: number | null
+          beta_reader_enabled: boolean | null
           book_description: string | null
           book_title: string
           book_videos: Json | null
@@ -679,6 +681,8 @@ export type Database = {
           is_paid: boolean
           isbn: string | null
           last_tip_date: string | null
+          letter_to_readers: string | null
+          newsletter_enabled: boolean | null
           publisher: string | null
           qr_code_image_url: string | null
           qr_code_status: string
@@ -696,8 +700,10 @@ export type Database = {
           video_title: string | null
         }
         Insert: {
+          arc_signup_enabled?: boolean | null
           author_id: string
           average_tip?: number | null
+          beta_reader_enabled?: boolean | null
           book_description?: string | null
           book_title: string
           book_videos?: Json | null
@@ -710,6 +716,8 @@ export type Database = {
           is_paid?: boolean
           isbn?: string | null
           last_tip_date?: string | null
+          letter_to_readers?: string | null
+          newsletter_enabled?: boolean | null
           publisher?: string | null
           qr_code_image_url?: string | null
           qr_code_status?: string
@@ -727,8 +735,10 @@ export type Database = {
           video_title?: string | null
         }
         Update: {
+          arc_signup_enabled?: boolean | null
           author_id?: string
           average_tip?: number | null
+          beta_reader_enabled?: boolean | null
           book_description?: string | null
           book_title?: string
           book_videos?: Json | null
@@ -741,6 +751,8 @@ export type Database = {
           is_paid?: boolean
           isbn?: string | null
           last_tip_date?: string | null
+          letter_to_readers?: string | null
+          newsletter_enabled?: boolean | null
           publisher?: string | null
           qr_code_image_url?: string | null
           qr_code_status?: string

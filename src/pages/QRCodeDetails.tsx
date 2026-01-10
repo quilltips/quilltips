@@ -17,6 +17,9 @@ import { CollapsibleBookDescription } from "@/components/book/CollapsibleBookDes
 import { CharacterArtCarousel } from "@/components/book/CharacterArtCarousel";
 import { BookRecommendationsCarousel } from "@/components/book/BookRecommendationsCarousel";
 import { AuthorOtherBooksCarousel } from "@/components/book/AuthorOtherBooksCarousel";
+import { ARCSignupCard } from "@/components/author/ARCSignupCard";
+import { BetaReaderSignupCard } from "@/components/author/BetaReaderSignupCard";
+import { NewsletterSignupCard } from "@/components/author/NewsletterSignupCard";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { Meta } from "@/components/Meta";
@@ -65,6 +68,9 @@ const QRCodeDetails = () => {
     ? (qrCode.book_description.length > 160 ? qrCode.book_description.substring(0, 157) + '...' : qrCode.book_description)
     : `Support ${qrCode.author?.name || 'the author'} by tipping them for ${qrCode.book_title} on Quilltips.`;
   const ogImage = qrCode.cover_image || 'https://quilltips.co/og-image.png';
+
+  // Check if any signup forms are enabled
+  const hasSignupForms = qrCode.arc_signup_enabled || qrCode.beta_reader_enabled || qrCode.newsletter_enabled;
 
   return (
     <>
@@ -254,6 +260,16 @@ const QRCodeDetails = () => {
                 return null;
               })()}
               
+              {/* Letter to Readers */}
+              {qrCode.letter_to_readers && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-playfair">A Letter from the Author</h3>
+                  <div className="rounded-lg p-6 bg-muted/30 border border-border">
+                    <CollapsibleBookDescription description={qrCode.letter_to_readers} />
+                  </div>
+                </div>
+              )}
+              
               {/* Book Description */}
               {qrCode.book_description && (
                 <div className="space-y-4">
@@ -279,6 +295,33 @@ const QRCodeDetails = () => {
                   authorName={qrCode.author?.name || 'this author'}
                   currentBookId={qrCode.id}
                 />
+              )}
+              
+              {/* Signup Forms Section */}
+              {hasSignupForms && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-playfair">Connect with the Author</h3>
+                  <div className="space-y-4">
+                    {qrCode.arc_signup_enabled && (
+                      <ARCSignupCard
+                        authorId={qrCode.author_id}
+                        description="Get early access to upcoming books in exchange for honest reviews."
+                      />
+                    )}
+                    {qrCode.beta_reader_enabled && (
+                      <BetaReaderSignupCard
+                        authorId={qrCode.author_id}
+                        description="Help shape upcoming stories by providing feedback on early drafts."
+                      />
+                    )}
+                    {qrCode.newsletter_enabled && (
+                      <NewsletterSignupCard
+                        authorId={qrCode.author_id}
+                        description="Stay updated on new releases, exclusive content, and author news."
+                      />
+                    )}
+                  </div>
+                </div>
               )}
               
               {/* Author Bio Preview */}

@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, AlertCircle, Loader2, ImagePlus, ChevronDown, Plus, X, Sparkles, HelpCircle } from "lucide-react";
@@ -73,9 +74,15 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const [isEnhancementsOpen, setIsEnhancementsOpen] = useState(false);
   const [videos, setVideos] = useState<BookVideo[]>([]);
   const [bookDescription, setBookDescription] = useState("");
+  const [letterToReaders, setLetterToReaders] = useState("");
   const [characters, setCharacters] = useState<Character[]>([]);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [enhancementErrors, setEnhancementErrors] = useState<Record<string, string>>({});
+  
+  // Signup form toggles
+  const [arcSignupEnabled, setArcSignupEnabled] = useState(false);
+  const [betaReaderEnabled, setBetaReaderEnabled] = useState(false);
+  const [newsletterEnabled, setNewsletterEnabled] = useState(false);
 
   // Video management functions
   const addVideo = () => {
@@ -237,7 +244,11 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           book_videos: validVideos.length > 0 ? validVideos as any : null,
           thank_you_video_url: validVideos.length > 0 ? validVideos[0].url : null, // Legacy field for backwards compatibility
           book_description: bookDescription || null,
+          letter_to_readers: letterToReaders || null,
           character_images: validCharacters.length > 0 ? (validCharacters as any) : null,
+          arc_signup_enabled: arcSignupEnabled,
+          beta_reader_enabled: betaReaderEnabled,
+          newsletter_enabled: newsletterEnabled,
         })
         .select()
         .single();
@@ -420,7 +431,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           <CollapsibleContent className="space-y-4 mt-4">
             {/* Videos Section */}
             <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-sm font-medium mb-3" style={{ color: '#ffd166' }}>Upload a video for your readers</h4>
+              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Upload a video for your readers</h4>
               <div className="space-y-3">
                 {videos.map((video, idx) => (
                   <div key={idx} className="p-3 rounded-md space-y-3" style={{ backgroundColor: '#f8f6f2' }}>
@@ -468,7 +479,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                                 <HelpCircle className="h-3 w-3 cursor-help" style={{ color: '#666666' }} />
                               </TooltipTrigger>
                               <TooltipContent className="max-w-[200px]">
-                                <p className="text-xs">MP4, WebM, OGG, MOV (max 150MB)</p>
+                                <p className="text-xs">MP4, WebM, OGG, MOV (max 225MB)</p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -509,8 +520,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                   variant="ghost"
                   size="sm"
                   onClick={addVideo}
-                  className="w-full h-8 text-xs border border-dashed"
-                  style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#ffd166' }}
+                  className="w-full h-8 text-xs border border-dashed font-medium"
+                  style={{ borderColor: '#ffd166', color: '#ffd166' }}
                 >
                   <Plus className="mr-1.5 h-3 w-3" />
                   Add Video
@@ -518,9 +529,26 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
               </div>
             </div>
 
+            {/* Letter to Readers */}
+            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Letter to Readers</h4>
+              <Textarea
+                value={letterToReaders}
+                onChange={(e) => setLetterToReaders(e.target.value)}
+                placeholder="Write a personal note to your readers..."
+                rows={4}
+                maxLength={2000}
+                className="text-sm bg-white border-gray-200 min-h-[100px]"
+                style={{ color: '#333333' }}
+              />
+              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                {letterToReaders.length}/2000 characters
+              </p>
+            </div>
+
             {/* Book Description */}
             <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-sm font-medium mb-3" style={{ color: '#ffd166' }}>Book Description</h4>
+              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Book Description</h4>
               <Textarea
                 value={bookDescription}
                 onChange={(e) => setBookDescription(e.target.value)}
@@ -537,7 +565,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
 
             {/* Character Art */}
             <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-sm font-medium mb-3" style={{ color: '#ffd166' }}>Character or Book Art</h4>
+              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Character or Book Art</h4>
               <div className="space-y-3">
                 {characters.map((char, idx) => (
                   <div key={idx} className="p-3 rounded-md space-y-2" style={{ backgroundColor: '#f8f6f2' }}>
@@ -595,8 +623,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                   variant="ghost"
                   size="sm"
                   onClick={addCharacter}
-                  className="w-full h-8 text-xs border border-dashed"
-                  style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#ffd166' }}
+                  className="w-full h-8 text-xs border border-dashed font-medium"
+                  style={{ borderColor: '#ffd166', color: '#ffd166' }}
                 >
                   <Plus className="mr-1.5 h-3 w-3" />
                   Add Art
@@ -604,9 +632,44 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
               </div>
             </div>
 
+            {/* Signup Forms */}
+            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
+              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Reader Signup Forms</h4>
+              <div className="p-3 rounded-md space-y-3" style={{ backgroundColor: '#f8f6f2' }}>
+                <p className="text-xs" style={{ color: '#666666' }}>Enable signup forms on this book page. Signups will appear in your author dashboard.</p>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="create-arc-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>ARC Reader Signup</Label>
+                  <Switch
+                    id="create-arc-signup"
+                    checked={arcSignupEnabled}
+                    onCheckedChange={setArcSignupEnabled}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="create-beta-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Beta Reader Signup</Label>
+                  <Switch
+                    id="create-beta-signup"
+                    checked={betaReaderEnabled}
+                    onCheckedChange={setBetaReaderEnabled}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="create-newsletter-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Newsletter Signup</Label>
+                  <Switch
+                    id="create-newsletter-signup"
+                    checked={newsletterEnabled}
+                    onCheckedChange={setNewsletterEnabled}
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Book Recommendations */}
             <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-sm font-medium mb-3" style={{ color: '#ffd166' }}>Book Recommendations</h4>
+              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Book Recommendations</h4>
               <div className="space-y-3">
                 {recommendations.map((rec, idx) => (
                   <div key={idx} className="p-3 rounded-md space-y-2" style={{ backgroundColor: '#f8f6f2' }}>
@@ -650,8 +713,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                   variant="ghost"
                   size="sm"
                   onClick={addRecommendation}
-                  className="w-full h-8 text-xs border border-dashed"
-                  style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#ffd166' }}
+                  className="w-full h-8 text-xs border border-dashed font-medium"
+                  style={{ borderColor: '#ffd166', color: '#ffd166' }}
                 >
                   <Plus className="mr-1.5 h-3 w-3" />
                   Add Recommendation

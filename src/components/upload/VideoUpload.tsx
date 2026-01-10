@@ -84,12 +84,12 @@ export const VideoUpload = ({ onUploadSuccess, currentVideoUrl, onRemove }: Vide
       return;
     }
 
-    // Validate file size (max 150MB)
-    const maxSize = 150 * 1024 * 1024;
+    // Validate file size (max 225MB)
+    const maxSize = 225 * 1024 * 1024;
     if (file.size > maxSize) {
       toast({
         title: "File too large",
-        description: "For videos over 150MB, please upload to YouTube and paste the link instead. This ensures faster loading for your readers.",
+        description: "For videos over 225MB, please upload to YouTube and paste the link instead. This ensures faster loading for your readers.",
         variant: "destructive",
         duration: 6000,
       });
