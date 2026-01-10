@@ -305,19 +305,19 @@ const QRCodeDetails = () => {
                     {qrCode.arc_signup_enabled && (
                       <ARCSignupCard
                         authorId={qrCode.author_id}
-                        description="Get early access to upcoming books in exchange for honest reviews."
+                        description={qrCode.author?.arc_signup_description || "Get early access to upcoming books in exchange for honest reviews."}
                       />
                     )}
                     {qrCode.beta_reader_enabled && (
                       <BetaReaderSignupCard
                         authorId={qrCode.author_id}
-                        description="Help shape upcoming stories by providing feedback on early drafts."
+                        description={qrCode.author?.beta_reader_description || "Help shape upcoming stories by providing feedback on early drafts."}
                       />
                     )}
                     {qrCode.newsletter_enabled && (
                       <NewsletterSignupCard
                         authorId={qrCode.author_id}
-                        description="Stay updated on new releases, exclusive content, and author news."
+                        description={qrCode.author?.newsletter_description || "Stay updated on new releases, exclusive content, and author news."}
                       />
                     )}
                   </div>

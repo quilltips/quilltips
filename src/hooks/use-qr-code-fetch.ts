@@ -25,40 +25,34 @@ export const useQRCodeFetch = () => {
       
       let qrData, qrError;
       
+      const selectQuery = `
+        *,
+        author:public_profiles!author_id (
+          id,
+          name,
+          avatar_url,
+          bio,
+          slug,
+          stripe_account_id,
+          stripe_setup_complete,
+          arc_signup_description,
+          beta_reader_description,
+          newsletter_description
+        )
+      `;
+      
       if (isUUID(identifier)) {
         // Fetch by UUID
         ({ data: qrData, error: qrError } = await supabase
           .from('qr_codes')
-          .select(`
-            *,
-            author:public_profiles!author_id (
-              id,
-              name,
-              avatar_url,
-              bio,
-              slug,
-              stripe_account_id,
-              stripe_setup_complete
-            )
-          `)
+          .select(selectQuery)
           .eq('id', identifier)
           .maybeSingle());
       } else {
         // Fetch by slug
         ({ data: qrData, error: qrError } = await supabase
           .from('qr_codes')
-          .select(`
-            *,
-            author:public_profiles!author_id (
-              id,
-              name,
-              avatar_url,
-              bio,
-              slug,
-              stripe_account_id,
-              stripe_setup_complete
-            )
-          `)
+          .select(selectQuery)
           .eq('slug', identifier)
           .maybeSingle());
       }
