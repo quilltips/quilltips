@@ -52,6 +52,25 @@ export const ARCSignupCard = ({ authorId, description }: ARCSignupCardProps) => 
 
       if (error) throw error;
 
+      // Send email notification to author
+      try {
+        await supabase.functions.invoke('send-email-notification', {
+          body: {
+            type: 'arc_signup',
+            userId: authorId,
+            data: {
+              readerName: formData.reader_name,
+              readerEmail: formData.reader_email,
+              readerLocation: formData.reader_location,
+              message: formData.message
+            }
+          }
+        });
+      } catch (emailError) {
+        console.error('Error sending email notification:', emailError);
+        // Don't fail the submission if email fails
+      }
+
       setIsSubmitted(true);
       toast({
         title: "Success!",

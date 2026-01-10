@@ -40,6 +40,7 @@ interface EnhancementsManagerProps {
     arc_signup_enabled?: boolean;
     beta_reader_enabled?: boolean;
     newsletter_enabled?: boolean;
+    book_club_enabled?: boolean;
   };
   recommendations?: Recommendation[];
   onUpdate?: () => void;
@@ -83,6 +84,7 @@ export const EnhancementsManager = ({
   const [arcSignupEnabled, setArcSignupEnabled] = useState(initialData?.arc_signup_enabled || false);
   const [betaReaderEnabled, setBetaReaderEnabled] = useState(initialData?.beta_reader_enabled || false);
   const [newsletterEnabled, setNewsletterEnabled] = useState(initialData?.newsletter_enabled || false);
+  const [bookClubEnabled, setBookClubEnabled] = useState(initialData?.book_club_enabled || false);
 
   const saveVideos = async (videosToSave: BookVideo[]) => {
     setIsVideoSaving(true);
@@ -197,6 +199,7 @@ export const EnhancementsManager = ({
       setArcSignupEnabled(initialData.arc_signup_enabled || false);
       setBetaReaderEnabled(initialData.beta_reader_enabled || false);
       setNewsletterEnabled(initialData.newsletter_enabled || false);
+      setBookClubEnabled(initialData.book_club_enabled || false);
       setCharacters(prevChars => {
         const newChars = initialData.character_images || [];
         const savedUrls = new Set(newChars.map(c => c.url).filter(Boolean));
@@ -228,6 +231,7 @@ export const EnhancementsManager = ({
           arc_signup_enabled: arcSignupEnabled,
           beta_reader_enabled: betaReaderEnabled,
           newsletter_enabled: newsletterEnabled,
+          book_club_enabled: bookClubEnabled,
         })
         .eq('id', qrCodeId);
 
@@ -565,6 +569,15 @@ export const EnhancementsManager = ({
                 id="newsletter-signup"
                 checked={newsletterEnabled}
                 onCheckedChange={setNewsletterEnabled}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <Label htmlFor="book-club-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Book Club Invitations</Label>
+              <Switch
+                id="book-club-signup"
+                checked={bookClubEnabled}
+                onCheckedChange={setBookClubEnabled}
               />
             </div>
           </div>

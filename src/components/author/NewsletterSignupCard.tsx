@@ -57,6 +57,23 @@ export const NewsletterSignupCard = ({ authorId, description }: NewsletterSignup
         throw error;
       }
 
+      // Send email notification to author
+      try {
+        await supabase.functions.invoke('send-email-notification', {
+          body: {
+            type: 'newsletter_signup',
+            userId: authorId,
+            data: {
+              subscriberName: formData.subscriber_name,
+              subscriberEmail: formData.subscriber_email
+            }
+          }
+        });
+      } catch (emailError) {
+        console.error('Error sending email notification:', emailError);
+        // Don't fail the submission if email fails
+      }
+
       setIsSubmitted(true);
       toast({
         title: "Success!",
