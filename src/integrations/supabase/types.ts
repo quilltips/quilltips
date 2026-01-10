@@ -613,6 +613,8 @@ export type Database = {
           beta_reader_description: string | null
           beta_reader_enabled: boolean | null
           bio: string | null
+          book_club_description: string | null
+          book_club_enabled: boolean | null
           countdown_enabled: boolean | null
           created_at: string | null
           id: string
@@ -633,6 +635,8 @@ export type Database = {
           beta_reader_description?: string | null
           beta_reader_enabled?: boolean | null
           bio?: string | null
+          book_club_description?: string | null
+          book_club_enabled?: boolean | null
           countdown_enabled?: boolean | null
           created_at?: string | null
           id: string
@@ -653,6 +657,8 @@ export type Database = {
           beta_reader_description?: string | null
           beta_reader_enabled?: boolean | null
           bio?: string | null
+          book_club_description?: string | null
+          book_club_enabled?: boolean | null
           countdown_enabled?: boolean | null
           created_at?: string | null
           id?: string
@@ -1093,6 +1099,8 @@ export type Database = {
           beta_reader_description: string | null
           beta_reader_enabled: boolean | null
           bio: string | null
+          book_club_description: string | null
+          book_club_enabled: boolean | null
           countdown_enabled: boolean | null
           created_at: string | null
           id: string
@@ -1126,6 +1134,8 @@ export type Database = {
           beta_reader_description: string | null
           beta_reader_enabled: boolean | null
           bio: string | null
+          book_club_description: string | null
+          book_club_enabled: boolean | null
           countdown_enabled: boolean | null
           created_at: string | null
           id: string
