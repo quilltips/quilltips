@@ -27,6 +27,12 @@ export type QRCode = {
   video_description?: string | null;
   book_description?: string | null;
   character_images?: any;
+  book_videos?: any;
+  letter_to_readers?: string | null;
+  arc_signup_enabled?: boolean | null;
+  beta_reader_enabled?: boolean | null;
+  newsletter_enabled?: boolean | null;
+  book_club_enabled?: boolean | null;
   author?: {
     name: string | null;
     avatar_url: string | null;
@@ -101,6 +107,12 @@ export const useQRCodeDetailsPage = () => {
             video_description,
             book_description,
             character_images,
+            book_videos,
+            letter_to_readers,
+            arc_signup_enabled,
+            beta_reader_enabled,
+            newsletter_enabled,
+            book_club_enabled,
             author:public_profiles!author_id (
               name,
               avatar_url,
@@ -135,6 +147,12 @@ export const useQRCodeDetailsPage = () => {
             video_description,
             book_description,
             character_images,
+            book_videos,
+            letter_to_readers,
+            arc_signup_enabled,
+            beta_reader_enabled,
+            newsletter_enabled,
+            book_club_enabled,
             author:public_profiles!author_id (
               name,
               avatar_url,

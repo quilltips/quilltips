@@ -44,6 +44,12 @@ interface QRCodeStatsCardProps {
     video_description?: string | null;
     book_description?: string | null;
     character_images?: any;
+    book_videos?: any;
+    letter_to_readers?: string | null;
+    arc_signup_enabled?: boolean | null;
+    beta_reader_enabled?: boolean | null;
+    newsletter_enabled?: boolean | null;
+    book_club_enabled?: boolean | null;
     recommendations?: any[];
     tipping_enabled?: boolean;
   } & QRCodeStats;
@@ -413,6 +419,12 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                 thank_you_video_url: qrCode.thank_you_video_url,
                 book_description: qrCode.book_description,
                 character_images: qrCode.character_images,
+                book_videos: qrCode.book_videos,
+                letter_to_readers: qrCode.letter_to_readers,
+                arc_signup_enabled: qrCode.arc_signup_enabled,
+                beta_reader_enabled: qrCode.beta_reader_enabled,
+                newsletter_enabled: qrCode.newsletter_enabled,
+                book_club_enabled: qrCode.book_club_enabled,
               }}
               recommendations={qrCode.recommendations}
               onUpdate={() => {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +52,49 @@ const VIDEO_TYPE_OPTIONS = [
   { value: "other", label: "Other" },
 ] as const;
 
+// Custom hook for debounced auto-save
+const useAutoSave = (
+  value: string,
+  saveFunction: (value: string) => Promise<void>,
+  delay: number = 2000
+) => {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedRef = useRef<string>(value);
+
+  useEffect(() => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Don't auto-save if value hasn't changed from last saved value
+    if (value === lastSavedRef.current) {
+      return;
+    }
+
+    // Set new timeout for auto-save
+    timeoutRef.current = setTimeout(async () => {
+      try {
+        await saveFunction(value);
+        lastSavedRef.current = value;
+      } catch (error) {
+        console.error("Auto-save failed:", error);
+      }
+    }, delay);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [value, saveFunction, delay]);
+
+  // Update the lastSavedRef when initial value changes (from server)
+  useEffect(() => {
+    lastSavedRef.current = value;
+  }, []);
+};
+
 export const EnhancementsManager = ({
   qrCodeId,
   authorId,
@@ -86,7 +129,26 @@ export const EnhancementsManager = ({
   const [newsletterEnabled, setNewsletterEnabled] = useState(initialData?.newsletter_enabled || false);
   const [bookClubEnabled, setBookClubEnabled] = useState(initialData?.book_club_enabled || false);
 
-  const saveVideos = async (videosToSave: BookVideo[]) => {
+  // Auto-save function for text fields
+  const autoSaveField = useCallback(async (field: string, value: string) => {
+    try {
+      const { error } = await supabase
+        .from('qr_codes')
+        .update({ [field]: value || null })
+        .eq('id', qrCodeId);
+
+      if (error) throw error;
+      console.log(`Auto-saved ${field}`);
+    } catch (error) {
+      console.error(`Auto-save failed for ${field}:`, error);
+    }
+  }, [qrCodeId]);
+
+  // Auto-save for book description
+  useAutoSave(bookDesc, useCallback((value: string) => autoSaveField('book_description', value), [autoSaveField]));
+  
+  // Auto-save for letter to readers
+  useAutoSave(letterToReaders, useCallback((value: string) => autoSaveField('letter_to_readers', value), [autoSaveField]));
     setIsVideoSaving(true);
     try {
       const validVideos = videosToSave.filter(v => v.url && v.url.trim() !== "");
@@ -630,7 +692,7 @@ export const EnhancementsManager = ({
         </CardContent>
       </Card>
 
-      <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full h-9 text-sm font-medium" style={{ backgroundColor: '#ffd166', color: '#19363c' }}>
+      <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full h-9 text-sm font-medium" style={{ backgroundColor: '#FFD166', color: '#333333' }}>
         {isSaving ? "Saving..." : "Save All Bonus Content"}
       </Button>
     </div>
