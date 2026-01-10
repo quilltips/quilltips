@@ -22,7 +22,7 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('arc_signup_enabled, beta_reader_enabled, newsletter_enabled')
+        .select('arc_signup_enabled, beta_reader_enabled, newsletter_enabled, book_club_enabled')
         .eq('id', authorId)
         .single();
       
@@ -79,6 +79,22 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
     enabled: !!profileSettings?.newsletter_enabled
   });
 
+  // Fetch Book Club invites
+  const { data: bookClubSignups, isLoading: bookClubLoading } = useQuery({
+    queryKey: ['book-club-signups', authorId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('book_club_invites')
+        .select('*')
+        .eq('author_id', authorId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!profileSettings?.book_club_enabled
+  });
+
   const downloadCSV = (data: any[], filename: string, headers: string[]) => {
     try {
       const csvContent = [
@@ -126,16 +142,18 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
     }
   };
 
-  const isLoading = arcLoading || betaLoading || newsletterLoading || profileLoading;
+  const isLoading = arcLoading || betaLoading || newsletterLoading || bookClubLoading || profileLoading;
 
   // Show the section if signup features are enabled OR if there's existing data
   const hasAnySignupEnabled = profileSettings?.arc_signup_enabled || 
                               profileSettings?.beta_reader_enabled || 
-                              profileSettings?.newsletter_enabled;
+                              profileSettings?.newsletter_enabled ||
+                              profileSettings?.book_club_enabled;
                               
   const hasExistingData = (arcSignups && arcSignups.length > 0) ||
                           (betaSignups && betaSignups.length > 0) ||
-                          (newsletterSignups && newsletterSignups.length > 0);
+                          (newsletterSignups && newsletterSignups.length > 0) ||
+                          (bookClubSignups && bookClubSignups.length > 0);
 
   if (!hasAnySignupEnabled && !hasExistingData) {
     return null;
@@ -168,7 +186,7 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
       <Card>
         <CardContent className="p-6">
           <Tabs defaultValue="arc" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="arc">
                 ARC ({arcSignups?.length || 0})
               </TabsTrigger>
@@ -177,6 +195,9 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
               </TabsTrigger>
               <TabsTrigger value="newsletter">
                 General ({newsletterSignups?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="bookclub">
+                Book Club ({bookClubSignups?.length || 0})
               </TabsTrigger>
             </TabsList>
 
@@ -335,6 +356,64 @@ export const SignupDataSection = ({ authorId }: SignupDataSectionProps) => {
                 </Table>
               ) : (
                 <p className="text-center text-muted-foreground py-8">No newsletter subscribers yet</p>
+              )}
+            </TabsContent>
+
+            {/* Book Club Tab */}
+            <TabsContent value="bookclub" className="mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => downloadCSV(
+                    bookClubSignups || [], 
+                    'book_club_invites',
+                    ['Reader Name', 'Reader Email', 'Event Type', 'Event Date', 'Event Location', 'Message', 'Created At']
+                  )}
+                  disabled={!bookClubSignups?.length}
+                  className="ml-auto"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download CSV
+                </Button>
+              </div>
+              
+              {bookClubSignups && bookClubSignups.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Event Type</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Message</TableHead>
+                      <TableHead>Submitted</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {bookClubSignups.map((signup, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell className="font-medium">{signup.reader_name}</TableCell>
+                        <TableCell>{signup.reader_email}</TableCell>
+                        <TableCell className="capitalize">{signup.event_type?.replace('_', ' ') || '-'}</TableCell>
+                        <TableCell>
+                          {signup.event_date 
+                            ? new Date(signup.event_date).toLocaleDateString()
+                            : '-'
+                          }
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate">{signup.event_location || '-'}</TableCell>
+                        <TableCell className="max-w-xs truncate">{signup.message || '-'}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {formatDistanceToNow(new Date(signup.created_at), { addSuffix: true })}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className="text-center text-muted-foreground py-8">No book club invites yet</p>
               )}
             </TabsContent>
           </Tabs>
