@@ -60,7 +60,10 @@ const isProtectedRoute = (pathname: string): boolean => {
     '/author/create-qr',
     '/author/data',
     '/author/bank-account',
-    '/author/book/',  // /author/book/:bookSlug (QR code details for authors)
+    '/author/book/',     // /author/book/:bookSlug (QR code details for authors)
+    '/author/qr/',       // /author/qr/:id (legacy UUID route)
+    '/author/tip-feed',  // Tip feed page
+    '/author/profile/',  // Author's own profile management
   ];
   
   // Check if the route is a protected author route
