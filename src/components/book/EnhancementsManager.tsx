@@ -149,6 +149,8 @@ export const EnhancementsManager = ({
   
   // Auto-save for letter to readers
   useAutoSave(letterToReaders, useCallback((value: string) => autoSaveField('letter_to_readers', value), [autoSaveField]));
+
+  const saveVideos = async (videosToSave: BookVideo[]) => {
     setIsVideoSaving(true);
     try {
       const validVideos = videosToSave.filter(v => v.url && v.url.trim() !== "");
