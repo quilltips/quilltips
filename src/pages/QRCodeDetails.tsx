@@ -21,8 +21,15 @@ import { ARCSignupCard } from "@/components/author/ARCSignupCard";
 import { BetaReaderSignupCard } from "@/components/author/BetaReaderSignupCard";
 import { NewsletterSignupCard } from "@/components/author/NewsletterSignupCard";
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Mail } from "lucide-react";
 import { Meta } from "@/components/Meta";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const QRCodeDetails = () => {
   const {
@@ -260,13 +267,28 @@ const QRCodeDetails = () => {
                 return null;
               })()}
               
-              {/* Letter to Readers */}
+              {/* Letter to Readers - Modal */}
               {qrCode.letter_to_readers && (
                 <div className="space-y-4">
-                  <h3 className="text-xl font-playfair">A Letter from the Author</h3>
-                  <div className="rounded-lg p-6 bg-muted/30 border border-border">
-                    <CollapsibleBookDescription description={qrCode.letter_to_readers} />
-                  </div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="w-full flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border hover:bg-muted/50 transition-colors group">
+                        <div className="flex items-center gap-3">
+                          <Mail className="h-5 w-5 text-muted-foreground" />
+                          <span className="text-lg font-playfair">A Letter from the Author</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="font-playfair text-xl">A Letter from the Author</DialogTitle>
+                      </DialogHeader>
+                      <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed">
+                        {qrCode.letter_to_readers}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               )}
               
@@ -285,42 +307,6 @@ const QRCodeDetails = () => {
                 <div className="space-y-6 -mt-8 sm:-mt-10">
                   <h3 className="text-xl font-playfair text-foreground">Book Art</h3>
                   <CharacterArtCarousel characters={qrCode.character_images} />
-                </div>
-              )}
-              
-              {/* Author's Other Books */}
-              {qrCode.otherBooks && qrCode.otherBooks.length > 1 && (
-                <AuthorOtherBooksCarousel
-                  books={qrCode.otherBooks}
-                  authorName={qrCode.author?.name || 'this author'}
-                  currentBookId={qrCode.id}
-                />
-              )}
-              
-              {/* Signup Forms Section */}
-              {hasSignupForms && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-playfair">Connect with the Author</h3>
-                  <div className="space-y-4">
-                    {qrCode.arc_signup_enabled && (
-                      <ARCSignupCard
-                        authorId={qrCode.author_id}
-                        description={qrCode.author?.arc_signup_description || "Get early access to upcoming books in exchange for honest reviews."}
-                      />
-                    )}
-                    {qrCode.beta_reader_enabled && (
-                      <BetaReaderSignupCard
-                        authorId={qrCode.author_id}
-                        description={qrCode.author?.beta_reader_description || "Help shape upcoming stories by providing feedback on early drafts."}
-                      />
-                    )}
-                    {qrCode.newsletter_enabled && (
-                      <NewsletterSignupCard
-                        authorId={qrCode.author_id}
-                        description={qrCode.author?.newsletter_description || "Stay updated on new releases, exclusive content, and author news."}
-                      />
-                    )}
-                  </div>
                 </div>
               )}
               
@@ -347,6 +333,42 @@ const QRCodeDetails = () => {
                 <BookRecommendationsCarousel
                   recommendations={qrCode.recommendations}
                   authorName={qrCode.author?.name || 'The author'}
+                />
+              )}
+              
+              {/* Signup Forms Section - moved below recommendations */}
+              {hasSignupForms && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-playfair">Connect with the Author</h3>
+                  <div className="space-y-4">
+                    {qrCode.arc_signup_enabled && (
+                      <ARCSignupCard
+                        authorId={qrCode.author_id}
+                        description={qrCode.author?.arc_signup_description || "Get early access to upcoming books in exchange for honest reviews."}
+                      />
+                    )}
+                    {qrCode.beta_reader_enabled && (
+                      <BetaReaderSignupCard
+                        authorId={qrCode.author_id}
+                        description={qrCode.author?.beta_reader_description || "Help shape upcoming stories by providing feedback on early drafts."}
+                      />
+                    )}
+                    {qrCode.newsletter_enabled && (
+                      <NewsletterSignupCard
+                        authorId={qrCode.author_id}
+                        description={qrCode.author?.newsletter_description || "Stay updated on new releases, exclusive content, and author news."}
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Author's Other Books - moved to bottom */}
+              {qrCode.otherBooks && qrCode.otherBooks.length > 1 && (
+                <AuthorOtherBooksCarousel
+                  books={qrCode.otherBooks}
+                  authorName={qrCode.author?.name || 'this author'}
+                  currentBookId={qrCode.id}
                 />
               )}
             </div>
