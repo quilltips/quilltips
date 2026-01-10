@@ -37,7 +37,8 @@ export const useQRCodeFetch = () => {
           stripe_setup_complete,
           arc_signup_description,
           beta_reader_description,
-          newsletter_description
+          newsletter_description,
+          book_club_description
         )
       `;
       

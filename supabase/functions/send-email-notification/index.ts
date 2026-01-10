@@ -150,6 +150,88 @@ function generateEmailContent(type, userName, data, userId) {
           url: "https://quilltips.co/author/tip-feed"
         }
       };
+    case 'arc_signup':
+      return {
+        subject: "New ARC Reader Signup on Quilltips",
+        header: "New ARC Reader Request",
+        mainMessage: `Hello ${userName}, you have received a new ARC reader signup request.`,
+        additionalContent: `
+          <p><strong>Reader Details:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            <li>Name: ${data.readerName || 'Not provided'}</li>
+            <li>Email: ${data.readerEmail || 'Not provided'}</li>
+            ${data.readerLocation ? `<li>Location: ${data.readerLocation}</li>` : ''}
+          </ul>
+          ${data.message ? `<p><strong>Message:</strong></p><p><em>"${data.message}"</em></p>` : ''}
+        `,
+        cta: {
+          text: "View Dashboard",
+          url: "https://quilltips.co/author/data"
+        }
+      };
+    case 'beta_reader_signup':
+      return {
+        subject: "New Beta Reader Application on Quilltips",
+        header: "New Beta Reader Application",
+        mainMessage: `Hello ${userName}, you have received a new beta reader application.`,
+        additionalContent: `
+          <p><strong>Applicant Details:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            <li>Name: ${data.readerName || 'Not provided'}</li>
+            <li>Email: ${data.readerEmail || 'Not provided'}</li>
+            ${data.readingExperience ? `<li>Reading Experience: ${data.readingExperience}</li>` : ''}
+          </ul>
+          ${data.message ? `<p><strong>Why they want to be a beta reader:</strong></p><p><em>"${data.message}"</em></p>` : ''}
+        `,
+        cta: {
+          text: "View Dashboard",
+          url: "https://quilltips.co/author/data"
+        }
+      };
+    case 'newsletter_signup':
+      return {
+        subject: "New Newsletter Subscriber on Quilltips",
+        header: "New Newsletter Subscriber",
+        mainMessage: `Hello ${userName}, you have a new newsletter subscriber.`,
+        additionalContent: `
+          <p><strong>Subscriber Details:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            ${data.subscriberName ? `<li>Name: ${data.subscriberName}</li>` : ''}
+            <li>Email: ${data.subscriberEmail || 'Not provided'}</li>
+          </ul>
+        `,
+        cta: {
+          text: "View Dashboard",
+          url: "https://quilltips.co/author/data"
+        }
+      };
+    case 'book_club_invite':
+      const eventTypeLabels = {
+        'book_club': 'Book Club Meeting',
+        'virtual_event': 'Virtual Event',
+        'in_person_event': 'In-Person Event',
+        'other': 'Other Event'
+      };
+      return {
+        subject: "New Book Club Invitation on Quilltips",
+        header: "New Event Invitation",
+        mainMessage: `Hello ${userName}, you have received an invitation to attend a reader event.`,
+        additionalContent: `
+          <p><strong>Event Details:</strong></p>
+          <ul style="text-align: left; display: inline-block;">
+            <li>From: ${data.readerName || 'Not provided'}</li>
+            <li>Email: ${data.readerEmail || 'Not provided'}</li>
+            <li>Event Type: ${eventTypeLabels[data.eventType] || data.eventType || 'Not specified'}</li>
+            ${data.eventDate ? `<li>Date: ${data.eventDate}</li>` : ''}
+            ${data.eventLocation ? `<li>Location: ${data.eventLocation}</li>` : ''}
+          </ul>
+          ${data.message ? `<p><strong>About the event:</strong></p><p><em>"${data.message}"</em></p>` : ''}
+        `,
+        cta: {
+          text: "View Dashboard",
+          url: "https://quilltips.co/author/data"
+        }
+      };
     case 'stripe_setup_incomplete':
       return {
         subject: "Action Required: Complete Your Payment Setup",

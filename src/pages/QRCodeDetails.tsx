@@ -20,6 +20,7 @@ import { AuthorOtherBooksCarousel } from "@/components/book/AuthorOtherBooksCaro
 import { ARCSignupCard } from "@/components/author/ARCSignupCard";
 import { BetaReaderSignupCard } from "@/components/author/BetaReaderSignupCard";
 import { NewsletterSignupCard } from "@/components/author/NewsletterSignupCard";
+import { BookClubInviteCard } from "@/components/author/BookClubInviteCard";
 import { useState } from "react";
 import { ChevronRight, Mail } from "lucide-react";
 import { Meta } from "@/components/Meta";
@@ -77,7 +78,7 @@ const QRCodeDetails = () => {
   const ogImage = qrCode.cover_image || 'https://quilltips.co/og-image.png';
 
   // Check if any signup forms are enabled
-  const hasSignupForms = qrCode.arc_signup_enabled || qrCode.beta_reader_enabled || qrCode.newsletter_enabled;
+  const hasSignupForms = qrCode.arc_signup_enabled || qrCode.beta_reader_enabled || qrCode.newsletter_enabled || qrCode.book_club_enabled;
 
   return (
     <>
@@ -357,6 +358,12 @@ const QRCodeDetails = () => {
                       <NewsletterSignupCard
                         authorId={qrCode.author_id}
                         description={qrCode.author?.newsletter_description || "Stay updated on new releases, exclusive content, and author news."}
+                      />
+                    )}
+                    {qrCode.book_club_enabled && (
+                      <BookClubInviteCard
+                        authorId={qrCode.author_id}
+                        description={qrCode.author?.book_club_description || "Invite the author to your book club meeting or event."}
                       />
                     )}
                   </div>

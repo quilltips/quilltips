@@ -9,7 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Calendar, Users, BookOpen, Mail, RotateCcw } from "lucide-react";
+import { Calendar, Users, BookOpen, Mail, RotateCcw, PartyPopper } from "lucide-react";
 
 interface LandingPageTabProps {
   profileId: string;
@@ -26,6 +26,8 @@ interface LandingPageSettings {
   beta_reader_description: string | null;
   newsletter_enabled: boolean;
   newsletter_description: string | null;
+  book_club_enabled: boolean;
+  book_club_description: string | null;
 }
 
 export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProps) => {
@@ -39,6 +41,8 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
     beta_reader_description: null,
     newsletter_enabled: false,
     newsletter_description: null,
+    book_club_enabled: false,
+    book_club_description: null,
   });
   const [savedSettings, setSavedSettings] = useState<LandingPageSettings>(settings);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,7 +74,9 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
           beta_reader_enabled,
           beta_reader_description,
           newsletter_enabled,
-          newsletter_description
+          newsletter_description,
+          book_club_enabled,
+          book_club_description
         `)
         .eq('id', profileId)
         .single();
@@ -87,6 +93,8 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
         beta_reader_description: data.beta_reader_description || null,
         newsletter_enabled: data.newsletter_enabled || false,
         newsletter_description: data.newsletter_description || null,
+        book_club_enabled: data.book_club_enabled || false,
+        book_club_description: data.book_club_description || null,
       };
 
       setSettings(fetchedSettings);
@@ -117,6 +125,8 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
         beta_reader_description: settings.beta_reader_description || null,
         newsletter_enabled: settings.newsletter_enabled,
         newsletter_description: settings.newsletter_description || null,
+        book_club_enabled: settings.book_club_enabled,
+        book_club_description: settings.book_club_description || null,
       };
 
       const { error } = await supabase
@@ -156,6 +166,8 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
         beta_reader_description: null,
         newsletter_enabled: false,
         newsletter_description: null,
+        book_club_enabled: false,
+        book_club_description: null,
       };
 
       const { error } = await supabase
@@ -381,6 +393,47 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
         </CardContent>
       </Card>
 
+      {/* Book Club Invites */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <PartyPopper className="h-5 w-5 text-primary" />
+            <CardTitle>Book Club and Event Invitations</CardTitle>
+          </div>
+          <CardDescription>
+            Allow readers to invite you to their book club meetings or events
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="book-club-enabled"
+              checked={settings.book_club_enabled}
+              onCheckedChange={(checked) => setSettings(prev => ({
+                ...prev,
+                book_club_enabled: checked
+              }))}
+            />
+            <Label htmlFor="book-club-enabled">Enable book club invitations</Label>
+          </div>
+          {settings.book_club_enabled && (
+            <div className="space-y-2">
+              <Label htmlFor="book-club-description">Book Club Invitation Description</Label>
+              <Textarea
+                id="book-club-description"
+                placeholder="Let readers know about your availability for book clubs and events..."
+                value={settings.book_club_description || ''}
+                onChange={(e) => setSettings(prev => ({
+                  ...prev,
+                  book_club_description: e.target.value.trim() || null
+                }))}
+                rows={3}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t">
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -399,6 +452,7 @@ export const LandingPageTab = ({ profileId, onChangeStatus }: LandingPageTabProp
                   <li>ARC signup form and description</li>
                   <li>Beta reader signup form and description</li>
                   <li>Newsletter signup form and description</li>
+                  <li>Book club invitation form and description</li>
                 </ul>
                 This action cannot be undone.
               </AlertDialogDescription>
