@@ -226,6 +226,7 @@ function generateEmailContent(type, userName, data, userId) {
             ${data.eventLocation ? `<li>Location: ${data.eventLocation}</li>` : ''}
           </ul>
           ${data.message ? `<p><strong>About the event:</strong></p><p><em>"${data.message}"</em></p>` : ''}
+          <p style="margin-top: 16px;">Feel free to email the reader directly to coordinate and learn more.</p>
         `,
         cta: {
           text: "View Dashboard",
