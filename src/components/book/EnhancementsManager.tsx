@@ -5,12 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Plus, X, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoUpload } from "../upload/VideoUpload";
 import { CharacterImageUpload } from "../upload/CharacterImageUpload";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import type { BookVideo } from "./VideoCarousel";
 
 interface Character {
   url: string;
@@ -32,10 +34,17 @@ interface EnhancementsManagerProps {
     thank_you_video_url?: string;
     book_description?: string;
     character_images?: Character[];
+    book_videos?: BookVideo[];
   };
   recommendations?: Recommendation[];
   onUpdate?: () => void;
 }
+
+const VIDEO_TYPE_OPTIONS = [
+  { value: "thank-you", label: "Thank-You Video" },
+  { value: "interview", label: "Interview" },
+  { value: "other", label: "Other" },
+] as const;
 
 export const EnhancementsManager = ({
   qrCodeId,
@@ -45,7 +54,20 @@ export const EnhancementsManager = ({
   onUpdate,
 }: EnhancementsManagerProps) => {
   const { toast } = useToast();
-  const [videoUrl, setVideoUrl] = useState(initialData?.thank_you_video_url || "");
+  
+  // Initialize videos from book_videos or legacy thank_you_video_url
+  const getInitialVideos = (): BookVideo[] => {
+    if (initialData?.book_videos && Array.isArray(initialData.book_videos) && initialData.book_videos.length > 0) {
+      return initialData.book_videos;
+    }
+    // Fallback to legacy single video
+    if (initialData?.thank_you_video_url) {
+      return [{ url: initialData.thank_you_video_url, type: "thank-you" }];
+    }
+    return [];
+  };
+  
+  const [videos, setVideos] = useState<BookVideo[]>(getInitialVideos());
   const [bookDesc, setBookDesc] = useState(initialData?.book_description || "");
   const [characters, setCharacters] = useState<Character[]>(initialData?.character_images || []);
   const [recs, setRecs] = useState<Recommendation[]>(recommendations);
@@ -53,20 +75,27 @@ export const EnhancementsManager = ({
   const [isVideoSaving, setIsVideoSaving] = useState(false);
   const recommendationsRef = useRef<Recommendation[]>(recommendations);
 
-  // Auto-save video URL to database
-  const saveVideoUrl = async (url: string | null) => {
+  // Save videos to database
+  const saveVideos = async (videosToSave: BookVideo[]) => {
     setIsVideoSaving(true);
     try {
+      // Filter out videos without URLs
+      const validVideos = videosToSave.filter(v => v.url && v.url.trim() !== "");
+      
       const { error } = await supabase
         .from('qr_codes')
-        .update({ thank_you_video_url: url })
+        .update({ 
+          book_videos: validVideos.length > 0 ? validVideos as any : null,
+          // Also update legacy field for backwards compatibility
+          thank_you_video_url: validVideos.length > 0 ? validVideos[0].url : null
+        })
         .eq('id', qrCodeId);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: url ? "Video saved successfully" : "Video removed successfully",
+        description: "Video saved successfully",
       });
       onUpdate?.();
     } catch (error) {
@@ -82,37 +111,68 @@ export const EnhancementsManager = ({
   };
 
   // Handle video upload success - auto-save
-  const handleVideoUploadSuccess = (url: string) => {
-    setVideoUrl(url);
-    saveVideoUrl(url);
+  const handleVideoUploadSuccess = (index: number, url: string) => {
+    const updated = [...videos];
+    updated[index] = { ...updated[index], url };
+    setVideos(updated);
+    saveVideos(updated);
   };
 
-  // Handle video removal - auto-save
-  const handleVideoRemove = () => {
-    setVideoUrl("");
-    saveVideoUrl(null);
+  // Handle video URL change (manual entry)
+  const handleVideoUrlChange = (index: number, url: string) => {
+    const updated = [...videos];
+    updated[index] = { ...updated[index], url };
+    setVideos(updated);
+  };
+
+  // Handle video type change
+  const handleVideoTypeChange = (index: number, type: BookVideo["type"]) => {
+    const updated = [...videos];
+    updated[index] = { ...updated[index], type };
+    setVideos(updated);
+  };
+
+  // Handle video description change
+  const handleVideoDescriptionChange = (index: number, description: string) => {
+    const updated = [...videos];
+    updated[index] = { ...updated[index], description };
+    setVideos(updated);
+  };
+
+  // Handle video removal
+  const handleVideoRemove = (index: number) => {
+    const updated = videos.filter((_, i) => i !== index);
+    setVideos(updated);
+    saveVideos(updated);
+  };
+
+  // Add new video
+  const addVideo = () => {
+    setVideos([...videos, { url: "", type: "thank-you" }]);
+  };
+
+  // Save video URL (for manual URL entry)
+  const saveVideoUrl = async (index: number) => {
+    const updated = [...videos];
+    if (updated[index]?.url) {
+      saveVideos(updated);
+    }
   };
   
-  // Sync recommendations when prop changes (e.g., after query refresh)
-  // But preserve locally added items (those without IDs) that haven't been saved yet
+  // Sync recommendations when prop changes
   useEffect(() => {
     if (recommendations !== undefined) {
-      // Check if recommendations actually changed (by comparing IDs or content)
       const currentIds = recommendations.map(r => r.id).filter(Boolean).sort().join(',');
       const prevIds = recommendationsRef.current?.map(r => r.id).filter(Boolean).sort().join(',') || '';
       
-      // Only sync if IDs actually changed or if this is the first time (prevIds is empty)
       const hasChanged = currentIds !== prevIds || 
                         (recommendationsRef.current === undefined && recommendations.length > 0) ||
                         (recommendationsRef.current?.length !== recommendations.length && recommendations.length > 0);
       
       if (hasChanged) {
-        console.log("Syncing recommendations from props, prev:", recommendationsRef.current, "new:", recommendations);
-        // Recommendations changed - merge with local unsaved items
         setRecs(prevRecs => {
           const localUnsavedItems = prevRecs.filter(r => !r.id);
           const merged = [...recommendations, ...localUnsavedItems];
-          console.log("Merged recommendations:", merged);
           return merged;
         });
         recommendationsRef.current = recommendations;
@@ -123,68 +183,53 @@ export const EnhancementsManager = ({
   // Sync initialData when it changes
   useEffect(() => {
     if (initialData) {
-      console.log("Syncing initialData - character_images:", initialData.character_images);
-      setVideoUrl(initialData.thank_you_video_url || "");
+      // Sync videos
+      const newVideos = getInitialVideos();
+      setVideos(prevVideos => {
+        // Preserve local unsaved videos (those without URLs or with new URLs not in saved data)
+        const savedUrls = new Set(newVideos.map(v => v.url).filter(Boolean));
+        const pendingVideos = prevVideos.filter(v => v.url && v.url.trim() !== "" && !savedUrls.has(v.url));
+        const unsavedVideos = prevVideos.filter(v => !v.url || v.url.trim() === "");
+        
+        if (pendingVideos.length > 0 || unsavedVideos.length > 0) {
+          return [...newVideos, ...pendingVideos, ...unsavedVideos];
+        }
+        return newVideos;
+      });
+      
       setBookDesc(initialData.book_description || "");
-      // Only sync characters if initialData actually has different data (by comparing lengths and URLs)
+      // Sync characters
       setCharacters(prevChars => {
         const newChars = initialData.character_images || [];
-        
-        // Separate local characters into: saved (match initialData), pending (have URL but not in saved), and unsaved (empty URL)
         const savedUrls = new Set(newChars.map(c => c.url).filter(Boolean));
-        const savedChars = prevChars.filter(c => c.url && savedUrls.has(c.url));
         const pendingChars = prevChars.filter(c => c.url && c.url.trim() !== "" && !savedUrls.has(c.url));
         const unsavedChars = prevChars.filter(c => !c.url || c.url.trim() === "");
         
-        // Check if saved data has changed by comparing URLs
-        const prevSavedUrls = savedChars.map(c => c.url).sort().join(',');
-        const newSavedUrls = newChars.map(c => c.url).filter(Boolean).sort().join(',');
-        
-        // If saved data has changed, update saved characters from initialData
-        if (prevSavedUrls !== newSavedUrls) {
-          console.log("Updating saved characters from initialData:", newChars);
-          // Merge: new saved characters + pending characters (uploaded but not saved) + unsaved characters (empty)
-          return [...newChars, ...pendingChars, ...unsavedChars];
-        }
-        
-        // If saved data hasn't changed, preserve pending and unsaved characters
         if (pendingChars.length > 0 || unsavedChars.length > 0) {
-          console.log("Preserving pending/unsaved characters - pending:", pendingChars.length, "unsaved:", unsavedChars.length);
-          // Merge: saved characters (from newChars or prev) + pending + unsaved
           return [...newChars, ...pendingChars, ...unsavedChars];
         }
-        
-        // No change needed
-        return prevChars;
+        return newChars;
       });
     }
   }, [initialData]);
-  
-  // Determine default tab for video: if videoUrl exists and is from storage bucket, show upload tab, otherwise show URL tab
-  const defaultVideoTab = videoUrl && videoUrl.includes('/book-videos/') ? 'upload' : (videoUrl ? 'url' : 'upload');
 
   const saveEnhancements = async () => {
     setIsSaving(true);
     try {
-      // Filter out characters without URLs (empty characters)
       const validCharacters = characters.filter(char => char.url && char.url.trim() !== "");
+      const validVideos = videos.filter(v => v.url && v.url.trim() !== "");
       
-      console.log("Saving enhancements - characters:", validCharacters);
-      console.log("Character images count:", validCharacters.length);
-      
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('qr_codes')
         .update({
-          thank_you_video_url: videoUrl || null,
+          book_videos: validVideos.length > 0 ? validVideos as any : null,
+          thank_you_video_url: validVideos.length > 0 ? validVideos[0].url : null,
           book_description: bookDesc || null,
           character_images: validCharacters.length > 0 ? validCharacters as any : null,
         })
-        .eq('id', qrCodeId)
-        .select('character_images');
+        .eq('id', qrCodeId);
 
       if (error) throw error;
-      
-      console.log("Save successful - returned character_images:", data?.[0]?.character_images);
 
       toast({
         title: "Success",
@@ -218,20 +263,15 @@ export const EnhancementsManager = ({
   };
 
   const addRecommendation = () => {
-    console.log("addRecommendation called, current recs:", recs);
-    setRecs(prevRecs => {
-      const newRecs = [
-        ...prevRecs,
-        {
-          recommended_book_title: "",
-          recommended_book_author: "",
-          buy_link: "",
-          display_order: prevRecs.length,
-        },
-      ];
-      console.log("New recs after adding:", newRecs);
-      return newRecs;
-    });
+    setRecs(prevRecs => [
+      ...prevRecs,
+      {
+        recommended_book_title: "",
+        recommended_book_author: "",
+        buy_link: "",
+        display_order: prevRecs.length,
+      },
+    ]);
   };
 
   const updateRecommendation = (index: number, field: keyof Recommendation, value: string | number) => {
@@ -308,62 +348,112 @@ export const EnhancementsManager = ({
       {/* Video Section */}
       <Card className="border rounded-lg" style={{ backgroundColor: '#19363c' }}>
         <CardHeader className="pb-3 md:pb-6">
-          <CardTitle className="text-sm md:text-base" style={{ color: '#ffd166' }}>Thank You Video</CardTitle>
+          <CardTitle className="text-sm md:text-base" style={{ color: '#ffd166' }}>Upload a video for your readers</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 pt-0">
-          <Tabs defaultValue={defaultVideoTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Video</TabsTrigger>
-              <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
-            </TabsList>
-            <TabsContent value="upload" className="space-y-4 pt-2">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Label className="text-xs font-medium" style={{ color: '#333333' }}>Video File</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 cursor-help" style={{ color: '#333333' }} />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[250px]">
-                        <p>Supported formats: MP4, WebM, OGG, MOV (max 100MB)</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <VideoUpload
-                  onUploadSuccess={handleVideoUploadSuccess}
-                  currentVideoUrl={videoUrl}
-                  onRemove={handleVideoRemove}
-                />
-                {isVideoSaving && (
-                  <p className="text-xs" style={{ color: '#ffd166' }}>Saving...</p>
-                )}
+          {videos.map((video, idx) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+              <div className="flex justify-between items-start">
+                <Label className="text-sm font-medium" style={{ color: '#ffd166' }}>Video {idx + 1}</Label>
+                <Button variant="ghost" size="sm" onClick={() => handleVideoRemove(idx)} className="text-white hover:text-white h-8 w-8 p-0">
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-            </TabsContent>
-            <TabsContent value="url" className="space-y-4 pt-2">
+              
+              {/* Video Type Selector */}
               <div className="space-y-2">
-                <Label style={{ color: '#333333' }}>Video URL</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="https://..."
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                    className="bg-white text-[#19363c] flex-1"
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => saveVideoUrl(videoUrl || null)}
-                    disabled={isVideoSaving}
-                    style={{ backgroundColor: '#ffd166', color: '#19363c' }}
-                    className="hover:opacity-90"
-                  >
-                    {isVideoSaving ? 'Saving...' : 'Save'}
-                  </Button>
-                </div>
+                <Label className="text-xs" style={{ color: '#333333' }}>Video Type</Label>
+                <RadioGroup
+                  value={video.type}
+                  onValueChange={(value) => handleVideoTypeChange(idx, value as BookVideo["type"])}
+                  className="flex flex-wrap gap-4"
+                >
+                  {VIDEO_TYPE_OPTIONS.map((option) => (
+                    <div key={option.value} className="flex items-center space-x-2">
+                      <RadioGroupItem value={option.value} id={`video-type-${idx}-${option.value}`} className="border-white text-white" />
+                      <Label htmlFor={`video-type-${idx}-${option.value}`} className="text-sm cursor-pointer" style={{ color: '#333333' }}>
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
               </div>
-            </TabsContent>
-          </Tabs>
+              
+              <Tabs defaultValue={video.url && video.url.includes('/book-videos/') ? 'upload' : (video.url ? 'url' : 'upload')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="upload" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Upload Video</TabsTrigger>
+                  <TabsTrigger value="url" style={{ color: '#333333' }} className="data-[state=active]:bg-[#ffd166] data-[state=active]:text-[#19363c]">Enter URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="space-y-4 pt-2">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Label className="text-xs font-medium" style={{ color: '#333333' }}>Video File</Label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-4 w-4 cursor-help" style={{ color: '#333333' }} />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[250px]">
+                            <p>Supported formats: MP4, WebM, OGG, MOV (max 150MB)</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <VideoUpload
+                      onUploadSuccess={(url) => handleVideoUploadSuccess(idx, url)}
+                      currentVideoUrl={video.url}
+                      onRemove={() => {
+                        const updated = [...videos];
+                        updated[idx] = { ...updated[idx], url: "" };
+                        setVideos(updated);
+                      }}
+                    />
+                    {isVideoSaving && (
+                      <p className="text-xs" style={{ color: '#ffd166' }}>Saving...</p>
+                    )}
+                  </div>
+                </TabsContent>
+                <TabsContent value="url" className="space-y-4 pt-2">
+                  <div className="space-y-2">
+                    <Label style={{ color: '#333333' }}>Video URL</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="https://..."
+                        value={video.url}
+                        onChange={(e) => handleVideoUrlChange(idx, e.target.value)}
+                        className="bg-white text-[#19363c] flex-1"
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => saveVideoUrl(idx)}
+                        disabled={isVideoSaving}
+                        style={{ backgroundColor: '#ffd166', color: '#19363c' }}
+                        className="hover:opacity-90"
+                      >
+                        {isVideoSaving ? 'Saving...' : 'Save'}
+                      </Button>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+              
+              {/* Video Description */}
+              <div className="space-y-2">
+                <Label className="text-xs" style={{ color: '#333333' }}>Description (optional)</Label>
+                <Input
+                  placeholder="Brief description of this video..."
+                  value={video.description || ""}
+                  onChange={(e) => handleVideoDescriptionChange(idx, e.target.value)}
+                  className="bg-white text-[#19363c]"
+                />
+              </div>
+            </div>
+          ))}
+          
+          <Button variant="outline" onClick={addVideo} className="w-full" style={{ borderColor: '#333333', color: '#333333' }}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Video
+          </Button>
         </CardContent>
       </Card>
 

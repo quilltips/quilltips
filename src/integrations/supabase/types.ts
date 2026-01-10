@@ -669,6 +669,7 @@ export type Database = {
           average_tip: number | null
           book_description: string | null
           book_title: string
+          book_videos: Json | null
           buy_now_link: string | null
           character_images: Json | null
           cover_image: string | null
@@ -699,6 +700,7 @@ export type Database = {
           average_tip?: number | null
           book_description?: string | null
           book_title: string
+          book_videos?: Json | null
           buy_now_link?: string | null
           character_images?: Json | null
           cover_image?: string | null
@@ -729,6 +731,7 @@ export type Database = {
           average_tip?: number | null
           book_description?: string | null
           book_title?: string
+          book_videos?: Json | null
           buy_now_link?: string | null
           character_images?: Json | null
           cover_image?: string | null
