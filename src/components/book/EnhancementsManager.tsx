@@ -563,8 +563,8 @@ export const EnhancementsManager = ({
               </div>
               <Tabs defaultValue={char.url && char.url.includes('/character-images/') ? 'upload' : (char.url ? 'url' : 'upload')} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 h-8">
-                  <TabsTrigger value="upload" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>Upload</TabsTrigger>
-                  <TabsTrigger value="url" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>URL</TabsTrigger>
+                  <TabsTrigger value="upload" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:!text-white">Upload</TabsTrigger>
+                  <TabsTrigger value="url" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:!text-white">URL</TabsTrigger>
                 </TabsList>
                 <TabsContent value="upload" className="mt-2">
                   <CharacterImageUpload
