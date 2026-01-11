@@ -5,6 +5,14 @@ import { toPng, toSvg } from "html-to-image";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { useToast } from "./use-toast";
 
+export type Recommendation = {
+  id: string;
+  recommended_book_title: string;
+  recommended_book_author: string;
+  buy_link: string | null;
+  display_order: number | null;
+};
+
 export type QRCode = {
   id: string;
   author_id: string;
@@ -33,6 +41,7 @@ export type QRCode = {
   beta_reader_enabled?: boolean | null;
   newsletter_enabled?: boolean | null;
   book_club_enabled?: boolean | null;
+  recommendations?: Recommendation[];
   author?: {
     name: string | null;
     avatar_url: string | null;
@@ -51,6 +60,7 @@ export const qrCodeQueryKeys = {
   list: () => [...qrCodeQueryKeys.all, 'list'] as const,
   detail: (id: string) => [...qrCodeQueryKeys.all, 'detail', id] as const,
   tips: (id: string) => [...qrCodeQueryKeys.all, 'tips', id] as const,
+  recommendations: (id: string) => [...qrCodeQueryKeys.all, 'recommendations', id] as const,
 };
 
 export const useQRCodeDetailsPage = () => {
@@ -271,6 +281,35 @@ export const useQRCodeDetailsPage = () => {
     enabled: !!qrCode?.id
   });
 
+  // Fetch book recommendations for this QR code
+  const { data: recommendations } = useQuery({
+    queryKey: qrCodeQueryKeys.recommendations(qrCode?.id || ''),
+    queryFn: async () => {
+      if (!qrCode?.id) return [];
+
+      const { data, error } = await supabase
+        .from('author_book_recommendations')
+        .select('id, recommended_book_title, recommended_book_author, buy_link, display_order')
+        .eq('qr_code_id', qrCode.id)
+        .order('display_order');
+
+      if (error) {
+        console.error("Error fetching recommendations:", error);
+        throw error;
+      }
+
+      console.log("Recommendations fetched:", data);
+      return data as Recommendation[];
+    },
+    enabled: !!qrCode?.id
+  });
+
+  // Merge recommendations into qrCode for convenience
+  const qrCodeWithRecommendations = qrCode ? {
+    ...qrCode,
+    recommendations: recommendations || []
+  } : undefined;
+
   const handleDownloadSVG = async () => {
     if (!qrCodeRef.current) {
       console.error('QR code element not found');
@@ -326,7 +365,7 @@ export const useQRCodeDetailsPage = () => {
 
   return {
     id: identifier,
-    qrCode,
+    qrCode: qrCodeWithRecommendations,
     qrLoading,
     handleDownloadSVG,
     handleDownloadPNG,
