@@ -428,9 +428,12 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
               }}
               recommendations={qrCode.recommendations}
               onUpdate={() => {
-                // Invalidate queries to refresh the QR code data
+                // Invalidate queries to refresh the QR code data and recommendations
                 if (id) {
                   queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id) });
+                }
+                if (qrCode.id) {
+                  queryClient.invalidateQueries({ queryKey: ['qr-codes', 'recommendations', qrCode.id] });
                 }
                 queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
               }}
