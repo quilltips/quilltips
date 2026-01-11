@@ -276,14 +276,14 @@ const QRCodeDetails = () => {
                       <button className="w-full flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border hover:bg-muted/50 transition-colors group">
                         <div className="flex items-center gap-3">
                           <Mail className="h-5 w-5 text-muted-foreground" />
-                          <span className="text-lg font-playfair">A Letter from the Author</span>
+                          <span className="text-lg font-playfair">A Letter from {authorFirstName || 'the Author'}</span>
                         </div>
                         <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
                       </button>
                     </DialogTrigger>
                     <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
                       <DialogHeader>
-                        <DialogTitle className="font-playfair text-xl">A Letter from the Author</DialogTitle>
+                        <DialogTitle className="font-playfair text-xl">A Letter from {authorFirstName || 'the Author'}</DialogTitle>
                       </DialogHeader>
                       <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed">
                         {qrCode.letter_to_readers}
