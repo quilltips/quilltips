@@ -11,6 +11,8 @@ import { SearchBar } from "./navigation/SearchBar";
 import { useAuth } from "./auth/AuthProvider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import logoUrl from "@/assets/Logo_Nav_Text.svg";
+import { useQuery } from "@tanstack/react-query";
+import { getAuthorUrl } from "@/lib/url-utils";
 
 export const Navigation = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +21,23 @@ export const Navigation = () => {
   const { user, isAuthor } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Fetch the user's profile to get their actual slug
+  const { data: userProfile } = useQuery({
+    queryKey: ['user-profile-nav', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, slug')
+        .eq('id', user.id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
 
   useEffect(() => {
     return () => setIsMobileMenuOpen(false);
@@ -70,7 +89,7 @@ export const Navigation = () => {
         <DropdownMenuItem onClick={() => navigate('/author/settings')}>
           Settings
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate(`/author/${user?.user_metadata?.name?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`)}>
+        <DropdownMenuItem onClick={() => navigate(getAuthorUrl({ id: user!.id, slug: userProfile?.slug }))}>
           Public profile
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout} disabled={isLoading}>
@@ -252,7 +271,7 @@ export const Navigation = () => {
               Settings
             </Link>
             <Link 
-              to={`/author/${user?.user_metadata?.name?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}`} 
+              to={getAuthorUrl({ id: user!.id, slug: userProfile?.slug })} 
               className="px-4 py-2 hover:bg-accent/10 rounded-md"
               onClick={closeMobileMenu}
             >
