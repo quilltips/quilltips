@@ -36,7 +36,7 @@ const HowItWorks = () => {
             How Quilltips Works
           </h1>
           <p className="text-xl md:text-2xl text-[#333333] max-w-3xl mx-auto leading-relaxed">
-            Create a Quilltips Jar, add the QR code to your book and enhance your reader experience
+            Create your author profile, set up a Quilltips Jar for your book, and connect with your readers!
           </p>
         </div>
 
@@ -47,20 +47,10 @@ const HowItWorks = () => {
               <div className="flex items-center gap-4 mb-6">
               
                 <h2 className="text-3xl md:text-4xl font-playfair font-medium text-[#333333]">
-                  Create your Quilltips account and link to Stripe
+                  Create your Quilltips account and publish your author profile.
                 </h2>
               </div>
-              <p className="text-lg text-[#333333]/80 leading-relaxed">
-                Sign up for Quilltips and complete Stripe onboarding to enable tips from your fanbase (optional). Learn more about our <Link to="/pricing" className="text-[#333333] underline hover:text-[#333333]/80 transition-colors">pricing</Link> and <Link to="/about" className="text-[#333333] underline hover:text-[#333333]/80 transition-colors">mission</Link>.
-              </p>
-              <div className="pt-4">
-                <Link 
-                  to="/stripe-help" 
-                  className="text-[#333333] underline hover:text-[#333333]/80 transition-colors"
-                >
-                  Learn more about Stripe setup →
-                </Link>
-              </div>
+           
             </div>
             <div className="flex justify-center">
               <div className="w-full max-w-md">
@@ -80,11 +70,11 @@ const HowItWorks = () => {
             <div className="md:order-2 space-y-6">
               <div className="flex items-center gap-4 mb-6">
                 <h2 className="text-3xl md:text-4xl font-playfair font-medium text-[#333333]">
-                  Generate and download your QR code
+                  Add your book details and bonus content 
                 </h2>
               </div>
               <p className="text-lg text-[#333333]/80 leading-relaxed">
-                Create a custom QR code for each of your books. Each code links to your personalized Quilltips Jar where readers can see more about your book, message you, leave a tip and more. You can configure your Quilltips Jar to include a thank-you video, character art, and book recommendations during the creation process or afterwards from your dashboard.
+               You can configure your Quilltips Jar to include a thank-you video, character art, and book recommendations during the creation process or afterwards from your dashboard. It's easy to embed this in your book using Quilltips' built-in QR code generator or to share a link to your page on social media. Readers can also write you a note or send you a tip. 
               </p>
               
             </div>
@@ -140,7 +130,7 @@ const HowItWorks = () => {
                 </h2>
               </div>
               <p className="text-lg text-[#19363C]/80 leading-relaxed">
-                Readers scan your QR code to learn more about your book and to leave tips and messages. Use your Quilltips profile to link to your website and socials, growing your audience with every interaction.
+                Readers can view your book page to see bonus content, learn more about your book, write you a note, or send you a tip. They can also sign up for future updates and see links to your website and socials, growing your audience with every interaction.
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
