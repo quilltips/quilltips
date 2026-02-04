@@ -167,7 +167,7 @@ const Index = () => {
           <div className="space-y-6 lg:space-y-8 max-w-4xl">
             <h1 className="font-playfair font-medium text-5xl sm:text-6xl lg:text-7xl text-[#333333] leading-tight">A home for your book</h1>
            
-            <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium max-w-3xl mx-auto">Engage readers with bonus content, get tips & messages, and build your email list. All via your Quilltips QR code.</p>
+            <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium max-w-3xl mx-auto">Engage readers with bonus content, get tips & messages, and build your email list.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6 lg:pt-8">
