@@ -15,15 +15,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { FeaturedAuthorsCarousel } from "@/components/FeaturedAuthorsCarousel";
 import backCoverExample from "@/assets/back_cover_example.png";
-
-const FEATURED_AUTHOR_IDS = [
-  "485c1a1f-5bf0-4c0d-b51c-c97af069fabd", // Gabriel Nardi-Huffman
-  "2964531d-4ba6-4b61-8716-8c63a80f3cae", // Tyler Tarter
-  "55056f35-3a44-4d79-8558-69e003be17b0", // Kelly Schweiger
-  "51c62b82-f4ed-42d2-83e5-8d73d77482a4", // T.M. Thomas
-  "e14f7979-c1ca-4a91-9eb7-df4098759bac", // Frank Eugene Dukes Jr
-  "3f6b03df-9231-451c-ac2e-491fe9be584c", // Melize Smit
-  "757201a7-8ca4-4801-8bdb-ad62c168146a", // Kitty Laroux
+const FEATURED_AUTHOR_IDS = ["485c1a1f-5bf0-4c0d-b51c-c97af069fabd",
+// Gabriel Nardi-Huffman
+"2964531d-4ba6-4b61-8716-8c63a80f3cae",
+// Tyler Tarter
+"55056f35-3a44-4d79-8558-69e003be17b0",
+// Kelly Schweiger
+"51c62b82-f4ed-42d2-83e5-8d73d77482a4",
+// T.M. Thomas
+"e14f7979-c1ca-4a91-9eb7-df4098759bac",
+// Frank Eugene Dukes Jr
+"3f6b03df-9231-451c-ac2e-491fe9be584c",
+// Melize Smit
+"757201a7-8ca4-4801-8bdb-ad62c168146a" // Kitty Laroux
 ];
 const Index = () => {
   const {
@@ -47,70 +51,56 @@ const Index = () => {
     queryClient.prefetchQuery({
       queryKey: ["featured-authors"],
       queryFn: async () => {
-        const { data, error } = await supabase
-          .from("public_profiles")
-          .select("id, name, avatar_url, slug, created_at")
-          .in("id", FEATURED_AUTHOR_IDS);
-
+        const {
+          data,
+          error
+        } = await supabase.from("public_profiles").select("id, name, avatar_url, slug, created_at").in("id", FEATURED_AUTHOR_IDS);
         if (error) throw error;
-        
+
         // Sort by the order in FEATURED_AUTHOR_IDS
-        return (data || []).sort((a, b) => 
-          FEATURED_AUTHOR_IDS.indexOf(a.id) - FEATURED_AUTHOR_IDS.indexOf(b.id)
-        );
+        return (data || []).sort((a, b) => FEATURED_AUTHOR_IDS.indexOf(a.id) - FEATURED_AUTHOR_IDS.indexOf(b.id));
       },
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000 // 5 minutes
     });
   }, [queryClient]);
-  
-  const readerImages = [
-    {
-      src: "/lovable-uploads/screenshots/about_author_qr.webp",
-      alt: "Reader scanning a QR code to tip an author"
-    },
-    {
-      src: backCoverExample,
-      alt: "Book back cover with QR code"
-    }
-  ];
-  
-  const features = [
-    {
-      title: "Upload a thank you video",
-      description: "It's like a hidden easter egg for your readers once they've finished your book",
-      image: "/lovable-uploads/screenshots/book-page-1.webp",
-      imageAlt: "Book page with thank you video",
-      imageTitle: "Upload a thank-you video"
-    },
-    {
-      title: "Like and reply to reader messages",
-      description: "It's like signing autographs from your couch",
-      image: "/lovable-uploads/screenshots/message-reply-1.webp",
-      imageAlt: "Message reply interface",
-      imageTitle: "Hear directly from readers"
-    },
-    {
-      title: "Connect with Stripe to receive tips (optional)",
-      description: "They'll appreciate the chance to support your work",
-      image: "/lovable-uploads/screenshots/tipping-1.webp",
-      imageAlt: "Reader tipping interface",
-      imageTitle: "Connect with Stripe"
-    },
-    {
-      title: "Add character art and book recommendations",
-      description: "Delight your fans even more",
-      image: "/lovable-uploads/screenshots/character-art-recs.webp",
-      imageAlt: "Author dashboard with art and recommendations",
-      imageTitle: "Add art and book recommendations"
-    },
-    {
-      title: "Link to your website and socials",
-      description: "Build your email list with easy reader signup forms",
-      image: "/lovable-uploads/screenshots/links-section.webp",
-      imageAlt: "Reader signup forms",
-      imageTitle: "Link back to your website"
-    }
-  ];
+  const readerImages = [{
+    src: "/lovable-uploads/screenshots/about_author_qr.webp",
+    alt: "Reader scanning a QR code to tip an author"
+  }, {
+    src: backCoverExample,
+    alt: "Book back cover with QR code"
+  }];
+  const features = [{
+    title: "Upload a thank you video",
+    description: "It's like a hidden easter egg for your readers once they've finished your book",
+    image: "/lovable-uploads/screenshots/book-page-1.webp",
+    imageAlt: "Book page with thank you video",
+    imageTitle: "Upload a thank-you video"
+  }, {
+    title: "Like and reply to reader messages",
+    description: "It's like signing autographs from your couch",
+    image: "/lovable-uploads/screenshots/message-reply-1.webp",
+    imageAlt: "Message reply interface",
+    imageTitle: "Hear directly from readers"
+  }, {
+    title: "Connect with Stripe to receive tips (optional)",
+    description: "They'll appreciate the chance to support your work",
+    image: "/lovable-uploads/screenshots/tipping-1.webp",
+    imageAlt: "Reader tipping interface",
+    imageTitle: "Connect with Stripe"
+  }, {
+    title: "Add character art and book recommendations",
+    description: "Delight your fans even more",
+    image: "/lovable-uploads/screenshots/character-art-recs.webp",
+    imageAlt: "Author dashboard with art and recommendations",
+    imageTitle: "Add art and book recommendations"
+  }, {
+    title: "Link to your website and socials",
+    description: "Build your email list with easy reader signup forms",
+    image: "/lovable-uploads/screenshots/links-section.webp",
+    imageAlt: "Reader signup forms",
+    imageTitle: "Link back to your website"
+  }];
   const handleCreateQRCode = () => {
     if (!user) {
       navigate("/author/login");
@@ -175,9 +165,7 @@ const Index = () => {
       <div className="mx-auto w-full max-w-6xl">
         <div className="flex flex-col items-center justify-center text-center py-2 lg:py-12">
           <div className="space-y-6 lg:space-y-8 max-w-4xl">
-            <h1 className="font-playfair font-medium text-5xl sm:text-6xl lg:text-7xl text-[#333333] leading-tight">
-              A homepage for your book
-            </h1>
+            <h1 className="font-playfair font-medium text-5xl sm:text-6xl lg:text-7xl text-[#333333] leading-tight">A home for your book</h1>
            
             <p className="text-xl sm:text-2xl text-[#333333]/70 font-medium max-w-3xl mx-auto">Engage readers with bonus content, get tips & messages, and build your email list. All via your Quilltips QR code.</p>
           </div>
@@ -273,40 +261,17 @@ const Index = () => {
         <div className="grid md:grid-cols-2 gap-8">
           {/* Left: Feature Tiles */}
           <div className="flex flex-col justify-center space-y-3 min-h-[530px]">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                onClick={() => setActiveFeatureIndex(index)}
-                className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
-                  activeFeatureIndex === index
-                    ? "bg-[#19363C] text-[#FFD166]"
-                    : "bg-transparent text-[#333333] hover:bg-gray-100"
-                }`}
-              >
-                <h3 className={`font-playfair font-semibold text-xl ${
-                  activeFeatureIndex === index ? "text-[#FFD166]" : "text-[#333333]"
-                }`}>
+            {features.map((feature, index) => <div key={index} onClick={() => setActiveFeatureIndex(index)} className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${activeFeatureIndex === index ? "bg-[#19363C] text-[#FFD166]" : "bg-transparent text-[#333333] hover:bg-gray-100"}`}>
+                <h3 className={`font-playfair font-semibold text-xl ${activeFeatureIndex === index ? "text-[#FFD166]" : "text-[#333333]"}`}>
                   {feature.title}
                 </h3>
-              </div>
-            ))}
+              </div>)}
           </div>
           
           {/* Right: Image Carousel */}
           <div className="flex justify-center items-center min-h-[530px]">
-            <div 
-              className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-300 hover:shadow-lg"
-              onClick={() => openImageModal(
-                features[activeFeatureIndex].image,
-                features[activeFeatureIndex].imageAlt,
-                features[activeFeatureIndex].imageTitle
-              )}
-            >
-              <img 
-                src={features[activeFeatureIndex].image} 
-                alt={features[activeFeatureIndex].imageAlt} 
-                className="w-full max-w-[370px] md:max-w-[425px] max-h-[530px] rounded-lg object-contain transition-opacity duration-300" 
-              />
+            <div className="rounded-2xl bg-transparent p-2 cursor-pointer transition-all duration-300 hover:shadow-lg" onClick={() => openImageModal(features[activeFeatureIndex].image, features[activeFeatureIndex].imageAlt, features[activeFeatureIndex].imageTitle)}>
+              <img src={features[activeFeatureIndex].image} alt={features[activeFeatureIndex].imageAlt} className="w-full max-w-[370px] md:max-w-[425px] max-h-[530px] rounded-lg object-contain transition-opacity duration-300" />
             </div>
           </div>
         </div>
@@ -324,25 +289,13 @@ const Index = () => {
           </div>
           {/* Image carousel right on desktop */}
           <div className="order-2 md:order-2 flex flex-col items-center md:items-end">
-            <img 
-              src={readerImages[activeReaderImageIndex].src} 
-              alt={readerImages[activeReaderImageIndex].alt} 
-              className="w-full max-w-[320px] md:max-w-[375px] rounded-xl transition-opacity duration-300" 
-            />
+            <img src={readerImages[activeReaderImageIndex].src} alt={readerImages[activeReaderImageIndex].alt} className="w-full max-w-[320px] md:max-w-[375px] rounded-xl transition-opacity duration-300" />
             {/* Navigation arrows underneath */}
             <div className="flex justify-center items-center gap-2 mt-3">
-              <button
-                onClick={() => setActiveReaderImageIndex((prev) => (prev - 1 + readerImages.length) % readerImages.length)}
-                className="h-6 w-6 rounded-full border border-gray-300 bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-200"
-                aria-label="Previous image"
-              >
+              <button onClick={() => setActiveReaderImageIndex(prev => (prev - 1 + readerImages.length) % readerImages.length)} className="h-6 w-6 rounded-full border border-gray-300 bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-200" aria-label="Previous image">
                 <ArrowLeft className="h-4 w-4 text-[#19363C]" />
               </button>
-              <button
-                onClick={() => setActiveReaderImageIndex((prev) => (prev + 1) % readerImages.length)}
-                className="h-6 w-6 rounded-full border border-gray-300 bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-200"
-                aria-label="Next image"
-              >
+              <button onClick={() => setActiveReaderImageIndex(prev => (prev + 1) % readerImages.length)} className="h-6 w-6 rounded-full border border-gray-300 bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-200" aria-label="Next image">
                 <ArrowRight className="h-4 w-4 text-[#19363C]" />
               </button>
             </div>
