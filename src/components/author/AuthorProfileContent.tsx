@@ -3,6 +3,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AuthorQRCodes } from "@/components/AuthorQRCodes";
 import { AuthorPublicTipFeed } from "@/components/tips/AuthorPublicTipFeed";
 import { CollapsibleSignupSection } from "@/components/author/CollapsibleSignupSection";
+import { getOtherLinks, getSocialIconLinks, getValidURL, SocialIconLinkRow, type SocialLink } from "@/components/AuthorPublicProfile";
+import { Link as LinkIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -11,6 +13,7 @@ interface AuthorProfileContentProps {
   authorName: string;
   stripeSetupComplete?: boolean;
   hasStripeAccount?: boolean;
+  socialLinks?: SocialLink[];
 }
 
 interface LandingPageSettings {
@@ -26,8 +29,12 @@ export const AuthorProfileContent = ({
   authorId,
   authorName,
   stripeSetupComplete = false,
-  hasStripeAccount = false
+  hasStripeAccount = false,
+  socialLinks = []
 }: AuthorProfileContentProps) => {
+  const socialIconLinks = getSocialIconLinks(socialLinks);
+  const otherLinks = getOtherLinks(socialLinks);
+  const hasAnyLinks = socialIconLinks.length > 0 || otherLinks.length > 0;
   const [landingPageSettings, setLandingPageSettings] = useState<LandingPageSettings | null>(null);
   
   // Check if the author has completed Stripe onboarding
@@ -83,6 +90,38 @@ export const AuthorProfileContent = ({
           />
         </CardContent>
       </Card>
+
+      {/* Links section: social icons on their own line, then other links */}
+      {hasAnyLinks && (
+        <Card className="border border-[#19363C]/50 shadow-sm rounded-xl overflow-hidden bg-transparent">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xl font-semibold text-[#333333]">Links</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0 space-y-4">
+            {socialIconLinks.length > 0 && (
+              <SocialIconLinkRow links={socialIconLinks} />
+            )}
+            {otherLinks.length > 0 && (
+              <div className="flex flex-wrap justify-start items-center gap-x-4 gap-y-2">
+                {otherLinks.map((link, index) => (
+                  <a
+                    key={index}
+                    href={getValidURL(link.url)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[#333333] font-bold hover:underline transition-colors"
+                  >
+                    <LinkIcon className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm truncate">
+                      {link.url.replace(/^https?:\/\//, '').replace(/^www\./, '')}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Reader Engagement Section - Collapsible Signups */}
       <CollapsibleSignupSection

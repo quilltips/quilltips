@@ -7,6 +7,15 @@ interface CollapsibleBookDescriptionProps {
   maxLines?: number;
 }
 
+const lineClampClass: Record<number, string> = {
+  1: "line-clamp-1",
+  2: "line-clamp-2",
+  3: "line-clamp-3",
+  4: "line-clamp-4",
+  5: "line-clamp-5",
+  6: "line-clamp-6",
+};
+
 export const CollapsibleBookDescription = ({
   description,
   maxLines = 6,
@@ -14,6 +23,7 @@ export const CollapsibleBookDescription = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const clampClass = lineClampClass[maxLines] ?? "line-clamp-6";
 
   useEffect(() => {
     const checkTruncation = () => {
@@ -33,7 +43,7 @@ export const CollapsibleBookDescription = ({
       <div
         ref={contentRef}
         className={`whitespace-pre-wrap ${
-          !isExpanded ? "line-clamp-6" : ""
+          !isExpanded ? clampClass : ""
         }`}
       >
         {description}

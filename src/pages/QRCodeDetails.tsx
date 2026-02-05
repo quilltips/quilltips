@@ -22,15 +22,8 @@ import { BetaReaderSignupCard } from "@/components/author/BetaReaderSignupCard";
 import { NewsletterSignupCard } from "@/components/author/NewsletterSignupCard";
 import { BookClubInviteCard } from "@/components/author/BookClubInviteCard";
 import { useState } from "react";
-import { ChevronRight, Mail } from "lucide-react";
+import { ChevronRight, Mail, Video, FileText, Image, MessageCircle } from "lucide-react";
 import { Meta } from "@/components/Meta";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 const QRCodeDetails = () => {
   const {
@@ -108,88 +101,105 @@ const QRCodeDetails = () => {
           "description": bookDescription
         }}
       />
-      <main className="container mx-auto px-4 pt-8 pb-12">
-        <div className="max-w-md mx-auto space-y-10 sm:space-y-12">
-          {/* Book details card with horizontal layout */}
-          <div className="flex items-center space-x-6">
-            <div className="w-32 aspect-[2/3] relative shrink-0 rounded-md overflow-hidden">
+      <main className="container mx-auto px-4 pt-4 md:pt-8 pb-12">
+        <div className="max-w-md md:max-w-2xl mx-auto space-y-8 md:space-y-10">
+          {/* Hero: centered */}
+          <div className="space-y-6 md:space-y-8">
+          {/* Book details: centered stack on all viewports (match mobile) */}
+          <div className="flex flex-col items-center text-center">
+            <div className="w-[90px] md:w-36 aspect-[2/3] relative shrink-0 rounded-md overflow-hidden">
               <OptimizedImage
                 src={qrCode.cover_image || "/lovable-uploads/logo_nav.svg"}
                 alt={qrCode.book_title}
                 className="w-full h-full"
                 objectFit={qrCode.cover_image ? "cover" : "contain"}
                 fallbackSrc="/lovable-uploads/logo_nav.svg"
-                sizes="128px"
+                sizes="(max-width: 768px) 90px, 144px"
                 priority={true}
               />
             </div>
-            <div className="space-y-1 pt-2">
-              <h1 className="text-2xl font-bold">{qrCode.book_title}</h1>
-              <p className="">
+            <div className="space-y-3 pt-3 w-full">
+              <h1 className="text-xl md:text-4xl font-bold">{qrCode.book_title}</h1>
+              <p className="text-sm md:text-Ixl">
                 by <Link 
                     to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author?.slug })}
                     className="hover:underline hover:text-primary transition-colors"
                   >
                     {qrCode.author?.name || 'Unknown Author'}
                   </Link>
-              </p>
-              
-              {/* Added publisher and release date info */}
-              <div className="mt-2 text-sm space-y-1">
-                {qrCode.publisher && (
-                  <p>Publisher: {qrCode.publisher}</p>
-                )}
                 {qrCode.release_date && (
-                  <p>Released: {format(new Date(qrCode.release_date), 'MMMM yyyy')}</p>
+                  <> · {format(new Date(qrCode.release_date), 'MMMM yyyy')}</>
                 )}
-                
-                {/* Buy Now button */}
-                {qrCode.buy_now_link && (
-                  <div className="pt-2">
+              </p>
+              {/* Inline actions: Buy, Support, Fanmail */}
+              {!showTipForm && !showMessageForm && (
+                <div className="flex flex-wrap justify-center gap-2 mt-3">
+                  {qrCode.buy_now_link && (
                     <Button 
                       variant="outline"
                       size="sm"
                       onClick={() => window.open(qrCode.buy_now_link, '_blank')}
-                      className="bg-transparent border-border text-[#333333] hover:underline hover:bg-transparent hover:shadow-none hover:font-bold hover:border-[#333333]/50 text-xs px-3 py-1"
+                      className="bg-transparent border-border text-[#333333] hover:underline hover:bg-transparent hover:shadow-none hover:font-bold hover:border-[#333333]/50 text-xs px-3 py-1.5 h-8"
                     >
-                      Buy Now!
+                      Buy
                     </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-            
-          {/* Tip and Message buttons */}
-          {!showTipForm && !showMessageForm && (
-            <div className="flex gap-3">
-              {stripeSetupComplete && hasStripeAccount && isQRCodePaid && qrCode.tipping_enabled !== false ? (
-                <>
-                  <Button 
-                    onClick={() => setShowTipForm(true)} 
-                    className="flex-1 py-6 text-md font-medium"
-                    style={{ backgroundColor: '#FFD166', color: '#333333' }}
-                  >
-                    Leave a tip
-                  </Button>
+                  )}
+                  {stripeSetupComplete && hasStripeAccount && isQRCodePaid && qrCode.tipping_enabled !== false && (
+                    <Button 
+                      onClick={() => setShowTipForm(true)} 
+                      variant="outline"
+                      size="sm"
+                      className="text-xs px-3 py-1.5 h-8 bg-transparent border-border text-[#333333] hover:underline hover:bg-transparent hover:shadow-none hover:font-bold hover:border-[#333333]/50"
+                    >
+                      Support
+                    </Button>
+                  )}
                   <Button 
                     onClick={() => setShowMessageForm(true)} 
                     variant="outline"
-                    className="flex-1 py-6 text-md font-medium hover:bg-transparent hover:shadow"
+                    size="sm"
+                    className="text-xs px-3 py-1.5 h-8 bg-transparent border-border text-[#333333] hover:underline hover:bg-transparent hover:shadow-none hover:font-bold hover:border-[#333333]/50"
                   >
-                    Send a message
+                    Fanmail
                   </Button>
-                </>
-              ) : (
-                <Button 
-                  onClick={() => setShowMessageForm(true)} 
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow py-6 text-lg font-semibold"
-                >
-                  Send a message
-                </Button>
+                </div>
               )}
             </div>
-          )}
+          </div>
+
+          {/* Mobile section nav: jump to video, letter, description, art, feed */}
+          {qrCode.is_paid && (() => {
+            const bookVideos = qrCode.book_videos as BookVideo[] | null;
+            const hasVideos = (bookVideos && Array.isArray(bookVideos) && bookVideos.length > 0) || (qrCode.thank_you_video_url || qrCode.video_title);
+            const hasLetter = !!qrCode.letter_to_readers;
+            const hasDescription = !!qrCode.book_description;
+            const hasArt = qrCode.character_images && Array.isArray(qrCode.character_images) && qrCode.character_images.length > 0;
+            const sections = [
+              hasVideos && { id: 'section-video', icon: Video, label: 'Video' },
+              hasLetter && { id: 'section-letter', icon: Mail, label: 'Letter' },
+              hasArt && { id: 'section-art', icon: Image, label: 'Art' },
+              hasDescription && { id: 'section-description', icon: FileText, label: 'Description' },
+              { id: 'section-feed', icon: MessageCircle, label: 'Feed' },
+            ].filter(Boolean) as { id: string; icon: typeof Video; label: string }[];
+            if (sections.length <= 1) return null;
+            return (
+              <div className="flex md:hidden justify-center">
+                <nav className="w-fit flex justify-center gap-3 py-1.5 border-y border-border">
+                {sections.map(({ id, icon: Icon, label }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                    className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                    aria-label={label}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </button>
+                ))}
+                </nav>
+              </div>
+            );
+          })()}
 
           {/* Message form (conditionally rendered) */}
           {showMessageForm && (
@@ -227,10 +237,13 @@ const QRCodeDetails = () => {
               onCancel={() => setShowTipForm(false)}
             />
           )}
-          
+
+          </div>
+          {/* End hero */}
+
           {/* Book Bonus Content Section - Only show if QR code is paid */}
           {!showTipForm && !showMessageForm && qrCode.is_paid && (
-            <div className="space-y-16 sm:space-y-20">
+            <div className="flex flex-col gap-10 sm:gap-12">
               {/* Videos Section */}
               {(() => {
                 // Check for new multi-video system first
@@ -242,10 +255,7 @@ const QRCodeDetails = () => {
                 
                 if (hasMultipleVideos) {
                   return (
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-playfair text-foreground">
-                        {bookVideos.length === 1 ? "A Message from the Author" : "Videos"}
-                      </h3>
+                    <div id="section-video" className="scroll-mt-4 rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-3 md:space-y-4">
                       <VideoCarousel videos={bookVideos} />
                     </div>
                   );
@@ -253,8 +263,7 @@ const QRCodeDetails = () => {
                 
                 if (hasLegacyVideo) {
                   return (
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-playfair text-foreground">A Message from the Author</h3>
+                    <div id="section-video" className="scroll-mt-4 rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-3 md:space-y-4">
                       <VideoThumbnailWithModal
                         videoUrl={qrCode.thank_you_video_url || qrCode.video_title || ''}
                         thumbnailUrl={qrCode.thank_you_video_thumbnail || undefined}
@@ -268,52 +277,38 @@ const QRCodeDetails = () => {
                 return null;
               })()}
               
-              {/* Letter to Readers - Modal */}
+              {/* Letter to Readers - inline on page */}
               {qrCode.letter_to_readers && (
-                <div className="space-y-4">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <button className="w-full flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border hover:bg-muted/50 transition-colors group">
-                        <div className="flex items-center gap-3">
-                          <Mail className="h-5 w-5 text-muted-foreground" />
-                          <span className="text-lg font-playfair">A Letter from {authorFirstName || 'the Author'}</span>
-                        </div>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle className="font-playfair text-xl">A Letter from {authorFirstName || 'the Author'}</DialogTitle>
-                      </DialogHeader>
-                      <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed">
-                        {qrCode.letter_to_readers}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              )}
-              
-              {/* Book Description */}
-              {qrCode.book_description && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-playfair">Description</h3>
-                  <div className="rounded-lg p-6">
-                    <CollapsibleBookDescription description={qrCode.book_description} />
+                <div id="section-letter" className="scroll-mt-4 rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-3 md:space-y-4">
+                  <div className="rounded-lg p-3 md:p-4 bg-white/60 border border-border">
+                    <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                      {qrCode.letter_to_readers}
+                    </div>
                   </div>
                 </div>
               )}
               
               {/* Character Art */}
               {qrCode.character_images && Array.isArray(qrCode.character_images) && qrCode.character_images.length > 0 && (
-                <div className="space-y-6 -mt-8 sm:-mt-10">
-                  <h3 className="text-xl font-playfair text-foreground">Book Art</h3>
+                <div id="section-art" className="scroll-mt-4 rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4 md:space-y-6">
+                  <h3 className="text-xl font-playfair text-foreground text-center">Book Art</h3>
                   <CharacterArtCarousel characters={qrCode.character_images} />
+                </div>
+              )}
+              
+              {/* Book Description */}
+              {qrCode.book_description && (
+                <div id="section-description" className="scroll-mt-4 rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-3 md:space-y-4">
+                  <h3 className="text-xl font-playfair text-center">Description</h3>
+                  <div className="rounded-lg p-3 md:p-4 bg-white/60">
+                    <CollapsibleBookDescription description={qrCode.book_description} maxLines={4} />
+                  </div>
                 </div>
               )}
               
               {/* Author Bio Preview */}
               {qrCode.author && qrCode.author.bio && (
-                <div className="space-y-2 py-2">
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-2">
                   <p className="text-sm ">
                     {qrCode.author.bio.length > 100 
                       ? `${qrCode.author.bio.substring(0, 100)}...` 
@@ -331,16 +326,18 @@ const QRCodeDetails = () => {
               
               {/* Author Recommendations */}
               {qrCode.recommendations && qrCode.recommendations.length > 0 && (
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2]">
                 <BookRecommendationsCarousel
                   recommendations={qrCode.recommendations}
                   authorName={qrCode.author?.name || 'The author'}
                 />
+                </div>
               )}
               
               {/* Signup Forms Section - moved below recommendations */}
               {hasSignupForms && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-playfair">Connect with the Author</h3>
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4">
+                  <h3 className="text-xl font-playfair text-center">Connect with the Author</h3>
                   <div className="space-y-4">
                     {qrCode.arc_signup_enabled && (
                       <ARCSignupCard
@@ -372,17 +369,19 @@ const QRCodeDetails = () => {
               
               {/* Author's Other Books - moved to bottom */}
               {qrCode.otherBooks && qrCode.otherBooks.length > 1 && (
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2]">
                 <AuthorOtherBooksCarousel
                   books={qrCode.otherBooks}
                   authorName={qrCode.author?.name || 'this author'}
                   currentBookId={qrCode.id}
                 />
+                </div>
               )}
             </div>
           )}
           
           {/* Feed section */}
-          <div className="rounded-lg border border-border p-6 space-y-6 pt-10 sm:pt-12">
+          <div id="section-feed" className="scroll-mt-4 rounded-lg border border-border p-6 space-y-6 pt-10 sm:pt-12">
             <h2 className="text-2xl font-semibold">Feed</h2>
             <PublicTipHistory qrCodeId={qrCode.id} />
           </div>

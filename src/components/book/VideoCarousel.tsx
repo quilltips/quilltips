@@ -6,7 +6,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { VideoThumbnailWithModal } from "./VideoThumbnailWithModal";
-import { Heart, Mic, Video } from "lucide-react";
 
 export interface BookVideo {
   url: string;
@@ -17,20 +16,6 @@ export interface BookVideo {
 interface VideoCarouselProps {
   videos: BookVideo[];
 }
-
-const VideoTypeIcon = ({ type }: { type: BookVideo["type"] }) => {
-  const iconProps = { className: "h-4 w-4 text-muted-foreground" };
-  
-  switch (type) {
-    case "thank-you":
-      return <Heart {...iconProps} />;
-    case "interview":
-      return <Mic {...iconProps} />;
-    case "other":
-    default:
-      return <Video {...iconProps} />;
-  }
-};
 
 export const VideoCarousel = ({ videos }: VideoCarouselProps) => {
   if (!videos || videos.length === 0) {
@@ -46,9 +31,6 @@ export const VideoCarousel = ({ videos }: VideoCarouselProps) => {
           videoUrl={video.url}
           description={video.description}
         />
-        <div className="flex justify-end">
-          <VideoTypeIcon type={video.type} />
-        </div>
       </div>
     );
   }
@@ -63,9 +45,6 @@ export const VideoCarousel = ({ videos }: VideoCarouselProps) => {
                 videoUrl={video.url}
                 description={video.description}
               />
-              <div className="flex justify-end">
-                <VideoTypeIcon type={video.type} />
-              </div>
             </div>
           </CarouselItem>
         ))}

@@ -107,24 +107,26 @@ export const VideoThumbnailWithModal = ({
         </>
       )}
       
-      <div
-        className="relative cursor-pointer group rounded-lg overflow-hidden"
-        onClick={() => setIsOpen(true)}
-      >
-        {displayThumbnail ? (
-          <img
-            src={displayThumbnail}
-            alt={title || "Video thumbnail"}
-            className="w-full h-48 object-cover"
-          />
-        ) : (
-          <div className="w-full h-48 bg-muted flex items-center justify-center">
-            <Play className="h-16 w-16 text-muted-foreground" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
-          <div className="bg-primary rounded-full p-4">
-            <Play className="h-8 w-8 text-primary-foreground" />
+      <div className="max-w-xl mx-auto">
+        <div
+          className="relative cursor-pointer group rounded-lg overflow-hidden aspect-video w-full"
+          onClick={() => setIsOpen(true)}
+        >
+          {displayThumbnail ? (
+            <img
+              src={displayThumbnail}
+              alt={title || "Video thumbnail"}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+              <Play className="h-16 w-16 text-muted-foreground" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+            <div className="bg-primary rounded-full p-4">
+              <Play className="h-8 w-8 text-primary-foreground" />
+            </div>
           </div>
         </div>
       </div>

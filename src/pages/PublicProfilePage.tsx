@@ -134,6 +134,7 @@ const PublicProfilePage = () => {
           authorName={author.name || "Anonymous Author"}
           hasStripeAccount={stripeSetupInfo.hasStripeAccount}
           stripeSetupComplete={stripeSetupInfo.stripeSetupComplete}
+          socialLinks={author.social_links || []}
         />
 
         {selectedQRCode && (
