@@ -146,13 +146,6 @@ export const AuthorProfileContent = ({
         </CardContent>
       </Card>
   
-      {/* Tip Guidance Text */}
-      <p className="text-sm text-[#718096] text-center mt-4">
-        {stripeOnboardingComplete 
-          ? "To send a tip, simply select a book from the Books section above and click the \"Leave a tip!\" button!"
-          : "Books are shown below. Tipping will be available once the author completes their payment setup."
-        }
-      </p>
     </div>
   );
 }
