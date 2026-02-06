@@ -143,7 +143,7 @@ const QRCodeDetails = () => {
               </div>
               {/* Inline actions: Buy, Support, Fan Mail */}
               {(
-                <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+                <div className="flex flex-wrap items-center justify-center gap-2.5 mt-3">
                   {qrCode.buy_now_link && (
                     <Button 
                       variant="outline"
