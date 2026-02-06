@@ -75,6 +75,28 @@ export const useQRCodeFetch = () => {
         .eq('qr_code_id', qrData.id)
         .order('display_order', { ascending: true });
 
+      // Enrich recommendations with slugs for platform-linked books
+      let enrichedRecommendations = recommendations || [];
+      const recQrCodeIds = (recommendations || [])
+        .map((r: any) => r.recommended_qr_code_id)
+        .filter(Boolean);
+
+      if (recQrCodeIds.length > 0) {
+        const { data: recBooks } = await supabase
+          .from('qr_codes')
+          .select('id, slug, cover_image')
+          .in('id', recQrCodeIds);
+
+        const bookMap = new Map((recBooks || []).map((b: any) => [b.id, b]));
+        enrichedRecommendations = (recommendations || []).map((r: any) => ({
+          ...r,
+          recommended_book_slug: r.recommended_qr_code_id ? bookMap.get(r.recommended_qr_code_id)?.slug : null,
+          recommended_book_cover_url: r.recommended_qr_code_id
+            ? (bookMap.get(r.recommended_qr_code_id)?.cover_image || r.recommended_book_cover_url)
+            : r.recommended_book_cover_url,
+        }));
+      }
+
       console.log("QRCodeFetch: QR code data loaded:", qrData);
       console.log("QRCodeFetch: character_images:", qrData.character_images);
       console.log("QRCodeFetch: character_images count:", Array.isArray(qrData.character_images) ? qrData.character_images.length : 'not an array');
@@ -82,7 +104,7 @@ export const useQRCodeFetch = () => {
       return {
         ...qrData,
         otherBooks: otherBooks || [],
-        recommendations: recommendations || []
+        recommendations: enrichedRecommendations
       };
 
     },

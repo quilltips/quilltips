@@ -99,6 +99,7 @@ export type Database = {
           recommended_book_author: string
           recommended_book_cover_url: string | null
           recommended_book_title: string
+          recommended_qr_code_id: string | null
         }
         Insert: {
           author_id: string
@@ -111,6 +112,7 @@ export type Database = {
           recommended_book_author: string
           recommended_book_cover_url?: string | null
           recommended_book_title: string
+          recommended_qr_code_id?: string | null
         }
         Update: {
           author_id?: string
@@ -123,6 +125,7 @@ export type Database = {
           recommended_book_author?: string
           recommended_book_cover_url?: string | null
           recommended_book_title?: string
+          recommended_qr_code_id?: string | null
         }
         Relationships: [
           {
@@ -135,6 +138,13 @@ export type Database = {
           {
             foreignKeyName: "author_book_recommendations_qr_code_id_fkey"
             columns: ["qr_code_id"]
+            isOneToOne: false
+            referencedRelation: "qr_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "author_book_recommendations_recommended_qr_code_id_fkey"
+            columns: ["recommended_qr_code_id"]
             isOneToOne: false
             referencedRelation: "qr_codes"
             referencedColumns: ["id"]

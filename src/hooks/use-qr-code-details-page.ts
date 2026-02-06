@@ -9,6 +9,9 @@ export type Recommendation = {
   id: string;
   recommended_book_title: string;
   recommended_book_author: string;
+  recommended_book_cover_url: string | null;
+  recommended_qr_code_id: string | null;
+  recommended_book_slug: string | null;
   buy_link: string | null;
   display_order: number | null;
 };
@@ -289,7 +292,7 @@ export const useQRCodeDetailsPage = () => {
 
       const { data, error } = await supabase
         .from('author_book_recommendations')
-        .select('id, recommended_book_title, recommended_book_author, buy_link, display_order')
+        .select('*')
         .eq('qr_code_id', qrCode.id)
         .order('display_order');
 
@@ -298,8 +301,30 @@ export const useQRCodeDetailsPage = () => {
         throw error;
       }
 
-      console.log("Recommendations fetched:", data);
-      return data as Recommendation[];
+      // Enrich recommendations with slugs for platform-linked books
+      const recQrCodeIds = (data || [])
+        .map((r: any) => r.recommended_qr_code_id)
+        .filter(Boolean);
+
+      let bookMap = new Map();
+      if (recQrCodeIds.length > 0) {
+        const { data: recBooks } = await supabase
+          .from('qr_codes')
+          .select('id, slug, cover_image')
+          .in('id', recQrCodeIds);
+        bookMap = new Map((recBooks || []).map((b: any) => [b.id, b]));
+      }
+
+      const enriched = (data || []).map((r: any) => ({
+        ...r,
+        recommended_book_slug: r.recommended_qr_code_id ? bookMap.get(r.recommended_qr_code_id)?.slug : null,
+        recommended_book_cover_url: r.recommended_qr_code_id
+          ? (bookMap.get(r.recommended_qr_code_id)?.cover_image || r.recommended_book_cover_url)
+          : r.recommended_book_cover_url,
+      }));
+
+      console.log("Recommendations fetched:", enriched);
+      return enriched as Recommendation[];
     },
     enabled: !!qrCode?.id
   });

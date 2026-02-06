@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { Plus, X, HelpCircle } from "lucide-react";
+import { Plus, X, HelpCircle, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoUpload } from "../upload/VideoUpload";
@@ -24,6 +24,8 @@ interface Recommendation {
   id?: string;
   recommended_book_title: string;
   recommended_book_author?: string;
+  recommended_book_cover_url?: string;
+  recommended_qr_code_id?: string;
   buy_link?: string;
   display_order: number;
 }
@@ -128,6 +130,11 @@ export const EnhancementsManager = ({
   const [betaReaderEnabled, setBetaReaderEnabled] = useState(initialData?.beta_reader_enabled || false);
   const [newsletterEnabled, setNewsletterEnabled] = useState(initialData?.newsletter_enabled || false);
   const [bookClubEnabled, setBookClubEnabled] = useState(initialData?.book_club_enabled || false);
+
+  // Bookshelf search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Auto-save function for text fields
   const autoSaveField = useCallback(async (field: string, value: string) => {
@@ -332,22 +339,74 @@ export const EnhancementsManager = ({
     setCharacters(characters.filter((_, i) => i !== index));
   };
 
-  const addRecommendation = () => {
-    setRecs(prevRecs => [
-      ...prevRecs,
-      {
-        recommended_book_title: "",
-        recommended_book_author: "",
-        buy_link: "",
-        display_order: prevRecs.length,
-      },
-    ]);
-  };
+  // Bookshelf search effect
+  useEffect(() => {
+    if (!searchQuery || searchQuery.length < 2) {
+      setSearchResults([]);
+      return;
+    }
 
-  const updateRecommendation = (index: number, field: keyof Recommendation, value: string | number) => {
-    const updated = [...recs];
-    updated[index] = { ...updated[index], [field]: value };
-    setRecs(updated);
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const { data, error } = await supabase
+          .from('qr_codes')
+          .select('id, book_title, cover_image, slug, author_id, author:public_profiles!author_id(name)')
+          .ilike('book_title', `%${searchQuery}%`)
+          .neq('author_id', authorId)
+          .limit(5);
+        if (error) throw error;
+        setSearchResults(data || []);
+      } catch (error) {
+        console.error('Error searching books:', error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, authorId]);
+
+  const selectBook = async (book: any) => {
+    if (recs.some(r => r.recommended_qr_code_id === book.id)) {
+      toast({ title: "Already added", description: "This book is already in your bookshelf" });
+      return;
+    }
+
+    try {
+      const authorName = Array.isArray(book.author) ? book.author[0]?.name : book.author?.name;
+      const { data, error } = await supabase
+        .from('author_book_recommendations')
+        .insert({
+          author_id: authorId,
+          qr_code_id: qrCodeId,
+          recommended_qr_code_id: book.id,
+          recommended_book_title: book.book_title,
+          recommended_book_author: authorName || '',
+          recommended_book_cover_url: book.cover_image,
+          display_order: recs.length,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setRecs(prev => [...prev, {
+        id: data.id,
+        recommended_book_title: book.book_title,
+        recommended_book_author: authorName || '',
+        recommended_book_cover_url: book.cover_image,
+        recommended_qr_code_id: book.id,
+        display_order: prev.length,
+      }]);
+      setSearchQuery('');
+      setSearchResults([]);
+      toast({ title: "Success", description: "Book added to your bookshelf" });
+      onUpdate?.();
+    } catch (error) {
+      console.error('Error adding recommendation:', error);
+      toast({ title: "Error", description: "Failed to add book", variant: "destructive" });
+    }
   };
 
   const removeRecommendation = async (index: number) => {
@@ -358,59 +417,16 @@ export const EnhancementsManager = ({
           .from('author_book_recommendations')
           .delete()
           .eq('id', rec.id);
-
         if (error) throw error;
-        toast({ title: "Success", description: "Recommendation removed" });
+        toast({ title: "Success", description: "Book removed from bookshelf" });
       } catch (error) {
         console.error("Error removing recommendation:", error);
-        toast({ title: "Error", description: "Failed to remove recommendation", variant: "destructive" });
+        toast({ title: "Error", description: "Failed to remove book", variant: "destructive" });
         return;
       }
     }
     setRecs(recs.filter((_, i) => i !== index));
-  };
-
-  const saveRecommendation = async (index: number) => {
-    const rec = recs[index];
-    try {
-      if (rec.id) {
-        const { error } = await supabase
-          .from('author_book_recommendations')
-          .update({
-            recommended_book_title: rec.recommended_book_title,
-            recommended_book_author: rec.recommended_book_author || "",
-            buy_link: rec.buy_link || null,
-            display_order: rec.display_order,
-          })
-          .eq('id', rec.id);
-
-        if (error) throw error;
-      } else {
-        const { data, error } = await supabase
-          .from('author_book_recommendations')
-          .insert({
-            author_id: authorId,
-            qr_code_id: qrCodeId,
-            recommended_book_title: rec.recommended_book_title,
-            recommended_book_author: rec.recommended_book_author || "",
-            buy_link: rec.buy_link || null,
-            display_order: rec.display_order,
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        const updated = [...recs];
-        updated[index] = { ...rec, id: data.id };
-        setRecs(updated);
-      }
-
-      toast({ title: "Success", description: "Recommendation saved" });
-      onUpdate?.();
-    } catch (error) {
-      console.error("Error saving recommendation:", error);
-      toast({ title: "Error", description: "Failed to save recommendation", variant: "destructive" });
-    }
+    onUpdate?.();
   };
 
   return (
@@ -648,49 +664,88 @@ export const EnhancementsManager = ({
         </CardContent>
       </Card>
 
-      {/* Recommendations */}
+      {/* Bookshelf */}
       <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
         <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Book Recommendations</CardTitle>
+          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Bookshelf</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 px-4 pb-4">
+          {/* Selected books */}
           {recs.map((rec, idx) => (
-            <div key={idx} className="p-3 rounded-md space-y-2" style={{ backgroundColor: '#f8f6f2' }}>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium" style={{ color: '#333333' }}>Book title</span>
-                <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)} className="h-6 w-6 p-0 hover:bg-transparent" style={{ color: '#333333' }}>
-                  <X className="h-3 w-3" />
-                </Button>
+            <div key={rec.id || idx} className="p-3 rounded-md flex items-center gap-3" style={{ backgroundColor: '#f8f6f2' }}>
+              {rec.recommended_book_cover_url ? (
+                <img src={rec.recommended_book_cover_url} alt={rec.recommended_book_title} className="w-10 h-14 object-cover rounded flex-shrink-0" />
+              ) : (
+                <div className="w-10 h-14 bg-muted rounded flex items-center justify-center flex-shrink-0">
+                  <span className="text-[8px]">No cover</span>
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium truncate" style={{ color: '#333333' }}>{rec.recommended_book_title}</p>
+                {rec.recommended_book_author && (
+                  <p className="text-[10px] truncate" style={{ color: '#666666' }}>{rec.recommended_book_author}</p>
+                )}
               </div>
-              <Input
-                value={rec.recommended_book_title}
-                onChange={(e) => updateRecommendation(idx, "recommended_book_title", e.target.value)}
-                className="h-8 text-xs bg-white border-gray-200"
-                style={{ color: '#333333' }}
-              />
-              <span className="text-xs font-medium block pt-1" style={{ color: '#333333' }}>Author name</span>
-              <Input
-                value={rec.recommended_book_author || ""}
-                onChange={(e) => updateRecommendation(idx, "recommended_book_author", e.target.value)}
-                className="h-8 text-xs bg-white border-gray-200"
-                style={{ color: '#333333' }}
-              />
-              <span className="text-xs font-medium block pt-1" style={{ color: '#333333' }}>Link</span>
-              <Input
-                value={rec.buy_link || ""}
-                onChange={(e) => updateRecommendation(idx, "buy_link", e.target.value)}
-                className="h-8 text-xs bg-white border-gray-200"
-                style={{ color: '#333333' }}
-              />
-              <Button onClick={() => saveRecommendation(idx)} size="sm" className="w-full h-8 text-xs mt-2" style={{ backgroundColor: '#ffd166', color: '#19363c' }}>
-                Save Recommendation
+              <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)} className="h-6 w-6 p-0 flex-shrink-0 hover:bg-transparent" style={{ color: '#333333' }}>
+                <X className="h-3 w-3" />
               </Button>
             </div>
           ))}
-          <Button variant="ghost" onClick={addRecommendation} className="w-full h-8 text-xs border border-dashed font-medium" style={{ borderColor: '#ffd166', color: '#ffd166' }}>
-            <Plus className="mr-1.5 h-3 w-3" />
-            Add Recommendation
-          </Button>
+
+          {/* Search input */}
+          <div className="relative">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3" style={{ color: '#666666' }} />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for books on Quilltips..."
+                className="h-8 text-xs bg-white border-gray-200 pl-7"
+                style={{ color: '#333333' }}
+              />
+            </div>
+
+            {/* Search results dropdown */}
+            {searchResults.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 rounded-md shadow-lg border border-gray-200 bg-white max-h-60 overflow-y-auto">
+                {searchResults.map((book) => {
+                  const bookAuthorName = Array.isArray(book.author) ? book.author[0]?.name : book.author?.name;
+                  return (
+                    <button
+                      key={book.id}
+                      type="button"
+                      onClick={() => selectBook(book)}
+                      className="w-full flex items-center gap-3 p-2.5 hover:bg-gray-50 transition-colors text-left"
+                    >
+                      {book.cover_image ? (
+                        <img src={book.cover_image} alt={book.book_title} className="w-8 h-12 object-cover rounded flex-shrink-0" />
+                      ) : (
+                        <div className="w-8 h-12 bg-muted rounded flex items-center justify-center flex-shrink-0">
+                          <span className="text-[6px]">No cover</span>
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium truncate" style={{ color: '#333333' }}>{book.book_title}</p>
+                        {bookAuthorName && <p className="text-[10px] truncate" style={{ color: '#666666' }}>by {bookAuthorName}</p>}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {isSearching && (
+              <div className="absolute z-10 w-full mt-1 rounded-md shadow-lg border border-gray-200 bg-white p-3">
+                <p className="text-xs text-center" style={{ color: '#666666' }}>Searching...</p>
+              </div>
+            )}
+
+            {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
+              <div className="absolute z-10 w-full mt-1 rounded-md shadow-lg border border-gray-200 bg-white p-3">
+                <p className="text-xs text-center" style={{ color: '#666666' }}>No books found</p>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 
