@@ -522,6 +522,33 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          author_id: string
+          id: string
+          page_type: string
+          qr_code_id: string | null
+          viewed_at: string
+          visitor_id: string | null
+        }
+        Insert: {
+          author_id: string
+          id?: string
+          page_type: string
+          qr_code_id?: string | null
+          viewed_at?: string
+          visitor_id?: string | null
+        }
+        Update: {
+          author_id?: string
+          id?: string
+          page_type?: string
+          qr_code_id?: string | null
+          viewed_at?: string
+          visitor_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           admin_notes: string | null

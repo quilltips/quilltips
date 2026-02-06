@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePublicProfile } from "@/hooks/use-public-profile";
 import { Meta } from "@/components/Meta";
 import { getCanonicalUrl } from "@/lib/url-utils";
+import { usePageViewTracking } from "@/hooks/use-page-view-tracking";
 
 const PublicProfilePage = () => {
   const { id, nameSlug } = useParams<{ id?: string; nameSlug?: string }>();
@@ -43,6 +44,12 @@ const PublicProfilePage = () => {
 
     fetchStripeSetupInfo();
   }, [author]);
+
+  // Track page view for this author profile
+  usePageViewTracking({
+    authorId: author?.id,
+    pageType: "profile",
+  });
 
   useEffect(() => {
     if (error) {

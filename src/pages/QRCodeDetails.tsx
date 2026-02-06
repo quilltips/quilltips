@@ -24,6 +24,7 @@ import { BookClubInviteCard } from "@/components/author/BookClubInviteCard";
 import { useState } from "react";
 import { ChevronRight, Mail, Video, FileText, Image, MessageCircle } from "lucide-react";
 import { Meta } from "@/components/Meta";
+import { usePageViewTracking } from "@/hooks/use-page-view-tracking";
 
 const QRCodeDetails = () => {
   const {
@@ -55,6 +56,13 @@ const QRCodeDetails = () => {
   } = useQRCodeDetails();
 
   const [showMessageForm, setShowMessageForm] = useState(false);
+
+  // Track page view for this book page
+  usePageViewTracking({
+    authorId: qrCode?.author_id,
+    qrCodeId: qrCode?.id,
+    pageType: "book",
+  });
 
   if (qrCodeLoading) {
     return <QRCodeLoading />;
