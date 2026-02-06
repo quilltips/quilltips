@@ -139,7 +139,7 @@ export const AuthorProfileContent = ({
       {/* Feed Section */}
       <Card className="border border-[#19363C]/50 shadow-sm rounded-lg overflow-hidden" prominent>
         <CardHeader>
-          <CardTitle className="text-xl text-[#2D3748]">Fanmail</CardTitle>
+          <CardTitle className="text-xl text-[#2D3748]">Fan Mail</CardTitle>
         </CardHeader>
         <CardContent>
           <AuthorPublicTipFeed authorId={authorId} />
