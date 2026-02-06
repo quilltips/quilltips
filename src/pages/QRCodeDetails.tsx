@@ -202,39 +202,43 @@ const QRCodeDetails = () => {
 
           {/* Message form (conditionally rendered) */}
           {showMessageForm && (
-            <MessageForm
-              authorId={qrCode.author_id}
-              authorName={qrCode.author?.name}
-              bookTitle={qrCode.book_title}
-              qrCodeId={qrCode.id}
-              onCancel={() => setShowMessageForm(false)}
-              onSuccess={() => setShowMessageForm(false)}
-            />
+            <div className="max-w-md mx-auto w-full">
+              <MessageForm
+                authorId={qrCode.author_id}
+                authorName={qrCode.author?.name}
+                bookTitle={qrCode.book_title}
+                qrCodeId={qrCode.id}
+                onCancel={() => setShowMessageForm(false)}
+                onSuccess={() => setShowMessageForm(false)}
+              />
+            </div>
           )}
 
           {/* Tip form (conditionally rendered) */}
           {showTipForm && (
-            <QRCodeTipForm
-              name={name}
-              message={message}
-              email={email}
-              amount={amount}
-              customAmount={customAmount}
-              isPrivate={isPrivate}
-              isLoading={isLoading}
-              authorFirstName={authorFirstName}
-              stripeSetupComplete={stripeSetupComplete}
-              hasStripeAccount={hasStripeAccount}
-              isQRCodePaid={isQRCodePaid}
-              onNameChange={setName}
-              onMessageChange={setMessage}
-              onEmailChange={setEmail}
-              onAmountChange={setAmount}
-              onCustomAmountChange={setCustomAmount}
-              onPrivateChange={setIsPrivate}
-              onSubmit={handleSubmit}
-              onCancel={() => setShowTipForm(false)}
-            />
+            <div className="max-w-md mx-auto w-full">
+              <QRCodeTipForm
+                name={name}
+                message={message}
+                email={email}
+                amount={amount}
+                customAmount={customAmount}
+                isPrivate={isPrivate}
+                isLoading={isLoading}
+                authorFirstName={authorFirstName}
+                stripeSetupComplete={stripeSetupComplete}
+                hasStripeAccount={hasStripeAccount}
+                isQRCodePaid={isQRCodePaid}
+                onNameChange={setName}
+                onMessageChange={setMessage}
+                onEmailChange={setEmail}
+                onAmountChange={setAmount}
+                onCustomAmountChange={setCustomAmount}
+                onPrivateChange={setIsPrivate}
+                onSubmit={handleSubmit}
+                onCancel={() => setShowTipForm(false)}
+              />
+            </div>
           )}
 
           </div>
@@ -341,7 +345,7 @@ const QRCodeDetails = () => {
               
               {/* Signup Forms - each in its own card */}
               {qrCode.arc_signup_enabled && (
-                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4">
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4 max-w-md mx-auto w-full">
                   <h3 className="text-xl font-playfair text-center">Sign up for ARC Reader</h3>
                   <ARCSignupCard
                     authorId={qrCode.author_id}
@@ -350,7 +354,7 @@ const QRCodeDetails = () => {
                 </div>
               )}
               {qrCode.beta_reader_enabled && (
-                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4">
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4 max-w-md mx-auto w-full">
                   <h3 className="text-xl font-playfair text-center">Sign up for Beta Reader</h3>
                   <BetaReaderSignupCard
                     authorId={qrCode.author_id}
@@ -359,7 +363,7 @@ const QRCodeDetails = () => {
                 </div>
               )}
               {qrCode.newsletter_enabled && (
-                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4">
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4 max-w-md mx-auto w-full">
                   <h3 className="text-xl font-playfair text-center">Sign up for Newsletter</h3>
                   <NewsletterSignupCard
                     authorId={qrCode.author_id}
@@ -368,7 +372,7 @@ const QRCodeDetails = () => {
                 </div>
               )}
               {qrCode.book_club_enabled && (
-                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4">
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4 max-w-md mx-auto w-full">
                   <h3 className="text-xl font-playfair text-center">Sign up for Book Club</h3>
                   <BookClubInviteCard
                     authorId={qrCode.author_id}
