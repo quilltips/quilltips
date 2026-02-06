@@ -39,7 +39,7 @@ const getFirstName = (fullName: string): string => {
   return fullName.split(' ')[0] || fullName;
 };
 
-const getSocialPlatformIcon = (platform: SocialPlatform, className = "h-5 w-5") => {
+export const getSocialPlatformIcon = (platform: SocialPlatform, className = "h-5 w-5") => {
   switch (platform) {
     case 'linkedin': return <Linkedin className={`${className} text-[#0077B5]`} />;
     case 'twitter': return <Twitter className={`${className} text-[#1DA1F2]`} />;

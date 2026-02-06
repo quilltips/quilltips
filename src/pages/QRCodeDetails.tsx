@@ -25,6 +25,7 @@ import { useState } from "react";
 import { ChevronRight, Mail, Video, FileText, Image, MessageCircle } from "lucide-react";
 import { Meta } from "@/components/Meta";
 import { usePageViewTracking } from "@/hooks/use-page-view-tracking";
+import { getSocialIconLinks, getSocialPlatformIcon, getValidURL, type SocialLink } from "@/components/AuthorPublicProfile";
 
 const QRCodeDetails = () => {
   const {
@@ -127,17 +128,41 @@ const QRCodeDetails = () => {
             </div>
             <div className="space-y-3 pt-3 w-full">
               <h1 className="text-xl md:text-4xl font-bold">{qrCode.book_title}</h1>
-              <p className="text-sm md:text-Ixl">
-                by <Link 
-                    to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author?.slug })}
-                    className="hover:underline hover:text-primary transition-colors"
-                  >
-                    {qrCode.author?.name || 'Unknown Author'}
-                  </Link>
-                {qrCode.release_date && (
-                  <> · {format(new Date(qrCode.release_date), 'MMMM yyyy')}</>
-                )}
-              </p>
+              <div className="flex items-center justify-center gap-1.5 flex-wrap text-sm md:text-lg">
+                <span>
+                  by <Link 
+                      to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author?.slug })}
+                      className="hover:underline hover:text-primary transition-colors"
+                    >
+                      {qrCode.author?.name || 'Unknown Author'}
+                    </Link>
+                  {qrCode.release_date && (
+                    <> · {format(new Date(qrCode.release_date), 'MMMM yyyy')}</>
+                  )}
+                </span>
+                {(() => {
+                  const authorSocialLinks = (qrCode.author?.social_links || []) as SocialLink[];
+                  const iconLinks = getSocialIconLinks(authorSocialLinks);
+                  if (iconLinks.length === 0) return null;
+                  return (
+                    <span className="inline-flex items-center gap-1 ml-0.5">
+                      {iconLinks.map((link, i) => (
+                        <a
+                          key={i}
+                          href={getValidURL(link.url)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center opacity-60 hover:opacity-100 transition-opacity"
+                          aria-label={link.platform}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {getSocialPlatformIcon(link.platform, "h-3.5 w-3.5")}
+                        </a>
+                      ))}
+                    </span>
+                  );
+                })()}
+              </div>
               {/* Inline actions: Buy, Support, Fan Mail */}
               {(
                 <div className="flex flex-wrap justify-center gap-2 mt-3">
