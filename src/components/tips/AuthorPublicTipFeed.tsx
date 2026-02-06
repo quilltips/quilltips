@@ -95,7 +95,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
   if (!tips?.length) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">No tips yet.</p>
+        <p className="text-muted-foreground">No fanmail yet.</p>
       </div>
     );
   }
@@ -118,8 +118,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
               <div className="flex-1 space-y-1">
                 <div>
                   <p className="font-medium text-sm leading-snug">
-                    {readerFirstName} sent a tip for
-                    {tip.book_title ? ` "${tip.book_title}"` : " a book"}
+                    {readerFirstName} sent fanmail!
                   </p>
                   {tip.message && (
                     <p className="text-sm leading-tight">"{tip.message}"</p>

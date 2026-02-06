@@ -20,7 +20,7 @@ serve(async (req) => {
   }
 
   try {
-    const { authorId, authorName, readerName, readerEmail, message, bookTitle, qrCodeId } = await req.json();
+    const { authorId, authorName, readerName, readerEmail, message, bookTitle, qrCodeId, isPrivate } = await req.json();
 
     console.log(`📧 Sending message to author ${authorName} from ${readerEmail}`);
 
@@ -102,7 +102,7 @@ serve(async (req) => {
 
     console.log(`✅ Confirmation email sent to reader ${readerEmail}`);
 
-    // Store message in tips table (amount = 0, always private)
+    // Store message in tips table (amount = 0, private based on reader choice)
     const { error: dbError } = await supabase
       .from('tips')
       .insert({
@@ -113,7 +113,7 @@ serve(async (req) => {
         reader_name: displayName,
         reader_email: readerEmail,
         book_title: bookTitle || null,
-        is_private: true,
+        is_private: isPrivate === true,
         status: 'complete'
       });
 
