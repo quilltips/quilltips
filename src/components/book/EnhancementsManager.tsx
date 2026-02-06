@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, X, HelpCircle, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +14,8 @@ import { VideoUpload } from "../upload/VideoUpload";
 import { CharacterImageUpload } from "../upload/CharacterImageUpload";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { BookVideo } from "./VideoCarousel";
+
+type BonusSection = "videos" | "letter" | "description" | "characters" | "signups" | "bookshelf" | null;
 
 interface Character {
   url: string;
@@ -135,6 +137,9 @@ export const EnhancementsManager = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Which bonus section dialog is open (minimal UI: plus opens dialog)
+  const [openSection, setOpenSection] = useState<BonusSection>(null);
 
   // Auto-save function for text fields
   const autoSaveField = useCallback(async (field: string, value: string) => {
@@ -429,329 +434,247 @@ export const EnhancementsManager = ({
     onUpdate?.();
   };
 
+  // Minimal list: section label + yellow plus. Click opens dialog.
+  const sectionRows: { key: BonusSection; label: string; count?: number }[] = [
+    { key: "videos", label: "Videos", count: videos.filter(v => v.url?.trim()).length },
+    { key: "letter", label: "Letter to Readers" },
+    { key: "description", label: "Book Description" },
+    { key: "characters", label: "Character or Book Art", count: characters.filter(c => c.url?.trim()).length },
+    { key: "signups", label: "Reader Signup Forms" },
+    { key: "bookshelf", label: "Bookshelf", count: recs.length },
+  ];
+
   return (
-    <div className="space-y-4">
-      {/* Video Section */}
-      <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
-        <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Upload videos for your readers</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 px-4 pb-4">
-          {videos.map((video, idx) => (
-            <div key={idx} className="p-3 rounded-md space-y-3" style={{ backgroundColor: '#f8f6f2' }}>
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-medium" style={{ color: '#333333' }}>Video {idx + 1}</span>
-                <Button variant="ghost" size="sm" onClick={() => handleVideoRemove(idx)} className="h-6 w-6 p-0 hover:bg-transparent" style={{ color: '#333333' }}>
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-              
-              {/* Video Type Selector */}
-              <RadioGroup
-                value={video.type}
-                onValueChange={(value) => handleVideoTypeChange(idx, value as BookVideo["type"])}
-                className="flex flex-wrap gap-3"
-              >
-                {VIDEO_TYPE_OPTIONS.map((option) => (
-                  <div key={option.value} className="flex items-center space-x-1.5">
-                    <RadioGroupItem value={option.value} id={`video-type-${idx}-${option.value}`} className="h-3 w-3" style={{ borderColor: '#333333' }} />
-                    <Label htmlFor={`video-type-${idx}-${option.value}`} className="text-xs cursor-pointer" style={{ color: '#333333' }}>
-                      {option.label}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-              
-              <Tabs defaultValue={video.url && video.url.includes('/book-videos/') ? 'upload' : (video.url ? 'url' : 'upload')} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 h-8">
-                  <TabsTrigger value="upload" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:!text-white">Upload</TabsTrigger>
-                  <TabsTrigger value="url" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:!text-white">URL</TabsTrigger>
-                </TabsList>
-                <TabsContent value="upload" className="mt-2">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <span className="text-xs" style={{ color: '#333333' }}>Video File</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="h-3 w-3 cursor-help" style={{ color: '#666666' }} />
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-[200px]">
-                          <p className="text-xs">MP4, WebM, OGG, MOV (max 225MB)</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <VideoUpload
-                    onUploadSuccess={(url) => handleVideoUploadSuccess(idx, url)}
-                    currentVideoUrl={video.url}
-                    onRemove={() => {
-                      const updated = [...videos];
-                      updated[idx] = { ...updated[idx], url: "" };
-                      setVideos(updated);
-                    }}
-                  />
-                  {isVideoSaving && <p className="text-xs mt-1" style={{ color: '#19363c' }}>Saving...</p>}
-                </TabsContent>
-                <TabsContent value="url" className="mt-2 space-y-2">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="https://..."
-                      value={video.url}
-                      onChange={(e) => handleVideoUrlChange(idx, e.target.value)}
-                      className="h-8 text-xs bg-white border-gray-200"
-                      style={{ color: '#333333' }}
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => saveVideoUrl(idx)}
-                      disabled={isVideoSaving}
-                      size="sm"
-                      className="h-8 px-3 text-xs"
-                      style={{ backgroundColor: '#19363c', color: '#ffd166' }}
-                    >
-                      Save
+    <div className="space-y-0">
+      {sectionRows.map(({ key, label, count }) => (
+        <div
+          key={key}
+          className="flex items-center justify-between py-3 border-b border-gray-200 last:border-b-0"
+        >
+          <span className="text-sm text-[#333333]">
+            {label}
+            {count !== undefined && count > 0 && (
+              <span className="ml-1.5 text-gray-500">({count})</span>
+            )}
+          </span>
+          <button
+            type="button"
+            onClick={() => setOpenSection(key)}
+            className="flex items-center justify-center w-8 h-8 rounded-full transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#FFD166] focus:ring-offset-1"
+            style={{ backgroundColor: "#FFD166", color: "#333333" }}
+            aria-label={`Add or edit ${label}`}
+          >
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
+          </button>
+        </div>
+      ))}
+
+      <Dialog open={openSection !== null} onOpenChange={(open) => !open && setOpenSection(null)}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-6">
+          <DialogHeader className="sr-only">
+            <DialogTitle>
+              {openSection === "videos" && "Videos"}
+              {openSection === "letter" && "Letter to Readers"}
+              {openSection === "description" && "Book Description"}
+              {openSection === "characters" && "Character or Book Art"}
+              {openSection === "signups" && "Reader Signup Forms"}
+              {openSection === "bookshelf" && "Bookshelf"}
+            </DialogTitle>
+          </DialogHeader>
+
+          {openSection === "videos" && (
+            <div className="space-y-3">
+              {videos.map((video, idx) => (
+                <div key={idx} className="p-3 rounded-lg space-y-3 bg-gray-50 border border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-medium text-[#333333]">Video {idx + 1}</span>
+                    <Button variant="ghost" size="sm" onClick={() => handleVideoRemove(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]">
+                      <X className="h-3 w-3" />
                     </Button>
                   </div>
-                </TabsContent>
-              </Tabs>
-              
-              <Input
-                placeholder="Description (optional)"
-                value={video.description || ""}
-                onChange={(e) => handleVideoDescriptionChange(idx, e.target.value)}
-                className="h-8 text-xs bg-white border-gray-200"
-                style={{ color: '#333333' }}
-              />
-            </div>
-          ))}
-          
-          <Button variant="ghost" onClick={addVideo} className="w-full h-8 text-xs border border-dashed font-medium" style={{ borderColor: '#ffd166', color: '#ffd166' }}>
-            <Plus className="mr-1.5 h-3 w-3" />
-            Add Video
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Letter to Readers */}
-      <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
-        <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Letter to Readers</CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 pb-4">
-          <Textarea
-            placeholder="Write a personal note to your readers..."
-            value={letterToReaders}
-            onChange={(e) => setLetterToReaders(e.target.value)}
-            className="text-sm bg-white border-gray-200 min-h-[100px]"
-            style={{ color: '#333333' }}
-          />
-        </CardContent>
-      </Card>
-
-      {/* Book Description */}
-      <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
-        <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Book Description</CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 pb-4">
-          <Textarea
-            placeholder="Enter book description..."
-            value={bookDesc}
-            onChange={(e) => setBookDesc(e.target.value)}
-            className="text-sm bg-white border-gray-200 min-h-[100px]"
-            style={{ color: '#333333' }}
-          />
-        </CardContent>
-      </Card>
-
-      {/* Character Art */}
-      <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
-        <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Character or Book Art</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 px-4 pb-4">
-          {characters.map((char, idx) => (
-            <div key={idx} className="p-3 rounded-md space-y-2" style={{ backgroundColor: '#f8f6f2' }}>
-              <div className="flex justify-end">
-                <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)} className="h-6 w-6 p-0 hover:bg-transparent" style={{ color: '#333333' }}>
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-              <Tabs defaultValue={char.url && char.url.includes('/character-images/') ? 'upload' : (char.url ? 'url' : 'upload')} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 h-8">
-                  <TabsTrigger value="upload" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:!text-white">Upload</TabsTrigger>
-                  <TabsTrigger value="url" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:!text-white">URL</TabsTrigger>
-                </TabsList>
-                <TabsContent value="upload" className="mt-2">
-                  <CharacterImageUpload
-                    onUploadSuccess={(url) => updateCharacter(idx, "url", url)}
-                    currentImageUrl={char.url}
-                    onRemove={() => updateCharacter(idx, "url", "")}
-                  />
-                </TabsContent>
-                <TabsContent value="url" className="mt-2">
-                  <Input
-                    placeholder="Image URL"
-                    value={char.url}
-                    onChange={(e) => updateCharacter(idx, "url", e.target.value)}
-                    className="h-8 text-xs bg-white border-gray-200"
-                    style={{ color: '#333333' }}
-                  />
-                </TabsContent>
-              </Tabs>
-              <Textarea
-                placeholder="Description (optional)"
-                value={char.description || ""}
-                onChange={(e) => updateCharacter(idx, "description", e.target.value)}
-                rows={2}
-                className="text-xs bg-white border-gray-200"
-                style={{ color: '#333333' }}
-              />
-            </div>
-          ))}
-          <Button variant="ghost" onClick={addCharacter} className="w-full h-8 text-xs border border-dashed font-medium" style={{ borderColor: '#ffd166', color: '#ffd166' }}>
-            <Plus className="mr-1.5 h-3 w-3" />
-            Add Art
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Signup Forms */}
-      <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
-        <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Reader Signup Forms</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 px-4 pb-4">
-          <div className="p-3 rounded-md space-y-3" style={{ backgroundColor: '#f8f6f2' }}>
-            <p className="text-xs" style={{ color: '#666666' }}>Enable signup forms on this book page. Signups will appear in your author dashboard.</p>
-            
-            <div className="flex items-center justify-between">
-              <Label htmlFor="arc-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>ARC Reader Signup</Label>
-              <Switch
-                id="arc-signup"
-                checked={arcSignupEnabled}
-                onCheckedChange={setArcSignupEnabled}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <Label htmlFor="beta-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Beta Reader Signup</Label>
-              <Switch
-                id="beta-signup"
-                checked={betaReaderEnabled}
-                onCheckedChange={setBetaReaderEnabled}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <Label htmlFor="newsletter-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Newsletter Signup</Label>
-              <Switch
-                id="newsletter-signup"
-                checked={newsletterEnabled}
-                onCheckedChange={setNewsletterEnabled}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <Label htmlFor="book-club-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Book Club Invitations</Label>
-              <Switch
-                id="book-club-signup"
-                checked={bookClubEnabled}
-                onCheckedChange={setBookClubEnabled}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Bookshelf */}
-      <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
-        <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Bookshelf</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 px-4 pb-4">
-          {/* Selected books */}
-          {recs.map((rec, idx) => (
-            <div key={rec.id || idx} className="p-3 rounded-md flex items-center gap-3" style={{ backgroundColor: '#f8f6f2' }}>
-              {rec.recommended_book_cover_url ? (
-                <img src={rec.recommended_book_cover_url} alt={rec.recommended_book_title} className="w-10 h-14 object-cover rounded flex-shrink-0" />
-              ) : (
-                <div className="w-10 h-14 bg-muted rounded flex items-center justify-center flex-shrink-0">
-                  <span className="text-[8px]">No cover</span>
+                  <RadioGroup
+                    value={video.type}
+                    onValueChange={(value) => handleVideoTypeChange(idx, value as BookVideo["type"])}
+                    className="flex flex-wrap gap-3"
+                  >
+                    {VIDEO_TYPE_OPTIONS.map((option) => (
+                      <div key={option.value} className="flex items-center space-x-1.5">
+                        <RadioGroupItem value={option.value} id={`video-type-${idx}-${option.value}`} className="h-3 w-3" />
+                        <Label htmlFor={`video-type-${idx}-${option.value}`} className="text-xs cursor-pointer text-[#333333]">{option.label}</Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                  <Tabs defaultValue={video.url && video.url.includes('/book-videos/') ? 'upload' : (video.url ? 'url' : 'upload')} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 h-8">
+                      <TabsTrigger value="upload" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:text-white">Upload</TabsTrigger>
+                      <TabsTrigger value="url" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:text-white">URL</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="upload" className="mt-2">
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <span className="text-xs text-[#333333]">Video File</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-3 w-3 cursor-help text-gray-500" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-[200px]"><p className="text-xs">MP4, WebM, OGG, MOV (max 225MB)</p></TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      <VideoUpload
+                        onUploadSuccess={(url) => handleVideoUploadSuccess(idx, url)}
+                        currentVideoUrl={video.url}
+                        onRemove={() => { const u = [...videos]; u[idx] = { ...u[idx], url: "" }; setVideos(u); }}
+                      />
+                      {isVideoSaving && <p className="text-xs mt-1 text-[#19363c]">Saving...</p>}
+                    </TabsContent>
+                    <TabsContent value="url" className="mt-2 space-y-2">
+                      <div className="flex gap-2">
+                        <Input placeholder="https://..." value={video.url} onChange={(e) => handleVideoUrlChange(idx, e.target.value)} className="h-8 text-xs" />
+                        <Button type="button" onClick={() => saveVideoUrl(idx)} disabled={isVideoSaving} size="sm" className="h-8 px-3 text-xs bg-[#19363c] text-[#ffd166]">Save</Button>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                  <Input placeholder="Description (optional)" value={video.description || ""} onChange={(e) => handleVideoDescriptionChange(idx, e.target.value)} className="h-8 text-xs" />
                 </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium truncate" style={{ color: '#333333' }}>{rec.recommended_book_title}</p>
-                {rec.recommended_book_author && (
-                  <p className="text-[10px] truncate" style={{ color: '#666666' }}>{rec.recommended_book_author}</p>
-                )}
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)} className="h-6 w-6 p-0 flex-shrink-0 hover:bg-transparent" style={{ color: '#333333' }}>
-                <X className="h-3 w-3" />
+              ))}
+              <Button variant="outline" onClick={addVideo} className="w-full h-9 text-xs border-dashed border-[#FFD166] text-[#333333] hover:bg-[#FFD166]/10">
+                <Plus className="mr-1.5 h-3 w-3" /> Add Video
+              </Button>
+              <Button onClick={() => saveVideos(videos)} disabled={isVideoSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
+                {isVideoSaving ? "Saving..." : "Save"}
               </Button>
             </div>
-          ))}
+          )}
 
-          {/* Search input */}
-          <div className="relative">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3" style={{ color: '#666666' }} />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for books on Quilltips..."
-                className="h-8 text-xs bg-white border-gray-200 pl-7"
-                style={{ color: '#333333' }}
+          {openSection === "letter" && (
+            <div className="space-y-3">
+              <Textarea
+                placeholder="Write a personal note to your readers..."
+                value={letterToReaders}
+                onChange={(e) => setLetterToReaders(e.target.value)}
+                className="min-h-[120px] text-sm"
               />
             </div>
+          )}
 
-            {/* Search results dropdown */}
-            {searchResults.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 rounded-md shadow-lg border border-gray-200 bg-white max-h-60 overflow-y-auto">
-                {searchResults.map((book) => {
-                  const bookAuthorName = Array.isArray(book.author) ? book.author[0]?.name : book.author?.name;
-                  return (
-                    <button
-                      key={book.id}
-                      type="button"
-                      onClick={() => selectBook(book)}
-                      className="w-full flex items-center gap-3 p-2.5 hover:bg-gray-50 transition-colors text-left"
-                    >
-                      {book.cover_image ? (
-                        <img src={book.cover_image} alt={book.book_title} className="w-8 h-12 object-cover rounded flex-shrink-0" />
-                      ) : (
-                        <div className="w-8 h-12 bg-muted rounded flex items-center justify-center flex-shrink-0">
-                          <span className="text-[6px]">No cover</span>
+          {openSection === "description" && (
+            <div className="space-y-3">
+              <Textarea
+                placeholder="Enter book description..."
+                value={bookDesc}
+                onChange={(e) => setBookDesc(e.target.value)}
+                className="min-h-[120px] text-sm"
+              />
+            </div>
+          )}
+
+          {openSection === "characters" && (
+            <div className="space-y-3">
+              {characters.map((char, idx) => (
+                <div key={idx} className="p-3 rounded-lg space-y-2 bg-gray-50 border border-gray-200">
+                  <div className="flex justify-end">
+                    <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]"><X className="h-3 w-3" /></Button>
+                  </div>
+                  <Tabs defaultValue={char.url && char.url.includes('/character-images/') ? 'upload' : (char.url ? 'url' : 'upload')} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 h-8">
+                      <TabsTrigger value="upload" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-white">Upload</TabsTrigger>
+                      <TabsTrigger value="url" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-white">URL</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="upload" className="mt-2">
+                      <CharacterImageUpload onUploadSuccess={(url) => updateCharacter(idx, "url", url)} currentImageUrl={char.url} onRemove={() => updateCharacter(idx, "url", "")} />
+                    </TabsContent>
+                    <TabsContent value="url" className="mt-2">
+                      <Input placeholder="Image URL" value={char.url} onChange={(e) => updateCharacter(idx, "url", e.target.value)} className="h-8 text-xs" />
+                    </TabsContent>
+                  </Tabs>
+                  <Textarea placeholder="Description (optional)" value={char.description || ""} onChange={(e) => updateCharacter(idx, "description", e.target.value)} rows={2} className="text-xs" />
+                </div>
+              ))}
+              <Button variant="outline" onClick={addCharacter} className="w-full h-9 text-xs border-dashed border-[#FFD166] text-[#333333] hover:bg-[#FFD166]/10">
+                <Plus className="mr-1.5 h-3 w-3" /> Add Art
+              </Button>
+              <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
+                {isSaving ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          )}
+
+          {openSection === "signups" && (
+            <div className="space-y-4">
+              <p className="text-xs text-gray-600">Enable signup forms on this book page. Signups appear in your author dashboard.</p>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="arc-signup" className="text-sm cursor-pointer text-[#333333]">ARC Reader Signup</Label>
+                  <Switch id="arc-signup" checked={arcSignupEnabled} onCheckedChange={setArcSignupEnabled} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="beta-signup" className="text-sm cursor-pointer text-[#333333]">Beta Reader Signup</Label>
+                  <Switch id="beta-signup" checked={betaReaderEnabled} onCheckedChange={setBetaReaderEnabled} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="newsletter-signup" className="text-sm cursor-pointer text-[#333333]">Newsletter Signup</Label>
+                  <Switch id="newsletter-signup" checked={newsletterEnabled} onCheckedChange={setNewsletterEnabled} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="book-club-signup" className="text-sm cursor-pointer text-[#333333]">Book Club Invitations</Label>
+                  <Switch id="book-club-signup" checked={bookClubEnabled} onCheckedChange={setBookClubEnabled} />
+                </div>
+              </div>
+              <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
+                {isSaving ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          )}
+
+          {openSection === "bookshelf" && (
+            <div className="space-y-3">
+              {recs.map((rec, idx) => (
+                <div key={rec.id || idx} className="p-3 rounded-lg flex items-center gap-3 bg-gray-50 border border-gray-200">
+                  {rec.recommended_book_cover_url ? (
+                    <img src={rec.recommended_book_cover_url} alt={rec.recommended_book_title} className="w-10 h-14 object-cover rounded flex-shrink-0" />
+                  ) : (
+                    <div className="w-10 h-14 bg-muted rounded flex items-center justify-center flex-shrink-0 text-[8px]">No cover</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate text-[#333333]">{rec.recommended_book_title}</p>
+                    {rec.recommended_book_author && <p className="text-[10px] truncate text-gray-600">{rec.recommended_book_author}</p>}
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)} className="h-6 w-6 p-0 flex-shrink-0 text-[#333333]"><X className="h-3 w-3" /></Button>
+                </div>
+              ))}
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-500" />
+                <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search for books on Quilltips..." className="h-9 pl-8 text-sm" />
+              </div>
+              {searchResults.length > 0 && (
+                <div className="border border-gray-200 rounded-lg bg-white max-h-48 overflow-y-auto">
+                  {searchResults.map((book) => {
+                    const bookAuthorName = Array.isArray(book.author) ? book.author[0]?.name : book.author?.name;
+                    return (
+                      <button key={book.id} type="button" onClick={() => selectBook(book)} className="w-full flex items-center gap-3 p-2.5 hover:bg-gray-50 text-left">
+                        {book.cover_image ? <img src={book.cover_image} alt={book.book_title} className="w-8 h-12 object-cover rounded flex-shrink-0" /> : <div className="w-8 h-12 bg-muted rounded flex items-center justify-center text-[6px]">No cover</div>}
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium truncate text-[#333333]">{book.book_title}</p>
+                          {bookAuthorName && <p className="text-[10px] truncate text-gray-600">by {bookAuthorName}</p>}
                         </div>
-                      )}
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium truncate" style={{ color: '#333333' }}>{book.book_title}</p>
-                        {bookAuthorName && <p className="text-[10px] truncate" style={{ color: '#666666' }}>by {bookAuthorName}</p>}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              {isSearching && <p className="text-xs text-center text-gray-500">Searching...</p>}
+              {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && <p className="text-xs text-center text-gray-500">No books found</p>}
+            </div>
+          )}
 
-            {isSearching && (
-              <div className="absolute z-10 w-full mt-1 rounded-md shadow-lg border border-gray-200 bg-white p-3">
-                <p className="text-xs text-center" style={{ color: '#666666' }}>Searching...</p>
-              </div>
-            )}
-
-            {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
-              <div className="absolute z-10 w-full mt-1 rounded-md shadow-lg border border-gray-200 bg-white p-3">
-                <p className="text-xs text-center" style={{ color: '#666666' }}>No books found</p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full h-9 text-sm font-medium" style={{ backgroundColor: '#FFD166', color: '#333333' }}>
-        {isSaving ? "Saving..." : "Save All Bonus Content"}
-      </Button>
+          {(openSection === "letter" || openSection === "description") && (
+            <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
+              {isSaving ? "Saving..." : "Save"}
+            </Button>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
