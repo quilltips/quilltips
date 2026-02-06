@@ -206,7 +206,7 @@ const QRCodeDetails = () => {
             if (iconLinks.length === 0) return null;
             return (
               <div className="flex sm:hidden justify-center">
-                <div className="flex items-center gap-3 py-1.5">
+                <div className="flex items-center gap-3 py-0.5">
                   {iconLinks.map((link, i) => (
                     <a
                       key={i}
