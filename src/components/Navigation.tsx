@@ -77,9 +77,6 @@ export const Navigation = () => {
         <DropdownMenuItem onClick={() => navigate('/author/dashboard')}>
           Dashboard
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate('/author/tip-feed')}>
-          Feed
-        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/author/book-qr-codes?tab=all')}>
           Book QR codes
         </DropdownMenuItem>
@@ -241,13 +238,6 @@ export const Navigation = () => {
               onClick={closeMobileMenu}
             >
               Dashboard
-            </Link>
-            <Link 
-              to="/author/tip-feed" 
-              className="px-4 py-2 hover:bg-accent/10 rounded-md"
-              onClick={closeMobileMenu}
-            >
-              Feed
             </Link>
             <Link 
               to="/author/book-qr-codes?tab=all" 
