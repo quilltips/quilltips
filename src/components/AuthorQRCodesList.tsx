@@ -148,7 +148,7 @@ export const AuthorQRCodesList = ({
         </div>
       ) : (
         <div className="space-y-4">
-          <div className={`space-y-2 ${stripeIncomplete ? 'opacity-75' : ''}`}>
+          <div className={`flex gap-3 overflow-x-auto pb-2 ${stripeIncomplete ? 'opacity-75' : ''}`}>
             {displayedQRCodes?.map(qr => (
               <QRCodeCard 
                 key={qr.id} 

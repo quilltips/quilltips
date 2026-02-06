@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Book, ChevronRight } from "lucide-react";
+import { Book } from "lucide-react";
 import { Card } from "../ui/card";
 import { OptimizedImage } from "../ui/optimized-image";
 
@@ -19,9 +19,9 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onNavigate }) =>
   return (
     <Card 
       onClick={onNavigate} 
-      className="p-4 cursor-pointer hover:bg-[white]/70 transition-colors flex items-center gap-4 border-b"
+      className="p-3 cursor-pointer hover:bg-[white]/70 transition-colors flex flex-col items-center gap-2 border min-w-[120px] max-w-[140px] flex-shrink-0"
     >
-      <div className="w-12 h-16 flex-shrink-0 rounded-md overflow-hidden">
+      <div className="w-16 h-20 flex-shrink-0 rounded-md overflow-hidden">
         {qrCode.cover_image ? (
           <OptimizedImage
             src={qrCode.cover_image}
@@ -37,19 +37,12 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onNavigate }) =>
         )}
       </div>
       
-      <div className="flex-1 text-left">
-        <h3 className="font-medium text-[#333333] text-md line-clamp-1">{qrCode.book_title}</h3>
-        <div className="flex gap-4 mt-1">
-          <p className="text-xs text-[#718096]">
-            <span className="font-medium">{qrCode.total_tips || 0}</span> tips
-          </p>
-          <p className="text-xs text-[#718096]">
-            <span className="font-medium">${(qrCode.total_amount || 0).toFixed(2)}</span> total
-          </p>
-        </div>
+      <div className="text-center w-full">
+        <h3 className="font-medium text-[#333333] text-xs line-clamp-2 leading-tight">{qrCode.book_title}</h3>
+        <p className="text-[10px] text-[#718096] mt-1">
+          {qrCode.total_tips || 0} tips
+        </p>
       </div>
-      
-      <ChevronRight className="h-4 w-4 text-[#718096]" />
     </Card>
   );
 };
