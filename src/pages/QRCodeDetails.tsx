@@ -331,7 +331,7 @@ const QRCodeDetails = () => {
                         to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author.slug })}
                         className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary transition-colors group"
                       >
-                        View author profile
+                        View profile
                         <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
                       </Link>
                     </div>
