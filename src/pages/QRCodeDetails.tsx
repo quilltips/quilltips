@@ -245,7 +245,7 @@ const QRCodeDetails = () => {
           {/* End hero */}
 
           {/* Book Bonus Content Section - Only show if QR code is paid */}
-          {!showTipForm && !showMessageForm && qrCode.is_paid && (
+          {qrCode.is_paid && (
             <div className="flex flex-col gap-10 sm:gap-12">
               {/* Videos Section */}
               {(() => {
