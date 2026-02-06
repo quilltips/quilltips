@@ -461,21 +461,6 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
                       </Button>
                     </div>
                     
-                    {/* Video Type Selector */}
-                    <RadioGroup
-                      value={video.type}
-                      onValueChange={(value) => updateVideo(idx, "type", value)}
-                      className="flex flex-wrap gap-3"
-                    >
-                      {VIDEO_TYPE_OPTIONS.map((option) => (
-                        <div key={option.value} className="flex items-center space-x-1.5">
-                          <RadioGroupItem value={option.value} id={`create-video-type-${idx}-${option.value}`} className="h-3 w-3" style={{ borderColor: '#333333' }} />
-                          <Label htmlFor={`create-video-type-${idx}-${option.value}`} className="text-xs cursor-pointer" style={{ color: '#333333' }}>
-                            {option.label}
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
                     
                     <Tabs defaultValue="upload" className="w-full">
                       <TabsList className="grid w-full grid-cols-2 h-8">

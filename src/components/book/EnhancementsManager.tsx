@@ -420,18 +420,6 @@ export const EnhancementsManager = ({
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
-                <RadioGroup
-                  value={video.type}
-                  onValueChange={(value) => handleVideoTypeChange(idx, value as BookVideo["type"])}
-                  className="flex flex-wrap gap-3"
-                >
-                  {VIDEO_TYPE_OPTIONS.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-1.5">
-                      <RadioGroupItem value={option.value} id={`video-type-${idx}-${option.value}`} className="h-3 w-3" />
-                      <Label htmlFor={`video-type-${idx}-${option.value}`} className="text-xs cursor-pointer text-[#333333]">{option.label}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
                 <Tabs defaultValue={video.url && video.url.includes('/book-videos/') ? 'upload' : (video.url ? 'url' : 'upload')} className="w-full">
                   <TabsList className="grid w-full grid-cols-2 h-8">
                     <TabsTrigger value="upload" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:text-white">Upload</TabsTrigger>
