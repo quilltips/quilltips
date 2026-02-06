@@ -299,7 +299,7 @@ const QRCodeDetails = () => {
               {qrCode.book_description && (
                 <div id="section-description" className="scroll-mt-4 rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-3 md:space-y-4">
                   <h3 className="text-xl font-playfair text-center">Description</h3>
-                  <div className="rounded-lg p-3 md:p-4 bg-white/60">
+                  <div className="rounded-lg p-3 md:p-4">
                     <CollapsibleBookDescription description={qrCode.book_description} maxLines={4} />
                   </div>
                 </div>
