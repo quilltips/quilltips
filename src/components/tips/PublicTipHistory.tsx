@@ -93,7 +93,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
     return (
       <div className="text-center py-8">
         <p className="text-muted-foreground">
-          No fanmail yet. Be the first to send a message!
+          No fan mail yet. Be the first to send a message!
         </p>
       </div>
     );
@@ -117,7 +117,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
               <div className="flex-1">
                 <div className="space-y-1">
                   <p className="font-medium">
-                    {readerFirstName} sent fanmail!
+                    {readerFirstName} sent fan mail!
                   </p>
                   {tip.message && (
                     <p className="">"{tip.message}"</p>

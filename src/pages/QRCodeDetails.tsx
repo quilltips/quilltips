@@ -130,7 +130,7 @@ const QRCodeDetails = () => {
                   <> · {format(new Date(qrCode.release_date), 'MMMM yyyy')}</>
                 )}
               </p>
-              {/* Inline actions: Buy, Support, Fanmail */}
+              {/* Inline actions: Buy, Support, Fan Mail */}
               {!showTipForm && !showMessageForm && (
                 <div className="flex flex-wrap justify-center gap-2 mt-3">
                   {qrCode.buy_now_link && (
@@ -159,7 +159,7 @@ const QRCodeDetails = () => {
                     size="sm"
                     className="text-xs px-3 py-1.5 h-8 bg-transparent border-border text-[#333333] hover:underline hover:bg-transparent hover:shadow-none hover:font-bold hover:border-[#333333]/50"
                   >
-                    Fanmail
+                    Fan Mail
                   </Button>
                 </div>
               )}
@@ -178,7 +178,7 @@ const QRCodeDetails = () => {
               hasLetter && { id: 'section-letter', icon: Mail, label: 'Letter' },
               hasArt && { id: 'section-art', icon: Image, label: 'Art' },
               hasDescription && { id: 'section-description', icon: FileText, label: 'Description' },
-              { id: 'section-feed', icon: MessageCircle, label: 'Fanmail' },
+              { id: 'section-feed', icon: MessageCircle, label: 'Fan Mail' },
             ].filter(Boolean) as { id: string; icon: typeof Video; label: string }[];
             if (sections.length <= 1) return null;
             return (
@@ -387,7 +387,7 @@ const QRCodeDetails = () => {
           
           {/* Feed section */}
           <div id="section-feed" className="scroll-mt-4 rounded-lg border border-border p-6 space-y-6 pt-10 sm:pt-12">
-            <h2 className="text-2xl font-semibold">Fanmail</h2>
+            <h2 className="text-2xl font-semibold">Fan Mail</h2>
             <PublicTipHistory qrCodeId={qrCode.id} />
           </div>
         </div>
