@@ -309,18 +309,34 @@ const QRCodeDetails = () => {
               {qrCode.author && qrCode.author.bio && (
                 <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-3">
                   <h3 className="text-xl font-playfair text-center">About The Author</h3>
-                  <p className="text-sm">
-                    {qrCode.author.bio.length > 100 
-                      ? `${qrCode.author.bio.substring(0, 100)}...` 
-                      : qrCode.author.bio}
-                  </p>
-                  <Link
-                    to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author.slug })}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary transition-colors group"
-                  >
-                    View author profile
-                    <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
+                  <div className="flex items-start gap-3">
+                    <Link
+                      to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author.slug })}
+                      className="shrink-0"
+                    >
+                      <OptimizedImage
+                        src={qrCode.author.avatar_url || "/lovable-uploads/logo_nav.svg"}
+                        alt={qrCode.author.name || "Author"}
+                        className="w-12 h-12 rounded-full object-cover border border-border"
+                        fallbackSrc="/lovable-uploads/logo_nav.svg"
+                        sizes="48px"
+                      />
+                    </Link>
+                    <div className="space-y-1">
+                      <p className="text-sm">
+                        {qrCode.author.bio.length > 100 
+                          ? `${qrCode.author.bio.substring(0, 100)}...` 
+                          : qrCode.author.bio}
+                      </p>
+                      <Link
+                        to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author.slug })}
+                        className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary transition-colors group"
+                      >
+                        View author profile
+                        <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               )}
               
