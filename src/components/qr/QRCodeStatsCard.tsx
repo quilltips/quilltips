@@ -318,35 +318,6 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
   return (
     <>
-    {/* Content tiles section above the grid */}
-    <div className="mb-7">
-      <h3 className="text-lg font-semibold text-[#333333] mb-3">Add Content To Your Book Page</h3>
-      <EnhancementsManager
-        qrCodeId={qrCode.id}
-        authorId={qrCode.author_id}
-        initialData={{
-          thank_you_video_url: qrCode.thank_you_video_url,
-          character_images: qrCode.character_images,
-          book_videos: qrCode.book_videos,
-          letter_to_readers: qrCode.letter_to_readers,
-          arc_signup_enabled: qrCode.arc_signup_enabled,
-          beta_reader_enabled: qrCode.beta_reader_enabled,
-          newsletter_enabled: qrCode.newsletter_enabled,
-          book_club_enabled: qrCode.book_club_enabled,
-        }}
-        recommendations={qrCode.recommendations}
-        onUpdate={() => {
-          if (id) {
-            queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id) });
-          }
-          if (qrCode.id) {
-            queryClient.invalidateQueries({ queryKey: ['qr-codes', 'recommendations', qrCode.id] });
-          }
-          queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
-        }}
-      />
-    </div>
-
     <div className="grid xl:grid-cols-[3fr_2fr] gap-7 mx-auto">
       {/* Left side - QR Code, Book Cover, and Book Details */}
       <div className="">
@@ -685,6 +656,35 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
           </Card>
         )}
       </div>
+    </div>
+
+    {/* Content tiles section below the grid */}
+    <div className="mt-7">
+      <h3 className="text-lg font-semibold text-[#333333] mb-3">Add Content To Your Book Page</h3>
+      <EnhancementsManager
+        qrCodeId={qrCode.id}
+        authorId={qrCode.author_id}
+        initialData={{
+          thank_you_video_url: qrCode.thank_you_video_url,
+          character_images: qrCode.character_images,
+          book_videos: qrCode.book_videos,
+          letter_to_readers: qrCode.letter_to_readers,
+          arc_signup_enabled: qrCode.arc_signup_enabled,
+          beta_reader_enabled: qrCode.beta_reader_enabled,
+          newsletter_enabled: qrCode.newsletter_enabled,
+          book_club_enabled: qrCode.book_club_enabled,
+        }}
+        recommendations={qrCode.recommendations}
+        onUpdate={() => {
+          if (id) {
+            queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id) });
+          }
+          if (qrCode.id) {
+            queryClient.invalidateQueries({ queryKey: ['qr-codes', 'recommendations', qrCode.id] });
+          }
+          queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+        }}
+      />
     </div>
   </>
   );

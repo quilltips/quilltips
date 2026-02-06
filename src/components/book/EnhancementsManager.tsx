@@ -6,8 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, X, HelpCircle, Search, Check } from "lucide-react";
+import { Plus, X, HelpCircle, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoUpload } from "../upload/VideoUpload";
@@ -68,10 +67,7 @@ const useAutoSave = (
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-
-    if (value === lastSavedRef.current) {
-      return;
-    }
+    if (value === lastSavedRef.current) return;
 
     timeoutRef.current = setTimeout(async () => {
       try {
@@ -83,9 +79,7 @@ const useAutoSave = (
     }, delay);
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [value, saveFunction, delay]);
 
@@ -121,28 +115,28 @@ export const EnhancementsManager = ({
   const [isVideoSaving, setIsVideoSaving] = useState(false);
   const recommendationsRef = useRef<Recommendation[]>(recommendations);
   
-  // Signup form toggles
   const [arcSignupEnabled, setArcSignupEnabled] = useState(initialData?.arc_signup_enabled || false);
   const [betaReaderEnabled, setBetaReaderEnabled] = useState(initialData?.beta_reader_enabled || false);
   const [newsletterEnabled, setNewsletterEnabled] = useState(initialData?.newsletter_enabled || false);
   const [bookClubEnabled, setBookClubEnabled] = useState(initialData?.book_club_enabled || false);
 
-  // Bookshelf search state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Which bonus section dialog is open
+  // Which section is expanded inline (toggle on/off)
   const [openSection, setOpenSection] = useState<BonusSection>(null);
 
-  // Auto-save function for text fields
+  const toggleSection = (key: BonusSection) => {
+    setOpenSection(prev => prev === key ? null : key);
+  };
+
   const autoSaveField = useCallback(async (field: string, value: string) => {
     try {
       const { error } = await supabase
         .from('qr_codes')
         .update({ [field]: value || null })
         .eq('id', qrCodeId);
-
       if (error) throw error;
       console.log(`Auto-saved ${field}`);
     } catch (error) {
@@ -150,14 +144,12 @@ export const EnhancementsManager = ({
     }
   }, [qrCodeId]);
 
-  // Auto-save for letter to readers
   useAutoSave(letterToReaders, useCallback((value: string) => autoSaveField('letter_to_readers', value), [autoSaveField]));
 
   const saveVideos = async (videosToSave: BookVideo[]) => {
     setIsVideoSaving(true);
     try {
       const validVideos = videosToSave.filter(v => v.url && v.url.trim() !== "");
-      
       const { error } = await supabase
         .from('qr_codes')
         .update({ 
@@ -165,21 +157,12 @@ export const EnhancementsManager = ({
           thank_you_video_url: validVideos.length > 0 ? validVideos[0].url : null
         })
         .eq('id', qrCodeId);
-
       if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Video saved successfully",
-      });
+      toast({ title: "Success", description: "Video saved successfully" });
       onUpdate?.();
     } catch (error) {
       console.error("Error saving video:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save video",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to save video", variant: "destructive" });
     } finally {
       setIsVideoSaving(false);
     }
@@ -231,16 +214,13 @@ export const EnhancementsManager = ({
     if (recommendations !== undefined) {
       const currentIds = recommendations.map(r => r.id).filter(Boolean).sort().join(',');
       const prevIds = recommendationsRef.current?.map(r => r.id).filter(Boolean).sort().join(',') || '';
-      
       const hasChanged = currentIds !== prevIds || 
                         (recommendationsRef.current === undefined && recommendations.length > 0) ||
                         (recommendationsRef.current?.length !== recommendations.length && recommendations.length > 0);
-      
       if (hasChanged) {
         setRecs(prevRecs => {
           const localUnsavedItems = prevRecs.filter(r => !r.id);
-          const merged = [...recommendations, ...localUnsavedItems];
-          return merged;
+          return [...recommendations, ...localUnsavedItems];
         });
         recommendationsRef.current = recommendations;
       }
@@ -254,13 +234,11 @@ export const EnhancementsManager = ({
         const savedUrls = new Set(newVideos.map(v => v.url).filter(Boolean));
         const pendingVideos = prevVideos.filter(v => v.url && v.url.trim() !== "" && !savedUrls.has(v.url));
         const unsavedVideos = prevVideos.filter(v => !v.url || v.url.trim() === "");
-        
         if (pendingVideos.length > 0 || unsavedVideos.length > 0) {
           return [...newVideos, ...pendingVideos, ...unsavedVideos];
         }
         return newVideos;
       });
-      
       setLetterToReaders(initialData.letter_to_readers || "");
       setArcSignupEnabled(initialData.arc_signup_enabled || false);
       setBetaReaderEnabled(initialData.beta_reader_enabled || false);
@@ -271,7 +249,6 @@ export const EnhancementsManager = ({
         const savedUrls = new Set(newChars.map(c => c.url).filter(Boolean));
         const pendingChars = prevChars.filter(c => c.url && c.url.trim() !== "" && !savedUrls.has(c.url));
         const unsavedChars = prevChars.filter(c => !c.url || c.url.trim() === "");
-        
         if (pendingChars.length > 0 || unsavedChars.length > 0) {
           return [...newChars, ...pendingChars, ...unsavedChars];
         }
@@ -285,7 +262,6 @@ export const EnhancementsManager = ({
     try {
       const validCharacters = characters.filter(char => char.url && char.url.trim() !== "");
       const validVideos = videos.filter(v => v.url && v.url.trim() !== "");
-      
       const { error } = await supabase
         .from('qr_codes')
         .update({
@@ -299,21 +275,12 @@ export const EnhancementsManager = ({
           book_club_enabled: bookClubEnabled,
         })
         .eq('id', qrCodeId);
-
       if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Enhancements saved successfully",
-      });
+      toast({ title: "Success", description: "Enhancements saved successfully" });
       onUpdate?.();
     } catch (error) {
       console.error("Error saving enhancements:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save enhancements",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to save enhancements", variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
@@ -333,13 +300,11 @@ export const EnhancementsManager = ({
     setCharacters(characters.filter((_, i) => i !== index));
   };
 
-  // Bookshelf search effect
   useEffect(() => {
     if (!searchQuery || searchQuery.length < 2) {
       setSearchResults([]);
       return;
     }
-
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
@@ -357,7 +322,6 @@ export const EnhancementsManager = ({
         setIsSearching(false);
       }
     }, 300);
-
     return () => clearTimeout(timer);
   }, [searchQuery, authorId]);
 
@@ -366,7 +330,6 @@ export const EnhancementsManager = ({
       toast({ title: "Already added", description: "This book is already in your bookshelf" });
       return;
     }
-
     try {
       const authorName = Array.isArray(book.author) ? book.author[0]?.name : book.author?.name;
       const { data, error } = await supabase
@@ -382,9 +345,7 @@ export const EnhancementsManager = ({
         })
         .select()
         .single();
-
       if (error) throw error;
-
       setRecs(prev => [...prev, {
         id: data.id,
         recommended_book_title: book.book_title,
@@ -423,238 +384,243 @@ export const EnhancementsManager = ({
     onUpdate?.();
   };
 
-  // Content tiles with has-content detection
-  const contentTiles: { key: BonusSection; label: string; hasContent: boolean }[] = [
-    { key: "videos", label: "Videos", hasContent: videos.filter(v => v.url?.trim()).length > 0 },
-    { key: "characters", label: "Book Art", hasContent: characters.filter(c => c.url?.trim()).length > 0 },
-    { key: "letter", label: "Letter to Readers", hasContent: !!letterToReaders?.trim() },
-    { key: "bookshelf", label: "Bookshelf", hasContent: recs.length > 0 },
-    { key: "signups", label: "Signup Forms", hasContent: arcSignupEnabled || betaReaderEnabled || newsletterEnabled || bookClubEnabled },
+  const contentTiles: { key: BonusSection; label: string }[] = [
+    { key: "videos", label: "Videos" },
+    { key: "characters", label: "Book Art" },
+    { key: "letter", label: "Letter to Readers" },
+    { key: "bookshelf", label: "Bookshelf" },
+    { key: "signups", label: "Signup Forms" },
   ];
 
   return (
-    <div>
+    <div className="space-y-4">
       {/* Horizontal content tiles */}
       <div className="flex flex-wrap gap-3">
-        {contentTiles.map(({ key, label, hasContent }) => (
+        {contentTiles.map(({ key, label }) => (
           <button
             key={key}
             type="button"
-            onClick={() => setOpenSection(key)}
-            className="flex flex-col items-center gap-2 px-4 py-3 rounded-lg border border-gray-200 bg-white hover:border-[#FFD166] hover:shadow-sm transition-all min-w-[100px] flex-1 sm:flex-initial"
+            onClick={() => toggleSection(key)}
+            className={`flex flex-col items-center gap-2 px-4 py-3 rounded-lg border bg-white hover:border-[#FFD166] hover:shadow-sm transition-all min-w-[100px] flex-1 sm:flex-initial ${
+              openSection === key ? 'border-[#FFD166] shadow-sm' : 'border-gray-200'
+            }`}
           >
             <span className="text-sm font-medium text-[#333333]">{label}</span>
-            <div
-              className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors ${
-                hasContent 
-                  ? 'bg-[#19363C] text-white' 
-                  : 'bg-[#FFD166] text-[#333333]'
-              }`}
-            >
-              {hasContent ? (
-                <Check className="h-4 w-4" strokeWidth={2.5} />
-              ) : (
-                <Plus className="h-4 w-4" strokeWidth={2.5} />
-              )}
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FFD166] text-[#333333] transition-colors">
+              <Plus className="h-4 w-4" strokeWidth={2.5} />
             </div>
           </button>
         ))}
       </div>
 
-      <Dialog open={openSection !== null} onOpenChange={(open) => !open && setOpenSection(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-6">
-          <DialogHeader className="sr-only">
-            <DialogTitle>
-              {openSection === "videos" && "Videos"}
-              {openSection === "letter" && "Letter to Readers"}
-              {openSection === "characters" && "Character or Book Art"}
-              {openSection === "signups" && "Reader Signup Forms"}
-              {openSection === "bookshelf" && "Bookshelf"}
-            </DialogTitle>
-          </DialogHeader>
-
-          {openSection === "videos" && (
-            <div className="space-y-3">
-              {videos.map((video, idx) => (
-                <div key={idx} className="p-3 rounded-lg space-y-3 bg-gray-50 border border-gray-200">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-medium text-[#333333]">Video {idx + 1}</span>
-                    <Button variant="ghost" size="sm" onClick={() => handleVideoRemove(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]">
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  <RadioGroup
-                    value={video.type}
-                    onValueChange={(value) => handleVideoTypeChange(idx, value as BookVideo["type"])}
-                    className="flex flex-wrap gap-3"
-                  >
-                    {VIDEO_TYPE_OPTIONS.map((option) => (
-                      <div key={option.value} className="flex items-center space-x-1.5">
-                        <RadioGroupItem value={option.value} id={`video-type-${idx}-${option.value}`} className="h-3 w-3" />
-                        <Label htmlFor={`video-type-${idx}-${option.value}`} className="text-xs cursor-pointer text-[#333333]">{option.label}</Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                  <Tabs defaultValue={video.url && video.url.includes('/book-videos/') ? 'upload' : (video.url ? 'url' : 'upload')} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 h-8">
-                      <TabsTrigger value="upload" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:text-white">Upload</TabsTrigger>
-                      <TabsTrigger value="url" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:text-white">URL</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="upload" className="mt-2">
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <span className="text-xs text-[#333333]">Video File</span>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="h-3 w-3 cursor-help text-gray-500" />
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-[200px]"><p className="text-xs">MP4, WebM, OGG, MOV (max 225MB)</p></TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                      <VideoUpload
-                        onUploadSuccess={(url) => handleVideoUploadSuccess(idx, url)}
-                        currentVideoUrl={video.url}
-                        onRemove={() => { const u = [...videos]; u[idx] = { ...u[idx], url: "" }; setVideos(u); }}
-                      />
-                      {isVideoSaving && <p className="text-xs mt-1 text-[#19363c]">Saving...</p>}
-                    </TabsContent>
-                    <TabsContent value="url" className="mt-2 space-y-2">
-                      <div className="flex gap-2">
-                        <Input placeholder="https://..." value={video.url} onChange={(e) => handleVideoUrlChange(idx, e.target.value)} className="h-8 text-xs" />
-                        <Button type="button" onClick={() => saveVideoUrl(idx)} disabled={isVideoSaving} size="sm" className="h-8 px-3 text-xs bg-[#19363c] text-[#ffd166]">Save</Button>
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                  <Input placeholder="Description (optional)" value={video.description || ""} onChange={(e) => handleVideoDescriptionChange(idx, e.target.value)} className="h-8 text-xs" />
-                </div>
-              ))}
-              <Button variant="outline" onClick={addVideo} className="w-full h-9 text-xs border-dashed border-[#FFD166] text-[#333333] hover:bg-[#FFD166]/10">
-                <Plus className="mr-1.5 h-3 w-3" /> Add Video
-              </Button>
-              <Button onClick={() => saveVideos(videos)} disabled={isVideoSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
-                {isVideoSaving ? "Saving..." : "Save"}
-              </Button>
-            </div>
-          )}
-
-          {openSection === "letter" && (
-            <div className="space-y-3">
-              <Textarea
-                placeholder="Write a personal note to your readers..."
-                value={letterToReaders}
-                onChange={(e) => setLetterToReaders(e.target.value)}
-                className="min-h-[120px] text-sm"
-              />
-            </div>
-          )}
-
-          {openSection === "characters" && (
-            <div className="space-y-3">
-              {characters.map((char, idx) => (
-                <div key={idx} className="p-3 rounded-lg space-y-2 bg-gray-50 border border-gray-200">
-                  <div className="flex justify-end">
-                    <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]"><X className="h-3 w-3" /></Button>
-                  </div>
-                  <Tabs defaultValue={char.url && char.url.includes('/character-images/') ? 'upload' : (char.url ? 'url' : 'upload')} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 h-8">
-                      <TabsTrigger value="upload" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-white">Upload</TabsTrigger>
-                      <TabsTrigger value="url" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-white">URL</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="upload" className="mt-2">
-                      <CharacterImageUpload onUploadSuccess={(url) => updateCharacter(idx, "url", url)} currentImageUrl={char.url} onRemove={() => updateCharacter(idx, "url", "")} />
-                    </TabsContent>
-                    <TabsContent value="url" className="mt-2">
-                      <Input placeholder="Image URL" value={char.url} onChange={(e) => updateCharacter(idx, "url", e.target.value)} className="h-8 text-xs" />
-                    </TabsContent>
-                  </Tabs>
-                  <Textarea placeholder="Description (optional)" value={char.description || ""} onChange={(e) => updateCharacter(idx, "description", e.target.value)} rows={2} className="text-xs" />
-                </div>
-              ))}
-              <Button variant="outline" onClick={addCharacter} className="w-full h-9 text-xs border-dashed border-[#FFD166] text-[#333333] hover:bg-[#FFD166]/10">
-                <Plus className="mr-1.5 h-3 w-3" /> Add Art
-              </Button>
-              <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
-                {isSaving ? "Saving..." : "Save"}
-              </Button>
-            </div>
-          )}
-
-          {openSection === "signups" && (
-            <div className="space-y-4">
-              <p className="text-xs text-gray-600">Enable signup forms on this book page. Signups appear in your author dashboard.</p>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="arc-signup" className="text-sm cursor-pointer text-[#333333]">ARC Reader Signup</Label>
-                  <Switch id="arc-signup" checked={arcSignupEnabled} onCheckedChange={setArcSignupEnabled} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="beta-signup" className="text-sm cursor-pointer text-[#333333]">Beta Reader Signup</Label>
-                  <Switch id="beta-signup" checked={betaReaderEnabled} onCheckedChange={setBetaReaderEnabled} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="newsletter-signup" className="text-sm cursor-pointer text-[#333333]">Newsletter Signup</Label>
-                  <Switch id="newsletter-signup" checked={newsletterEnabled} onCheckedChange={setNewsletterEnabled} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="book-club-signup" className="text-sm cursor-pointer text-[#333333]">Book Club Invitations</Label>
-                  <Switch id="book-club-signup" checked={bookClubEnabled} onCheckedChange={setBookClubEnabled} />
-                </div>
-              </div>
-              <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
-                {isSaving ? "Saving..." : "Save"}
-              </Button>
-            </div>
-          )}
-
-          {openSection === "bookshelf" && (
-            <div className="space-y-3">
-              {recs.map((rec, idx) => (
-                <div key={rec.id || idx} className="p-3 rounded-lg flex items-center gap-3 bg-gray-50 border border-gray-200">
-                  {rec.recommended_book_cover_url ? (
-                    <img src={rec.recommended_book_cover_url} alt={rec.recommended_book_title} className="w-10 h-14 object-cover rounded flex-shrink-0" />
-                  ) : (
-                    <div className="w-10 h-14 bg-muted rounded flex items-center justify-center flex-shrink-0 text-[8px]">No cover</div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate text-[#333333]">{rec.recommended_book_title}</p>
-                    {rec.recommended_book_author && <p className="text-[10px] truncate text-gray-600">{rec.recommended_book_author}</p>}
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)} className="h-6 w-6 p-0 flex-shrink-0 text-[#333333]"><X className="h-3 w-3" /></Button>
-                </div>
-              ))}
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-500" />
-                <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search for books on Quilltips..." className="h-9 pl-8 text-sm" />
-              </div>
-              {searchResults.length > 0 && (
-                <div className="border border-gray-200 rounded-lg bg-white max-h-48 overflow-y-auto">
-                  {searchResults.map((book) => {
-                    const bookAuthorName = Array.isArray(book.author) ? book.author[0]?.name : book.author?.name;
-                    return (
-                      <button key={book.id} type="button" onClick={() => selectBook(book)} className="w-full flex items-center gap-3 p-2.5 hover:bg-gray-50 text-left">
-                        {book.cover_image ? <img src={book.cover_image} alt={book.book_title} className="w-8 h-12 object-cover rounded flex-shrink-0" /> : <div className="w-8 h-12 bg-muted rounded flex items-center justify-center text-[6px]">No cover</div>}
-                        <div className="min-w-0">
-                          <p className="text-xs font-medium truncate text-[#333333]">{book.book_title}</p>
-                          {bookAuthorName && <p className="text-[10px] truncate text-gray-600">by {bookAuthorName}</p>}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-              {isSearching && <p className="text-xs text-center text-gray-500">Searching...</p>}
-              {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && <p className="text-xs text-center text-gray-500">No books found</p>}
-            </div>
-          )}
-
-          {openSection === "letter" && (
-            <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
-              {isSaving ? "Saving..." : "Save"}
+      {/* Inline expanded section content */}
+      {openSection === "videos" && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-sm font-semibold text-[#333333]">Videos</h4>
+            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
+              <X className="h-4 w-4" />
             </Button>
+          </div>
+          {videos.map((video, idx) => (
+            <div key={idx} className="p-3 rounded-lg space-y-3 bg-gray-50 border border-gray-200">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-medium text-[#333333]">Video {idx + 1}</span>
+                <Button variant="ghost" size="sm" onClick={() => handleVideoRemove(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]">
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+              <RadioGroup
+                value={video.type}
+                onValueChange={(value) => handleVideoTypeChange(idx, value as BookVideo["type"])}
+                className="flex flex-wrap gap-3"
+              >
+                {VIDEO_TYPE_OPTIONS.map((option) => (
+                  <div key={option.value} className="flex items-center space-x-1.5">
+                    <RadioGroupItem value={option.value} id={`video-type-${idx}-${option.value}`} className="h-3 w-3" />
+                    <Label htmlFor={`video-type-${idx}-${option.value}`} className="text-xs cursor-pointer text-[#333333]">{option.label}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+              <Tabs defaultValue={video.url && video.url.includes('/book-videos/') ? 'upload' : (video.url ? 'url' : 'upload')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 h-8">
+                  <TabsTrigger value="upload" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:text-white">Upload</TabsTrigger>
+                  <TabsTrigger value="url" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:text-white">URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="mt-2">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="text-xs text-[#333333]">Video File</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-3 w-3 cursor-help text-gray-500" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[200px]"><p className="text-xs">MP4, WebM, OGG, MOV (max 225MB)</p></TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <VideoUpload
+                    onUploadSuccess={(url) => handleVideoUploadSuccess(idx, url)}
+                    currentVideoUrl={video.url}
+                    onRemove={() => { const u = [...videos]; u[idx] = { ...u[idx], url: "" }; setVideos(u); }}
+                  />
+                  {isVideoSaving && <p className="text-xs mt-1 text-[#19363c]">Saving...</p>}
+                </TabsContent>
+                <TabsContent value="url" className="mt-2 space-y-2">
+                  <div className="flex gap-2">
+                    <Input placeholder="https://..." value={video.url} onChange={(e) => handleVideoUrlChange(idx, e.target.value)} className="h-8 text-xs" />
+                    <Button type="button" onClick={() => saveVideoUrl(idx)} disabled={isVideoSaving} size="sm" className="h-8 px-3 text-xs bg-[#19363c] text-[#ffd166]">Save</Button>
+                  </div>
+                </TabsContent>
+              </Tabs>
+              <Input placeholder="Description (optional)" value={video.description || ""} onChange={(e) => handleVideoDescriptionChange(idx, e.target.value)} className="h-8 text-xs" />
+            </div>
+          ))}
+          <Button variant="outline" onClick={addVideo} className="w-full h-9 text-xs border-dashed border-[#FFD166] text-[#333333] hover:bg-[#FFD166]/10">
+            <Plus className="mr-1.5 h-3 w-3" /> Add Video
+          </Button>
+          <Button onClick={() => saveVideos(videos)} disabled={isVideoSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
+            {isVideoSaving ? "Saving..." : "Save"}
+          </Button>
+        </div>
+      )}
+
+      {openSection === "letter" && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-sm font-semibold text-[#333333]">Letter to Readers</h4>
+            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <Textarea
+            placeholder="Write a personal note to your readers..."
+            value={letterToReaders}
+            onChange={(e) => setLetterToReaders(e.target.value)}
+            className="min-h-[120px] text-sm"
+          />
+          <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
+            {isSaving ? "Saving..." : "Save"}
+          </Button>
+        </div>
+      )}
+
+      {openSection === "characters" && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-sm font-semibold text-[#333333]">Book Art</h4>
+            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          {characters.map((char, idx) => (
+            <div key={idx} className="p-3 rounded-lg space-y-2 bg-gray-50 border border-gray-200">
+              <div className="flex justify-end">
+                <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]"><X className="h-3 w-3" /></Button>
+              </div>
+              <Tabs defaultValue={char.url && char.url.includes('/character-images/') ? 'upload' : (char.url ? 'url' : 'upload')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 h-8">
+                  <TabsTrigger value="upload" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-white">Upload</TabsTrigger>
+                  <TabsTrigger value="url" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-white">URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="mt-2">
+                  <CharacterImageUpload onUploadSuccess={(url) => updateCharacter(idx, "url", url)} currentImageUrl={char.url} onRemove={() => updateCharacter(idx, "url", "")} />
+                </TabsContent>
+                <TabsContent value="url" className="mt-2">
+                  <Input placeholder="Image URL" value={char.url} onChange={(e) => updateCharacter(idx, "url", e.target.value)} className="h-8 text-xs" />
+                </TabsContent>
+              </Tabs>
+              <Textarea placeholder="Description (optional)" value={char.description || ""} onChange={(e) => updateCharacter(idx, "description", e.target.value)} rows={2} className="text-xs" />
+            </div>
+          ))}
+          <Button variant="outline" onClick={addCharacter} className="w-full h-9 text-xs border-dashed border-[#FFD166] text-[#333333] hover:bg-[#FFD166]/10">
+            <Plus className="mr-1.5 h-3 w-3" /> Add Art
+          </Button>
+          <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
+            {isSaving ? "Saving..." : "Save"}
+          </Button>
+        </div>
+      )}
+
+      {openSection === "signups" && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-sm font-semibold text-[#333333]">Signup Forms</h4>
+            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-gray-600">Enable signup forms on this book page. Signups appear in your author dashboard.</p>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="arc-signup" className="text-sm cursor-pointer text-[#333333]">ARC Reader Signup</Label>
+              <Switch id="arc-signup" checked={arcSignupEnabled} onCheckedChange={setArcSignupEnabled} />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="beta-signup" className="text-sm cursor-pointer text-[#333333]">Beta Reader Signup</Label>
+              <Switch id="beta-signup" checked={betaReaderEnabled} onCheckedChange={setBetaReaderEnabled} />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="newsletter-signup" className="text-sm cursor-pointer text-[#333333]">Newsletter Signup</Label>
+              <Switch id="newsletter-signup" checked={newsletterEnabled} onCheckedChange={setNewsletterEnabled} />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="book-club-signup" className="text-sm cursor-pointer text-[#333333]">Book Club Invitations</Label>
+              <Switch id="book-club-signup" checked={bookClubEnabled} onCheckedChange={setBookClubEnabled} />
+            </div>
+          </div>
+          <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
+            {isSaving ? "Saving..." : "Save"}
+          </Button>
+        </div>
+      )}
+
+      {openSection === "bookshelf" && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-sm font-semibold text-[#333333]">Bookshelf</h4>
+            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          {recs.map((rec, idx) => (
+            <div key={rec.id || idx} className="p-3 rounded-lg flex items-center gap-3 bg-gray-50 border border-gray-200">
+              {rec.recommended_book_cover_url ? (
+                <img src={rec.recommended_book_cover_url} alt={rec.recommended_book_title} className="w-10 h-14 object-cover rounded flex-shrink-0" />
+              ) : (
+                <div className="w-10 h-14 bg-muted rounded flex items-center justify-center flex-shrink-0 text-[8px]">No cover</div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium truncate text-[#333333]">{rec.recommended_book_title}</p>
+                {rec.recommended_book_author && <p className="text-[10px] truncate text-gray-600">{rec.recommended_book_author}</p>}
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => removeRecommendation(idx)} className="h-6 w-6 p-0 flex-shrink-0 text-[#333333]"><X className="h-3 w-3" /></Button>
+            </div>
+          ))}
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-500" />
+            <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search for books on Quilltips..." className="h-9 pl-8 text-sm" />
+          </div>
+          {searchResults.length > 0 && (
+            <div className="border border-gray-200 rounded-lg bg-white max-h-48 overflow-y-auto">
+              {searchResults.map((book) => {
+                const bookAuthorName = Array.isArray(book.author) ? book.author[0]?.name : book.author?.name;
+                return (
+                  <button key={book.id} type="button" onClick={() => selectBook(book)} className="w-full flex items-center gap-3 p-2.5 hover:bg-gray-50 text-left">
+                    {book.cover_image ? <img src={book.cover_image} alt={book.book_title} className="w-8 h-12 object-cover rounded flex-shrink-0" /> : <div className="w-8 h-12 bg-muted rounded flex items-center justify-center text-[6px]">No cover</div>}
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium truncate text-[#333333]">{book.book_title}</p>
+                      {bookAuthorName && <p className="text-[10px] truncate text-gray-600">by {bookAuthorName}</p>}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           )}
-        </DialogContent>
-      </Dialog>
+          {isSearching && <p className="text-xs text-center text-gray-500">Searching...</p>}
+          {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && <p className="text-xs text-center text-gray-500">No books found</p>}
+        </div>
+      )}
     </div>
   );
 };
