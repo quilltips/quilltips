@@ -319,7 +319,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
   return (
     <>
-    <div className="grid xl:grid-cols-[3fr_2fr] gap-7 mx-auto">
+    <div className="grid xl:grid-cols-[5fr_3fr] gap-7 mx-auto">
       {/* Left side - QR Code, Book Cover, and Book Details */}
       <div className="">
         <Card className="p-4 md:p-7 bg-white shadow-md" style={{ borderColor: '#333333' }}>
@@ -537,73 +537,80 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
               />
             </div>
 
-            {/* Small QR code preview - compact card */}
-            <div className="flex justify-center">
-              <StyledQRCode
-                value={qrUrl}
-                showBranding={true}
-                isPaid={isPaid}
-                variant="screen"
-                size={80}
-              />
-            </div>
-
-            <QRCodeDownloadOptions
-              onDownloadSVG={handleDownloadSVG}
-              onDownloadPNG={handleDownloadPNG}
-              disabled={!isPaid}
-            />
-
-            <Button 
-              variant="secondary" 
-              className="w-full border border-[#333333]"
-              onClick={handleShare}
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Share QR Code
-            </Button>
-
-            {/* Book page link */}
-            <div className="space-y-1">
-              <span className="text-sm font-medium text-[#333333]">Book page</span>
-              <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-md border">
-                <input
-                  type="text"
+            {/* QR code beside download/share buttons */}
+            <div className="flex items-start gap-4">
+              <div className="shrink-0">
+                <StyledQRCode
                   value={qrUrl}
-                  readOnly
-                  className="flex-1 text-sm bg-transparent border-none outline-none text-[#333333] min-w-0"
+                  showBranding={true}
+                  isPaid={isPaid}
+                  variant="screen"
+                  size={80}
                 />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    navigator.clipboard.writeText(qrUrl);
-                    toast({
-                      title: "Link copied",
-                      description: "Your book page link has been copied to clipboard.",
-                    });
-                  }}
-                  className="text-[#333333] hover:text-[#19363C] p-1 shrink-0"
+              </div>
+              <div className="flex-1 space-y-2">
+                <QRCodeDownloadOptions
+                  onDownloadSVG={handleDownloadSVG}
+                  onDownloadPNG={handleDownloadPNG}
+                  disabled={!isPaid}
+                />
+                <Button 
+                  variant="secondary" 
+                  className="w-full border border-[#333333]"
+                  onClick={handleShare}
                 >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Share QR Code
                 </Button>
               </div>
             </div>
 
-            {/* Author profile link */}
-            <div className="space-y-1">
-              <span className="text-sm font-medium text-[#333333]">Author profile</span>
-              <a
-                href={authorProfileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-2 bg-gray-50 rounded-md border hover:bg-gray-100 transition-colors text-sm text-[#333333]"
-              >
-                <span className="flex-1 truncate">{authorProfileUrl}</span>
-                <ExternalLink className="h-4 w-4 shrink-0" />
-              </a>
+            {/* Links section */}
+            <div className="space-y-3 pt-2 border-t">
+              <h4 className="text-sm font-semibold text-[#333333]">Links</h4>
+
+              {/* Book page link */}
+              <div className="space-y-1">
+                <span className="text-sm font-medium text-[#333333]">Book page</span>
+                <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-md border">
+                  <input
+                    type="text"
+                    value={qrUrl}
+                    readOnly
+                    className="flex-1 text-sm bg-transparent border-none outline-none text-[#333333] min-w-0"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(qrUrl);
+                      toast({
+                        title: "Link copied",
+                        description: "Your book page link has been copied to clipboard.",
+                      });
+                    }}
+                    className="text-[#333333] hover:text-[#19363C] p-1 shrink-0"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Author profile link */}
+              <div className="space-y-1">
+                <span className="text-sm font-medium text-[#333333]">Author profile</span>
+                <a
+                  href={authorProfileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 p-2 bg-gray-50 rounded-md border hover:bg-gray-100 transition-colors text-sm text-[#333333]"
+                >
+                  <span className="flex-1 truncate">{authorProfileUrl}</span>
+                  <ExternalLink className="h-4 w-4 shrink-0" />
+                </a>
+              </div>
             </div>
 
             {!isPaid && (

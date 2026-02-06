@@ -91,7 +91,7 @@ export const CharacterImageUpload = ({
   return (
     <div className="space-y-2">
       {currentImageUrl && (
-        <div className="relative w-full aspect-square max-w-[200px] border rounded-lg overflow-hidden">
+        <div className="relative w-20 h-20 border rounded-lg overflow-hidden">
           <OptimizedImage
             src={currentImageUrl}
             alt="Character"
