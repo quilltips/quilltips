@@ -51,7 +51,7 @@ export const QRCodeTipForm = ({
     <Card className="mt-8">
       <CardContent className="pt-6">
         <h2 className="text-2xl font-bold text-left mb-6">
-          Send {authorFirstName} a tip!
+          Support {authorFirstName} with a tip!
         </h2>
         
         {!stripeSetupComplete || !hasStripeAccount || !isQRCodePaid ? (
