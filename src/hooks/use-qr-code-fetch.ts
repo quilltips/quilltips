@@ -38,7 +38,8 @@ export const useQRCodeFetch = () => {
           arc_signup_description,
           beta_reader_description,
           newsletter_description,
-          book_club_description
+          book_club_description,
+          social_links
         )
       `;
       
