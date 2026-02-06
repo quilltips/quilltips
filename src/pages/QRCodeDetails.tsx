@@ -184,11 +184,11 @@ const QRCodeDetails = () => {
                             href={getValidURL(link.url)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-border opacity-60 hover:opacity-100 transition-opacity"
+                            className="inline-flex items-center hover:opacity-80 transition-opacity"
                             aria-label={link.platform}
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {getSocialPlatformIcon(link.platform, "h-3.5 w-3.5")}
+                            {getSocialPlatformIcon(link.platform, "h-[22px] w-[22px]")}
                           </a>
                         ))}
                       </>
