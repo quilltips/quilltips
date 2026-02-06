@@ -117,7 +117,7 @@ export const PublicTipHistory = ({ qrCodeId }: PublicTipHistoryProps) => {
               <div className="flex-1">
                 <div className="space-y-1">
                   <p className="font-medium">
-                    {readerFirstName} sent fan mail!
+                    {readerFirstName} sent Fan Mail!
                   </p>
                   {tip.message && (
                     <p className="">"{tip.message}"</p>
