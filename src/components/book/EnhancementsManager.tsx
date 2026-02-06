@@ -124,8 +124,24 @@ export const EnhancementsManager = ({
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Ordered array of open sections — newest first
-  const [openSections, setOpenSections] = useState<BonusSection[]>([]);
+  // Compute which sections have existing content
+  const sectionsWithContent = (): BonusSection[] => {
+    const sections: BonusSection[] = [];
+    const hasVideos = (initialData?.book_videos && Array.isArray(initialData.book_videos) && initialData.book_videos.length > 0) || !!initialData?.thank_you_video_url;
+    const hasCharacters = initialData?.character_images && Array.isArray(initialData.character_images) && initialData.character_images.length > 0;
+    const hasLetter = !!initialData?.letter_to_readers;
+    const hasRecs = recommendations && recommendations.length > 0;
+    const hasSignups = initialData?.arc_signup_enabled || initialData?.beta_reader_enabled || initialData?.newsletter_enabled || initialData?.book_club_enabled;
+    if (hasVideos) sections.push("videos");
+    if (hasCharacters) sections.push("characters");
+    if (hasLetter) sections.push("letter");
+    if (hasRecs) sections.push("bookshelf");
+    if (hasSignups) sections.push("signups");
+    return sections;
+  };
+
+  // Ordered array of open sections — newest first, initialized with sections that have content
+  const [openSections, setOpenSections] = useState<BonusSection[]>(sectionsWithContent);
 
   const toggleSection = (key: BonusSection) => {
     setOpenSections(prev => {
@@ -472,23 +488,12 @@ export const EnhancementsManager = ({
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            {characters.map((char, idx) => (
+           {characters.map((char, idx) => (
               <div key={idx} className="p-3 rounded-lg space-y-2 bg-gray-50 border border-gray-200">
                 <div className="flex justify-end">
                   <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]"><X className="h-3 w-3" /></Button>
                 </div>
-                <Tabs defaultValue={char.url && char.url.includes('/character-images/') ? 'upload' : (char.url ? 'url' : 'upload')} className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 h-8">
-                    <TabsTrigger value="upload" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-white">Upload</TabsTrigger>
-                    <TabsTrigger value="url" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-white">URL</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="upload" className="mt-2">
-                    <CharacterImageUpload onUploadSuccess={(url) => updateCharacter(idx, "url", url)} currentImageUrl={char.url} onRemove={() => updateCharacter(idx, "url", "")} />
-                  </TabsContent>
-                  <TabsContent value="url" className="mt-2">
-                    <Input placeholder="Image URL" value={char.url} onChange={(e) => updateCharacter(idx, "url", e.target.value)} className="h-8 text-xs" />
-                  </TabsContent>
-                </Tabs>
+                <CharacterImageUpload onUploadSuccess={(url) => updateCharacter(idx, "url", url)} currentImageUrl={char.url} onRemove={() => updateCharacter(idx, "url", "")} />
                 <Textarea placeholder="Description (optional)" value={char.description || ""} onChange={(e) => updateCharacter(idx, "description", e.target.value)} rows={2} className="text-xs" />
               </div>
             ))}
@@ -618,7 +623,7 @@ export const EnhancementsManager = ({
             key={key}
             type="button"
             onClick={() => toggleSection(key)}
-            className={`flex flex-col items-center gap-2 px-4 py-3 rounded-lg border bg-white hover:border-[#FFD166] hover:shadow-sm transition-all min-w-[100px] flex-1 sm:flex-initial ${
+            className={`flex flex-col items-center gap-2 px-4 py-3 rounded-lg border bg-white hover:border-[#FFD166] hover:shadow-sm transition-all min-w-[90px] ${
               openSections.includes(key) ? 'border-[#FFD166] shadow-sm' : 'border-gray-200'
             }`}
           >
@@ -631,7 +636,9 @@ export const EnhancementsManager = ({
       </div>
 
       {/* Inline expanded sections - rendered in click order (newest first) */}
-      {openSections.map(section => renderSection(section))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {openSections.map(section => renderSection(section))}
+      </div>
     </div>
   );
 };
