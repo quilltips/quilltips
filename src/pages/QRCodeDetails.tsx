@@ -22,7 +22,7 @@ import { BetaReaderSignupCard } from "@/components/author/BetaReaderSignupCard";
 import { NewsletterSignupCard } from "@/components/author/NewsletterSignupCard";
 import { BookClubInviteCard } from "@/components/author/BookClubInviteCard";
 import { useState } from "react";
-import { ChevronRight, Mail, Video, FileText, Image, MessageCircle } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Meta } from "@/components/Meta";
 import { usePageViewTracking } from "@/hooks/use-page-view-tracking";
 import { getSocialIconLinks, getSocialPlatformIcon, getValidURL, type SocialLink } from "@/components/AuthorPublicProfile";
@@ -177,7 +177,7 @@ const QRCodeDetails = () => {
                     const iconLinks = getSocialIconLinks(authorSocialLinks);
                     if (iconLinks.length === 0) return null;
                     return (
-                      <>
+                      <span className="hidden sm:inline-flex items-center gap-2.5">
                         {iconLinks.map((link, i) => (
                           <a
                             key={i}
@@ -191,7 +191,7 @@ const QRCodeDetails = () => {
                             {getSocialPlatformIcon(link.platform, "h-[22px] w-[22px]")}
                           </a>
                         ))}
-                      </>
+                      </span>
                     );
                   })()}
                 </div>
@@ -199,36 +199,28 @@ const QRCodeDetails = () => {
             </div>
           </div>
 
-          {/* Mobile section nav: jump to video, letter, description, art, feed */}
-          {qrCode.is_paid && (() => {
-            const bookVideos = qrCode.book_videos as BookVideo[] | null;
-            const hasVideos = (bookVideos && Array.isArray(bookVideos) && bookVideos.length > 0) || (qrCode.thank_you_video_url || qrCode.video_title);
-            const hasLetter = !!qrCode.letter_to_readers;
-            const hasDescription = !!qrCode.book_description;
-            const hasArt = qrCode.character_images && Array.isArray(qrCode.character_images) && qrCode.character_images.length > 0;
-            const sections = [
-              hasVideos && { id: 'section-video', icon: Video, label: 'Video' },
-              hasLetter && { id: 'section-letter', icon: Mail, label: 'Letter' },
-              hasArt && { id: 'section-art', icon: Image, label: 'Art' },
-              hasDescription && { id: 'section-description', icon: FileText, label: 'Description' },
-              { id: 'section-feed', icon: MessageCircle, label: 'Fan Mail' },
-            ].filter(Boolean) as { id: string; icon: typeof Video; label: string }[];
-            if (sections.length <= 1) return null;
+          {/* Mobile social icons row */}
+          {(() => {
+            const authorSocialLinks = (qrCode.author?.social_links || []) as SocialLink[];
+            const iconLinks = getSocialIconLinks(authorSocialLinks);
+            if (iconLinks.length === 0) return null;
             return (
-              <div className="flex md:hidden justify-center">
-                <nav className="w-fit flex justify-center gap-3 py-1.5 border-y border-border">
-                {sections.map(({ id, icon: Icon, label }) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                    className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                    aria-label={label}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </button>
-                ))}
-                </nav>
+              <div className="flex sm:hidden justify-center">
+                <div className="flex items-center gap-3 py-1.5">
+                  {iconLinks.map((link, i) => (
+                    <a
+                      key={i}
+                      href={getValidURL(link.url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center hover:opacity-80 transition-opacity"
+                      aria-label={link.platform}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {getSocialPlatformIcon(link.platform, "h-[22px] w-[22px]")}
+                    </a>
+                  ))}
+                </div>
               </div>
             );
           })()}
