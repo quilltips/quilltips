@@ -108,7 +108,7 @@ export const NewsletterSignupCard = ({ authorId, description }: NewsletterSignup
   }
 
   return (
-    <Card className="bg-[#f8f6f2]">
+    <Card className="bg-[#FFFFFF99]">
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
