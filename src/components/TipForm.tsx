@@ -64,7 +64,7 @@ export const TipForm = ({
     <Card className="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="p-6 space-y-6">
         <h2 className="text-2xl font-bold text-left">
-          Send {authorFirstName} a tip!
+          Support {authorFirstName} with a tip!
         </h2>
         
         <TipMessageForm
