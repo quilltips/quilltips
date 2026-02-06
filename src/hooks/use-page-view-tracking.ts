@@ -41,7 +41,8 @@ export const usePageViewTracking = ({ authorId, qrCodeId, pageType }: UsePageVie
             visitor_id: visitorId,
           });
 
-        if (error) {
+        if (error && error.code !== '23505') {
+          // Ignore unique constraint violations (duplicate views) - only log real errors
           console.error("Error tracking page view:", error);
         }
       } catch (err) {
