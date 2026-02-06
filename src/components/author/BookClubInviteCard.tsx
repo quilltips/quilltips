@@ -112,11 +112,8 @@ export const BookClubInviteCard = ({ authorId, description }: BookClubInviteCard
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card className="bg-[#f8f6f2]">
+      <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -174,7 +171,7 @@ export const BookClubInviteCard = ({ authorId, description }: BookClubInviteCard
               <Label htmlFor="bc-event-location">Location (Optional)</Label>
               <Input
                 id="bc-event-location"
-                placeholder="City, State or Virtual"
+                placeholder=""
                 value={formData.event_location}
                 onChange={(e) => setFormData(prev => ({ ...prev, event_location: e.target.value }))}
               />
@@ -185,7 +182,7 @@ export const BookClubInviteCard = ({ authorId, description }: BookClubInviteCard
             <Label htmlFor="bc-message">Tell us about your event (Optional)</Label>
             <Textarea
               id="bc-message"
-              placeholder="Share details about your book club or event..."
+              placeholder=""
               value={formData.message}
               onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
               rows={3}

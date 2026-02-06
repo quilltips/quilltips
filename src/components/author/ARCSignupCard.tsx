@@ -105,12 +105,8 @@ export const ARCSignupCard = ({ authorId, description }: ARCSignupCardProps) => 
   }
 
   return (
-    <Card>
-      <CardHeader>
-     
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card className="bg-[#f8f6f2]">
+      <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">

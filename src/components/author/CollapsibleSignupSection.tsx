@@ -34,9 +34,9 @@ const getIcon = (type: string) => {
 
 const getButtonText = (type: string) => {
   switch (type) {
-    case 'arc': return "Sign up as an ARC reader!";
-    case 'beta': return "Become a Beta reader!";
-    case 'newsletter': return "Sign up for author updates!";
+    case 'arc': return "Sign up for ARC reader access";
+    case 'beta': return "Sign up for Beta reader access";
+    case 'newsletter': return "Sign up for Author updates";
     default: return "";
   }
 };
@@ -84,7 +84,7 @@ export const CollapsibleSignupSection = ({
   return (
     <Card className="border border-[#333333]/50 rounded-lg overflow-hidden">
       <CardContent className="p-4 space-y-2">
-        <h3 className="text-lg font-semibold text-foreground mb-3">Get Involved!</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-3">Connect with the Author</h3>
         {signupOptions.map((option) => (
           <Collapsible 
             key={option.key}
