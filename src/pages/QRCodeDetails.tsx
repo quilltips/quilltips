@@ -70,8 +70,7 @@ const QRCodeDetails = () => {
     : `Support ${qrCode.author?.name || 'the author'} by tipping them for ${qrCode.book_title} on Quilltips.`;
   const ogImage = qrCode.cover_image || 'https://quilltips.co/og-image.png';
 
-  // Check if any signup forms are enabled
-  const hasSignupForms = qrCode.arc_signup_enabled || qrCode.beta_reader_enabled || qrCode.newsletter_enabled || qrCode.book_club_enabled;
+  // Individual signup forms are rendered separately below
 
   return (
     <>
@@ -306,10 +305,11 @@ const QRCodeDetails = () => {
                 </div>
               )}
               
-              {/* Author Bio Preview */}
+              {/* About The Author */}
               {qrCode.author && qrCode.author.bio && (
-                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-2">
-                  <p className="text-sm ">
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-3">
+                  <h3 className="text-xl font-playfair text-center">About The Author</h3>
+                  <p className="text-sm">
                     {qrCode.author.bio.length > 100 
                       ? `${qrCode.author.bio.substring(0, 100)}...` 
                       : qrCode.author.bio}
@@ -324,56 +324,61 @@ const QRCodeDetails = () => {
                 </div>
               )}
               
-              {/* Author Recommendations */}
-              {qrCode.recommendations && qrCode.recommendations.length > 0 && (
-                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2]">
-                <BookRecommendationsCarousel
-                  recommendations={qrCode.recommendations}
-                  authorName={qrCode.author?.name || 'The author'}
-                />
-                </div>
-              )}
-              
-              {/* Signup Forms Section - moved below recommendations */}
-              {hasSignupForms && (
+              {/* Signup Forms - each in its own card */}
+              {qrCode.arc_signup_enabled && (
                 <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4">
-                  <h3 className="text-xl font-playfair text-center">Connect with the Author</h3>
-                  <div className="space-y-4">
-                    {qrCode.arc_signup_enabled && (
-                      <ARCSignupCard
-                        authorId={qrCode.author_id}
-                        description={qrCode.author?.arc_signup_description || "Get early access to upcoming books in exchange for honest reviews."}
-                      />
-                    )}
-                    {qrCode.beta_reader_enabled && (
-                      <BetaReaderSignupCard
-                        authorId={qrCode.author_id}
-                        description={qrCode.author?.beta_reader_description || "Help shape upcoming stories by providing feedback on early drafts."}
-                      />
-                    )}
-                    {qrCode.newsletter_enabled && (
-                      <NewsletterSignupCard
-                        authorId={qrCode.author_id}
-                        description={qrCode.author?.newsletter_description || "Stay updated on new releases, exclusive content, and author news."}
-                      />
-                    )}
-                    {qrCode.book_club_enabled && (
-                      <BookClubInviteCard
-                        authorId={qrCode.author_id}
-                        description={qrCode.author?.book_club_description || "Invite the author to your book club meeting or event."}
-                      />
-                    )}
-                  </div>
+                  <h3 className="text-xl font-playfair text-center">Sign up for ARC Reader</h3>
+                  <ARCSignupCard
+                    authorId={qrCode.author_id}
+                    description={qrCode.author?.arc_signup_description || "Get early access to upcoming books in exchange for honest reviews."}
+                  />
+                </div>
+              )}
+              {qrCode.beta_reader_enabled && (
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4">
+                  <h3 className="text-xl font-playfair text-center">Sign up for Beta Reader</h3>
+                  <BetaReaderSignupCard
+                    authorId={qrCode.author_id}
+                    description={qrCode.author?.beta_reader_description || "Help shape upcoming stories by providing feedback on early drafts."}
+                  />
+                </div>
+              )}
+              {qrCode.newsletter_enabled && (
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4">
+                  <h3 className="text-xl font-playfair text-center">Sign up for Newsletter</h3>
+                  <NewsletterSignupCard
+                    authorId={qrCode.author_id}
+                    description={qrCode.author?.newsletter_description || "Stay updated on new releases, exclusive content, and author news."}
+                  />
+                </div>
+              )}
+              {qrCode.book_club_enabled && (
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2] space-y-4">
+                  <h3 className="text-xl font-playfair text-center">Sign up for Book Club</h3>
+                  <BookClubInviteCard
+                    authorId={qrCode.author_id}
+                    description={qrCode.author?.book_club_description || "Invite the author to your book club meeting or event."}
+                  />
                 </div>
               )}
               
-              {/* Author's Other Books - moved to bottom */}
+              {/* Author's Other Books */}
               {qrCode.otherBooks && qrCode.otherBooks.length > 1 && (
                 <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2]">
                 <AuthorOtherBooksCarousel
                   books={qrCode.otherBooks}
                   authorName={qrCode.author?.name || 'this author'}
                   currentBookId={qrCode.id}
+                />
+                </div>
+              )}
+              
+              {/* Bookshelf - below Other Books */}
+              {qrCode.recommendations && qrCode.recommendations.length > 0 && (
+                <div className="rounded-xl p-4 md:p-6 bg-[#f8f6f2]">
+                <BookRecommendationsCarousel
+                  recommendations={qrCode.recommendations}
+                  authorName={qrCode.author?.name || 'The author'}
                 />
                 </div>
               )}
