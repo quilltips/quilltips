@@ -1,116 +1,90 @@
 
-# Rename Public Feed to "Fanmail" and Include Reader Messages
 
-## Overview
+## Redesign Bonus Content Intake Flow + Move Book Description to Core Field
 
-Transform the public "Feed" sections (on both individual book pages and author profile pages) from a tip-centric feed into a "Fanmail" feed that shows reader messages -- both from tips that include messages and from direct fanmail submissions. Add a "Keep this message private" option to the direct message form (it already exists on the tip form). Exclude private messages from the public Fanmail feed.
+This plan has two main parts: (1) replacing the current vertical list layout for bonus content with a horizontal tile-based layout inspired by the reference image, and (2) moving Book Description from a bonus content item to a core book field.
 
-## Current State
+---
 
-- The public feed only shows data from `public_tips` table, which only contains tips with `amount > 0`
-- Direct messages (amount = 0) are always stored as `is_private: true` in the `tips` table and never appear publicly
-- The `sync_to_public_tips` database trigger explicitly deletes entries with `amount = 0` from `public_tips`
-- The tip form already has a "Keep this tip private" checkbox
-- The direct message form (`MessageForm.tsx`) has no privacy option -- messages are always private
-- Feed items display as "{name} sent a tip for {book}!"
+### Part 1: New Horizontal Content Tiles in QRCodeStatsCard
 
-## What Changes
+**Current state:** The "Bonus Content" section sits at the bottom of the page in a full-width card, using `EnhancementsManager` which renders a vertical list of rows (Videos, Letter to Readers, Book Description, Character Art, Signup Forms, Bookshelf) with a + button on each row. Clicking + opens a dialog.
 
-### 1. Database: Update `sync_to_public_tips` Trigger
+**New design:** Replace the full-width card at the bottom with a horizontal row of content tiles at the top of the page (above the two-column grid), matching the reference image. Each tile shows a label and a golden + button. Tiles that already have content show a checkmark or filled state instead of just a +.
 
-Currently, the trigger only syncs tips where `amount > 0`. It needs to also sync messages (`amount = 0`) **when they are not private** (`is_private = false`). This allows non-private fanmail messages to appear in the public feed alongside tips that have messages.
+**Layout:** A section titled "Add Content To Your Book Page" with tiles laid out horizontally (scrollable on mobile, wrapped on desktop). The tiles are:
+- Videos
+- Book Art
+- Letter to Readers
+- Bookshelf
+- Signup Forms
 
-Changes to the trigger logic:
-- Remove the `amount > 0` guard
-- Instead, only sync entries where `is_private = false` (or `is_private IS NULL`)
-- Delete from `public_tips` if `is_private = true`
+(Book Description is removed from this list -- see Part 2)
 
-### 2. Edge Function: Update `send-message-to-author`
+Clicking a tile's + button opens the same dialog that currently exists in `EnhancementsManager`, so all the editing/saving logic stays the same.
 
-Currently hardcodes `is_private: true` for all messages. Update to accept an `isPrivate` parameter from the frontend and default to `false` (public) so fanmail appears in the feed by default unless the reader opts out.
+When a content type already has content added (e.g., videos uploaded, bookshelf has entries), the tile visually indicates this (e.g., a checkmark overlay or a different background shade) and clicking it opens the management dialog for that content.
 
-### 3. MessageForm.tsx: Add Privacy Checkbox
+**Files to modify:**
+- `src/components/qr/QRCodeStatsCard.tsx` -- Remove the bottom "Bonus Content" card, add the new horizontal tile section above the two-column grid
+- `src/components/book/EnhancementsManager.tsx` -- Remove "description" from the section rows list. Adjust the component to support the new horizontal tile layout (export a new presentation or refactor the existing one to render tiles instead of vertical rows)
 
-Add a "Keep this message private" checkbox (same styling as the tip form's checkbox) to the direct message form. Pass the `isPrivate` value to the edge function.
+---
 
-### 4. Public Feed Components: Rename and Restyle
+### Part 2: Move Book Description to Core Field
 
-**AuthorPublicTipFeed.tsx** (author profile page feed):
-- Rename section from "Feed" to "Fanmail" in the parent `AuthorProfileContent.tsx`
-- Change item text from "{name} sent a tip for {book}!" to "{name} sent fanmail!"
-- Show the message below (already shown when present)
-- Keep the comment button and timestamp
-- Filter out entries where `is_private = true` (already handled by `public_tips` table, which will now also contain non-private messages)
-- Update empty state text from "No tips yet." to "No fanmail yet."
+**Current state:** `book_description` is managed as part of "Bonus Content" in `EnhancementsManager`, both during book creation (`CreateQRCode.tsx`) and on the book management page (`QRCodeStatsCard.tsx`).
 
-**PublicTipHistory.tsx** (individual book page feed):
-- Change item text from "{name} sent a tip for {book}!" to "{name} sent fanmail!"
-- Show the message below
-- Keep comment button and timestamp
-- Update empty state text from "Nothing here yet... be the first to engage!" to "No fanmail yet. Be the first to send a message!"
+**Changes:**
 
-**QRCodeDetails.tsx** (book page):
-- Rename section header from "Feed" to "Fanmail"
-- Update mobile nav label from "Feed" to "Fanmail"
+#### A. Book Creation Flow (`CreateQRCode.tsx`)
+- Move the Book Description textarea out of the collapsible "Bonus Content" section
+- Place it as an optional field in the main form, after the Buy Now Link field and before the Cover Image upload
+- Label it "Book Description (optional)"
+- Remove it from the enhancements collapsible
 
-**AuthorProfileContent.tsx** (author profile page):
-- Rename CardTitle from "Feed" to "Fanmail"
+#### B. Book Management Page (`QRCodeStatsCard.tsx`)
+- Add a Book Description edit section to the left-side book card, right below the Buy Now Link section
+- Use the same inline edit pattern as the Buy Now Link (show current text, click Edit to expand a textarea, Save/Cancel buttons)
+- The field auto-saves or saves on button click, updating `book_description` in the `qr_codes` table
 
-### 5. TipDetailsDialog.tsx: Update Language
+#### C. EnhancementsManager
+- Remove the "description" entry from `sectionRows` and the corresponding dialog content for `openSection === "description"`
+- Remove `book_description` from `initialData` prop type and internal state
+- Remove auto-save for `bookDesc`
 
-When opened from the Fanmail feed, the dialog should use fanmail language instead of tip language. The header already adapts for $0 messages vs tips, so this mostly works. No major changes needed here.
+---
 
-## Files to Modify
+### Technical Details
 
-| File | Change |
-|------|--------|
-| DB Migration | Update `sync_to_public_tips` trigger to include non-private messages |
-| `supabase/functions/send-message-to-author/index.ts` | Accept `isPrivate` param, default to `false` |
-| `src/components/MessageForm.tsx` | Add "Keep this message private" checkbox, pass to edge function |
-| `src/components/tips/AuthorPublicTipFeed.tsx` | Change item text to "sent fanmail!", update empty state |
-| `src/components/tips/PublicTipHistory.tsx` | Change item text to "sent fanmail!", update empty state |
-| `src/pages/QRCodeDetails.tsx` | Rename "Feed" header to "Fanmail", update mobile nav label |
-| `src/components/author/AuthorProfileContent.tsx` | Rename "Feed" CardTitle to "Fanmail" |
+#### QRCodeStatsCard.tsx changes:
+1. Add new "Add Content" tile section above the grid:
+   ```text
+   +--------------------------------------------------+
+   |   Add Content To Your Book Page                   |
+   |  [Videos +] [Book Art +] [Letter +] [Shelf +] .. |
+   +--------------------------------------------------+
+   |  Left Card (cover, details)  |  Right (Share, Activity) |
+   ```
+2. Each tile: a small card/button with the content type name and a `#FFD166` plus icon below it, styled similarly to the reference image
+3. On mobile: tiles scroll horizontally or wrap into 2-3 columns
+4. Add Book Description textarea below the Buy Now Link section in the left card, with inline edit behavior
+5. Remove the full-width "Bonus Content" card at the bottom
 
-## Technical Details
+#### EnhancementsManager.tsx changes:
+1. Remove "description" from `sectionRows` array
+2. Remove `bookDesc` state, `book_description` from `initialData`, and auto-save logic for it
+3. Remove `openSection === "description"` dialog content
+4. Update `saveEnhancements` to no longer include `book_description`
+5. Change the layout from vertical list rows to a horizontal tile grid:
+   - Each tile is a clickable card with the label centered and a `#FFD166` + circle below
+   - Tiles that have content show an indicator (count badge or checkmark)
 
-### Updated Trigger Logic
+#### CreateQRCode.tsx changes:
+1. Move the Book Description textarea from inside the `CollapsibleContent` (enhancements) to the main form body, after the Buy Now Link input
+2. Keep it as a simple `Textarea` with "(optional)" label
+3. Remove the book description section from inside the collapsible enhancements area
 
-```text
-sync_to_public_tips trigger:
-  ON INSERT/UPDATE:
-    IF is_private = false (or NULL defaults to false):
-      -> UPSERT into public_tips
-    ELSE (is_private = true):
-      -> DELETE from public_tips if exists
-  ON DELETE:
-    -> DELETE from public_tips
-```
+#### Edge function build errors:
+The build errors listed are pre-existing issues in edge functions (TypeScript type errors in `platform-webhook`, `stripe-webhook`, `create-tip-checkout`, `create-qr-checkout`, and missing npm packages in `send-message-to-author` and `send-password-reset`). These are unrelated to this feature change and won't be addressed in this plan.
 
-This means both tips (amount > 0) and messages (amount = 0) will appear in public_tips as long as `is_private` is false.
-
-### Feed Item Display
-
-```text
-Before: "{firstName} sent a tip for "{bookTitle}"!"
-After:  "{firstName} sent fanmail!"
-        "{message text}" (if present, shown below)
-        [comment button] [timestamp]
-```
-
-### Privacy Flow for Direct Messages
-
-```text
-Reader opens message form
-  -> Sees "Keep this message private" checkbox (unchecked by default)
-  -> Submits form
-  -> Edge function stores with is_private = false (or true if checked)
-  -> Trigger syncs to public_tips if is_private = false
-  -> Message appears in Fanmail feed
-```
-
-### Backward Compatibility
-
-- Existing $0 messages are all stored as `is_private: true`, so they will remain private and not suddenly appear in the feed
-- Only new messages submitted after this change (with the checkbox unchecked) will appear publicly
-- Existing tips with `amount > 0` and `is_private = false` will continue to appear in the feed as fanmail
