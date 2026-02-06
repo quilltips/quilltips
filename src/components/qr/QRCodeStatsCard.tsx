@@ -9,7 +9,8 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { useQRCheckout } from "@/hooks/use-qr-checkout";
-import { ShoppingCart, Share2, Edit, Save, X, ExternalLink } from "lucide-react";
+import { ShoppingCart, Share2, Edit, Save, X, ExternalLink, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { generateBrandedQRCodeSVG } from "./generateBrandedQRCodeSVG";
 import { OptimizedImage } from "../ui/optimized-image";
 import { BookCoverUpload } from "./BookCoverUpload";
@@ -660,7 +661,19 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
     {/* Content tiles section below the grid */}
     <div className="mt-7">
-      <h3 className="text-lg font-semibold text-[#333333] mb-3">Add Content To Your Book Page</h3>
+      <div className="flex items-center gap-2 mb-3">
+        <h3 className="text-lg font-semibold text-[#333333]">Add Content To Your Book Page</h3>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircle className="h-4 w-4 cursor-help text-gray-400" />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[280px]">
+              <p className="text-xs">Enhance your book page with bonus content for readers. Add videos, book art, a personal letter, recommend other books, or enable signup forms to grow your audience.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
       <EnhancementsManager
         qrCodeId={qrCode.id}
         authorId={qrCode.author_id}
