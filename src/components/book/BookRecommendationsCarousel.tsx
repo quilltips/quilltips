@@ -38,7 +38,7 @@ export const BookRecommendationsCarousel = ({
       <h3 className="text-xl font-playfair text-foreground">
         {firstName}'s Bookshelf
       </h3>
-      <Carousel className="w-full">
+      <Carousel className="w-full px-10">
         <CarouselContent>
           {recommendations.map((rec) => {
             const linkTo = rec.recommended_book_slug
@@ -86,8 +86,8 @@ export const BookRecommendationsCarousel = ({
         </CarouselContent>
         {recommendations.length > 1 && (
           <>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
           </>
         )}
       </Carousel>

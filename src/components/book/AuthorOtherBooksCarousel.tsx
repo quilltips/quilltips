@@ -37,7 +37,7 @@ export const AuthorOtherBooksCarousel = ({
       <h3 className="text-xl font-playfair text-foreground">
         More by {authorName}
       </h3>
-      <Carousel className="w-full">
+      <Carousel className="w-full px-10">
         <CarouselContent>
           {otherBooks.map((book) => (
             <CarouselItem key={book.id} className="basis-1/3 sm:basis-1/4 md:basis-1/2 lg:basis-1/3">
@@ -65,8 +65,8 @@ export const AuthorOtherBooksCarousel = ({
         </CarouselContent>
         {otherBooks.length > 1 && (
           <>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
           </>
         )}
       </Carousel>
