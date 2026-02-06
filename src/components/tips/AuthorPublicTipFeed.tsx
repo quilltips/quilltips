@@ -118,7 +118,7 @@ export const AuthorPublicTipFeed = ({ authorId, limit = 5 }: AuthorPublicTipFeed
               <div className="flex-1 space-y-1">
                 <div>
                   <p className="font-medium text-sm leading-snug">
-                    {readerFirstName} sent fan mail!
+                    {readerFirstName} sent Fan Mail!
                   </p>
                   {tip.message && (
                     <p className="text-sm leading-tight">"{tip.message}"</p>
