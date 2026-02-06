@@ -14,7 +14,7 @@ import { CharacterImageUpload } from "../upload/CharacterImageUpload";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { BookVideo } from "./VideoCarousel";
 
-type BonusSection = "videos" | "letter" | "characters" | "signups" | "bookshelf" | null;
+type BonusSection = "videos" | "letter" | "characters" | "signups" | "bookshelf";
 
 interface Character {
   url: string;
@@ -124,11 +124,27 @@ export const EnhancementsManager = ({
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Which section is expanded inline (toggle on/off)
-  const [openSection, setOpenSection] = useState<BonusSection>(null);
+  // Which sections are expanded inline (multiple can be open)
+  const [openSections, setOpenSections] = useState<Set<BonusSection>>(new Set());
 
   const toggleSection = (key: BonusSection) => {
-    setOpenSection(prev => prev === key ? null : key);
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  };
+
+  const closeSection = (key: BonusSection) => {
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
   };
 
   const autoSaveField = useCallback(async (field: string, value: string) => {
@@ -402,7 +418,7 @@ export const EnhancementsManager = ({
             type="button"
             onClick={() => toggleSection(key)}
             className={`flex flex-col items-center gap-2 px-4 py-3 rounded-lg border bg-white hover:border-[#FFD166] hover:shadow-sm transition-all min-w-[100px] flex-1 sm:flex-initial ${
-              openSection === key ? 'border-[#FFD166] shadow-sm' : 'border-gray-200'
+              openSections.has(key) ? 'border-[#FFD166] shadow-sm' : 'border-gray-200'
             }`}
           >
             <span className="text-sm font-medium text-[#333333]">{label}</span>
@@ -413,12 +429,12 @@ export const EnhancementsManager = ({
         ))}
       </div>
 
-      {/* Inline expanded section content */}
-      {openSection === "videos" && (
+      {/* Inline expanded sections - multiple can be open at once */}
+      {openSections.has("videos") && (
         <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
           <div className="flex items-center justify-between mb-1">
             <h4 className="text-sm font-semibold text-[#333333]">Videos</h4>
-            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
+            <Button variant="ghost" size="sm" onClick={() => closeSection("videos")} className="h-6 w-6 p-0">
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -485,31 +501,11 @@ export const EnhancementsManager = ({
         </div>
       )}
 
-      {openSection === "letter" && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
-          <div className="flex items-center justify-between mb-1">
-            <h4 className="text-sm font-semibold text-[#333333]">Letter to Readers</h4>
-            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <Textarea
-            placeholder="Write a personal note to your readers..."
-            value={letterToReaders}
-            onChange={(e) => setLetterToReaders(e.target.value)}
-            className="min-h-[120px] text-sm"
-          />
-          <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
-            {isSaving ? "Saving..." : "Save"}
-          </Button>
-        </div>
-      )}
-
-      {openSection === "characters" && (
+      {openSections.has("characters") && (
         <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
           <div className="flex items-center justify-between mb-1">
             <h4 className="text-sm font-semibold text-[#333333]">Book Art</h4>
-            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
+            <Button variant="ghost" size="sm" onClick={() => closeSection("characters")} className="h-6 w-6 p-0">
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -542,44 +538,31 @@ export const EnhancementsManager = ({
         </div>
       )}
 
-      {openSection === "signups" && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+      {openSections.has("letter") && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
           <div className="flex items-center justify-between mb-1">
-            <h4 className="text-sm font-semibold text-[#333333]">Signup Forms</h4>
-            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
+            <h4 className="text-sm font-semibold text-[#333333]">Letter to Readers</h4>
+            <Button variant="ghost" size="sm" onClick={() => closeSection("letter")} className="h-6 w-6 p-0">
               <X className="h-4 w-4" />
             </Button>
           </div>
-          <p className="text-xs text-gray-600">Enable signup forms on this book page. Signups appear in your author dashboard.</p>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="arc-signup" className="text-sm cursor-pointer text-[#333333]">ARC Reader Signup</Label>
-              <Switch id="arc-signup" checked={arcSignupEnabled} onCheckedChange={setArcSignupEnabled} />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="beta-signup" className="text-sm cursor-pointer text-[#333333]">Beta Reader Signup</Label>
-              <Switch id="beta-signup" checked={betaReaderEnabled} onCheckedChange={setBetaReaderEnabled} />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="newsletter-signup" className="text-sm cursor-pointer text-[#333333]">Newsletter Signup</Label>
-              <Switch id="newsletter-signup" checked={newsletterEnabled} onCheckedChange={setNewsletterEnabled} />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="book-club-signup" className="text-sm cursor-pointer text-[#333333]">Book Club Invitations</Label>
-              <Switch id="book-club-signup" checked={bookClubEnabled} onCheckedChange={setBookClubEnabled} />
-            </div>
-          </div>
+          <Textarea
+            placeholder="Write a personal note to your readers..."
+            value={letterToReaders}
+            onChange={(e) => setLetterToReaders(e.target.value)}
+            className="min-h-[120px] text-sm"
+          />
           <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
             {isSaving ? "Saving..." : "Save"}
           </Button>
         </div>
       )}
 
-      {openSection === "bookshelf" && (
+      {openSections.has("bookshelf") && (
         <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
           <div className="flex items-center justify-between mb-1">
             <h4 className="text-sm font-semibold text-[#333333]">Bookshelf</h4>
-            <Button variant="ghost" size="sm" onClick={() => setOpenSection(null)} className="h-6 w-6 p-0">
+            <Button variant="ghost" size="sm" onClick={() => closeSection("bookshelf")} className="h-6 w-6 p-0">
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -619,6 +602,39 @@ export const EnhancementsManager = ({
           )}
           {isSearching && <p className="text-xs text-center text-gray-500">Searching...</p>}
           {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && <p className="text-xs text-center text-gray-500">No books found</p>}
+        </div>
+      )}
+
+      {openSections.has("signups") && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-sm font-semibold text-[#333333]">Signup Forms</h4>
+            <Button variant="ghost" size="sm" onClick={() => closeSection("signups")} className="h-6 w-6 p-0">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-gray-600">Enable signup forms on this book page. Signups appear in your author dashboard.</p>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="arc-signup" className="text-sm cursor-pointer text-[#333333]">ARC Reader Signup</Label>
+              <Switch id="arc-signup" checked={arcSignupEnabled} onCheckedChange={setArcSignupEnabled} />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="beta-signup" className="text-sm cursor-pointer text-[#333333]">Beta Reader Signup</Label>
+              <Switch id="beta-signup" checked={betaReaderEnabled} onCheckedChange={setBetaReaderEnabled} />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="newsletter-signup" className="text-sm cursor-pointer text-[#333333]">Newsletter Signup</Label>
+              <Switch id="newsletter-signup" checked={newsletterEnabled} onCheckedChange={setNewsletterEnabled} />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="book-club-signup" className="text-sm cursor-pointer text-[#333333]">Book Club Invitations</Label>
+              <Switch id="book-club-signup" checked={bookClubEnabled} onCheckedChange={setBookClubEnabled} />
+            </div>
+          </div>
+          <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
+            {isSaving ? "Saving..." : "Save"}
+          </Button>
         </div>
       )}
     </div>
