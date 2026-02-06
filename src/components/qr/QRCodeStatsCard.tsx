@@ -7,6 +7,7 @@ import { toPng } from "html-to-image";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 import { useQRCheckout } from "@/hooks/use-qr-checkout";
 import { ShoppingCart, Share2, Edit, Save, X, ExternalLink } from "lucide-react";
 import { generateBrandedQRCodeSVG } from "./generateBrandedQRCodeSVG";
@@ -15,7 +16,6 @@ import { BookCoverUpload } from "./BookCoverUpload";
 import { useQRCodeDetailsPage, qrCodeQueryKeys } from "@/hooks/use-qr-code-details-page";
 import { supabase } from "@/integrations/supabase/client";
 import { EnhancementsManager } from "../book/EnhancementsManager";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuthorUrl } from "@/lib/url-utils";
@@ -89,6 +89,11 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
   const [buyNowLinkInput, setBuyNowLinkInput] = useState(qrCode.buy_now_link || "");
   const [isSaving, setIsSaving] = useState(false);
 
+  // Book description inline edit state
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [descriptionInput, setDescriptionInput] = useState(qrCode.book_description || "");
+  const [isDescSaving, setIsDescSaving] = useState(false);
+
   const downloadRef = useRef<HTMLDivElement>(null);
 
   // Sync buyNowLinkInput when qrCode.buy_now_link changes
@@ -97,6 +102,13 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       setBuyNowLinkInput(qrCode.buy_now_link || "");
     }
   }, [qrCode.buy_now_link, isEditingBuyNow]);
+
+  // Sync descriptionInput when qrCode.book_description changes
+  useEffect(() => {
+    if (!isEditingDescription) {
+      setDescriptionInput(qrCode.book_description || "");
+    }
+  }, [qrCode.book_description, isEditingDescription]);
 
   // Use slug if available, fallback to old format for backward compatibility
   const bookSlug = qrCode.slug || qrCode.book_title.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
@@ -191,7 +203,6 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
       if (error) throw error;
 
-      // Optimistically update the local state
       if (id) {
         queryClient.setQueryData(qrCodeQueryKeys.detail(id), (old: any) => ({
           ...old,
@@ -199,7 +210,6 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         }));
       }
 
-      // Invalidate queries to refetch
       queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id || '') });
       queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
 
@@ -226,8 +236,50 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
     setIsEditingBuyNow(false);
   };
 
+  const handleSaveDescription = async () => {
+    setIsDescSaving(true);
+    try {
+      const { error } = await supabase
+        .from('qr_codes')
+        .update({ book_description: descriptionInput || null })
+        .eq('id', qrCode.id);
+
+      if (error) throw error;
+
+      if (id) {
+        queryClient.setQueryData(qrCodeQueryKeys.detail(id), (old: any) => ({
+          ...old,
+          book_description: descriptionInput || null
+        }));
+      }
+
+      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id || '') });
+      queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+
+      toast({
+        title: "Success",
+        description: "Book description updated successfully",
+      });
+
+      setIsEditingDescription(false);
+    } catch (error) {
+      console.error("Error updating book description:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update book description",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDescSaving(false);
+    }
+  };
+
+  const handleCancelDescriptionEdit = () => {
+    setDescriptionInput(qrCode.book_description || "");
+    setIsEditingDescription(false);
+  };
+
   const handleTippingToggle = async () => {
-    // Toggle the value: if currently false, set to true; otherwise set to false
     const newValue = qrCode.tipping_enabled === false ? true : false;
     
     try {
@@ -238,7 +290,6 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
       if (error) throw error;
 
-      // Optimistically update the local state
       if (id) {
         queryClient.setQueryData(qrCodeQueryKeys.detail(id), (old: any) => ({
           ...old,
@@ -246,7 +297,6 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
         }));
       }
 
-      // Invalidate queries to refetch
       queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id || '') });
       queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
 
@@ -268,10 +318,38 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
 
   return (
     <>
+    {/* Content tiles section above the grid */}
+    <div className="mb-7">
+      <h3 className="text-lg font-semibold text-[#333333] mb-3">Add Content To Your Book Page</h3>
+      <EnhancementsManager
+        qrCodeId={qrCode.id}
+        authorId={qrCode.author_id}
+        initialData={{
+          thank_you_video_url: qrCode.thank_you_video_url,
+          character_images: qrCode.character_images,
+          book_videos: qrCode.book_videos,
+          letter_to_readers: qrCode.letter_to_readers,
+          arc_signup_enabled: qrCode.arc_signup_enabled,
+          beta_reader_enabled: qrCode.beta_reader_enabled,
+          newsletter_enabled: qrCode.newsletter_enabled,
+          book_club_enabled: qrCode.book_club_enabled,
+        }}
+        recommendations={qrCode.recommendations}
+        onUpdate={() => {
+          if (id) {
+            queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id) });
+          }
+          if (qrCode.id) {
+            queryClient.invalidateQueries({ queryKey: ['qr-codes', 'recommendations', qrCode.id] });
+          }
+          queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+        }}
+      />
+    </div>
+
     <div className="grid xl:grid-cols-[3fr_2fr] gap-7 mx-auto">
       {/* Left side - QR Code, Book Cover, and Book Details */}
       <div className="">
-        {/* QR Code, Book Cover, and Book Details Container */}
         <Card className="p-4 md:p-7 bg-white shadow-md" style={{ borderColor: '#333333' }}>
           <div className="space-y-8">
             {/* Book Cover with Upload */}
@@ -371,7 +449,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                      </div>
                    </div>
                  ) : (
-                   <p className="text-sm text-muted-foreground">
+                   <p className="text-sm">
                      {qrCode.buy_now_link ? (
                        <a 
                          href={qrCode.buy_now_link} 
@@ -382,9 +460,65 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                          {qrCode.buy_now_link}
                        </a>
                      ) : (
-                       "No buy now link set"
+                       <span className="text-sm">No buy now link set</span>
                      )}
                    </p>
+                  )}
+                </div>
+
+                {/* Book Description Edit Section */}
+                <div className="space-y-2 pt-2 border-t">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Book Description:</span>
+                    {!isEditingDescription && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsEditingDescription(true)}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {isEditingDescription ? (
+                    <div className="space-y-2">
+                      <Textarea
+                        value={descriptionInput}
+                        onChange={(e) => setDescriptionInput(e.target.value)}
+                        placeholder="Enter a description of your book..."
+                        className="min-h-[100px] text-sm"
+                        maxLength={2000}
+                      />
+                      <p className="text-xs text-gray-500">{descriptionInput.length}/2000 characters</p>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={handleSaveDescription}
+                          disabled={isDescSaving}
+                        >
+                          <Save className="h-3 w-3 mr-1" />
+                          {isDescSaving ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleCancelDescriptionEdit}
+                        >
+                          <X className="h-3 w-3 mr-1" />
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm">
+                      {qrCode.book_description ? (
+                        <span className="line-clamp-3">{qrCode.book_description}</span>
+                      ) : (
+                        <span className="text-sm">No description set</span>
+                      )}
+                    </p>
                   )}
                 </div>
 
@@ -551,40 +685,6 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
           </Card>
         )}
       </div>
-    </div>
-
-    {/* Full width - Bonus Content */}
-    <div className="mt-8 w-full">
-      <Card className="p-4 md:p-7 bg-white shadow-md">
-        <div className="space-y-6 md:space-y-6">
-          <h3 className="text-xl font-semibold text-[#333333]">Bonus Content</h3>
-          <EnhancementsManager
-            qrCodeId={qrCode.id}
-            authorId={qrCode.author_id}
-            initialData={{
-              thank_you_video_url: qrCode.thank_you_video_url,
-              book_description: qrCode.book_description,
-              character_images: qrCode.character_images,
-              book_videos: qrCode.book_videos,
-              letter_to_readers: qrCode.letter_to_readers,
-              arc_signup_enabled: qrCode.arc_signup_enabled,
-              beta_reader_enabled: qrCode.beta_reader_enabled,
-              newsletter_enabled: qrCode.newsletter_enabled,
-              book_club_enabled: qrCode.book_club_enabled,
-            }}
-            recommendations={qrCode.recommendations}
-            onUpdate={() => {
-              if (id) {
-                queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id) });
-              }
-              if (qrCode.id) {
-                queryClient.invalidateQueries({ queryKey: ['qr-codes', 'recommendations', qrCode.id] });
-              }
-              queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
-            }}
-          />
-        </div>
-      </Card>
     </div>
   </>
   );

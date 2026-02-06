@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, X, HelpCircle, Search } from "lucide-react";
+import { Plus, X, HelpCircle, Search, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoUpload } from "../upload/VideoUpload";
@@ -15,7 +15,7 @@ import { CharacterImageUpload } from "../upload/CharacterImageUpload";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { BookVideo } from "./VideoCarousel";
 
-type BonusSection = "videos" | "letter" | "description" | "characters" | "signups" | "bookshelf" | null;
+type BonusSection = "videos" | "letter" | "characters" | "signups" | "bookshelf" | null;
 
 interface Character {
   url: string;
@@ -37,7 +37,6 @@ interface EnhancementsManagerProps {
   authorId: string;
   initialData?: {
     thank_you_video_url?: string;
-    book_description?: string;
     character_images?: Character[];
     book_videos?: BookVideo[];
     letter_to_readers?: string;
@@ -66,17 +65,14 @@ const useAutoSave = (
   const lastSavedRef = useRef<string>(value);
 
   useEffect(() => {
-    // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
-    // Don't auto-save if value hasn't changed from last saved value
     if (value === lastSavedRef.current) {
       return;
     }
 
-    // Set new timeout for auto-save
     timeoutRef.current = setTimeout(async () => {
       try {
         await saveFunction(value);
@@ -93,7 +89,6 @@ const useAutoSave = (
     };
   }, [value, saveFunction, delay]);
 
-  // Update the lastSavedRef when initial value changes (from server)
   useEffect(() => {
     lastSavedRef.current = value;
   }, []);
@@ -119,7 +114,6 @@ export const EnhancementsManager = ({
   };
   
   const [videos, setVideos] = useState<BookVideo[]>(getInitialVideos());
-  const [bookDesc, setBookDesc] = useState(initialData?.book_description || "");
   const [letterToReaders, setLetterToReaders] = useState(initialData?.letter_to_readers || "");
   const [characters, setCharacters] = useState<Character[]>(initialData?.character_images || []);
   const [recs, setRecs] = useState<Recommendation[]>(recommendations);
@@ -138,7 +132,7 @@ export const EnhancementsManager = ({
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Which bonus section dialog is open (minimal UI: plus opens dialog)
+  // Which bonus section dialog is open
   const [openSection, setOpenSection] = useState<BonusSection>(null);
 
   // Auto-save function for text fields
@@ -156,9 +150,6 @@ export const EnhancementsManager = ({
     }
   }, [qrCodeId]);
 
-  // Auto-save for book description
-  useAutoSave(bookDesc, useCallback((value: string) => autoSaveField('book_description', value), [autoSaveField]));
-  
   // Auto-save for letter to readers
   useAutoSave(letterToReaders, useCallback((value: string) => autoSaveField('letter_to_readers', value), [autoSaveField]));
 
@@ -270,7 +261,6 @@ export const EnhancementsManager = ({
         return newVideos;
       });
       
-      setBookDesc(initialData.book_description || "");
       setLetterToReaders(initialData.letter_to_readers || "");
       setArcSignupEnabled(initialData.arc_signup_enabled || false);
       setBetaReaderEnabled(initialData.beta_reader_enabled || false);
@@ -301,7 +291,6 @@ export const EnhancementsManager = ({
         .update({
           book_videos: validVideos.length > 0 ? validVideos as any : null,
           thank_you_video_url: validVideos.length > 0 ? validVideos[0].url : null,
-          book_description: bookDesc || null,
           letter_to_readers: letterToReaders || null,
           character_images: validCharacters.length > 0 ? validCharacters as any : null,
           arc_signup_enabled: arcSignupEnabled,
@@ -434,40 +423,43 @@ export const EnhancementsManager = ({
     onUpdate?.();
   };
 
-  // Minimal list: section label + yellow plus. Click opens dialog.
-  const sectionRows: { key: BonusSection; label: string; count?: number }[] = [
-    { key: "videos", label: "Videos", count: videos.filter(v => v.url?.trim()).length },
-    { key: "letter", label: "Letter to Readers" },
-    { key: "description", label: "Book Description" },
-    { key: "characters", label: "Character or Book Art", count: characters.filter(c => c.url?.trim()).length },
-    { key: "signups", label: "Reader Signup Forms" },
-    { key: "bookshelf", label: "Bookshelf", count: recs.length },
+  // Content tiles with has-content detection
+  const contentTiles: { key: BonusSection; label: string; hasContent: boolean }[] = [
+    { key: "videos", label: "Videos", hasContent: videos.filter(v => v.url?.trim()).length > 0 },
+    { key: "characters", label: "Book Art", hasContent: characters.filter(c => c.url?.trim()).length > 0 },
+    { key: "letter", label: "Letter to Readers", hasContent: !!letterToReaders?.trim() },
+    { key: "bookshelf", label: "Bookshelf", hasContent: recs.length > 0 },
+    { key: "signups", label: "Signup Forms", hasContent: arcSignupEnabled || betaReaderEnabled || newsletterEnabled || bookClubEnabled },
   ];
 
   return (
-    <div className="space-y-0">
-      {sectionRows.map(({ key, label, count }) => (
-        <div
-          key={key}
-          className="flex items-center justify-between py-3 border-b border-gray-200 last:border-b-0"
-        >
-          <span className="text-sm text-[#333333]">
-            {label}
-            {count !== undefined && count > 0 && (
-              <span className="ml-1.5 text-gray-500">({count})</span>
-            )}
-          </span>
+    <div>
+      {/* Horizontal content tiles */}
+      <div className="flex flex-wrap gap-3">
+        {contentTiles.map(({ key, label, hasContent }) => (
           <button
+            key={key}
             type="button"
             onClick={() => setOpenSection(key)}
-            className="flex items-center justify-center w-8 h-8 rounded-full transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#FFD166] focus:ring-offset-1"
-            style={{ backgroundColor: "#FFD166", color: "#333333" }}
-            aria-label={`Add or edit ${label}`}
+            className="flex flex-col items-center gap-2 px-4 py-3 rounded-lg border border-gray-200 bg-white hover:border-[#FFD166] hover:shadow-sm transition-all min-w-[100px] flex-1 sm:flex-initial"
           >
-            <Plus className="h-4 w-4" strokeWidth={2.5} />
+            <span className="text-sm font-medium text-[#333333]">{label}</span>
+            <div
+              className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors ${
+                hasContent 
+                  ? 'bg-[#19363C] text-white' 
+                  : 'bg-[#FFD166] text-[#333333]'
+              }`}
+            >
+              {hasContent ? (
+                <Check className="h-4 w-4" strokeWidth={2.5} />
+              ) : (
+                <Plus className="h-4 w-4" strokeWidth={2.5} />
+              )}
+            </div>
           </button>
-        </div>
-      ))}
+        ))}
+      </div>
 
       <Dialog open={openSection !== null} onOpenChange={(open) => !open && setOpenSection(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-6">
@@ -475,7 +467,6 @@ export const EnhancementsManager = ({
             <DialogTitle>
               {openSection === "videos" && "Videos"}
               {openSection === "letter" && "Letter to Readers"}
-              {openSection === "description" && "Book Description"}
               {openSection === "characters" && "Character or Book Art"}
               {openSection === "signups" && "Reader Signup Forms"}
               {openSection === "bookshelf" && "Bookshelf"}
@@ -553,17 +544,6 @@ export const EnhancementsManager = ({
                 placeholder="Write a personal note to your readers..."
                 value={letterToReaders}
                 onChange={(e) => setLetterToReaders(e.target.value)}
-                className="min-h-[120px] text-sm"
-              />
-            </div>
-          )}
-
-          {openSection === "description" && (
-            <div className="space-y-3">
-              <Textarea
-                placeholder="Enter book description..."
-                value={bookDesc}
-                onChange={(e) => setBookDesc(e.target.value)}
                 className="min-h-[120px] text-sm"
               />
             </div>
@@ -668,7 +648,7 @@ export const EnhancementsManager = ({
             </div>
           )}
 
-          {(openSection === "letter" || openSection === "description") && (
+          {openSection === "letter" && (
             <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
               {isSaving ? "Saving..." : "Save"}
             </Button>

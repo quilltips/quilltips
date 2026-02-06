@@ -374,6 +374,18 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
         </div>
 
         <div className="space-y-2">
+          <label className="text-sm font-medium">Book Description (optional)</label>
+          <Textarea
+            value={bookDescription}
+            onChange={(e) => setBookDescription(e.target.value)}
+            placeholder="Enter a description of your book..."
+            maxLength={2000}
+            className="min-h-[80px] text-sm"
+          />
+          <p className="text-xs text-gray-500">{bookDescription.length}/2000 characters</p>
+        </div>
+
+        <div className="space-y-2">
           <label className="text-sm font-medium">Cover Image (optional)</label>
           <div className="relative aspect-[2/3] max-w-[150px] border rounded-2xl overflow-hidden bg-white">
             {coverImageUrl ? (
@@ -546,22 +558,6 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
               </p>
             </div>
 
-            {/* Book Description */}
-            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Book Description</h4>
-              <Textarea
-                value={bookDescription}
-                onChange={(e) => setBookDescription(e.target.value)}
-                placeholder="Enter a detailed description of your book..."
-                rows={4}
-                maxLength={2000}
-                className="text-sm bg-white border-gray-200 min-h-[100px]"
-                style={{ color: '#333333' }}
-              />
-              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                {bookDescription.length}/2000 characters
-              </p>
-            </div>
 
             {/* Character Art */}
             <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
