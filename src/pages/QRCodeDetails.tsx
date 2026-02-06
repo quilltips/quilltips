@@ -131,7 +131,7 @@ const QRCodeDetails = () => {
                 )}
               </p>
               {/* Inline actions: Buy, Support, Fan Mail */}
-              {!showTipForm && !showMessageForm && (
+              {(
                 <div className="flex flex-wrap justify-center gap-2 mt-3">
                   {qrCode.buy_now_link && (
                     <Button 
