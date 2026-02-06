@@ -125,7 +125,7 @@ export const EnhancementsManager = ({
   const [isSearching, setIsSearching] = useState(false);
 
   // Compute which sections have existing content
-  const sectionsWithContent = (): BonusSection[] => {
+  const getSectionsWithContent = useCallback((): BonusSection[] => {
     const sections: BonusSection[] = [];
     const hasVideos = (initialData?.book_videos && Array.isArray(initialData.book_videos) && initialData.book_videos.length > 0) || !!initialData?.thank_you_video_url;
     const hasCharacters = initialData?.character_images && Array.isArray(initialData.character_images) && initialData.character_images.length > 0;
@@ -138,10 +138,20 @@ export const EnhancementsManager = ({
     if (hasRecs) sections.push("bookshelf");
     if (hasSignups) sections.push("signups");
     return sections;
-  };
+  }, [initialData, recommendations]);
 
   // Ordered array of open sections — newest first, initialized with sections that have content
-  const [openSections, setOpenSections] = useState<BonusSection[]>(sectionsWithContent);
+  const [openSections, setOpenSections] = useState<BonusSection[]>(getSectionsWithContent);
+
+  // Sync open sections when async data arrives (e.g. recommendations load after mount)
+  useEffect(() => {
+    const withContent = getSectionsWithContent();
+    setOpenSections(prev => {
+      const toAdd = withContent.filter(s => !prev.includes(s));
+      if (toAdd.length === 0) return prev;
+      return [...prev, ...toAdd];
+    });
+  }, [getSectionsWithContent]);
 
   const toggleSection = (key: BonusSection) => {
     setOpenSections(prev => {
