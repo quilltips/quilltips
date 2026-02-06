@@ -75,7 +75,7 @@ export const TipMessageForm = ({
             htmlFor="private" 
             className="text-sm font-normal cursor-pointer"
           >
-            Keep this tip private (only visible to you and the author)
+            Keep this message private (only visible to you and the author)
           </Label>
         </div>
       )}

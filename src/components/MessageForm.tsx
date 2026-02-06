@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
+import { Checkbox } from "./ui/checkbox";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -28,6 +29,7 @@ export const MessageForm = ({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const authorFirstName = authorName?.split(' ')[0] || 'the author';
@@ -52,7 +54,8 @@ export const MessageForm = ({
           readerEmail: email,
           message,
           bookTitle,
-          qrCodeId
+          qrCodeId,
+          isPrivate
         }
       });
 
@@ -119,6 +122,20 @@ export const MessageForm = ({
             rows={4}
             required
           />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="private-message"
+            checked={isPrivate}
+            onCheckedChange={(checked) => setIsPrivate(checked === true)}
+          />
+          <Label 
+            htmlFor="private-message" 
+            className="text-sm font-normal cursor-pointer"
+          >
+            Keep this message private (only visible to you and the author)
+          </Label>
         </div>
 
         <div className="flex flex-row-reverse justify-between items-center gap-4 mt-6">
