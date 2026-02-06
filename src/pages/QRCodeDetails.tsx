@@ -314,12 +314,11 @@ const QRCodeDetails = () => {
                       to={getAuthorUrl({ id: qrCode.author_id, slug: qrCode.author.slug })}
                       className="shrink-0"
                     >
-                      <OptimizedImage
+                      <img
                         src={qrCode.author.avatar_url || "/lovable-uploads/logo_nav.svg"}
                         alt={qrCode.author.name || "Author"}
-                        className="w-12 h-12 rounded-full object-cover border border-border"
-                        fallbackSrc="/lovable-uploads/logo_nav.svg"
-                        sizes="48px"
+                        className="w-10 h-10 rounded-full object-cover border border-border"
+                        onError={(e) => { e.currentTarget.src = "/lovable-uploads/logo_nav.svg"; }}
                       />
                     </Link>
                     <div className="space-y-1">
