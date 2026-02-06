@@ -87,7 +87,7 @@ export const QRCodesList = ({
     return (
       <div className="space-y-8">
         <div className="text-center py-4 text-[#718096]">
-          You haven't created any Quilltips Jars yet.
+          You haven't created any books yet.
         </div>
         
         <div className="flex justify-center">
@@ -115,7 +115,7 @@ export const QRCodesList = ({
                   <LockKeyhole size={20} className="text-amber-500 flex-shrink-0" />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[300px] bg-white p-3 text-sm">
-                  <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+                   <p>Complete your Stripe account setup to activate your books for readers.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -128,13 +128,13 @@ export const QRCodesList = ({
                 <LockKeyhole size={20} className="text-amber-500 flex-shrink-0 cursor-pointer" />
               </PopoverTrigger>
               <PopoverContent className="w-screen max-w-[250px] bg-white p-3 text-sm">
-                <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+                <p>Complete your Stripe account setup to activate your books for readers.</p>
               </PopoverContent>
             </Popover>
           </div>
           
           <div className="text-amber-700 text-sm">
-            Your Quilltips Jars won't be active for readers until you complete your Stripe account setup.
+            Your books won't be active for readers until you complete your Stripe account setup.
           </div>
         </div>
       )}

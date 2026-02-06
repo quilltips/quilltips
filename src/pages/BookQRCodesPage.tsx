@@ -88,7 +88,7 @@ const BookQRCodesPage = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <h1 className="text-3xl font-playfair font-medium ">Quilltips Jars</h1>
+            <h1 className="text-3xl font-playfair font-medium ">Books</h1>
             <Button 
               onClick={() => handleTabChange('new')} 
               className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#333333] font-medium md:hidden"
@@ -104,13 +104,13 @@ const BookQRCodesPage = () => {
                 value="all" 
                 className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#2D3748] data-[state=active]:font-medium bg-transparent"
               >
-                All Quilltips Jars
+                All Books
               </TabsTrigger>
               <TabsTrigger 
                 value="new" 
                 className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#2D3748] data-[state=active]:text-[#2D3748] data-[state=active]:font-medium bg-transparent"
               >
-                New Quilltips Jar
+                New Book
               </TabsTrigger>
             </TabsList>
             <TabsContent value="all" className="mt-6">
@@ -124,7 +124,7 @@ const BookQRCodesPage = () => {
               <div className="max-w-2xl mx-auto">
                 <div className="text-center mb-8 mt-10">
                   <QrCode className="h-14 w-14 mx-auto mb-6 text-[#19363c]" />
-                  <h3 className="text-3xl font-bold mb-2">Create a new Quilltips Jar</h3>
+                  <h3 className="text-3xl font-bold mb-2">Create a new book</h3>
                   <p className="">
                     Set up your virtual space for an upcoming book.
                   </p>
