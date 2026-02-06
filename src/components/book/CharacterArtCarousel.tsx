@@ -28,7 +28,7 @@ export const CharacterArtCarousel = ({ characters }: CharacterArtCarouselProps) 
 
   return (
     <>
-      <Carousel className="w-full">
+      <Carousel className="w-full px-10">
         <CarouselContent>
           {characters.map((character, index) => (
             <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
@@ -46,7 +46,7 @@ export const CharacterArtCarousel = ({ characters }: CharacterArtCarouselProps) 
                     <h4 className="font-semibold text-foreground">{character.name}</h4>
                   )}
                   {character.description && (
-                    <p className="text-sm text-muted-foreground">{character.description}</p>
+                    <p className="text-sm">{character.description}</p>
                   )}
                 </div>
               </div>
@@ -55,8 +55,8 @@ export const CharacterArtCarousel = ({ characters }: CharacterArtCarouselProps) 
         </CarouselContent>
         {characters.length > 1 && (
           <>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
           </>
         )}
       </Carousel>
