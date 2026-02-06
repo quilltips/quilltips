@@ -431,7 +431,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           <CollapsibleContent className="space-y-4 mt-4">
             {/* Videos Section */}
             <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Upload a video for your readers</h4>
+              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Upload videos for your readers</h4>
               <div className="space-y-3">
                 {videos.map((video, idx) => (
                   <div key={idx} className="p-3 rounded-md space-y-3" style={{ backgroundColor: '#f8f6f2' }}>

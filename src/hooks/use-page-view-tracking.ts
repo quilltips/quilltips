@@ -3,13 +3,19 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const getVisitorId = (): string => {
-  const key = "qt_visitor_id";
-  let visitorId = localStorage.getItem(key);
-  if (!visitorId) {
-    visitorId = crypto.randomUUID();
-    localStorage.setItem(key, visitorId);
+  try {
+    const key = "qt_visitor_id";
+    const stored = localStorage.getItem(key);
+    if (stored) return stored;
+    const id = typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    localStorage.setItem(key, id);
+    return id;
+  } catch {
+    // localStorage or crypto may be unavailable (e.g. mobile Safari private mode)
+    return `anon-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   }
-  return visitorId;
 };
 
 interface UsePageViewTrackingOptions {

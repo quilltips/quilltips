@@ -110,7 +110,7 @@ const QRCodeDetails = () => {
         }}
       />
       <main className="container mx-auto px-4 pt-4 md:pt-8 pb-12">
-        <div className="max-w-md md:max-w-2xl mx-auto space-y-8 md:space-y-10">
+        <div className="max-w-md md:max-w-2xl mx-auto space-y-4 md:space-y-10">
           {/* Hero: centered */}
           <div className="space-y-6 md:space-y-8">
           {/* Book details: centered stack on all viewports (match mobile) */}
@@ -172,58 +172,10 @@ const QRCodeDetails = () => {
                   >
                     Fan Mail
                   </Button>
-                  {(() => {
-                    const authorSocialLinks = (qrCode.author?.social_links || []) as SocialLink[];
-                    const iconLinks = getSocialIconLinks(authorSocialLinks);
-                    if (iconLinks.length === 0) return null;
-                    return (
-                      <span className="hidden sm:inline-flex items-center gap-2.5">
-                        {iconLinks.map((link, i) => (
-                          <a
-                            key={i}
-                            href={getValidURL(link.url)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center hover:opacity-80 transition-opacity"
-                            aria-label={link.platform}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {getSocialPlatformIcon(link.platform, "h-[22px] w-[22px]")}
-                          </a>
-                        ))}
-                      </span>
-                    );
-                  })()}
                 </div>
               )}
             </div>
           </div>
-
-          {/* Mobile social icons row */}
-          {(() => {
-            const authorSocialLinks = (qrCode.author?.social_links || []) as SocialLink[];
-            const iconLinks = getSocialIconLinks(authorSocialLinks);
-            if (iconLinks.length === 0) return null;
-            return (
-              <div className="flex sm:hidden justify-center">
-                <div className="flex items-center gap-3 py-0.5">
-                  {iconLinks.map((link, i) => (
-                    <a
-                      key={i}
-                      href={getValidURL(link.url)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center hover:opacity-80 transition-opacity"
-                      aria-label={link.platform}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {getSocialPlatformIcon(link.platform, "h-[22px] w-[22px]")}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
 
           {/* Message form (conditionally rendered) */}
           {showMessageForm && (
@@ -271,7 +223,7 @@ const QRCodeDetails = () => {
 
           {/* Book Bonus Content Section - Only show if QR code is paid */}
           {qrCode.is_paid && (
-            <div className="flex flex-col gap-10 sm:gap-12">
+            <div className="flex flex-col gap-6 sm:gap-12">
               {/* Videos Section */}
               {(() => {
                 // Check for new multi-video system first
@@ -363,6 +315,27 @@ const QRCodeDetails = () => {
                         View profile
                         <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
                       </Link>
+                      {(() => {
+                        const authorSocialLinks = (Array.isArray(qrCode.author?.social_links) ? qrCode.author.social_links : []) as SocialLink[];
+                        const iconLinks = getSocialIconLinks(authorSocialLinks);
+                        if (iconLinks.length === 0) return null;
+                        return (
+                          <div className="flex flex-wrap justify-start items-center gap-3 pt-2">
+                            {iconLinks.map((link, i) => (
+                              <a
+                                key={i}
+                                href={getValidURL(link.url)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center hover:opacity-80 transition-opacity"
+                                aria-label={link.platform}
+                              >
+                                {getSocialPlatformIcon(link.platform, "h-[22px] w-[22px]")}
+                              </a>
+                            ))}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>

@@ -434,7 +434,7 @@ export const EnhancementsManager = ({
       {/* Video Section */}
       <Card className="border-0 shadow-sm" style={{ backgroundColor: '#19363c' }}>
         <CardHeader className="pb-2 pt-4 px-4">
-          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Upload a video for your readers</CardTitle>
+          <CardTitle className="text-base font-semibold" style={{ color: '#ffd166' }}>Upload videos for your readers</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 px-4 pb-4">
           {videos.map((video, idx) => (

@@ -40,9 +40,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onNavigate }) =>
       
       <div className="flex-1 sm:flex-initial text-left sm:text-center w-full">
         <h3 className="font-medium text-[#333333] text-sm sm:text-xs line-clamp-1 sm:line-clamp-2 leading-tight">{qrCode.book_title}</h3>
-        <p className="text-[10px] text-[#718096] mt-0.5 sm:mt-1">
-          {qrCode.total_tips || 0} tips
-        </p>
+       
       </div>
     </Card>
   );

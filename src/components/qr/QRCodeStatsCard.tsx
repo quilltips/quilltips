@@ -17,7 +17,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { EnhancementsManager } from "../book/EnhancementsManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getAuthorUrl } from "@/lib/url-utils";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2, ChevronRight } from "lucide-react";
 
 interface QRCodeStats {
   total_tips: number | null;
@@ -59,7 +62,23 @@ interface QRCodeStatsCardProps {
 export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const isPaid = qrCode.is_paid !== false;
+
+  const { data: bookActivity, isLoading: activityLoading } = useQuery({
+    queryKey: ['book-activity', qrCode.id],
+    queryFn: async () => {
+      const [viewsResult, tipsResult] = await Promise.all([
+        supabase.from('page_views').select('id', { count: 'exact', head: true }).eq('qr_code_id', qrCode.id).eq('page_type', 'book'),
+        supabase.from('tips').select('id, message').eq('qr_code_id', qrCode.id),
+      ]);
+      const totalViews = viewsResult.count ?? 0;
+      const tips = tipsResult.data || [];
+      const totalMessages = tips.filter(t => t.message && String(t.message).trim().length > 0).length;
+      return { totalViews, totalMessages, totalTips: tips.length };
+    },
+    enabled: !!qrCode.id,
+  });
   const { isCheckingOut, handleCheckout } = useQRCheckout({
     qrCodeId: qrCode.id,
     bookTitle: qrCode.book_title
@@ -84,6 +103,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
   const qrUrl = bookSlug ? 
     `${window.location.origin}/book/${bookSlug}` : 
     `${window.location.origin}/qr/${qrCode.id}`;
+  const authorProfileUrl = `${window.location.origin}${getAuthorUrl({ id: qrCode.author_id })}`;
 
   const handleDownloadSVG = async () => {
     if (!isPaid) {
@@ -247,46 +267,30 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
   };
 
   return (
+    <>
     <div className="grid xl:grid-cols-[3fr_2fr] gap-7 mx-auto">
       {/* Left side - QR Code, Book Cover, and Book Details */}
       <div className="">
         {/* QR Code, Book Cover, and Book Details Container */}
-        <Card className="p-4 md:p-7 border" style={{ borderColor: '#333333' }}>
+        <Card className="p-4 md:p-7 bg-white shadow-md" style={{ borderColor: '#333333' }}>
           <div className="space-y-8">
-            {/* QR Code and Book Cover - Responsive Stacking */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 ">
-              {/* QR Code */}
-              <div className="space-y-4">
-                <div className="bg-gray rounded-lg flex justify-center">
-                  <StyledQRCode
-                    ref={qrCodeRef}
-                    value={qrUrl}
-                    showBranding={true}
-                    isPaid={isPaid}
-                    variant="screen"
-                    size={window.innerWidth < 768 ? 180 : 200}
-                  />
-                </div>
-              </div>
-
-              {/* Book Cover with Upload - Max Width Constraint */}
-              <div className="space-y-4">
-                <div className="aspect-[2/3] rounded-lg overflow-hidden relative max-w-xs mx-auto md:mx-0">
-                  <OptimizedImage
-                    key={imageRefreshKey}
-                    src={qrCode.cover_image || "/lovable-uploads/logo_nav.svg"}
-                    alt={qrCode.book_title}
-                    className="w-full h-full"
-                    objectFit={qrCode.cover_image ? "cover" : "contain"}
-                    fallbackSrc="/lovable-uploads/logo_nav.svg"
-                  />
-                  <BookCoverUpload 
-                    qrCodeId={qrCode.id}
-                    coverImage={qrCode.cover_image}
-                    bookTitle={qrCode.book_title}
-                    updateCoverImage={updateCoverImage}
-                  />
-                </div>
+            {/* Book Cover with Upload */}
+            <div className="space-y-4">
+              <div className="aspect-[2/3] rounded-lg overflow-hidden relative max-w-[240px] mx-auto">
+                <OptimizedImage
+                  key={imageRefreshKey}
+                  src={qrCode.cover_image || "/lovable-uploads/logo_nav.svg"}
+                  alt={qrCode.book_title}
+                  className="w-full h-full"
+                  objectFit={qrCode.cover_image ? "cover" : "contain"}
+                  fallbackSrc="/lovable-uploads/logo_nav.svg"
+                />
+                <BookCoverUpload 
+                  qrCodeId={qrCode.id}
+                  coverImage={qrCode.cover_image}
+                  bookTitle={qrCode.book_title}
+                  updateCoverImage={updateCoverImage}
+                />
               </div>
             </div>
 
@@ -390,7 +394,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                     <div className="space-y-1">
                       <span className="text-sm font-medium">Enable Tipping</span>
                       <p className="text-xs">
-                        When disabled, readers can only send messages (no tips)
+                        When disabled, readers can only send messages
                       </p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -407,71 +411,16 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
               </div>
            </div>
          </Card>
-
-        {/* Enhancements Section */}
-        <Card className="p-4 md:p-5 pt-6">
-          <div className="space-y-6 md:space-y-6">
-            <h3 className="text-xl font-semibold mb-4 md:mb-0">Bonus Content</h3>
-            <EnhancementsManager
-              qrCodeId={qrCode.id}
-              authorId={qrCode.author_id}
-              initialData={{
-                thank_you_video_url: qrCode.thank_you_video_url,
-                book_description: qrCode.book_description,
-                character_images: qrCode.character_images,
-                book_videos: qrCode.book_videos,
-                letter_to_readers: qrCode.letter_to_readers,
-                arc_signup_enabled: qrCode.arc_signup_enabled,
-                beta_reader_enabled: qrCode.beta_reader_enabled,
-                newsletter_enabled: qrCode.newsletter_enabled,
-                book_club_enabled: qrCode.book_club_enabled,
-              }}
-              recommendations={qrCode.recommendations}
-              onUpdate={() => {
-                // Invalidate queries to refresh the QR code data and recommendations
-                if (id) {
-                  queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id) });
-                }
-                if (qrCode.id) {
-                  queryClient.invalidateQueries({ queryKey: ['qr-codes', 'recommendations', qrCode.id] });
-                }
-                queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
-              }}
-            />
-          </div>
-        </Card>
       </div>
 
-      {/* Right side - Stats and Actions */}
+      {/* Right side - Share first (white card), then condensed Activity */}
       <div className="space-y-6">
-        {/* Individual Tip Statistics Tiles */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-3">
-            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
-              <p className="text-xs md:text-sm text-white/80 mb-2">Total Tips</p>
-              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">{qrCode.total_tips || 0}</p>
-            </Card>
-            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
-              <p className="text-xs md:text-sm text-white/80 mb-2">Total Amount</p>
-              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">${qrCode.total_amount?.toFixed(2) || "0.00"}</p>
-            </Card>
-            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
-              <p className="text-xs md:text-sm text-white/80 mb-2">Average Tip</p>
-              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">${qrCode.average_tip?.toFixed(2) || "0.00"}</p>
-            </Card>
-            <Card className="p-4 md:p-5 bg-[#19363C] text-white">
-              <p className="text-xs md:text-sm text-white/80 mb-2">Last Tip</p>
-              <p className="text-2xl md:text-3xl font-bold text-[#FFD166]">
-                {qrCode.last_tip_date ? format(new Date(qrCode.last_tip_date), "MMM d") : "-"}
-              </p>
-            </Card>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <Card className="p-4 md:p-5 md:mt-4">
+        {/* Share - white background card */}
+        <Card className="p-4 md:p-5 bg-white shadow-md">
           <div className="space-y-4">
-            {/* Hidden download QR code */}
+            <h3 className="text-lg font-semibold text-[#333333]">Share</h3>
+
+            {/* Hidden download QR code (used for PNG/SVG export) */}
             <div style={{ position: "absolute", left: "-9999px", top: "0" }}>
               <StyledQRCode
                 ref={downloadRef}
@@ -479,6 +428,17 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
                 showBranding={true}
                 isPaid={isPaid}
                 variant="download"
+              />
+            </div>
+
+            {/* Small QR code preview - compact card */}
+            <div className="flex justify-center">
+              <StyledQRCode
+                value={qrUrl}
+                showBranding={true}
+                isPaid={isPaid}
+                variant="screen"
+                size={80}
               />
             </div>
 
@@ -497,31 +457,47 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
               Share QR Code
             </Button>
 
-            {/* Your Link Section */}
-            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-md border">
-              <span className="text-sm font-medium text-[#333333] whitespace-nowrap">Your Link:</span>
-              <input
-                type="text"
-                value={qrUrl}
-                readOnly
-                className="flex-1 text-sm bg-transparent border-none outline-none text-[#333333]"
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(qrUrl);
-                  toast({
-                    title: "Link copied",
-                    description: "Your QR code link has been copied to clipboard.",
-                  });
-                }}
-                className="text-[#333333] hover:text-[#19363C] p-1"
+            {/* Book page link */}
+            <div className="space-y-1">
+              <span className="text-sm font-medium text-[#333333]">Book page</span>
+              <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-md border">
+                <input
+                  type="text"
+                  value={qrUrl}
+                  readOnly
+                  className="flex-1 text-sm bg-transparent border-none outline-none text-[#333333] min-w-0"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(qrUrl);
+                    toast({
+                      title: "Link copied",
+                      description: "Your book page link has been copied to clipboard.",
+                    });
+                  }}
+                  className="text-[#333333] hover:text-[#19363C] p-1 shrink-0"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </Button>
+              </div>
+            </div>
+
+            {/* Author profile link */}
+            <div className="space-y-1">
+              <span className="text-sm font-medium text-[#333333]">Author profile</span>
+              <a
+                href={authorProfileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 p-2 bg-gray-50 rounded-md border hover:bg-gray-100 transition-colors text-sm text-[#333333]"
               >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-              </Button>
+                <span className="flex-1 truncate">{authorProfileUrl}</span>
+                <ExternalLink className="h-4 w-4 shrink-0" />
+              </a>
             </div>
 
             {!isPaid && (
@@ -541,7 +517,75 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             )}
           </div>
         </Card>
+
+        {/* Condensed Activity - book-scoped engagement */}
+        {activityLoading ? (
+          <Card className="p-4 flex justify-center items-center bg-[#19363C] min-h-[100px] rounded-lg">
+            <Loader2 className="h-6 w-6 animate-spin text-[#FFD166]" />
+          </Card>
+        ) : (
+          <Card
+            className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow rounded-lg"
+            onClick={() => navigate('/author/data')}
+          >
+            <div className="p-4 bg-[#19363C] text-white">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-playfair">Activity</h3>
+                <ChevronRight className="h-4 w-4 text-white/60" />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-0.5 text-center">
+                  <div className="text-xl font-bold text-[#FFD166]">{bookActivity?.totalViews ?? 0}</div>
+                  <div className="text-xs text-white/80">Views</div>
+                </div>
+                <div className="space-y-0.5 text-center">
+                  <div className="text-xl font-bold text-[#FFD166]">{bookActivity?.totalMessages ?? 0}</div>
+                  <div className="text-xs text-white/80">Messages</div>
+                </div>
+                <div className="space-y-0.5 text-center">
+                  <div className="text-xl font-bold text-[#FFD166]">{bookActivity?.totalTips ?? qrCode.total_tips ?? 0}</div>
+                  <div className="text-xs text-white/80">Tips</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
+
+    {/* Full width - Bonus Content */}
+    <div className="mt-8 w-full">
+      <Card className="p-4 md:p-7 bg-white shadow-md">
+        <div className="space-y-6 md:space-y-6">
+          <h3 className="text-xl font-semibold text-[#333333]">Bonus Content</h3>
+          <EnhancementsManager
+            qrCodeId={qrCode.id}
+            authorId={qrCode.author_id}
+            initialData={{
+              thank_you_video_url: qrCode.thank_you_video_url,
+              book_description: qrCode.book_description,
+              character_images: qrCode.character_images,
+              book_videos: qrCode.book_videos,
+              letter_to_readers: qrCode.letter_to_readers,
+              arc_signup_enabled: qrCode.arc_signup_enabled,
+              beta_reader_enabled: qrCode.beta_reader_enabled,
+              newsletter_enabled: qrCode.newsletter_enabled,
+              book_club_enabled: qrCode.book_club_enabled,
+            }}
+            recommendations={qrCode.recommendations}
+            onUpdate={() => {
+              if (id) {
+                queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.detail(id) });
+              }
+              if (qrCode.id) {
+                queryClient.invalidateQueries({ queryKey: ['qr-codes', 'recommendations', qrCode.id] });
+              }
+              queryClient.invalidateQueries({ queryKey: qrCodeQueryKeys.all });
+            }}
+          />
+        </div>
+      </Card>
+    </div>
+  </>
   );
 };

@@ -58,13 +58,15 @@ export const getValidURL = (url: string): string => {
 
 /** Returns links that are not recognized social platforms (LinkedIn, X, Facebook, Instagram, TikTok, Amazon). */
 export const getOtherLinks = (socialLinks: SocialLink[]): SocialLink[] => {
-  return socialLinks.filter((link) => link.url?.trim() && getPlatformFromUrl(link.url) == null);
+  if (!Array.isArray(socialLinks)) return [];
+  return socialLinks.filter((link) => link && link.url?.trim() && getPlatformFromUrl(link.url) == null);
 };
 
 /** Returns links that are recognized social platforms, with platform type. */
 export const getSocialIconLinks = (socialLinks: SocialLink[]): { url: string; platform: SocialPlatform }[] => {
+  if (!Array.isArray(socialLinks)) return [];
   return socialLinks
-    .filter((link) => link.url?.trim())
+    .filter((link) => link && link.url?.trim())
     .map((link) => ({ url: link.url, platform: getPlatformFromUrl(link.url) as SocialPlatform | null }))
     .filter((item): item is { url: string; platform: SocialPlatform } => item.platform != null);
 };

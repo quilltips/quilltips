@@ -83,7 +83,7 @@ const AuthorDashboard = () => {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        <div className="max-w-6xl mx-auto space-y-8">
+        <div className="max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div className="space-y-2">
               <h1 className="text-3xl md:text-4xl font-playfair font-bold text-[#333333]">

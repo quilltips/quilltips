@@ -57,7 +57,7 @@ export const ActivityCard = ({ authorId }: ActivityCardProps) => {
       className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
       onClick={() => navigate('/author/data')}
     >
-      <CardContent className="p-6 bg-[#19363C] text-white">
+      <CardContent className="p-6 bg-[#19363C] text-white shadow-md">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-playfair">Activity</h2>
           <ChevronRight className="h-5 w-5 text-white/60" />

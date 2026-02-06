@@ -20,7 +20,7 @@ export const AuthorDashboardContent = ({
       <ActivityCard authorId={authorId} />
       
       {/* Quilltips Jars - horizontal layout */}
-      <div className="border border-[#333333] rounded-xl p-4 bg-transparent">
+      <div className="shadow-md rounded-xl p-4 bg-white">
         <AuthorQRCodesList 
           authorId={authorId}
           stripeSetupComplete={stripeSetupComplete}
@@ -29,7 +29,7 @@ export const AuthorDashboardContent = ({
       </div>
       
       {/* Feed - full width below */}
-      <div className="border border-[#333333] rounded-xl p-4 bg-transparent">
+      <div className=" rounded-xl p-4 bg-white shadow-md">
         <TipHistory 
           authorId={authorId} 
           limit={5} 
