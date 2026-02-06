@@ -1,99 +1,116 @@
 
-
-# Revamp Book Recommendations to Platform-Only Bookshelf
+# Rename Public Feed to "Fanmail" and Include Reader Messages
 
 ## Overview
-Transform the current external book recommendations system into an integrated "Bookshelf" feature where authors can only recommend books already on the Quilltips platform. This creates cross-promotion between authors and a more cohesive user experience.
+
+Transform the public "Feed" sections (on both individual book pages and author profile pages) from a tip-centric feed into a "Fanmail" feed that shows reader messages -- both from tips that include messages and from direct fanmail submissions. Add a "Keep this message private" option to the direct message form (it already exists on the tip form). Exclude private messages from the public Fanmail feed.
 
 ## Current State
-- Authors manually type book titles, author names, and external links (e.g., Amazon URLs)
-- Recommendations are stored in `author_book_recommendations` with free-text fields
-- The public-facing display is a simple bulleted list with external link icons
-- The config UI in `EnhancementsManager` has individual text inputs for title, author, and link
+
+- The public feed only shows data from `public_tips` table, which only contains tips with `amount > 0`
+- Direct messages (amount = 0) are always stored as `is_private: true` in the `tips` table and never appear publicly
+- The `sync_to_public_tips` database trigger explicitly deletes entries with `amount = 0` from `public_tips`
+- The tip form already has a "Keep this tip private" checkbox
+- The direct message form (`MessageForm.tsx`) has no privacy option -- messages are always private
+- Feed items display as "{name} sent a tip for {book}!"
 
 ## What Changes
 
-### 1. Database Migration
-Add a new column to `author_book_recommendations` to store the reference to the recommended QR code (book on the platform):
+### 1. Database: Update `sync_to_public_tips` Trigger
 
-- Add `recommended_qr_code_id` (uuid, nullable, FK to `qr_codes.id`) to `author_book_recommendations`
-- Keep existing columns (`recommended_book_title`, `recommended_book_author`, `buy_link`, `recommended_book_cover_url`) for display caching / backward compatibility, but new entries will auto-populate these from the linked `qr_codes` record
+Currently, the trigger only syncs tips where `amount > 0`. It needs to also sync messages (`amount = 0`) **when they are not private** (`is_private = false`). This allows non-private fanmail messages to appear in the public feed alongside tips that have messages.
 
-### 2. Author Configuration UI (EnhancementsManager.tsx)
-Replace the current free-text recommendation form (lines 651-694) with a search-and-select interface:
+Changes to the trigger logic:
+- Remove the `amount > 0` guard
+- Instead, only sync entries where `is_private = false` (or `is_private IS NULL`)
+- Delete from `public_tips` if `is_private = true`
 
-- Replace the individual title/author/link inputs with a single search input field
-- When the author types, query `qr_codes` table (via `ilike` on `book_title`) joined with `public_profiles` to show matching books with their covers and author names
-- Display search results as a dropdown list showing: cover thumbnail, book title, author name
-- On selection, save the `recommended_qr_code_id` and auto-fill `recommended_book_title`, `recommended_book_author`, and `recommended_book_cover_url` from the QR code data
-- Remove the external link input entirely
-- Each selected book appears as a compact card with cover + title + remove button
-- Prevent authors from recommending their own books (filter out books where `author_id === current authorId`)
-- Rename the section header from "Book Recommendations" to "Bookshelf"
+### 2. Edge Function: Update `send-message-to-author`
 
-### 3. Public Display (BookRecommendationsCarousel.tsx)
-Replace the bulleted list with a visual carousel of book covers:
+Currently hardcodes `is_private: true` for all messages. Update to accept an `isPrivate` parameter from the frontend and default to `false` (public) so fanmail appears in the feed by default unless the reader opts out.
 
-- Rename header from "{firstName} also recommends these books!" to "{firstName}'s Bookshelf"
-- Replace the `<ul>` list with a `<Carousel>` component (reusing the existing Embla carousel from the UI library, same pattern as `AuthorOtherBooksCarousel`)
-- Each carousel item shows: book cover image, book title below, author name below title
-- Each item links to the book's page on Quilltips (`/book/{slug}`) instead of external URLs
-- Remove the `ExternalLink` icon since all links are internal now
+### 3. MessageForm.tsx: Add Privacy Checkbox
 
-### 4. Data Fetching Updates
-- **`use-qr-code-fetch.ts`**: Update the recommendations query to also select `recommended_qr_code_id` and join with `qr_codes` to get `slug` and `cover_image` for the linked book
-- **`use-qr-code-details-page.ts`**: Same update to the recommendations query
-- **`QRCodeDetails.tsx`**: Pass updated data to the new carousel component
+Add a "Keep this message private" checkbox (same styling as the tip form's checkbox) to the direct message form. Pass the `isPrivate` value to the edge function.
 
-### 5. Backward Compatibility
-- Existing recommendations without `recommended_qr_code_id` (old external links) will still display but won't have internal links -- they can show as static text entries. Over time authors can replace them with platform books.
-- The `buy_link` column remains in the DB but is no longer populated for new entries.
+### 4. Public Feed Components: Rename and Restyle
 
-## Files to Create/Modify
+**AuthorPublicTipFeed.tsx** (author profile page feed):
+- Rename section from "Feed" to "Fanmail" in the parent `AuthorProfileContent.tsx`
+- Change item text from "{name} sent a tip for {book}!" to "{name} sent fanmail!"
+- Show the message below (already shown when present)
+- Keep the comment button and timestamp
+- Filter out entries where `is_private = true` (already handled by `public_tips` table, which will now also contain non-private messages)
+- Update empty state text from "No tips yet." to "No fanmail yet."
 
-| File | Action |
+**PublicTipHistory.tsx** (individual book page feed):
+- Change item text from "{name} sent a tip for {book}!" to "{name} sent fanmail!"
+- Show the message below
+- Keep comment button and timestamp
+- Update empty state text from "Nothing here yet... be the first to engage!" to "No fanmail yet. Be the first to send a message!"
+
+**QRCodeDetails.tsx** (book page):
+- Rename section header from "Feed" to "Fanmail"
+- Update mobile nav label from "Feed" to "Fanmail"
+
+**AuthorProfileContent.tsx** (author profile page):
+- Rename CardTitle from "Feed" to "Fanmail"
+
+### 5. TipDetailsDialog.tsx: Update Language
+
+When opened from the Fanmail feed, the dialog should use fanmail language instead of tip language. The header already adapts for $0 messages vs tips, so this mostly works. No major changes needed here.
+
+## Files to Modify
+
+| File | Change |
 |------|--------|
-| **DB Migration** | Add `recommended_qr_code_id` column with FK to `qr_codes` |
-| `src/components/book/EnhancementsManager.tsx` | Replace recommendation form (lines 651-694) with search-and-select UI |
-| `src/components/book/BookRecommendationsCarousel.tsx` | Rewrite from bullet list to visual carousel with covers and internal links |
-| `src/hooks/use-qr-code-fetch.ts` | Update recommendations query to include slug/cover from linked QR code |
-| `src/hooks/use-qr-code-details-page.ts` | Same query update |
-| `src/pages/QRCodeDetails.tsx` | Minor: pass slug data to carousel, no structural changes needed |
+| DB Migration | Update `sync_to_public_tips` trigger to include non-private messages |
+| `supabase/functions/send-message-to-author/index.ts` | Accept `isPrivate` param, default to `false` |
+| `src/components/MessageForm.tsx` | Add "Keep this message private" checkbox, pass to edge function |
+| `src/components/tips/AuthorPublicTipFeed.tsx` | Change item text to "sent fanmail!", update empty state |
+| `src/components/tips/PublicTipHistory.tsx` | Change item text to "sent fanmail!", update empty state |
+| `src/pages/QRCodeDetails.tsx` | Rename "Feed" header to "Fanmail", update mobile nav label |
+| `src/components/author/AuthorProfileContent.tsx` | Rename "Feed" CardTitle to "Fanmail" |
 
 ## Technical Details
 
-### Search in EnhancementsManager
-A lightweight inline search (not reusing the full `useSearch` hook which includes navigation logic). Instead, a simple debounced query:
+### Updated Trigger Logic
 
 ```text
-qr_codes table
-  -> ilike book_title
-  -> select id, book_title, cover_image, slug, author_id
-  -> join public_profiles for author name
-  -> filter out current author's own books
-  -> limit 5 results
+sync_to_public_tips trigger:
+  ON INSERT/UPDATE:
+    IF is_private = false (or NULL defaults to false):
+      -> UPSERT into public_tips
+    ELSE (is_private = true):
+      -> DELETE from public_tips if exists
+  ON DELETE:
+    -> DELETE from public_tips
 ```
 
-### Carousel Component Pattern
-Follow the exact same pattern as `AuthorOtherBooksCarousel`:
-- Embla carousel with cover images
-- Each item is a `Link` to `/book/{slug}`
-- Responsive basis classes for mobile/desktop
-- Previous/Next arrows when more than 1 item
+This means both tips (amount > 0) and messages (amount = 0) will appear in public_tips as long as `is_private` is false.
 
-### Recommendation Data Flow
+### Feed Item Display
+
 ```text
-Author searches -> selects book -> saves to author_book_recommendations:
-  - recommended_qr_code_id = selected qr_code.id
-  - recommended_book_title = qr_code.book_title (cached)
-  - recommended_book_author = author.name (cached)
-  - recommended_book_cover_url = qr_code.cover_image (cached)
-  - buy_link = null (no longer used)
+Before: "{firstName} sent a tip for "{bookTitle}"!"
+After:  "{firstName} sent fanmail!"
+        "{message text}" (if present, shown below)
+        [comment button] [timestamp]
 ```
 
-### Public Display Data Flow
+### Privacy Flow for Direct Messages
+
 ```text
-Fetch recommendations -> join qr_codes for fresh slug/cover ->
-  Display carousel with covers linking to /book/{slug}
+Reader opens message form
+  -> Sees "Keep this message private" checkbox (unchecked by default)
+  -> Submits form
+  -> Edge function stores with is_private = false (or true if checked)
+  -> Trigger syncs to public_tips if is_private = false
+  -> Message appears in Fanmail feed
 ```
 
+### Backward Compatibility
+
+- Existing $0 messages are all stored as `is_private: true`, so they will remain private and not suddenly appear in the feed
+- Only new messages submitted after this change (with the checkbox unchecked) will appear publicly
+- Existing tips with `amount > 0` and `is_private = false` will continue to appear in the feed as fanmail
