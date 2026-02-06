@@ -7,6 +7,7 @@ import { AuthorProfileHeader } from "@/components/author/AuthorProfileHeader";
 import { AuthorProfileContent } from "@/components/author/AuthorProfileContent";
 import { supabase } from "@/integrations/supabase/client";
 import { usePublicProfile } from "@/hooks/use-public-profile";
+import { usePageViewTracking } from "@/hooks/use-page-view-tracking";
 
 const AuthorPublicProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +24,12 @@ const AuthorPublicProfile = () => {
   });
 
   const { data: author, isLoading, error } = usePublicProfile(id);
+
+  // Track page view for this author profile
+  usePageViewTracking({
+    authorId: author?.id,
+    pageType: "profile",
+  });
 
   // Fetch the author's Stripe setup info
   useEffect(() => {

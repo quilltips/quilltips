@@ -10,6 +10,7 @@ import { TipStats } from "./TipStats";
 import { TopBooks } from "./TopBooks";
 import { ReaderStats } from "./ReaderStats";
 import { SignupDataSection } from "./SignupDataSection";
+import { PageViewStats } from "./PageViewStats";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthorDataDashboardProps {
@@ -90,6 +91,21 @@ export const AuthorDataDashboard = ({ authorId, hideDownloadButton = false }: Au
       const readerInfo: ReaderInfo[] = Object.values(readerMap)
         .sort((a, b) => b.value - a.value)
         .slice(0, 10);
+
+      // Fetch page views
+      const { data: pageViews, error: pageViewsError } = await supabase
+        .from('page_views')
+        .select('page_type, viewed_at')
+        .eq('author_id', authorId);
+      
+      if (pageViewsError) throw pageViewsError;
+
+      const totalBookViews = (pageViews || []).filter(v => v.page_type === 'book').length;
+      const totalProfileViews = (pageViews || []).filter(v => v.page_type === 'profile').length;
+      
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const last30DaysViews = (pageViews || []).filter(v => new Date(v.viewed_at) >= thirtyDaysAgo).length;
       
       return {
         totalBooks,
@@ -99,7 +115,10 @@ export const AuthorDataDashboard = ({ authorId, hideDownloadButton = false }: Au
         topBooks,
         readerInfo,
         qrCodes,
-        tips
+        tips,
+        totalBookViews,
+        totalProfileViews,
+        last30DaysViews
       };
     }
   });
@@ -174,6 +193,12 @@ export const AuthorDataDashboard = ({ authorId, hideDownloadButton = false }: Au
           totalAmount={data?.totalAmount || 0}
           averageTip={data?.averageTip || 0}
           totalTips={data?.totalTips || 0}
+        />
+        
+        <PageViewStats
+          totalBookViews={data?.totalBookViews || 0}
+          totalProfileViews={data?.totalProfileViews || 0}
+          last30DaysViews={data?.last30DaysViews || 0}
         />
         
         <TopBooks 
