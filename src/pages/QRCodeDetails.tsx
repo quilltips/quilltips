@@ -140,32 +140,10 @@ const QRCodeDetails = () => {
                     <> · {format(new Date(qrCode.release_date), 'MMMM yyyy')}</>
                   )}
                 </span>
-                {(() => {
-                  const authorSocialLinks = (qrCode.author?.social_links || []) as SocialLink[];
-                  const iconLinks = getSocialIconLinks(authorSocialLinks);
-                  if (iconLinks.length === 0) return null;
-                  return (
-                    <span className="inline-flex items-center gap-1 ml-0.5">
-                      {iconLinks.map((link, i) => (
-                        <a
-                          key={i}
-                          href={getValidURL(link.url)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center opacity-60 hover:opacity-100 transition-opacity"
-                          aria-label={link.platform}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {getSocialPlatformIcon(link.platform, "h-3.5 w-3.5")}
-                        </a>
-                      ))}
-                    </span>
-                  );
-                })()}
               </div>
               {/* Inline actions: Buy, Support, Fan Mail */}
               {(
-                <div className="flex flex-wrap justify-center gap-2 mt-3">
+                <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
                   {qrCode.buy_now_link && (
                     <Button 
                       variant="outline"
@@ -194,6 +172,28 @@ const QRCodeDetails = () => {
                   >
                     Fan Mail
                   </Button>
+                  {(() => {
+                    const authorSocialLinks = (qrCode.author?.social_links || []) as SocialLink[];
+                    const iconLinks = getSocialIconLinks(authorSocialLinks);
+                    if (iconLinks.length === 0) return null;
+                    return (
+                      <>
+                        {iconLinks.map((link, i) => (
+                          <a
+                            key={i}
+                            href={getValidURL(link.url)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-border opacity-60 hover:opacity-100 transition-opacity"
+                            aria-label={link.platform}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {getSocialPlatformIcon(link.platform, "h-3.5 w-3.5")}
+                          </a>
+                        ))}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
             </div>
