@@ -9,13 +9,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, AlertCircle, Loader2, ImagePlus, ChevronDown, Plus, X, Sparkles, HelpCircle } from "lucide-react";
+import { CalendarIcon, AlertCircle, Loader2, ImagePlus, Plus, X, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { BookCoverUpload } from "./qr/BookCoverUpload";
@@ -52,11 +50,7 @@ interface Recommendation {
   display_order: number;
 }
 
-const VIDEO_TYPE_OPTIONS = [
-  { value: "thank-you", label: "Thank-You Video" },
-  { value: "interview", label: "Interview" },
-  { value: "other", label: "Other" },
-] as const;
+
 
 export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const navigate = useNavigate();
@@ -71,7 +65,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const { toast } = useToast();
 
   // Enhancement fields
-  const [isEnhancementsOpen, setIsEnhancementsOpen] = useState(false);
+  type BonusSection = "videos" | "letter" | "characters" | "signups";
+  const [openSections, setOpenSections] = useState<BonusSection[]>([]);
   const [videos, setVideos] = useState<BookVideo[]>([]);
   const [bookDescription, setBookDescription] = useState("");
   const [letterToReaders, setLetterToReaders] = useState("");
@@ -172,7 +167,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
       if (imageError) throw new Error(imageError);
 
       // Validate enhancements if any are filled
-      if (isEnhancementsOpen && !validateEnhancements()) {
+      // Validate enhancements if any content sections are open
+      if (openSections.length > 0 && !validateEnhancements()) {
         throw new Error("Please fix the errors in the enhancements section");
       }
 
@@ -420,290 +416,210 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           </p>
         </div>
 
-        {/* Enhancements Section */}
-        <Collapsible open={isEnhancementsOpen} onOpenChange={setIsEnhancementsOpen} className=" rounded-lg p-4 bg-muted/30">
-          <CollapsibleTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full flex items-center justify-between hover:bg-transparent p-0"
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <span className="text-base font-semibold">Bonus Content (Optional)</span>
-              </div>
-              <ChevronDown
-                className={cn(
-                  "h-5 w-5 transition-transform",
-                  isEnhancementsOpen && "transform rotate-180"
-                )}
-              />
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-4 mt-4">
-            {/* Videos Section */}
-            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Upload videos for your readers</h4>
-              <div className="space-y-3">
-                {videos.map((video, idx) => (
-                  <div key={idx} className="p-3 rounded-md space-y-3" style={{ backgroundColor: '#f8f6f2' }}>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-medium" style={{ color: '#333333' }}>Video {idx + 1}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeVideo(idx)}
-                        className="h-6 w-6 p-0 hover:bg-transparent"
-                        style={{ color: '#333333' }}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    
-                    
-                    <Tabs defaultValue="upload" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 h-8">
-                        <TabsTrigger value="upload" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>Upload</TabsTrigger>
-                        <TabsTrigger value="url" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>URL</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="upload" className="mt-2">
-                        <div className="flex items-center gap-1.5 mb-2">
-                          <span className="text-xs" style={{ color: '#333333' }}>Video File</span>
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <HelpCircle className="h-3 w-3 cursor-help" style={{ color: '#666666' }} />
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-[200px]">
-                                <p className="text-xs">MP4, WebM, OGG, MOV (max 225MB)</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+        {/* Add Content To Your Book Page - tile-based UI */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-[#333333]">Add Content To Your Book Page</h3>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-4 w-4 cursor-help text-gray-400" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[280px]">
+                  <p className="text-xs">Enhance your book page with bonus content for readers. Add videos, book art, a personal letter, or enable signup forms to grow your audience.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          {/* Horizontal content tiles */}
+          <div className="flex flex-wrap gap-3">
+            {([
+              { key: "videos" as BonusSection, label: "Videos" },
+              { key: "characters" as BonusSection, label: "Book Art" },
+              { key: "letter" as BonusSection, label: "Letter to Readers" },
+              { key: "signups" as BonusSection, label: "Signup Forms" },
+            ]).map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => {
+                  setOpenSections(prev =>
+                    prev.includes(key)
+                      ? prev.filter(s => s !== key)
+                      : [key, ...prev]
+                  );
+                }}
+                className={`flex flex-col items-center gap-2 px-4 py-3 rounded-lg border bg-white hover:border-[#FFD166] hover:shadow-sm transition-all min-w-[90px] ${
+                  openSections.includes(key) ? 'border-[#FFD166] shadow-sm' : 'border-gray-200'
+                }`}
+              >
+                <span className="text-sm font-medium text-[#333333]">{label}</span>
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FFD166] text-[#333333] transition-colors">
+                  <Plus className="h-4 w-4" strokeWidth={2.5} />
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Expanded sections */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {openSections.map(section => {
+              switch (section) {
+                case "videos":
+                  return (
+                    <div key="videos" className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-sm font-semibold text-[#333333]">Videos</h4>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setOpenSections(prev => prev.filter(s => s !== "videos"))} className="h-6 w-6 p-0">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      {videos.map((video, idx) => (
+                        <div key={idx} className="p-3 rounded-lg space-y-3 bg-gray-50 border border-gray-200">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs font-medium text-[#333333]">Video {idx + 1}</span>
+                            <Button type="button" variant="ghost" size="sm" onClick={() => removeVideo(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]">
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <Tabs defaultValue="upload" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2 h-8">
+                              <TabsTrigger value="upload" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:text-white">Upload</TabsTrigger>
+                              <TabsTrigger value="url" className="text-xs text-[#333333] data-[state=active]:bg-[#19363c] data-[state=active]:text-white">URL</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="upload" className="mt-2">
+                              <div className="flex items-center gap-1.5 mb-2">
+                                <span className="text-xs text-[#333333]">Video File</span>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <HelpCircle className="h-3 w-3 cursor-help text-gray-500" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-[200px]"><p className="text-xs">MP4, WebM, OGG, MOV (max 225MB)</p></TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                              <VideoUpload
+                                onUploadSuccess={(url) => updateVideo(idx, "url", url)}
+                                currentVideoUrl={video.url}
+                                onRemove={() => updateVideo(idx, "url", "")}
+                              />
+                            </TabsContent>
+                            <TabsContent value="url" className="mt-2">
+                              <Input
+                                value={video.url}
+                                onChange={(e) => updateVideo(idx, "url", e.target.value)}
+                                placeholder="https://..."
+                                type="url"
+                                className="h-8 text-xs"
+                              />
+                              {enhancementErrors[`video_${idx}_url`] && (
+                                <p className="text-xs text-red-500 mt-1">{enhancementErrors[`video_${idx}_url`]}</p>
+                              )}
+                            </TabsContent>
+                          </Tabs>
+                          <Input
+                            placeholder="Description (optional)"
+                            value={video.description || ""}
+                            onChange={(e) => updateVideo(idx, "description", e.target.value)}
+                            className="h-8 text-xs"
+                          />
                         </div>
-                        <VideoUpload
-                          onUploadSuccess={(url) => updateVideo(idx, "url", url)}
-                          currentVideoUrl={video.url}
-                          onRemove={() => updateVideo(idx, "url", "")}
-                        />
-                      </TabsContent>
-                      <TabsContent value="url" className="mt-2">
-                        <Input
-                          value={video.url}
-                          onChange={(e) => updateVideo(idx, "url", e.target.value)}
-                          placeholder="https://..."
-                          type="url"
-                          className="h-8 text-xs bg-white border-gray-200"
-                          style={{ color: '#333333' }}
-                        />
-                        {enhancementErrors[`video_${idx}_url`] && (
-                          <p className="text-xs text-red-500 mt-1">{enhancementErrors[`video_${idx}_url`]}</p>
-                        )}
-                      </TabsContent>
-                    </Tabs>
-                    
-                    <Input
-                      placeholder="Description (optional)"
-                      value={video.description || ""}
-                      onChange={(e) => updateVideo(idx, "description", e.target.value)}
-                      className="h-8 text-xs bg-white border-gray-200"
-                      style={{ color: '#333333' }}
-                    />
-                  </div>
-                ))}
-                
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={addVideo}
-                  className="w-full h-8 text-xs border border-dashed font-medium"
-                  style={{ borderColor: '#ffd166', color: '#ffd166' }}
-                >
-                  <Plus className="mr-1.5 h-3 w-3" />
-                  Add Video
-                </Button>
-              </div>
-            </div>
-
-            {/* Letter to Readers */}
-            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Letter to Readers</h4>
-              <Textarea
-                value={letterToReaders}
-                onChange={(e) => setLetterToReaders(e.target.value)}
-                placeholder="Write a personal note to your readers..."
-                rows={4}
-                maxLength={2000}
-                className="text-sm bg-white border-gray-200 min-h-[100px]"
-                style={{ color: '#333333' }}
-              />
-              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                {letterToReaders.length}/2000 characters
-              </p>
-            </div>
-
-
-            {/* Character Art */}
-            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Character or Book Art</h4>
-              <div className="space-y-3">
-                {characters.map((char, idx) => (
-                  <div key={idx} className="p-3 rounded-md space-y-2" style={{ backgroundColor: '#f8f6f2' }}>
-                    <div className="flex justify-end">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeCharacter(idx)}
-                        className="h-6 w-6 p-0 hover:bg-transparent"
-                        style={{ color: '#333333' }}
-                      >
-                        <X className="h-3 w-3" />
+                      ))}
+                      <Button type="button" variant="outline" onClick={addVideo} className="w-full h-9 text-xs border-dashed border-[#FFD166] text-[#333333] hover:bg-[#FFD166]/10">
+                        <Plus className="mr-1.5 h-3 w-3" /> Add Video
                       </Button>
                     </div>
-                    <Tabs defaultValue="upload" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 h-8">
-                        <TabsTrigger value="upload" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>Upload</TabsTrigger>
-                        <TabsTrigger value="url" className="text-xs data-[state=active]:bg-[#19363c] data-[state=active]:text-[#ffd166]" style={{ color: '#333333' }}>URL</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="upload" className="mt-2">
-                        <CharacterImageUpload
-                          onUploadSuccess={(url) => updateCharacter(idx, "url", url)}
-                          currentImageUrl={char.url}
-                          onRemove={() => updateCharacter(idx, "url", "")}
-                        />
-                      </TabsContent>
-                      <TabsContent value="url" className="mt-2">
-                        <Input
-                          placeholder="Image URL"
-                          value={char.url}
-                          onChange={(e) => updateCharacter(idx, "url", e.target.value)}
-                          type="url"
-                          className="h-8 text-xs bg-white border-gray-200"
-                          style={{ color: '#333333' }}
-                        />
-                        {enhancementErrors[`character_${idx}_url`] && (
-                          <p className="text-xs text-red-500 mt-1">{enhancementErrors[`character_${idx}_url`]}</p>
-                        )}
-                      </TabsContent>
-                    </Tabs>
-                    <Textarea
-                      placeholder="Description (optional)"
-                      value={char.description || ""}
-                      onChange={(e) => updateCharacter(idx, "description", e.target.value)}
-                      rows={2}
-                      maxLength={500}
-                      className="text-xs bg-white border-gray-200"
-                      style={{ color: '#333333' }}
-                    />
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={addCharacter}
-                  className="w-full h-8 text-xs border border-dashed font-medium"
-                  style={{ borderColor: '#ffd166', color: '#ffd166' }}
-                >
-                  <Plus className="mr-1.5 h-3 w-3" />
-                  Add Art
-                </Button>
-              </div>
-            </div>
+                  );
 
-            {/* Signup Forms */}
-            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Reader Signup Forms</h4>
-              <div className="p-3 rounded-md space-y-3" style={{ backgroundColor: '#f8f6f2' }}>
-                <p className="text-xs" style={{ color: '#666666' }}>Enable signup forms on this book page. Signups will appear in your author dashboard.</p>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="create-arc-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>ARC Reader Signup</Label>
-                  <Switch
-                    id="create-arc-signup"
-                    checked={arcSignupEnabled}
-                    onCheckedChange={setArcSignupEnabled}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="create-beta-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Beta Reader Signup</Label>
-                  <Switch
-                    id="create-beta-signup"
-                    checked={betaReaderEnabled}
-                    onCheckedChange={setBetaReaderEnabled}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="create-newsletter-signup" className="text-sm cursor-pointer" style={{ color: '#333333' }}>Newsletter Signup</Label>
-                  <Switch
-                    id="create-newsletter-signup"
-                    checked={newsletterEnabled}
-                    onCheckedChange={setNewsletterEnabled}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Book Recommendations */}
-            <div className="p-4 rounded-lg" style={{ backgroundColor: '#19363c' }}>
-              <h4 className="text-base font-semibold mb-3" style={{ color: '#ffd166' }}>Book Recommendations</h4>
-              <div className="space-y-3">
-                {recommendations.map((rec, idx) => (
-                  <div key={idx} className="p-3 rounded-md space-y-2" style={{ backgroundColor: '#f8f6f2' }}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium" style={{ color: '#333333' }}>Book title</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeRecommendation(idx)}
-                        className="h-6 w-6 p-0 hover:bg-transparent"
-                        style={{ color: '#333333' }}
-                      >
-                        <X className="h-3 w-3" />
+                case "characters":
+                  return (
+                    <div key="characters" className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-sm font-semibold text-[#333333]">Book Art</h4>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setOpenSections(prev => prev.filter(s => s !== "characters"))} className="h-6 w-6 p-0">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      {characters.map((char, idx) => (
+                        <div key={idx} className="p-3 rounded-lg space-y-2 bg-gray-50 border border-gray-200">
+                          <div className="flex justify-end">
+                            <Button type="button" variant="ghost" size="sm" onClick={() => removeCharacter(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]"><X className="h-3 w-3" /></Button>
+                          </div>
+                          <CharacterImageUpload
+                            onUploadSuccess={(url) => updateCharacter(idx, "url", url)}
+                            currentImageUrl={char.url}
+                            onRemove={() => updateCharacter(idx, "url", "")}
+                          />
+                          <Textarea
+                            placeholder="Description (optional)"
+                            value={char.description || ""}
+                            onChange={(e) => updateCharacter(idx, "description", e.target.value)}
+                            rows={2}
+                            className="text-xs"
+                          />
+                        </div>
+                      ))}
+                      <Button type="button" variant="outline" onClick={addCharacter} className="w-full h-9 text-xs border-dashed border-[#FFD166] text-[#333333] hover:bg-[#FFD166]/10">
+                        <Plus className="mr-1.5 h-3 w-3" /> Add Art
                       </Button>
                     </div>
-                    <Input
-                      value={rec.recommended_book_title}
-                      onChange={(e) => updateRecommendation(idx, "recommended_book_title", e.target.value)}
-                      className="h-8 text-xs bg-white border-gray-200"
-                      style={{ color: '#333333' }}
-                    />
-                    <span className="text-xs font-medium block pt-1" style={{ color: '#333333' }}>Author name</span>
-                    <Input
-                      value={rec.recommended_book_author || ""}
-                      onChange={(e) => updateRecommendation(idx, "recommended_book_author", e.target.value)}
-                      className="h-8 text-xs bg-white border-gray-200"
-                      style={{ color: '#333333' }}
-                    />
-                    <span className="text-xs font-medium block pt-1" style={{ color: '#333333' }}>Buy link</span>
-                    <Input
-                      value={rec.buy_link || ""}
-                      onChange={(e) => updateRecommendation(idx, "buy_link", e.target.value)}
-                      className="h-8 text-xs bg-white border-gray-200"
-                      style={{ color: '#333333' }}
-                    />
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={addRecommendation}
-                  className="w-full h-8 text-xs border border-dashed font-medium"
-                  style={{ borderColor: '#ffd166', color: '#ffd166' }}
-                >
-                  <Plus className="mr-1.5 h-3 w-3" />
-                  Add Recommendation
-                </Button>
-              </div>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+                  );
+
+                case "letter":
+                  return (
+                    <div key="letter" className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-sm font-semibold text-[#333333]">Letter to Readers</h4>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setOpenSections(prev => prev.filter(s => s !== "letter"))} className="h-6 w-6 p-0">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <Textarea
+                        placeholder="Write a personal note to your readers..."
+                        value={letterToReaders}
+                        onChange={(e) => setLetterToReaders(e.target.value)}
+                        className="min-h-[120px] text-sm"
+                        maxLength={2000}
+                      />
+                      <p className="text-xs text-gray-500">{letterToReaders.length}/2000 characters</p>
+                    </div>
+                  );
+
+                case "signups":
+                  return (
+                    <div key="signups" className="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-sm font-semibold text-[#333333]">Signup Forms</h4>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setOpenSections(prev => prev.filter(s => s !== "signups"))} className="h-6 w-6 p-0">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-xs text-gray-600">Enable signup forms on this book page. Signups appear in your author dashboard.</p>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="create-arc-signup" className="text-sm cursor-pointer text-[#333333]">ARC Reader Signup</Label>
+                          <Switch id="create-arc-signup" checked={arcSignupEnabled} onCheckedChange={setArcSignupEnabled} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="create-beta-signup" className="text-sm cursor-pointer text-[#333333]">Beta Reader Signup</Label>
+                          <Switch id="create-beta-signup" checked={betaReaderEnabled} onCheckedChange={setBetaReaderEnabled} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="create-newsletter-signup" className="text-sm cursor-pointer text-[#333333]">Newsletter Signup</Label>
+                          <Switch id="create-newsletter-signup" checked={newsletterEnabled} onCheckedChange={setNewsletterEnabled} />
+                        </div>
+                      </div>
+                    </div>
+                  );
+
+                default:
+                  return null;
+              }
+            })}
+          </div>
+        </div>
 
         <Button
           type="submit"

@@ -138,7 +138,7 @@ const BookQRCodesPage = () => {
                         target="_blank"
                         className="text-[#333333] underline  transition-colors"
                       >
-                        Learn more about how Quilltips Jars work
+                        Learn more about how Quilltips works
                       </Link>
                     </p>
                 </div>
