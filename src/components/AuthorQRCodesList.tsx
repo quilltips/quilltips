@@ -90,7 +90,7 @@ export const AuthorQRCodesList = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-xl font-medium text-[#2D3748]">Quilltips Jars</h2>
+          <h2 className="text-xl font-medium text-[#2D3748]">Books</h2>
           
           {stripeIncomplete && (
             <div className="relative">
@@ -101,7 +101,7 @@ export const AuthorQRCodesList = ({
                       <LockKeyhole size={18} className="text-amber-500 cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-[250px] bg-white p-3 text-sm">
-                      <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+                       <p>Complete your Stripe account setup to activate your books for readers.</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -113,7 +113,7 @@ export const AuthorQRCodesList = ({
                     <LockKeyhole size={18} className="text-amber-500 cursor-pointer" />
                   </PopoverTrigger>
                   <PopoverContent className="w-screen max-w-[250px] bg-white p-3 text-sm">
-                    <p>Complete your Stripe account setup to activate your Quilltips Jars for readers.</p>
+                    <p>Complete your Stripe account setup to activate your books for readers.</p>
                   </PopoverContent>
                 </Popover>
               </div>
@@ -134,7 +134,7 @@ export const AuthorQRCodesList = ({
       {!qrCodes || qrCodes.length === 0 ? (
         <div className="space-y-5">
           <div className="text-center py-3 text-[#718096] text-sm">
-            You haven't created any Quilltips Jars yet.
+            You haven't created any books yet.
           </div>
           
           <div className="flex items-center justify-center gap-4">
@@ -143,7 +143,7 @@ export const AuthorQRCodesList = ({
               className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] px-6 h-auto py-2 font-medium text-sm"
             >
               <Plus className="h-3 w-3 mr-2" />
-              New Quilltips Jar
+              New Book
             </Button>
             
             <Link 
@@ -172,7 +172,7 @@ export const AuthorQRCodesList = ({
               className="bg-[#FFD166] hover:bg-[#FFD166]/90 text-[#2D3748] px-6 h-auto py-2 font-medium text-sm"
             >
               <Plus className="h-3 w-3 mr-2" />
-              New Quilltips Jar
+              New Book
             </Button>
           </div>
         </div>
