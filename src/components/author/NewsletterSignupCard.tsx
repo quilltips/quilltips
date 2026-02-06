@@ -108,18 +108,13 @@ export const NewsletterSignupCard = ({ authorId, description }: NewsletterSignup
   }
 
   return (
-    <Card>
-      <CardHeader>
-      
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card className="bg-[#f8f6f2]">
+      <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="newsletter-name">Name (Optional)</Label>
             <Input
               id="newsletter-name"
-              placeholder="Your name"
               value={formData.subscriber_name}
               onChange={(e) => setFormData(prev => ({ ...prev, subscriber_name: e.target.value }))}
             />
@@ -130,7 +125,6 @@ export const NewsletterSignupCard = ({ authorId, description }: NewsletterSignup
             <Input
               id="newsletter-email"
               type="email"
-              placeholder="your.email@example.com"
               value={formData.subscriber_email}
               onChange={(e) => setFormData(prev => ({ ...prev, subscriber_email: e.target.value }))}
               required
