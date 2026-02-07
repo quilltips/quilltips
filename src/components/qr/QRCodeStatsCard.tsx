@@ -523,7 +523,7 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
       <div className="space-y-6">
         {/* Share - white background card */}
         <Card className="p-4 md:p-5 bg-white shadow-md">
-          <div className="space-y-4">
+          <div className="space-y-6">
             <h3 className="text-lg font-semibold text-[#333333]">Share</h3>
 
             {/* Hidden download QR code (used for PNG/SVG export) */}
@@ -538,30 +538,34 @@ export const QRCodeStatsCard = ({ qrCode, qrCodeRef }: QRCodeStatsCardProps) => 
             </div>
 
             {/* QR code beside download/share buttons */}
-            <div className="flex items-start gap-4">
+            <div className="flex items-center gap-4">
               <div className="shrink-0">
                 <StyledQRCode
                   value={qrUrl}
                   showBranding={true}
                   isPaid={isPaid}
                   variant="screen"
-                  size={80}
+                  size={120}
                 />
               </div>
-              <div className="flex-1 space-y-2">
-                <QRCodeDownloadOptions
-                  onDownloadSVG={handleDownloadSVG}
-                  onDownloadPNG={handleDownloadPNG}
-                  disabled={!isPaid}
-                />
-                <Button 
-                  variant="secondary" 
-                  className="w-full border border-[#333333]"
-                  onClick={handleShare}
-                >
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Share QR Code
-                </Button>
+              <div className="flex-1 flex flex-col items-center justify-center gap-2 min-w-0">
+                <div className="w-[180px] space-y-2">
+                  <QRCodeDownloadOptions
+                    onDownloadSVG={handleDownloadSVG}
+                    onDownloadPNG={handleDownloadPNG}
+                    disabled={!isPaid}
+                    className="w-full"
+                    buttonClassName="w-full"
+                  />
+                  <Button 
+                    variant="secondary" 
+                    className="w-full border border-[#333333]"
+                    onClick={handleShare}
+                  >
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Share QR Code
+                  </Button>
+                </div>
               </div>
             </div>
 

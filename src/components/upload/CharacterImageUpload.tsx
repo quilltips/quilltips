@@ -11,68 +11,73 @@ interface CharacterImageUploadProps {
   onUploadSuccess: (url: string) => void;
   currentImageUrl?: string;
   onRemove?: () => void;
+  /** When true, allows selecting multiple files; onUploadSuccess is called for each. No thumbnail/remove shown. */
+  multiple?: boolean;
+}
+
+const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+const maxFileSize = 10 * 1024 * 1024; // 10MB
+
+async function uploadFile(file: File, supabase: any): Promise<string> {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+  const { error } = await supabase.storage
+    .from('character-images')
+    .upload(fileName, file, { cacheControl: '3600', upsert: false });
+  if (error) throw error;
+  const { data: { publicUrl } } = supabase.storage.from('character-images').getPublicUrl(fileName);
+  return publicUrl;
 }
 
 export const CharacterImageUpload = ({ 
   onUploadSuccess, 
   currentImageUrl, 
-  onRemove
+  onRemove,
+  multiple = false,
 }: CharacterImageUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-    // Validate file type
-    const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-    if (!validImageTypes.includes(file.type)) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload an image file (JPEG, PNG, WebP, or GIF)",
-        variant: "destructive",
-      });
-      return;
-    }
+    const fileList = multiple ? Array.from(files) : [files[0]];
 
-    // Validate file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-      toast({
-        title: "File too large",
-        description: "Image must be less than 10MB",
-        variant: "destructive",
-      });
-      return;
+    for (const file of fileList) {
+      if (!validImageTypes.includes(file.type)) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload image files (JPEG, PNG, WebP, or GIF)",
+          variant: "destructive",
+        });
+        continue;
+      }
+      if (file.size > maxFileSize) {
+        toast({
+          title: "File too large",
+          description: `${file.name} exceeds 10MB`,
+          variant: "destructive",
+        });
+        continue;
+      }
     }
 
     setIsUploading(true);
-
+    let successCount = 0;
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('character-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false,
+      for (const file of fileList) {
+        if (!validImageTypes.includes(file.type) || file.size > maxFileSize) continue;
+        const publicUrl = await uploadFile(file, supabase);
+        onUploadSuccess(publicUrl);
+        successCount++;
+      }
+      if (successCount > 0) {
+        toast({
+          title: "Success",
+          description: successCount === 1 ? "Image uploaded successfully" : `${successCount} images uploaded`,
         });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('character-images')
-        .getPublicUrl(filePath);
-
-      onUploadSuccess(publicUrl);
-
-      toast({
-        title: "Success",
-        description: "Image uploaded successfully",
-      });
+      }
     } catch (error: any) {
       console.error("Error uploading image:", error);
       toast({
@@ -90,7 +95,7 @@ export const CharacterImageUpload = ({
 
   return (
     <div className="space-y-2">
-      {currentImageUrl && (
+      {!multiple && currentImageUrl && (
         <div className="relative w-20 h-20 border rounded-lg overflow-hidden">
           <OptimizedImage
             src={currentImageUrl}
@@ -118,12 +123,12 @@ export const CharacterImageUpload = ({
           ) : (
             <>
               <Upload className="mr-2 h-4 w-4" />
-              {currentImageUrl ? 'Change Image' : 'Upload Image'}
+              {multiple ? 'Upload' : (currentImageUrl ? 'Change Image' : 'Upload Image')}
             </>
           )}
         </Button>
         
-        {currentImageUrl && onRemove && (
+        {!multiple && currentImageUrl && onRemove && (
           <Button
             type="button"
             variant="ghost"
@@ -153,6 +158,7 @@ export const CharacterImageUpload = ({
         accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
         onChange={handleFileUpload}
         className="hidden"
+        multiple={multiple}
       />
     </div>
   );

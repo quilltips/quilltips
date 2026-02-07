@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, parse, isValid } from "date-fns";
 import { CalendarIcon, AlertCircle, Loader2, ImagePlus, Plus, X, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +58,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
   const [publisher, setPublisher] = useState("");
   const [isbn, setIsbn] = useState("");
   const [releaseDate, setReleaseDate] = useState<Date>();
+  const [releaseDateInput, setReleaseDateInput] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [buyNowLink, setBuyNowLink] = useState("");
   const [imageError, setImageError] = useState<string | null>(null);
@@ -308,6 +309,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             onChange={(e) => setBookTitle(e.target.value)}
             placeholder=""
             required
+            className="border border-[#333333] bg-white"
           />
         </div>
 
@@ -318,35 +320,8 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             onChange={(e) => setPublisher(e.target.value)}
             placeholder=""
             required
+            className="border border-[#333333] bg-white"
           />
-        </div>
-
-       
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Enter release date (optional)</label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "border border-[#333333] rounded-md w-full justify-start text-left font-normal hover:bg-transparent hover:shadow-none",
-                  !releaseDate && ""
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {releaseDate ? format(releaseDate, "PPP") : <span></span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={releaseDate}
-                onSelect={setReleaseDate}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
         </div>
 
         <div className="space-y-2">
@@ -356,7 +331,64 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             onChange={(e) => setIsbn(e.target.value)}
             placeholder=""
             required
+            className="border border-[#333333] bg-white"
           />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Enter release date (optional)</label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <div className="flex border border-[#333333] rounded-md bg-white overflow-hidden">
+                <div className="flex items-center pl-3 text-muted-foreground">
+                  <CalendarIcon className="h-4 w-4" />
+                </div>
+                <Input
+                  value={releaseDateInput}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "");
+                    if (v.length >= 2) v = v.slice(0, 2) + "/" + v.slice(2);
+                    if (v.length >= 5) v = v.slice(0, 5) + "/" + v.slice(5);
+                    if (v.length > 10) v = v.slice(0, 10);
+                    setReleaseDateInput(v);
+                    const parsed = parse(v, "MM/dd/yyyy", new Date());
+                    if (isValid(parsed)) setReleaseDate(parsed);
+                    else if (!v) setReleaseDate(undefined);
+                  }}
+                  placeholder="MM/DD/YYYY"
+                  className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <div className="p-3 border-b">
+                <Input
+                  value={releaseDateInput}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "");
+                    if (v.length >= 2) v = v.slice(0, 2) + "/" + v.slice(2);
+                    if (v.length >= 5) v = v.slice(0, 5) + "/" + v.slice(5);
+                    if (v.length > 10) v = v.slice(0, 10);
+                    setReleaseDateInput(v);
+                    const parsed = parse(v, "MM/dd/yyyy", new Date());
+                    if (isValid(parsed)) setReleaseDate(parsed);
+                    else if (!v) setReleaseDate(undefined);
+                  }}
+                  placeholder="MM/DD/YYYY"
+                  className="border border-[#333333] bg-white"
+                />
+              </div>
+              <Calendar
+                mode="single"
+                selected={releaseDate}
+                onSelect={(date) => {
+                  setReleaseDate(date);
+                  setReleaseDateInput(date ? format(date, "MM/dd/yyyy") : "");
+                }}
+                defaultMonth={releaseDate ?? new Date()}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="space-y-2">
@@ -366,6 +398,7 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
             onChange={(e) => setBuyNowLink(e.target.value)}
             placeholder=""
             type="text"
+            className="border border-[#333333] bg-white"
           />
         </div>
 
@@ -374,16 +407,16 @@ export const CreateQRCode = ({ authorId }: CreateQRCodeProps) => {
           <Textarea
             value={bookDescription}
             onChange={(e) => setBookDescription(e.target.value)}
-            placeholder="Enter a description of your book..."
+            placeholder=""
             maxLength={2000}
-            className="min-h-[80px] text-sm"
+            className="min-h-[80px] text-sm border border-[#333333] bg-white"
           />
           <p className="text-xs text-gray-500">{bookDescription.length}/2000 characters</p>
         </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Cover Image (optional)</label>
-          <div className="relative aspect-[2/3] max-w-[150px] border rounded-2xl overflow-hidden bg-white">
+          <div className="relative aspect-[2/3] max-w-[150px] border border-[#333333] rounded-2xl overflow-hidden bg-white">
             {coverImageUrl ? (
               <img
                 src={coverImageUrl}

@@ -13,6 +13,7 @@ interface QRCodeDownloadOptionsProps {
   onDownloadSVG: () => void;
   onDownloadPNG: () => void;
   className?: string;
+  buttonClassName?: string;
   disabled?: boolean;
 }
 
@@ -20,6 +21,7 @@ export const QRCodeDownloadOptions = ({
   onDownloadSVG,
   onDownloadPNG,
   className,
+  buttonClassName,
   disabled = false
 }: QRCodeDownloadOptionsProps) => {
   return (
@@ -27,7 +29,7 @@ export const QRCodeDownloadOptions = ({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
-            className={`flex-grow ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#FFD166] hover:bg-[#FFD166]/90'} text-[#2D3748]`}
+            className={`flex-grow ${buttonClassName || ''} ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#FFD166] hover:bg-[#FFD166]/90'} text-[#2D3748]`}
             disabled={disabled}
           >
             <Download className="mr-2 h-4 w-4" />

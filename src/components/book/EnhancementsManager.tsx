@@ -6,12 +6,21 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { Plus, X, HelpCircle, Search } from "lucide-react";
+import { Plus, X, HelpCircle, Search, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoUpload } from "../upload/VideoUpload";
 import { CharacterImageUpload } from "../upload/CharacterImageUpload";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import type { BookVideo } from "./VideoCarousel";
 
 type BonusSection = "videos" | "letter" | "characters" | "signups" | "bookshelf";
@@ -491,25 +500,79 @@ export const EnhancementsManager = ({
 
       case "characters":
         return (
-          <div key={key} className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+          <div key={key} className="rounded-lg border border-gray-200 bg-white p-4 space-y-7">
             <div className="flex items-center justify-between mb-1">
               <h4 className="text-sm font-semibold text-[#333333]">Book Art</h4>
               <Button variant="ghost" size="sm" onClick={() => closeSection("characters")} className="h-6 w-6 p-0">
                 <X className="h-4 w-4" />
               </Button>
             </div>
-           {characters.map((char, idx) => (
-              <div key={idx} className="p-3 rounded-lg space-y-2 bg-gray-50 border border-gray-200">
-                <div className="flex justify-end">
-                  <Button variant="ghost" size="sm" onClick={() => removeCharacter(idx)} className="h-6 w-6 p-0 hover:bg-transparent text-[#333333]"><X className="h-3 w-3" /></Button>
-                </div>
-                <CharacterImageUpload onUploadSuccess={(url) => updateCharacter(idx, "url", url)} currentImageUrl={char.url} onRemove={() => updateCharacter(idx, "url", "")} />
-                <Textarea placeholder="Description (optional)" value={char.description || ""} onChange={(e) => updateCharacter(idx, "description", e.target.value)} rows={2} className="text-xs" />
-              </div>
-            ))}
-            <Button variant="outline" onClick={addCharacter} className="w-full h-9 text-xs border-dashed border-[#FFD166] text-[#333333] hover:bg-[#FFD166]/10">
-              <Plus className="mr-1.5 h-3 w-3" /> Add Art
-            </Button>
+
+            {/* Upload button at top */}
+            <CharacterImageUpload
+              multiple
+              onUploadSuccess={(url) => setCharacters(prev => [...prev, { url, description: "" }])}
+            />
+
+            {/* Carousel of uploaded images */}
+            {characters.length > 0 && (
+              <Carousel className="w-full px-8">
+                <CarouselContent className="-ml-2">
+                  {characters.map((char, idx) => (
+                    <CarouselItem key={idx} className="pl-2 basis-[120px]">
+                      <div className="group relative rounded-sm overflow-hidden border border-gray-200 ">
+                        <OptimizedImage
+                          src={char.url}
+                          alt="Book art"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="secondary"
+                                size="icon"
+                                className="h-8 w-8 rounded-full bg-white/90 hover:bg-white text-[#333333]"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64 p-2" align="center">
+                              <Textarea
+                                placeholder="Description (optional)"
+                                value={char.description || ""}
+                                onChange={(e) => updateCharacter(idx, "description", e.target.value)}
+                                rows={2}
+                                className="text-xs"
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <Button
+                            variant="secondary"
+                            size="icon"
+                            className="h-8 w-8 rounded-full bg-red-500/90 hover:bg-red-500 text-white"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeCharacter(idx);
+                            }}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {characters.length > 1 && (
+                  <>
+                    <CarouselPrevious className="left-0 h-8 w-8" />
+                    <CarouselNext className="right-0 h-8 w-8" />
+                  </>
+                )}
+              </Carousel>
+            )}
+
             <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
               {isSaving ? "Saving..." : "Save"}
             </Button>
@@ -526,10 +589,10 @@ export const EnhancementsManager = ({
               </Button>
             </div>
             <Textarea
-              placeholder="Write a personal note to your readers..."
+              placeholder="Dear Beloved Readers..."
               value={letterToReaders}
               onChange={(e) => setLetterToReaders(e.target.value)}
-              className="min-h-[120px] text-sm"
+              className="min-h-[180px] text-sm"
             />
             <Button onClick={saveEnhancements} disabled={isSaving} size="sm" className="w-full bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/90">
               {isSaving ? "Saving..." : "Save"}
@@ -541,7 +604,7 @@ export const EnhancementsManager = ({
         return (
           <div key={key} className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
             <div className="flex items-center justify-between mb-1">
-              <h4 className="text-sm font-semibold text-[#333333]">Bookshelf</h4>
+              <h4 className="text-sm font-semibold text-[#333333]">Bookshelf (Recommendations)</h4>
               <Button variant="ghost" size="sm" onClick={() => closeSection("bookshelf")} className="h-6 w-6 p-0">
                 <X className="h-4 w-4" />
               </Button>
@@ -594,7 +657,7 @@ export const EnhancementsManager = ({
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-gray-600">Enable signup forms on this book page. Signups appear in your author dashboard.</p>
+            <p className="text-xs text-gray-600">Enable signup forms on this book page. Signup results appear in your data page.</p>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label htmlFor="arc-signup" className="text-sm cursor-pointer text-[#333333]">ARC Reader Signup</Label>
@@ -646,7 +709,7 @@ export const EnhancementsManager = ({
       </div>
 
       {/* Inline expanded sections - rendered in click order (newest first) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {openSections.map(section => renderSection(section))}
       </div>
     </div>
