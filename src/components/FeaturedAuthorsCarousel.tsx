@@ -10,9 +10,9 @@ const FEATURED_AUTHOR_IDS = [
   "2964531d-4ba6-4b61-8716-8c63a80f3cae", // Tyler Tarter
   "55056f35-3a44-4d79-8558-69e003be17b0", // Kelly Schweiger
   "51c62b82-f4ed-42d2-83e5-8d73d77482a4", // T.M. Thomas
-  "e14f7979-c1ca-4a91-9eb7-df4098759bac", // Frank Eugene Dukes Jr
+  "78a82f38-ca14-430d-9ab4-2fc3423edff3", // Author MG
   "3f6b03df-9231-451c-ac2e-491fe9be584c", // Melize Smit
-  "757201a7-8ca4-4801-8bdb-ad62c168146a", // Kitty Laroux
+  "e14f7979-c1ca-4a91-9eb7-df4098759bac", // Frank Eugene Dukes Jr
 ];
 
 interface AuthorProfile {
