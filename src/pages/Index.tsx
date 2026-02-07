@@ -23,11 +23,11 @@ const FEATURED_AUTHOR_IDS = ["485c1a1f-5bf0-4c0d-b51c-c97af069fabd",
 // Kelly Schweiger
 "51c62b82-f4ed-42d2-83e5-8d73d77482a4",
 // T.M. Thomas
-"e14f7979-c1ca-4a91-9eb7-df4098759bac",
-// Frank Eugene Dukes Jr
+"78a82f38-ca14-430d-9ab4-2fc3423edff3",
+// Author MG
 "3f6b03df-9231-451c-ac2e-491fe9be584c",
 // Melize Smit
-"757201a7-8ca4-4801-8bdb-ad62c168146a" // Kitty Laroux
+"e14f7979-c1ca-4a91-9eb7-df4098759bac" // Frank Eugene Dukes Jr
 ];
 const Index = () => {
   const {
